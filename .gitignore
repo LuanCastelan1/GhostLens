@@ -1,0 +1,15 @@
+# Logs & Cache
+*.log
+__pycache__/
+*.pyc
+.DS_Store
+
+# Executables & Builds
+dist/
+build/
+*.spec
+
+# Antidetect local session data
+perfis_antidetect/
+tokens_antidetect/
+temp_media/
