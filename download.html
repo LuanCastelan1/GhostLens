@@ -476,11 +476,11 @@
         </div>
 
         <div>
-          <a href="/download/GhostLens-Installer.dmg" class="btn-download btn-mac" onclick="handleDownloadSim(event, 'macOS')">
-            <span>🍏</span> Baixar Instalador (.DMG)
+          <a href="/download/GhostLens-Installer-macOS.zip" download="GhostLens-Installer-macOS.zip" class="btn-download btn-mac">
+            <span>🍏</span> Baixar Instalador (.ZIP / .DMG)
           </a>
           <div class="card-meta">
-            <span>Versão 2.4.0</span>
+            <span>Versão 2.4.0 • 18 MB</span>
             <span>SHA-256 Validado</span>
           </div>
         </div>
@@ -506,16 +506,109 @@
         </div>
 
         <div>
-          <a href="/download/GhostLens-Setup.exe" class="btn-download btn-win" onclick="handleDownloadSim(event, 'Windows')">
+          <a href="/download/GhostLens-Setup-Windows.zip" download="GhostLens-Setup-Windows.zip" class="btn-download btn-win">
             <span>🪟</span> Baixar Executável (.EXE)
           </a>
           <div class="card-meta">
-            <span>Versão 2.4.0</span>
+            <span>Versão 2.4.0 • 18 MB</span>
             <span>Assinado Digitalmente</span>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- 💳 SEÇÃO DE PLANOS & PREÇOS (MENSAL E ANUAL COM DESCONTO) -->
+    <section style="margin-top: 80px; text-align: center;">
+      <div class="hero-pill" style="margin-bottom: 14px;">
+        <span>💎 PLANOS DE ASSINATURA OFICIAIS</span>
+      </div>
+      <h2 style="font-size: 2.2rem; font-weight: 800; color: #fff; margin-bottom: 12px;">
+        Escolha o Plano Ideal para a sua Operação
+      </h2>
+      <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 600px; margin: 0 auto 32px auto;">
+        Desbloqueie o potencial máximo de antidetect móvel e aceleração de vídeo. Cancele quando quiser.
+      </p>
+
+      <!-- Toggle Mensal / Anual -->
+      <div style="display: inline-flex; align-items: center; gap: 14px; background: rgba(255,255,255,0.04); border: 1px solid var(--border-card); padding: 6px 14px; border-radius: 999px; margin-bottom: 48px;">
+        <span id="label-mensal" style="font-size: 0.88rem; font-weight: 700; color: var(--accent-lime); cursor: pointer;" onclick="setBilling('mensal')">Mensal</span>
+        <div id="billing-toggle" onclick="toggleBilling()" style="width: 52px; height: 28px; background: rgba(255,255,255,0.15); border-radius: 999px; position: relative; cursor: pointer; transition: all 0.3s ease;">
+          <div id="toggle-knob" style="width: 22px; height: 22px; background: var(--accent-lime); border-radius: 50%; position: absolute; top: 3px; left: 3px; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);"></div>
+        </div>
+        <span id="label-anual" style="font-size: 0.88rem; font-weight: 700; color: #94a3b8; cursor: pointer;" onclick="setBilling('anual')">
+          Anual <span style="background: rgba(190, 242, 100, 0.2); color: var(--accent-lime); padding: 3px 8px; border-radius: 999px; font-size: 0.72rem; margin-left: 4px;">25% OFF (3 Meses Grátis)</span>
+        </span>
+      </div>
+
+      <!-- Grid de Planos -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; text-align: left; max-width: 1100px; margin: 0 auto 80px auto;">
+        
+        <!-- Plano Starter -->
+        <div class="download-card" style="padding: 32px;">
+          <div>
+            <div style="color: #94a3b8; font-size: 0.8rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; margin-bottom: 8px;">Plano Starter</div>
+            <h3 style="font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 12px;">Solo Creator</h3>
+            <div style="display: flex; align-items: baseline; gap: 4px; margin-bottom: 20px;">
+              <span style="font-size: 1.1rem; color: #94a3b8;">R$</span>
+              <span id="price-starter" style="font-size: 2.5rem; font-weight: 900; color: #fff;">147</span>
+              <span id="period-starter" style="color: #94a3b8; font-size: 0.85rem;">/mês</span>
+            </div>
+            <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 24px;">Ideal para operadores individuais que gerenciam 1 musa ou perfil de autoridade.</p>
+            <div class="spec-list" style="margin-bottom: 28px;">
+              <div class="spec-item"><span class="icon">✓</span> <strong>1 Aparelho GhostPhone</strong> Ativo</div>
+              <div class="spec-item"><span class="icon">✓</span> Rotação de IP 4G Móvel</div>
+              <div class="spec-item"><span class="icon">✓</span> Limpeza EXIF & Purga C2PA</div>
+              <div class="spec-item"><span class="icon">✓</span> 50 Processamentos 60 FPS / mês</div>
+            </div>
+          </div>
+          <a href="/studio" style="display: block; text-align: center; background: rgba(255,255,255,0.06); border: 1px solid var(--border-card); color: #fff; padding: 14px; border-radius: 14px; font-weight: 800; text-decoration: none; transition: 0.2s;" onmouseover="this.style.borderColor='var(--accent-lime)'" onmouseout="this.style.borderColor='var(--border-card)'">Assinar Starter</a>
+        </div>
+
+        <!-- Plano Pro (Destaque) -->
+        <div class="download-card highlight" style="padding: 32px; border-color: rgba(190, 242, 100, 0.5); box-shadow: 0 0 40px rgba(190, 242, 100, 0.1);">
+          <div style="position: absolute; top: -14px; right: 28px; background: var(--accent-lime); color: #000; font-size: 0.72rem; font-weight: 900; padding: 4px 12px; border-radius: 999px; text-transform: uppercase;">Mais Popular</div>
+          <div>
+            <div style="color: var(--accent-lime); font-size: 0.8rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; margin-bottom: 8px;">Plano Pro Agency</div>
+            <h3 style="font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 12px;">Scale Master</h3>
+            <div style="display: flex; align-items: baseline; gap: 4px; margin-bottom: 20px;">
+              <span style="font-size: 1.1rem; color: #94a3b8;">R$</span>
+              <span id="price-pro" style="font-size: 2.5rem; font-weight: 900; color: #fff;">297</span>
+              <span id="period-pro" style="color: #94a3b8; font-size: 0.85rem;">/mês</span>
+            </div>
+            <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 24px;">O pacote definitivo para agências que escalam até 5 perfis simultâneos.</p>
+            <div class="spec-list" style="margin-bottom: 28px;">
+              <div class="spec-item"><span class="icon">✓</span> <strong>3 GhostPhones Simultâneos</strong></div>
+              <div class="spec-item"><span class="icon">✓</span> Injeção de Câmera iPhone 16 Pro</div>
+              <div class="spec-item"><span class="icon">✓</span> Interpolação 60 FPS Ilimitada</div>
+              <div class="spec-item"><span class="icon">✓</span> Suporte Prioritário VIP</div>
+            </div>
+          </div>
+          <a href="/studio" style="display: block; text-align: center; background: var(--accent-lime); color: #000; padding: 14px; border-radius: 14px; font-weight: 900; text-decoration: none; box-shadow: 0 10px 25px rgba(190, 242, 100, 0.3);">Assinar Plano Pro</a>
+        </div>
+
+        <!-- Plano Enterprise -->
+        <div class="download-card" style="padding: 32px;">
+          <div>
+            <div style="color: #38bdf8; font-size: 0.8rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; text-transform: uppercase; margin-bottom: 8px;">Plano Enterprise</div>
+            <h3 style="font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 12px;">Agency Empire</h3>
+            <div style="display: flex; align-items: baseline; gap: 4px; margin-bottom: 20px;">
+              <span style="font-size: 1.1rem; color: #94a3b8;">R$</span>
+              <span id="price-enterprise" style="font-size: 2.5rem; font-weight: 900; color: #fff;">597</span>
+              <span id="period-enterprise" style="color: #94a3b8; font-size: 0.85rem;">/mês</span>
+            </div>
+            <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 24px;">Para grandes operações de tráfego e fazendas de perfis de alta rentabilidade.</p>
+            <div class="spec-list" style="margin-bottom: 28px;">
+              <div class="spec-item"><span class="icon">✓</span> <strong>10 GhostPhones Simultâneos</strong></div>
+              <div class="spec-item"><span class="icon">✓</span> Acesso Multi-usuário de Equipe</div>
+              <div class="spec-item"><span class="icon">✓</span> Multi-máquinas (Multi HWID Lock)</div>
+              <div class="spec-item"><span class="icon">✓</span> Gerente de Sucesso Dedicado</div>
+            </div>
+          </div>
+          <a href="/proposta" style="display: block; text-align: center; background: rgba(56, 189, 248, 0.1); border: 1px solid var(--accent-blue); color: #fff; padding: 14px; border-radius: 14px; font-weight: 800; text-decoration: none;">Falar com Consultor</a>
+        </div>
+
+      </div>
+    </section>
 
     <!-- Requisitos de Hardware com Enquadramento de Cibersegurança -->
     <section class="req-section">
@@ -632,10 +725,52 @@
   </main>
 
   <script>
-    function handleDownloadSim(e, os) {
-      e.preventDefault();
-      alert(`🚀 Iniciando download do instalador oficial do GhostLens para ${os}!\n\n• Motor GhostStealth™ incluso\n• Arquitetura Hypervisor ativa\n• Ativação automática ao abrir o Web Studio.`);
-      window.location.href = '/studio';
+    let currentBilling = 'mensal';
+
+    const pricing = {
+      mensal: {
+        starter: { price: '147', period: '/mês' },
+        pro: { price: '297', period: '/mês' },
+        enterprise: { price: '597', period: '/mês' }
+      },
+      anual: {
+        starter: { price: '110', period: '/mês (cobrado R$ 1.320/ano)' },
+        pro: { price: '222', period: '/mês (cobrado R$ 2.670/ano)' },
+        enterprise: { price: '447', period: '/mês (cobrado R$ 5.370/ano)' }
+      }
+    };
+
+    function setBilling(mode) {
+      currentBilling = mode;
+      const knob = document.getElementById('toggle-knob');
+      const toggle = document.getElementById('billing-toggle');
+      const lblMensal = document.getElementById('label-mensal');
+      const lblAnual = document.getElementById('label-anual');
+
+      if (mode === 'anual') {
+        knob.style.transform = 'translateX(24px)';
+        toggle.style.background = 'rgba(190, 242, 100, 0.4)';
+        lblAnual.style.color = 'var(--accent-lime)';
+        lblMensal.style.color = '#94a3b8';
+      } else {
+        knob.style.transform = 'translateX(0px)';
+        toggle.style.background = 'rgba(255, 255, 255, 0.15)';
+        lblMensal.style.color = 'var(--accent-lime)';
+        lblAnual.style.color = '#94a3b8';
+      }
+
+      document.getElementById('price-starter').innerText = pricing[mode].starter.price;
+      document.getElementById('period-starter').innerText = pricing[mode].starter.period;
+
+      document.getElementById('price-pro').innerText = pricing[mode].pro.price;
+      document.getElementById('period-pro').innerText = pricing[mode].pro.period;
+
+      document.getElementById('price-enterprise').innerText = pricing[mode].enterprise.price;
+      document.getElementById('period-enterprise').innerText = pricing[mode].enterprise.period;
+    }
+
+    function toggleBilling() {
+      setBilling(currentBilling === 'mensal' ? 'anual' : 'mensal');
     }
   </script>
 </body>
