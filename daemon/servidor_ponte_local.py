@@ -14,8 +14,8 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 
 PORT = 4444
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-GHOST_DIR = os.path.dirname(BASE_DIR)
-PERFIS_DIR = os.path.join(GHOST_DIR, "perfis_antidetect")
+EROS_DIR = os.path.dirname(BASE_DIR)
+PERFIS_DIR = os.path.join(EROS_DIR, "perfis_antidetect")
 
 os.makedirs(PERFIS_DIR, exist_ok=True)
 
@@ -205,7 +205,6 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                     '--window-title', f'GhostPhone™ • {musa}',
                     '--always-on-top',
                     '--stay-awake',
-                    '--no-audio',
                     '--window-width', '440'
                 ]
                 subprocess.Popen(cmd)
@@ -1156,7 +1155,6 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                     '--window-title', f'GhostPhone™ • {musa}',
                     '--always-on-top',
                     '--stay-awake',
-                    '--no-audio',
                     '--window-width', '440'
                 ]
                 subprocess.Popen(cmd)

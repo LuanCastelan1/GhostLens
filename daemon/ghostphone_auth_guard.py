@@ -67,22 +67,22 @@ class GhostAuthGuard:
         """Gera uma chave criptográfica blindada e assinada para o cliente."""
         import secrets
         plan_clean = str(plan).upper()
-        if "SOLO" in plan_clean or "47" in plan_clean:
+        if "SOLO" in plan_clean or "49" in plan_clean or "47" in plan_clean or "1" in plan_clean:
             code = "SOLO"
             max_devs = 1
-            plan_name = "GhostPhone Solo (1 Celular)"
-        elif "AGENCY" in plan_clean or "SCALE" in plan_clean or "197" in plan_clean:
+            plan_name = "GhostLens Solo (1 Dispositivo)"
+        elif "AGENCY" in plan_clean or "SCALE" in plan_clean or "300" in plan_clean or "10" in plan_clean:
             code = "AGENCY"
             max_devs = 10
-            plan_name = "GhostPhone Agency (10 Celulares)"
+            plan_name = "GhostLens Agency (10 Dispositivos)"
         elif "MASTER" in plan_clean:
             code = "MASTER"
             max_devs = 50
-            plan_name = "GhostPhone Master (Ilimitado)"
+            plan_name = "GhostLens Master (Dispositivos Ilimitados)"
         else:
             code = "PRO"
             max_devs = 3
-            plan_name = "GhostPhone Pro (3 Celulares)"
+            plan_name = "GhostLens Pro (3 Dispositivos)"
 
         part1 = secrets.token_hex(2).upper()
         part2 = secrets.token_hex(2).upper()

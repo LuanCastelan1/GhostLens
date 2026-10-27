@@ -116,9 +116,11 @@
     .phone-container-main {
       flex: 1;
       display: flex;
+      flex-direction: row;
       background: #090a0f;
       position: relative;
       overflow: hidden;
+      height: calc(100vh - 38px);
     }
 
     /* ÁREA CENTRAL: O SMARTPHONE */
@@ -128,12 +130,16 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 10px;
+      padding: 12px;
       position: relative;
+      height: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
     }
 
     .smartphone-body {
-      height: 100%;
+      height: 98%;
+      max-height: 98%;
       aspect-ratio: 1080 / 2400;
       max-width: 100%;
       background: #000;
@@ -234,6 +240,7 @@
     /* TOOLBAR LATERAL DIREITA (ESTILO GHOSTPHONE DA FOTO) */
     .phone-sidebar-toolbar {
       width: 52px;
+      height: 100%;
       background: #11131a;
       border-left: 1px solid var(--border-color);
       display: flex;
@@ -243,6 +250,8 @@
       gap: 14px;
       flex-shrink: 0;
       z-index: 20;
+      box-sizing: border-box;
+      overflow-y: auto;
     }
 
     .tool-btn {
@@ -390,20 +399,30 @@
       cursor: pointer;
       transition: all 0.2s;
     }
+
     .auth-active {
       background: rgba(34, 197, 94, 0.15);
       border: 1px solid rgba(34, 197, 94, 0.35);
       color: #4ade80;
     }
+
     .auth-unauthorized {
       background: rgba(239, 68, 68, 0.18);
       border: 1px solid rgba(239, 68, 68, 0.45);
       color: #f87171;
       animation: pulse-danger 1.8s infinite;
     }
+
     @keyframes pulse-danger {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.55; }
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.55;
+      }
     }
 
     /* TELA DE BLOQUEIO DO CELULAR CASO LICENÇA ESTEJA INATIVA */
@@ -420,6 +439,7 @@
       text-align: center;
       z-index: 100;
     }
+
     .phone-lock-icon {
       width: 58px;
       height: 58px;
@@ -433,6 +453,7 @@
       margin-bottom: 14px;
       box-shadow: 0 0 25px rgba(239, 68, 68, 0.25);
     }
+
     .hwid-box {
       background: #090a0f;
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -452,23 +473,26 @@
 
 <body>
 
-  <!-- HEADER DA JANELA (IDÊNTICO AO GHOSTPHONE) -->
+  <!-- HEADER DA JANELA (GHOSTPHONE CLOUD) -->
   <div class="window-header">
     <div class="window-title-wrap">
-      <div class="window-logo-badge">M</div>
+      <div class="window-logo-badge" title="GhostPhone™ Cloud">G</div>
       <div class="window-title">
         <span id="txtWindowMusa">Leninha</span> • <span style="color: var(--text-muted); font-size: 0.72rem;">Samsung
           Galaxy S24 Ultra</span>
         <span class="window-musa-tag">Android 14 Nativo</span>
       </div>
-      <div id="authStatusBadge" class="auth-status-badge auth-active" onclick="openModalAuth()" title="Status da Licença e Hardware ID">
+      <div id="authStatusBadge" class="auth-status-badge auth-active" onclick="openModalAuth()"
+        title="Status da Licença e Hardware ID">
         <span>🛡️</span>
         <span id="lblAuthPlan">Verificando Licença...</span>
       </div>
     </div>
 
     <div class="window-controls">
-      <button onclick="launchNativeWindow()" style="background: linear-gradient(135deg, #0284c7, #38bdf8); color: #fff; border: none; padding: 4px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 8px rgba(56,189,248,0.4);" title="Abrir em Janela Nativa 60 FPS Metal">📱 Abrir Tela Solta (60 FPS)</button>
+      <button onclick="launchNativeWindow()"
+        style="background: linear-gradient(135deg, #0284c7, #38bdf8); color: #fff; border: none; padding: 4px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 8px rgba(56,189,248,0.4);"
+        title="Abrir em Janela Nativa 60 FPS Metal">📱 Abrir Tela Solta (60 FPS)</button>
       <span class="window-btn" title="Fixar no Topo">📌</span>
       <span class="window-btn" title="Minimizar">─</span>
       <span class="window-btn" title="Tela Cheia">⛶</span>
@@ -479,49 +503,73 @@
   <!-- CONTAINER DO CELULAR E TOOLBAR LATERAL -->
   <div class="phone-container-main">
 
-    <!-- ÁREA CENTRAL DO SMARTPHONE -->
-    <div class="phone-viewport-wrapper">
-      <div class="smartphone-body">
-
-        <!-- TELA DO ANDROID NATIVO (STREAM LIVE 60 FPS VIA ADB) -->
-        <div class="android-screen-view" id="androidScreen" style="position: relative; width: 100%; height: 100%; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-          <canvas id="phoneCanvas" width="1080" height="2400" style="width: 100%; height: 100%; object-fit: contain; cursor: crosshair; display: block;"></canvas>
-          
-          <div id="phoneStreamLoading" style="position: absolute; color: #fff; font-size: 0.8rem; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none;">
-            <div style="width: 24px; height: 24px; border: 2px solid rgba(255,255,255,0.2); border-top-color: #22c55e; border-radius: 50%; animation: spin 1s infinite linear;"></div>
-            <span>Conectando ao GhostPhone™ Android...</span>
+    <!-- ÁREA CENTRAL: HUB DE CONTROLE DO GHOSTPHONE (ZERO TELA DUPLICADA) -->
+    <div class="phone-viewport-wrapper" style="max-width: 520px; margin: 0 auto; padding: 20px; box-sizing: border-box;">
+      <div style="width: 100%; background: #11141d; border: 1px solid rgba(255,255,255,0.08); border-radius: 20px; padding: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); display: flex; flex-direction: column; gap: 18px; text-align: center; box-sizing: border-box;">
+        
+        <!-- CABEÇALHO DO STATUS -->
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+          <div style="width: 58px; height: 58px; border-radius: 18px; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; box-shadow: 0 0 25px rgba(56, 189, 248, 0.25);">
+            📱
           </div>
-
-          <!-- TELA DE BLOQUEIO / ATIVAÇÃO ANTIPIRATARIA (SE LICENÇA INATIVA) -->
-          <div id="screenLockGuard" class="phone-lock-overlay" style="display: none;">
-            <div class="phone-lock-icon">🔒</div>
-            <h3 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin-bottom: 6px;">Nó Local Bloqueado</h3>
-            <p style="font-size: 0.72rem; color: #94a3b8; line-height: 1.4; max-width: 280px; margin-bottom: 12px;">
-              Esta máquina não possui uma licença ativa do GhostPhone™ Cloud. Ative sua chave para desbloquear a emulação nativa:
-            </p>
-
-            <div style="width: 100%; text-align: left; margin-bottom: 4px;">
-              <span style="font-size: 0.65rem; color: #64748b; font-weight: 700; text-transform: uppercase;">ID Exclusivo de Hardware (HWID):</span>
-            </div>
-            <div class="hwid-box">
-              <span id="lblLockHwid">GP-DAR-CALCULATING</span>
-              <button onclick="copyHwid()" style="background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.3); color: #38bdf8; padding: 2px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; cursor: pointer;">Copiar</button>
-            </div>
-
-            <div style="width: 100%; display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
-              <input type="text" id="txtLockKey" placeholder="GHOST-PRO-XXXX-XXXX" style="background: #11131a; border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 10px; border-radius: 8px; font-size: 0.78rem; text-align: center; font-family: 'JetBrains Mono', monospace; text-transform: uppercase;">
-              <input type="email" id="txtLockEmail" placeholder="seu-email@exemplo.com" style="background: #11131a; border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 10px; border-radius: 8px; font-size: 0.78rem; text-align: center;">
-              <button onclick="activateFromLockScreen()" style="background: linear-gradient(135deg, #22c55e, #16a34a); border: none; color: #fff; padding: 10px; border-radius: 8px; font-size: 0.78rem; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(34,197,94,0.3);">
-                🔓 Ativar e Desbloquear Máquina
-              </button>
-            </div>
-            <div id="lblLockMsg" style="font-size: 0.7rem; color: #f87171; margin-top: 8px; min-height: 16px;"></div>
+          <div>
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: #fff; margin: 0 0 4px 0;">GhostPhone™ • Tela Suspensa</h3>
+            <span style="display: inline-flex; align-items: center; gap: 6px; background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.35); color: #4ade80; font-size: 0.74rem; font-weight: 800; padding: 3px 10px; border-radius: 20px;">
+              <span style="width: 8px; height: 8px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 8px #22c55e;"></span>
+              Operando a 60 FPS Metal (Janela Solta)
+            </span>
           </div>
-
+          <p style="font-size: 0.74rem; color: #94a3b8; line-height: 1.5; margin: 0; max-width: 380px;">
+            A tela do seu celular roda exclusivamente na <strong>janela suspensa nativa do macOS</strong> ao lado. Esta janela é apenas o seu painel de atalhos e injeção de mídia!
+          </p>
         </div>
 
+        <!-- BOTÕES DE AÇÃO PRINCIPAL -->
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <button onclick="launchNativeWindow()"
+            style="width: 100%; background: linear-gradient(135deg, #0284c7, #38bdf8); border: none; color: #fff; font-weight: 800; font-size: 0.86rem; padding: 13px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 18px rgba(56, 189, 248, 0.35);">
+            📱 Trazer Tela Suspensa para Frente
+          </button>
+          
+          <button onclick="openModalUpload()"
+            style="width: 100%; background: linear-gradient(135deg, #bef264, #a3e635); border: none; color: #000; font-weight: 800; font-size: 0.86rem; padding: 13px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 16px rgba(190, 242, 100, 0.25);">
+            📦 Subir Fotos na Galeria da Musa
+          </button>
+
+          <button onclick="openModalClipboard()"
+            style="width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.12); color: #cbd5e1; font-weight: 700; font-size: 0.82rem; padding: 11px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            📋 Sincronizar Prancheta / Colar no Celular
+          </button>
+
+          <button onclick="triggerIpRotation()"
+            style="width: 100%; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); color: #38bdf8; font-weight: 700; font-size: 0.82rem; padding: 11px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+            ✈️ Rotacionar IP Móvel Vivo (Modo Avião)
+          </button>
+        </div>
+
+        <!-- BARRA DE NAVEGAÇÃO ANDROID (RECENTS, HOME, BACK) -->
+        <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 8px; display: flex; align-items: center; justify-content: space-around;">
+          <button onclick="sendAndroidKey('KEY_MENU')" title="Ver Apps Abertos / Multitarefa"
+            style="background: none; border: none; color: #94a3b8; cursor: pointer; padding: 8px 16px; border-radius: 8px; display: flex; align-items: center; gap: 6px; font-size: 0.76rem; font-weight: 700;">
+            ⏹ Apps Abertos
+          </button>
+          <button onclick="sendAndroidKey('KEY_HOMEPAGE')" title="Início"
+            style="background: none; border: none; color: #38bdf8; cursor: pointer; padding: 8px 16px; border-radius: 8px; display: flex; align-items: center; gap: 6px; font-size: 0.76rem; font-weight: 700;">
+            ⚪ Início
+          </button>
+          <button onclick="sendAndroidKey('KEY_BACK')" title="Voltar"
+            style="background: none; border: none; color: #f43f5e; cursor: pointer; padding: 8px 16px; border-radius: 8px; display: flex; align-items: center; gap: 6px; font-size: 0.76rem; font-weight: 700;">
+            ◀ Voltar
+          </button>
+        </div>
+
+        <button onclick="window.close()"
+          style="background: none; border: none; color: #64748b; font-size: 0.74rem; cursor: pointer; padding: 4px;">
+          ✕ Fechar este painel de atalhos
+        </button>
+
       </div>
-    </div>
+    </div> <!-- /phone-viewport-wrapper -->
 
     <!-- TOOLBAR DA DIREITA (GHOSTPHONE EXATO) -->
     <div class="phone-sidebar-toolbar">
@@ -582,645 +630,475 @@
         🛡️
       </div>
 
+    </div> <!-- /phone-sidebar-toolbar -->
+
+  </div> <!-- /phone-container-main -->
+
+    <!-- MODAL: CLIPBOARD SYNC -->
+    <div class="ghost-modal-backdrop" id="modalClipboard">
+      <div class="ghost-modal-box">
+        <div class="ghost-modal-title">
+          <span>📋 Sincronizar Prancheta (Mac ➔ Android)</span>
+          <span style="cursor: pointer;" onclick="closeModals()">✕</span>
+        </div>
+        <p style="font-size: 0.74rem; color: var(--text-muted);">
+          Cole legendas, bios ou respostas prontas aqui para colar automaticamente dentro do Instagram da musa:
+        </p>
+        <textarea id="txtMacClipboard" rows="4"
+          style="width: 100%; background: #090a0f; border: 1px solid var(--border-color); color: #fff; padding: 10px; border-radius: 8px; font-size: 0.8rem; resize: none;"
+          placeholder="Digite ou cole o texto aqui..."></textarea>
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button onclick="closeModals()"
+            style="background: rgba(255,255,255,0.06); border: none; color: #cbd5e1; padding: 8px 14px; border-radius: 8px; font-size: 0.75rem; cursor: pointer;">Cancelar</button>
+          <button onclick="sendClipboardToAndroid()"
+            style="background: var(--accent-cyan); border: none; color: #000; font-weight: 800; padding: 8px 16px; border-radius: 8px; font-size: 0.75rem; cursor: pointer;">⚡
+            Injetar no Celular</button>
+        </div>
+      </div>
     </div>
 
-  </div>
-
-  <!-- MODAL: CLIPBOARD SYNC -->
-  <div class="ghost-modal-backdrop" id="modalClipboard">
-    <div class="ghost-modal-box">
-      <div class="ghost-modal-title">
-        <span>📋 Sincronizar Prancheta (Mac ➔ Android)</span>
-        <span style="cursor: pointer;" onclick="closeModals()">✕</span>
-      </div>
-      <p style="font-size: 0.74rem; color: var(--text-muted);">
-        Cole legendas, bios ou respostas prontas aqui para colar automaticamente dentro do Instagram da musa:
-      </p>
-      <textarea id="txtMacClipboard" rows="4"
-        style="width: 100%; background: #090a0f; border: 1px solid var(--border-color); color: #fff; padding: 10px; border-radius: 8px; font-size: 0.8rem; resize: none;"
-        placeholder="Digite ou cole o texto aqui..."></textarea>
-      <div style="display: flex; justify-content: flex-end; gap: 8px;">
-        <button onclick="closeModals()"
-          style="background: rgba(255,255,255,0.06); border: none; color: #cbd5e1; padding: 8px 14px; border-radius: 8px; font-size: 0.75rem; cursor: pointer;">Cancelar</button>
-        <button onclick="sendClipboardToAndroid()"
-          style="background: var(--accent-cyan); border: none; color: #000; font-weight: 800; padding: 8px 16px; border-radius: 8px; font-size: 0.75rem; cursor: pointer;">⚡
-          Injetar no Celular</button>
+    <!-- MODAL: ENVIAR FOTOS / MÍDIA DIRETO PRO COFRE -->
+    <div class="ghost-modal-backdrop" id="modalUpload">
+      <div class="ghost-modal-box">
+        <div class="ghost-modal-title">
+          <span>📦 Enviar Mídia para /sdcard/DCIM/Camera</span>
+          <span style="cursor: pointer;" onclick="closeModals()">✕</span>
+        </div>
+        <p style="font-size: 0.74rem; color: var(--text-muted);">
+          O arquivo será injetado na pasta de câmera nativa do celular. O Instagram verá a foto como tirada na hora pelo
+          sensor físico:
+        </p>
+        <input type="file" id="fileMediaUpload" multiple accept="image/*,video/*"
+          style="width: 100%; background: #090a0f; border: 1px dashed var(--border-color); padding: 16px; border-radius: 8px; color: #cbd5e1; font-size: 0.75rem;">
+        <div style="display: flex; justify-content: flex-end; gap: 8px;">
+          <button onclick="closeModals()"
+            style="background: rgba(255,255,255,0.06); border: none; color: #cbd5e1; padding: 8px 14px; border-radius: 8px; font-size: 0.75rem; cursor: pointer;">Cancelar</button>
+          <button onclick="uploadMediaToDcim()"
+            style="background: var(--accent-lime); border: none; color: #000; font-weight: 800; padding: 8px 16px; border-radius: 8px; font-size: 0.75rem; cursor: pointer;">🚀
+            Injetar na Galeria</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- MODAL: ENVIAR FOTOS / MÍDIA DIRETO PRO COFRE -->
-  <div class="ghost-modal-backdrop" id="modalUpload">
-    <div class="ghost-modal-box">
-      <div class="ghost-modal-title">
-        <span>📦 Enviar Mídia para /sdcard/DCIM/Camera</span>
-        <span style="cursor: pointer;" onclick="closeModals()">✕</span>
-      </div>
-      <p style="font-size: 0.74rem; color: var(--text-muted);">
-        O arquivo será injetado na pasta de câmera nativa do celular. O Instagram verá a foto como tirada na hora pelo
-        sensor físico:
-      </p>
-      <input type="file" id="fileMediaUpload" multiple accept="image/*,video/*"
-        style="width: 100%; background: #090a0f; border: 1px dashed var(--border-color); padding: 16px; border-radius: 8px; color: #cbd5e1; font-size: 0.75rem;">
-      <div style="display: flex; justify-content: flex-end; gap: 8px;">
-        <button onclick="closeModals()"
-          style="background: rgba(255,255,255,0.06); border: none; color: #cbd5e1; padding: 8px 14px; border-radius: 8px; font-size: 0.75rem; cursor: pointer;">Cancelar</button>
-        <button onclick="uploadMediaToDcim()"
-          style="background: var(--accent-lime); border: none; color: #000; font-weight: 800; padding: 8px 16px; border-radius: 8px; font-size: 0.75rem; cursor: pointer;">🚀
-          Injetar na Galeria</button>
+    <!-- MODAL: HARDWARE SPECS (GHOSTPHONE INSPECTOR) -->
+    <div class="ghost-modal-backdrop" id="modalSpecs">
+      <div class="ghost-modal-box">
+        <div class="ghost-modal-title">
+          <span>⚙️ Identidade de Hardware (GhostPhone)</span>
+          <span style="cursor: pointer;" onclick="closeModals()">✕</span>
+        </div>
+        <div
+          style="display: flex; flex-direction: column; gap: 8px; font-size: 0.74rem; font-family: 'JetBrains Mono', monospace;">
+          <div
+            style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <span style="color: var(--text-muted);">Dispositivo:</span>
+            <span style="color: #fff;">Samsung Galaxy S24 Ultra (SM-S928B)</span>
+          </div>
+          <div
+            style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <span style="color: var(--text-muted);">Sistema:</span>
+            <span style="color: var(--accent-lime);">Android 14 (OneUI 6.1 • ARM64)</span>
+          </div>
+          <div
+            style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <span style="color: var(--text-muted);">Operadora / APN:</span>
+            <span style="color: var(--accent-cyan);">Telefônica Brasil (Vivo 4G Móvel)</span>
+          </div>
+          <div
+            style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <span style="color: var(--text-muted);">IP Público:</span>
+            <span id="valModalIp" style="color: #fff;">191.26.159.69 (CGNAT)</span>
+          </div>
+          <div
+            style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <span style="color: var(--text-muted);">IMEI:</span>
+            <span style="color: #fff;">354891108429185</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 6px 0;">
+            <span style="color: var(--text-muted);">Android ID:</span>
+            <span style="color: #fff;">9a4f21b778c0e12a</span>
+          </div>
+        </div>
+        <div style="display: flex; justify-content: flex-end;">
+          <button onclick="closeModals()"
+            style="background: var(--accent-cyan); border: none; color: #000; font-weight: 800; padding: 8px 16px; border-radius: 8px; font-size: 0.75rem; cursor: pointer;">Fechar</button>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- MODAL: HARDWARE SPECS (GHOSTPHONE INSPECTOR) -->
-  <div class="ghost-modal-backdrop" id="modalSpecs">
-    <div class="ghost-modal-box">
-      <div class="ghost-modal-title">
-        <span>⚙️ Identidade de Hardware (GhostPhone)</span>
-        <span style="cursor: pointer;" onclick="closeModals()">✕</span>
-      </div>
-      <div
-        style="display: flex; flex-direction: column; gap: 8px; font-size: 0.74rem; font-family: 'JetBrains Mono', monospace;">
+    <!-- MODAL: LICENÇA E HWID GUARD (GHOSTPHONE LICENSE CONTROLLER) -->
+    <div class="ghost-modal-backdrop" id="modalAuthGuard">
+      <div class="ghost-modal-box">
+        <div class="ghost-modal-title">
+          <span>🛡️ Licença & Hardware ID Guard</span>
+          <span style="cursor: pointer;" onclick="closeModals()">✕</span>
+        </div>
+
+        <p style="font-size: 0.74rem; color: var(--text-muted); line-height: 1.4;">
+          Este executável possui criptografia anti-pirataria HMAC SHA-256 e está estritamente vinculado à placa-mãe
+          desta máquina física.
+        </p>
+
         <div
-          style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-          <span style="color: var(--text-muted);">Dispositivo:</span>
-          <span style="color: #fff;">Samsung Galaxy S24 Ultra (SM-S928B)</span>
+          style="background: #090a0f; border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 8px; font-size: 0.74rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="color: var(--text-muted);">Status do Nó:</span>
+            <span id="valModalAuthStatus" style="font-weight: 800; color: #4ade80;">ATIVADO</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="color: var(--text-muted);">Plano:</span>
+            <span id="valModalAuthPlan" style="font-weight: 700; color: #bef264;">Enterprise Master</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="color: var(--text-muted);">Assinante:</span>
+            <span id="valModalAuthEmail" style="color: #cbd5e1;">luan@ghostlens.ai</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="color: var(--text-muted);">Instâncias Permitidas:</span>
+            <span id="valModalAuthDevices" style="color: #38bdf8; font-weight: 700;">Até 50 celulares</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="color: var(--text-muted);">Expiração:</span>
+            <span id="valModalAuthExpires" style="color: #cbd5e1;">Ano 2035 (Permanente)</span>
+          </div>
         </div>
-        <div
-          style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-          <span style="color: var(--text-muted);">Sistema:</span>
-          <span style="color: var(--accent-lime);">Android 14 (OneUI 6.1 • ARM64)</span>
+
+        <div style="margin-top: 6px;">
+          <span
+            style="font-size: 0.68rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Hardware
+            ID da Máquina:</span>
+          <div class="hwid-box">
+            <span id="valModalAuthHwid">GP-DAR-CALCULATING</span>
+            <button onclick="copyHwid()"
+              style="background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.3); color: #38bdf8; padding: 2px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; cursor: pointer;">Copiar</button>
+          </div>
         </div>
-        <div
-          style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-          <span style="color: var(--text-muted);">Operadora / APN:</span>
-          <span style="color: var(--accent-cyan);">Telefônica Brasil (Vivo 4G Móvel)</span>
+
+        <div style="margin-top: 6px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 10px;">
+          <span style="font-size: 0.68rem; color: #94a3b8;">Deseja alterar ou renovar sua chave?</span>
+          <div style="display: flex; gap: 8px; margin-top: 6px;">
+            <input type="text" id="txtModalNewKey" placeholder="Nova Chave GHOST-..."
+              style="flex: 1; background: #090a0f; border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 8px; border-radius: 6px; font-size: 0.74rem; font-family: 'JetBrains Mono', monospace; text-transform: uppercase;">
+            <button onclick="activateFromModal()"
+              style="background: var(--accent-lime); border: none; color: #000; font-weight: 800; padding: 8px 14px; border-radius: 6px; font-size: 0.74rem; cursor: pointer;">Ativar</button>
+          </div>
         </div>
-        <div
-          style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-          <span style="color: var(--text-muted);">IP Público:</span>
-          <span id="valModalIp" style="color: #fff;">191.26.159.69 (CGNAT)</span>
+
+        <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
+          <button onclick="closeModals()"
+            style="background: rgba(255,255,255,0.08); border: none; color: #cbd5e1; font-weight: 700; padding: 8px 16px; border-radius: 8px; font-size: 0.75rem; cursor: pointer;">Fechar</button>
         </div>
-        <div
-          style="display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-          <span style="color: var(--text-muted);">IMEI:</span>
-          <span style="color: #fff;">354891108429185</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; padding: 6px 0;">
-          <span style="color: var(--text-muted);">Android ID:</span>
-          <span style="color: #fff;">9a4f21b778c0e12a</span>
-        </div>
-      </div>
-      <div style="display: flex; justify-content: flex-end;">
-        <button onclick="closeModals()"
-          style="background: var(--accent-cyan); border: none; color: #000; font-weight: 800; padding: 8px 16px; border-radius: 8px; font-size: 0.75rem; cursor: pointer;">Fechar</button>
       </div>
     </div>
-  </div>
 
-  <!-- MODAL: LICENÇA E HWID GUARD (GHOSTPHONE LICENSE CONTROLLER) -->
-  <div class="ghost-modal-backdrop" id="modalAuthGuard">
-    <div class="ghost-modal-box">
-      <div class="ghost-modal-title">
-        <span>🛡️ Licença & Hardware ID Guard</span>
-        <span style="cursor: pointer;" onclick="closeModals()">✕</span>
-      </div>
-      
-      <p style="font-size: 0.74rem; color: var(--text-muted); line-height: 1.4;">
-        Este executável possui criptografia anti-pirataria HMAC SHA-256 e está estritamente vinculado à placa-mãe desta máquina física.
-      </p>
+    <!-- TOAST -->
+    <div id="ghostToast">✓ Notificação</div>
 
-      <div style="background: #090a0f; border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 8px; font-size: 0.74rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span style="color: var(--text-muted);">Status do Nó:</span>
-          <span id="valModalAuthStatus" style="font-weight: 800; color: #4ade80;">ATIVADO</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span style="color: var(--text-muted);">Plano:</span>
-          <span id="valModalAuthPlan" style="font-weight: 700; color: #bef264;">Enterprise Master</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span style="color: var(--text-muted);">Assinante:</span>
-          <span id="valModalAuthEmail" style="color: #cbd5e1;">luan@ghostlens.ai</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span style="color: var(--text-muted);">Instâncias Permitidas:</span>
-          <span id="valModalAuthDevices" style="color: #38bdf8; font-weight: 700;">Até 50 celulares</span>
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span style="color: var(--text-muted);">Expiração:</span>
-          <span id="valModalAuthExpires" style="color: #cbd5e1;">Ano 2035 (Permanente)</span>
-        </div>
-      </div>
+    <script>
+      const BRIDGE_URL = (window.location.protocol.startsWith('http') && window.location.port === '4444')
+        ? window.location.origin
+        : 'http://127.0.0.1:4444';
+      const urlParams = new URLSearchParams(window.location.search);
+      const musaNome = urlParams.get('musa') || 'Leninha';
+      const titleEl = document.getElementById('txtWindowMusa');
+      if (titleEl) titleEl.innerText = musaNome;
 
-      <div style="margin-top: 6px;">
-        <span style="font-size: 0.68rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase;">Hardware ID da Máquina:</span>
-        <div class="hwid-box">
-          <span id="valModalAuthHwid">GP-DAR-CALCULATING</span>
-          <button onclick="copyHwid()" style="background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.3); color: #38bdf8; padding: 2px 8px; border-radius: 4px; font-size: 0.65rem; font-weight: 700; cursor: pointer;">Copiar</button>
-        </div>
-      </div>
+      // Relógio
+      function updateAndroidClock() {
+        const el = document.getElementById('androidClock');
+        if (!el) return;
+        const now = new Date();
+        const h = String(now.getHours()).padStart(2, '0');
+        const m = String(now.getMinutes()).padStart(2, '0');
+        el.innerText = `${h}:${m}`;
+      }
+      setInterval(updateAndroidClock, 1000);
+      updateAndroidClock();
 
-      <div style="margin-top: 6px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 10px;">
-        <span style="font-size: 0.68rem; color: #94a3b8;">Deseja alterar ou renovar sua chave?</span>
-        <div style="display: flex; gap: 8px; margin-top: 6px;">
-          <input type="text" id="txtModalNewKey" placeholder="Nova Chave GHOST-..." style="flex: 1; background: #090a0f; border: 1px solid rgba(255,255,255,0.15); color: #fff; padding: 8px; border-radius: 6px; font-size: 0.74rem; font-family: 'JetBrains Mono', monospace; text-transform: uppercase;">
-          <button onclick="activateFromModal()" style="background: var(--accent-lime); border: none; color: #000; font-weight: 800; padding: 8px 14px; border-radius: 6px; font-size: 0.74rem; cursor: pointer;">Ativar</button>
-        </div>
-      </div>
-
-      <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
-        <button onclick="closeModals()"
-          style="background: rgba(255,255,255,0.08); border: none; color: #cbd5e1; font-weight: 700; padding: 8px 16px; border-radius: 8px; font-size: 0.75rem; cursor: pointer;">Fechar</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- TOAST -->
-  <div id="ghostToast">✓ Notificação</div>
-
-  <script>
-    const BRIDGE_URL = (window.location.protocol.startsWith('http') && window.location.port === '4444') 
-      ? window.location.origin 
-      : 'http://127.0.0.1:4444';
-    const urlParams = new URLSearchParams(window.location.search);
-    const musaNome = urlParams.get('musa') || 'Leninha';
-    const titleEl = document.getElementById('txtWindowMusa');
-    if (titleEl) titleEl.innerText = musaNome;
-
-    // Relógio
-    function updateAndroidClock() {
-      const el = document.getElementById('androidClock');
-      if (!el) return;
-      const now = new Date();
-      const h = String(now.getHours()).padStart(2, '0');
-      const m = String(now.getMinutes()).padStart(2, '0');
-      el.innerText = `${h}:${m}`;
-    }
-    setInterval(updateAndroidClock, 1000);
-    updateAndroidClock();
-
-    function showToast(msg) {
-      const t = document.getElementById('ghostToast');
-      t.innerText = msg;
-      t.classList.add('show');
-      setTimeout(() => t.classList.remove('show'), 3000);
-    }
-
-    // STREAM LIVE DO ANDROID VIA CANVAS
-    const canvas = document.getElementById('phoneCanvas');
-    const ctx = canvas.getContext('2d');
-    const loader = document.getElementById('phoneStreamLoading');
-    let isStreaming = true;
-    let isFetching = false;
-    let firstFrameLoaded = false;
-
-    async function streamLoop() {
-      if (!isStreaming) return;
-      if (isFetching) {
-        requestAnimationFrame(streamLoop);
-        return;
+      function showToast(msg) {
+        const t = document.getElementById('ghostToast');
+        t.innerText = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 3000);
       }
 
-      isFetching = true;
-      const startTime = performance.now();
+      // O GhostPhone opera exclusivamente via Janela Suspensa 60 FPS Metal
+      // Zero canvas, zero streaming web duplicado, zero sobrecarga!
+      async function checkAndAutoLaunchNative() {
+        try {
+          const res = await fetch(`${BRIDGE_URL}/api/phone/specs`);
+          if (res.ok) {
+            const data = await res.json();
+            if (!data.scrcpy_active) {
+              launchNativeWindow();
+            }
+          }
+        } catch(e) {}
+      }
+      checkAndAutoLaunchNative();
 
-      try {
-        const res = await fetch(`${BRIDGE_URL}/api/phone/screencap?t=${Date.now()}`);
-        if (res.status === 403) {
-          isFetching = false;
-          checkAuthStatus();
+      // TECLAS DE HARDWARE E NAVEGAÇÃO ANDROID
+      async function sendAndroidKey(keyType) {
+        const keyMap = {
+          'KEY_BACK': 'KEYCODE_BACK',
+          'KEY_HOMEPAGE': 'KEYCODE_HOME',
+          'KEY_MENU': 'KEYCODE_APP_SWITCH',
+          'VOLUME_UP': 'KEYCODE_VOLUME_UP',
+          'VOLUME_DOWN': 'KEYCODE_VOLUME_DOWN'
+        };
+
+        const keycode = keyMap[keyType] || 'KEYCODE_BACK';
+        await fetch(`${BRIDGE_URL}/api/phone/input`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'key', keycode })
+        });
+
+        showToast(`Comando ${keyType} executado!`);
+      }
+
+      async function launchNativeWindow() {
+        showToast('🚀 Focando Tela Suspensa 60 FPS...');
+        try {
+          const res = await fetch(`${BRIDGE_URL}/api/phone/launch_native`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ musa: musaNome, package: 'com.instagram.android' })
+          });
+          if (res.ok) {
+            showToast('✓ GhostPhone ativo na Tela Suspensa!');
+            return;
+          }
+        } catch (e) {
+          console.error("Erro ao comunicar com daemon local:", e);
+          showToast('Falha ao comunicar com daemon local.');
+        }
+      }
+
+      // Rotação de IP Vivo 4G
+      async function triggerIpRotation() {
+        showToast('✈️ Ativando Modo Avião Vivo 4G...');
+        try {
+          await fetch(`${BRIDGE_URL}/api/phone/rotate_ip`, { method: 'POST' });
+          showToast('✓ IP 4G rotacionado com sucesso! Novo IP Vivo CGNAT atribuído.');
+        } catch (e) {
+          showToast('✓ Modo avião alternado.');
+        }
+      }
+
+      function takePhoneScreenshot() {
+        showToast('📷 Captura de tela salva em Downloads/print_ghostphone.png');
+      }
+
+      function rebootAndroidInstance() {
+        if (!confirm('Deseja reiniciar este celular Android? Todas as sessões serão mantidas.')) return;
+        showToast('🔄 Reiniciando Android...');
+        sendAndroidKey('KEY_HOMEPAGE');
+      }
+
+      // MODAIS
+      function openModalClipboard() {
+        document.getElementById('modalClipboard').style.display = 'flex';
+        document.getElementById('txtMacClipboard').focus();
+      }
+
+      function openModalUpload() {
+        document.getElementById('modalUpload').style.display = 'flex';
+      }
+
+      function openModalSpecs() {
+        document.getElementById('modalSpecs').style.display = 'flex';
+      }
+
+      function closeModals() {
+        document.querySelectorAll('.ghost-modal-backdrop').forEach(m => m.style.display = 'none');
+      }
+
+      async function sendClipboardToAndroid() {
+        const text = document.getElementById('txtMacClipboard').value;
+        if (!text) return;
+        await fetch(`${BRIDGE_URL}/api/phone/input`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'text', text })
+        });
+        closeModals();
+        showToast('✓ Texto injetado no Android!');
+        document.getElementById('txtMacClipboard').value = '';
+      }
+
+      async function uploadMediaToDcim() {
+        const input = document.getElementById('fileMediaUpload');
+        if (!input.files || !input.files.length) {
+          alert('Selecione uma foto ou vídeo para enviar.');
           return;
         }
-        if (res.ok) {
-          const blob = await res.blob();
-          try {
-            if (window.createImageBitmap) {
-              const bmp = await createImageBitmap(blob);
-              ctx.drawImage(bmp, 0, 0, canvas.width, canvas.height);
-              bmp.close();
-              if (!firstFrameLoaded) {
-                firstFrameLoaded = true;
-                if (loader) loader.style.display = 'none';
+        showToast(`⏳ Injetando ${input.files.length} foto(s) na Galeria do celular...`);
+        for (let i = 0; i < input.files.length; i++) {
+          const file = input.files[i];
+          const reader = new FileReader();
+          await new Promise((resolve) => {
+            reader.onload = async (e) => {
+              const base64 = e.target.result.split(',')[1];
+              try {
+                await fetch(`${BRIDGE_URL}/api/phone/upload_media`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ filename: file.name, data: base64 })
+                });
+              } catch (err) {
+                console.error(err);
               }
-              const latency = Math.round(performance.now() - startTime);
-              document.getElementById('lblPing').innerText = `${latency}ms`;
-              isFetching = false;
-              requestAnimationFrame(streamLoop);
-              return;
-            }
-          } catch(e) {
-            console.warn("createImageBitmap fallback:", e);
+              resolve();
+            };
+            reader.readAsDataURL(file);
+          });
+        }
+        closeModals();
+        showToast(`✓ Fotos injetadas e indexadas no Instagram com sucesso!`);
+        input.value = '';
+      }
+
+      // ==========================================
+      // 🛡️ AUTH GUARD & HWID ANTI-PIRATARIA JS
+      // ==========================================
+      let currentAuth = null;
+
+      async function checkAuthStatus() {
+        try {
+          const res = await fetch(`${BRIDGE_URL}/api/auth/status`);
+          if (res.ok) {
+            const json = await res.json();
+            currentAuth = json.auth;
+            applyAuthStatus(currentAuth);
+          }
+        } catch (e) {
+          console.error('Falha ao checar status de licença:', e);
+        }
+      }
+
+      function applyAuthStatus(auth) {
+        if (!auth) return;
+        const badge = document.getElementById('authStatusBadge');
+        const planLbl = document.getElementById('lblAuthPlan');
+        const lockOverlay = document.getElementById('screenLockGuard');
+        const lockHwid = document.getElementById('lblLockHwid');
+        const modalHwid = document.getElementById('valModalAuthHwid');
+
+        if (lockHwid) lockHwid.innerText = auth.hwid || 'GP-DAR-UNKNOWN';
+        if (modalHwid) modalHwid.innerText = auth.hwid || 'GP-DAR-UNKNOWN';
+
+        if (auth.active) {
+          if (badge) {
+            badge.className = 'auth-status-badge auth-active';
+            if (planLbl) planLbl.innerText = auth.plan || 'Licença Ativa';
+          }
+          if (lockOverlay) lockOverlay.style.display = 'none';
+
+          if (!isStreaming) {
+            isStreaming = true;
+            streamLoop();
           }
 
-          // Fallback clássico caso createImageBitmap falhe
-          const img = new Image();
-          img.onload = () => {
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            URL.revokeObjectURL(img.src);
-            if (!firstFrameLoaded) {
-              firstFrameLoaded = true;
-              if (loader) loader.style.display = 'none';
-            }
-            const latency = Math.round(performance.now() - startTime);
-            document.getElementById('lblPing').innerText = `${latency}ms`;
-            isFetching = false;
-            requestAnimationFrame(streamLoop);
-          };
-          img.onerror = () => {
-            isFetching = false;
-            setTimeout(streamLoop, 150);
-          };
-          img.src = URL.createObjectURL(blob);
+          // Atualiza modal
+          const statusVal = document.getElementById('valModalAuthStatus');
+          if (statusVal) {
+            statusVal.innerText = 'ATIVADO';
+            statusVal.style.color = '#4ade80';
+          }
+          const pVal = document.getElementById('valModalAuthPlan');
+          if (pVal) pVal.innerText = auth.plan;
+          const eVal = document.getElementById('valModalAuthEmail');
+          if (eVal) eVal.innerText = auth.email || 'cliente@ghostlens.ai';
+          const dVal = document.getElementById('valModalAuthDevices');
+          if (dVal) dVal.innerText = `Até ${auth.max_devices || 1} celulares`;
         } else {
-          isFetching = false;
-          setTimeout(streamLoop, 300);
-        }
-      } catch (err) {
-        console.error("Stream error:", err);
-        isFetching = false;
-        setTimeout(streamLoop, 400);
-      }
-    }
+          if (badge) {
+            badge.className = 'auth-status-badge auth-unauthorized';
+            if (planLbl) planLbl.innerText = '🔒 Não Licenciado';
+          }
+          if (lockOverlay) lockOverlay.style.display = 'flex';
+          isStreaming = false;
 
-    // Inicia stream
-    streamLoop();
-
-    // INTERAÇÃO DE TOQUE E SWIPE NO CANVAS (MAPEA COORDENADAS 1080x2400)
-    let touchStartX = 0;
-    let touchStartY = 0;
-    let touchStartTime = 0;
-
-    function getCoords(e) {
-      const rect = canvas.getBoundingClientRect();
-      const canvasAspect = canvas.width / canvas.height; // 1080 / 2400 = 0.45
-      const boxAspect = rect.width / rect.height;
-
-      let renderW, renderH, offsetX, offsetY;
-      if (boxAspect > canvasAspect) {
-        // Barras pretas laterais
-        renderH = rect.height;
-        renderW = rect.height * canvasAspect;
-        offsetX = (rect.width - renderW) / 2;
-        offsetY = 0;
-      } else {
-        // Barras pretas topo/baixo
-        renderW = rect.width;
-        renderH = rect.width / canvasAspect;
-        offsetX = 0;
-        offsetY = (rect.height - renderH) / 2;
-      }
-
-      const clickX = e.clientX - rect.left - offsetX;
-      const clickY = e.clientY - rect.top - offsetY;
-
-      const x = Math.max(0, Math.min(canvas.width, Math.round(clickX * (canvas.width / renderW))));
-      const y = Math.max(0, Math.min(canvas.height, Math.round(clickY * (canvas.height / renderH))));
-
-      return { x, y };
-    }
-
-    canvas.addEventListener('mousedown', (e) => {
-      const c = getCoords(e);
-      touchStartX = c.x;
-      touchStartY = c.y;
-      touchStartTime = Date.now();
-    });
-
-    canvas.addEventListener('mouseup', async (e) => {
-      const c = getCoords(e);
-      const dx = c.x - touchStartX;
-      const dy = c.y - touchStartY;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      const dt = Date.now() - touchStartTime;
-
-      if (dist < 20) {
-        // Toque rápido (TAP)
-        await fetch(`${BRIDGE_URL}/api/phone/input`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'tap', x: c.x, y: c.y })
-        });
-      } else {
-        // Gesto de rolagem (SWIPE)
-        await fetch(`${BRIDGE_URL}/api/phone/input`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action: 'swipe',
-            x1: touchStartX,
-            y1: touchStartY,
-            x2: c.x,
-            y2: c.y,
-            duration: Math.max(120, dt)
-          })
-        });
-      }
-
-      // Atualiza tela imediatamente após input
-      setTimeout(() => { isFetching = false; streamLoop(); }, 60);
-    });
-
-    // DIGITAÇÃO DIRETA COM O TECLADO DO MAC
-    window.addEventListener('keydown', async (e) => {
-      if (['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
-
-      if (e.key === 'Backspace') {
-        e.preventDefault();
-        await fetch(`${BRIDGE_URL}/api/phone/input`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'key', keycode: 'KEYCODE_DEL' })
-        });
-        setTimeout(() => { isFetching = false; streamLoop(); }, 40);
-      } else if (e.key === 'Enter') {
-        e.preventDefault();
-        await fetch(`${BRIDGE_URL}/api/phone/input`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'key', keycode: 'KEYCODE_ENTER' })
-        });
-        setTimeout(() => { isFetching = false; streamLoop(); }, 40);
-      } else if (e.key === 'Tab') {
-        e.preventDefault();
-        await fetch(`${BRIDGE_URL}/api/phone/input`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'key', keycode: 'KEYCODE_TAB' })
-        });
-        setTimeout(() => { isFetching = false; streamLoop(); }, 40);
-      } else if (e.key === 'Escape') {
-        e.preventDefault();
-        sendAndroidKey('KEY_BACK');
-      } else if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
-        e.preventDefault();
-        await fetch(`${BRIDGE_URL}/api/phone/input`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'text', text: e.key })
-        });
-        setTimeout(() => { isFetching = false; streamLoop(); }, 40);
-      }
-    });
-
-    // TECLAS DE HARDWARE E NAVEGAÇÃO ANDROID
-    async function sendAndroidKey(keyType) {
-      const keyMap = {
-        'KEY_BACK': 'KEYCODE_BACK',
-        'KEY_HOMEPAGE': 'KEYCODE_HOME',
-        'KEY_MENU': 'KEYCODE_APP_SWITCH',
-        'VOLUME_UP': 'KEYCODE_VOLUME_UP',
-        'VOLUME_DOWN': 'KEYCODE_VOLUME_DOWN'
-      };
-
-      const keycode = keyMap[keyType] || 'KEYCODE_BACK';
-      await fetch(`${BRIDGE_URL}/api/phone/input`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'key', keycode })
-      });
-
-      showToast(`Comando ${keyType} executado!`);
-    }
-
-    async function launchNativeWindow() {
-      showToast('🚀 Lançando GhostPhone em Tela Solta (60 FPS)...');
-      try {
-        await fetch(`${BRIDGE_URL}/api/phone/launch_native`, {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({ musa: musaNome, package: 'com.instagram.android' })
-        });
-        showToast('✓ Janela de Celular Nativa (Tela Solta) aberta com sucesso!');
-      } catch(e) {
-        showToast('Falha ao comunicar com daemon local.');
-      }
-    }
-
-    // Rotação de IP Vivo 4G
-    async function triggerIpRotation() {
-      showToast('✈️ Ativando Modo Avião Vivo 4G...');
-      try {
-        await fetch(`${BRIDGE_URL}/api/phone/rotate_ip`, { method: 'POST' });
-        showToast('✓ IP 4G rotacionado com sucesso! Novo IP Vivo CGNAT atribuído.');
-      } catch (e) {
-        showToast('✓ Modo avião alternado.');
-      }
-    }
-
-    function takePhoneScreenshot() {
-      showToast('📷 Captura de tela salva em Downloads/print_ghostphone.png');
-    }
-
-    function rebootAndroidInstance() {
-      if (!confirm('Deseja reiniciar este celular Android? Todas as sessões serão mantidas.')) return;
-      showToast('🔄 Reiniciando Android...');
-      sendAndroidKey('KEY_HOMEPAGE');
-    }
-
-    // MODAIS
-    function openModalClipboard() {
-      document.getElementById('modalClipboard').style.display = 'flex';
-      document.getElementById('txtMacClipboard').focus();
-    }
-
-    function openModalUpload() {
-      document.getElementById('modalUpload').style.display = 'flex';
-    }
-
-    function openModalSpecs() {
-      document.getElementById('modalSpecs').style.display = 'flex';
-    }
-
-    function closeModals() {
-      document.querySelectorAll('.ghost-modal-backdrop').forEach(m => m.style.display = 'none');
-    }
-
-    async function sendClipboardToAndroid() {
-      const text = document.getElementById('txtMacClipboard').value;
-      if (!text) return;
-      await fetch(`${BRIDGE_URL}/api/phone/input`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'text', text })
-      });
-      closeModals();
-      showToast('✓ Texto injetado no Android!');
-      document.getElementById('txtMacClipboard').value = '';
-    }
-
-    async function uploadMediaToDcim() {
-      const input = document.getElementById('fileMediaUpload');
-      if (!input.files || !input.files.length) {
-        alert('Selecione uma foto ou vídeo para enviar.');
-        return;
-      }
-      showToast(`⏳ Injetando ${input.files.length} foto(s) na Galeria do celular...`);
-      for (let i = 0; i < input.files.length; i++) {
-        const file = input.files[i];
-        const reader = new FileReader();
-        await new Promise((resolve) => {
-          reader.onload = async (e) => {
-            const base64 = e.target.result.split(',')[1];
-            try {
-              await fetch(`${BRIDGE_URL}/api/phone/upload_media`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ filename: file.name, data: base64 })
-              });
-            } catch(err){
-              console.error(err);
-            }
-            resolve();
-          };
-          reader.readAsDataURL(file);
-        });
-      }
-      closeModals();
-      showToast(`✓ Fotos injetadas e indexadas no Instagram com sucesso!`);
-      input.value = '';
-    }
-
-    // ==========================================
-    // 🛡️ AUTH GUARD & HWID ANTI-PIRATARIA JS
-    // ==========================================
-    let currentAuth = null;
-
-    async function checkAuthStatus() {
-      try {
-        const res = await fetch(`${BRIDGE_URL}/api/auth/status`);
-        if (res.ok) {
-          const json = await res.json();
-          currentAuth = json.auth;
-          applyAuthStatus(currentAuth);
-        }
-      } catch (e) {
-        console.error('Falha ao checar status de licença:', e);
-      }
-    }
-
-    function applyAuthStatus(auth) {
-      if (!auth) return;
-      const badge = document.getElementById('authStatusBadge');
-      const planLbl = document.getElementById('lblAuthPlan');
-      const lockOverlay = document.getElementById('screenLockGuard');
-      const lockHwid = document.getElementById('lblLockHwid');
-      const modalHwid = document.getElementById('valModalAuthHwid');
-
-      if (lockHwid) lockHwid.innerText = auth.hwid || 'GP-DAR-UNKNOWN';
-      if (modalHwid) modalHwid.innerText = auth.hwid || 'GP-DAR-UNKNOWN';
-
-      if (auth.active) {
-        if (badge) {
-          badge.className = 'auth-status-badge auth-active';
-          if (planLbl) planLbl.innerText = auth.plan || 'Licença Ativa';
-        }
-        if (lockOverlay) lockOverlay.style.display = 'none';
-
-        if (!isStreaming) {
-          isStreaming = true;
-          streamLoop();
-        }
-
-        // Atualiza modal
-        const statusVal = document.getElementById('valModalAuthStatus');
-        if (statusVal) {
-          statusVal.innerText = 'ATIVADO';
-          statusVal.style.color = '#4ade80';
-        }
-        const pVal = document.getElementById('valModalAuthPlan');
-        if (pVal) pVal.innerText = auth.plan;
-        const eVal = document.getElementById('valModalAuthEmail');
-        if (eVal) eVal.innerText = auth.email || 'cliente@ghostlens.ai';
-        const dVal = document.getElementById('valModalAuthDevices');
-        if (dVal) dVal.innerText = `Até ${auth.max_devices || 1} celulares`;
-      } else {
-        if (badge) {
-          badge.className = 'auth-status-badge auth-unauthorized';
-          if (planLbl) planLbl.innerText = '🔒 Não Licenciado';
-        }
-        if (lockOverlay) lockOverlay.style.display = 'flex';
-        isStreaming = false;
-
-        const statusVal = document.getElementById('valModalAuthStatus');
-        if (statusVal) {
-          statusVal.innerText = 'BLOQUEADO / INATIVO';
-          statusVal.style.color = '#f87171';
+          const statusVal = document.getElementById('valModalAuthStatus');
+          if (statusVal) {
+            statusVal.innerText = 'BLOQUEADO / INATIVO';
+            statusVal.style.color = '#f87171';
+          }
         }
       }
-    }
 
-    function openModalAuth() {
-      document.getElementById('modalAuthGuard').style.display = 'flex';
-    }
-
-    function copyHwid() {
-      const hwid = currentAuth ? currentAuth.hwid : document.getElementById('lblLockHwid').innerText;
-      navigator.clipboard.writeText(hwid);
-      showToast(`✓ HWID copiado: ${hwid}`);
-    }
-
-    async function activateFromLockScreen() {
-      const key = document.getElementById('txtLockKey').value.trim();
-      const email = document.getElementById('txtLockEmail').value.trim();
-      const msg = document.getElementById('lblLockMsg');
-      if (!key) {
-        msg.innerText = 'Informe uma chave de licença válida.';
-        return;
+      function openModalAuth() {
+        document.getElementById('modalAuthGuard').style.display = 'flex';
       }
-      msg.innerText = 'Validando chave com assinatura criptográfica...';
-      msg.style.color = '#38bdf8';
 
-      try {
-        const res = await fetch(`${BRIDGE_URL}/api/auth/activate`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ key, email })
-        });
-        const data = await res.json();
-        if (data.code === 0 && data.result.success) {
-          msg.innerText = '✓ Ativação concluída! Desbloqueando...';
-          msg.style.color = '#4ade80';
-          setTimeout(() => {
-            checkAuthStatus();
-            showToast('✓ GhostPhone Desbloqueado com sucesso!');
-          }, 800);
-        } else {
-          msg.innerText = `❌ ${data.result ? data.result.message : 'Chave inválida'}`;
+      function copyHwid() {
+        const hwid = currentAuth ? currentAuth.hwid : document.getElementById('lblLockHwid').innerText;
+        navigator.clipboard.writeText(hwid);
+        showToast(`✓ HWID copiado: ${hwid}`);
+      }
+
+      async function activateFromLockScreen() {
+        const key = document.getElementById('txtLockKey').value.trim();
+        const email = document.getElementById('txtLockEmail').value.trim();
+        const msg = document.getElementById('lblLockMsg');
+        if (!key) {
+          msg.innerText = 'Informe uma chave de licença válida.';
+          return;
+        }
+        msg.innerText = 'Validando chave com assinatura criptográfica...';
+        msg.style.color = '#38bdf8';
+
+        try {
+          const res = await fetch(`${BRIDGE_URL}/api/auth/activate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ key, email })
+          });
+          const data = await res.json();
+          if (data.code === 0 && data.result.success) {
+            msg.innerText = '✓ Ativação concluída! Desbloqueando...';
+            msg.style.color = '#4ade80';
+            setTimeout(() => {
+              checkAuthStatus();
+              showToast('✓ GhostPhone Desbloqueado com sucesso!');
+            }, 800);
+          } else {
+            msg.innerText = `❌ ${data.result ? data.result.message : 'Chave inválida'}`;
+            msg.style.color = '#f87171';
+          }
+        } catch (err) {
+          msg.innerText = 'Erro ao conectar ao daemon local.';
           msg.style.color = '#f87171';
         }
-      } catch (err) {
-        msg.innerText = 'Erro ao conectar ao daemon local.';
-        msg.style.color = '#f87171';
       }
-    }
 
-    async function activateFromModal() {
-      const key = document.getElementById('txtModalNewKey').value.trim();
-      if (!key) return;
-      try {
-        const res = await fetch(`${BRIDGE_URL}/api/auth/activate`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ key, email: currentAuth?.email || 'cliente@ghostlens.ai' })
-        });
-        const data = await res.json();
-        if (data.code === 0 && data.result.success) {
-          showToast('✓ Licença atualizada com sucesso!');
-          closeModals();
-          checkAuthStatus();
-        } else {
-          showToast(`❌ ${data.result ? data.result.message : 'Chave inválida'}`);
+      async function activateFromModal() {
+        const key = document.getElementById('txtModalNewKey').value.trim();
+        if (!key) return;
+        try {
+          const res = await fetch(`${BRIDGE_URL}/api/auth/activate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ key, email: currentAuth?.email || 'cliente@ghostlens.ai' })
+          });
+          const data = await res.json();
+          if (data.code === 0 && data.result.success) {
+            showToast('✓ Licença atualizada com sucesso!');
+            closeModals();
+            checkAuthStatus();
+          } else {
+            showToast(`❌ ${data.result ? data.result.message : 'Chave inválida'}`);
+          }
+        } catch (e) {
+          showToast('❌ Erro na ativação.');
         }
-      } catch (e) {
-        showToast('❌ Erro na ativação.');
       }
-    }
 
-    // Inicializa verificação de licença
-    checkAuthStatus();
-    setInterval(checkAuthStatus, 20000);
-  </script>
+      // Inicializa verificação de licença
+      checkAuthStatus();
+      setInterval(checkAuthStatus, 20000);
+    </script>
 </body>
 
 </html>

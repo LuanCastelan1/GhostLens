@@ -1066,7 +1066,7 @@
       }
     }
 
-    /* ─── BANNER PROMOCIONAL COMPACTO COM FADE (GHOST-IMAGE • SAFRA 2026) ─── */
+    /* ─── BANNER PROMOCIONAL COMPACTO COM FADE (EROS-IMAGE • SAFRA 2026) ─── */
     .ghost-promo-banner-wrap {
       margin-bottom: 16px;
       transition: opacity 0.3s ease;
@@ -1588,7 +1588,7 @@
       </div>
     </div>
 
-    <!-- ─── BANNER PROMOCIONAL COMPACTO COM FADE (GHOST-IMAGE • SAFRA 2026) ─── -->
+    <!-- ─── BANNER PROMOCIONAL COMPACTO COM FADE (EROS-IMAGE • SAFRA 2026) ─── -->
     <div class="ghost-promo-banner-wrap" id="ghostPromoBannerWrap">
       <a id="ghostPromoBannerLink" href="proposta_comercial_agencia_ia.html" target="_blank"
         style="text-decoration: none; display: block;">
@@ -2765,10 +2765,10 @@
               <label style="font-size: 0.68rem; font-weight: 700; color: #94a3b8; display: block; margin-bottom: 4px;">PLANO DO CLIENTE:</label>
               <select id="selAdminTokenPlan"
                 style="width: 100%; background: #0b0d13; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 9px 12px; color: #fff; font-size: 0.78rem; outline: none;">
-                <option value="SOLO">Solo • 1 Celular (R$ 47/mês)</option>
-                <option value="PRO" selected>Pro • 3 Celulares (R$ 97/mês - Mais Vendido)</option>
-                <option value="AGENCY">Agency • 10 Celulares (R$ 197/mês)</option>
-                <option value="MASTER">Enterprise Master (50 Celulares • Vitalício)</option>
+                <option value="SOLO">Solo • 1 Dispositivo (R$ 49,90/mês)</option>
+                <option value="PRO" selected>Pro • 3 Dispositivos (R$ 97/mês - Mais Vendido)</option>
+                <option value="AGENCY">Agency • 10 Dispositivos (R$ 300/mês)</option>
+                <option value="MASTER">Enterprise Master (Dispositivos Ilimitados)</option>
               </select>
             </div>
           </div>
@@ -4913,7 +4913,7 @@
         currentUser.email === 'luan@ghostlens.ai' ||
         currentUser.email.startsWith('luan') ||
         currentUser.email.includes('castellan') ||
-        currentUser.email === 'admin@ghostlens.ai' ||
+        currentUser.email === 'luan@eroschat.com' ||
         currentUser.id === 'admin_local'
       );
       if (isLuan || !currentUser) {
@@ -5383,7 +5383,7 @@
     }
 
     function isMusaCloudActive(profileId) {
-      if (currentUser && (currentUser.email === 'luan@ghostlens.ai' || currentUser.email === 'admin@ghostlens.ai')) return true;
+      if (currentUser && (currentUser.email === 'luan@ghostlens.ai' || currentUser.email === 'luan@eroschat.com')) return true;
       return localStorage.getItem('ghostlens_cloud_sub_' + profileId) === 'active';
     }
 
@@ -5627,12 +5627,52 @@
       }
     }
 
-    // 📱 ABRIR GHOSTPHONE (CELULAR ANDROID BLINDADO EM TELA SOLTA)
-    async function launchGhostPhonePlayer(profileId) {
+    // 🛡️ CHAVE TRAVA ANTI-BAN 4G/5G
+    let currentPendingProfileId = null;
+
+    function toggleGhostphone4gLock(checked) {
+      localStorage.setItem('ghostphone_4g_lock', checked ? 'true' : 'false');
+      const sub = document.getElementById('lblGhostphone4gLockSub');
+      const slider = document.getElementById('sliderGhostphone4gLock');
+      const knob = document.getElementById('knobGhostphone4gLock');
+      if (sub) {
+        sub.innerText = checked ? 'Bloquear Wi-Fi Local' : 'Permitir Wi-Fi (Sem Trava)';
+        sub.style.color = checked ? '#bef264' : '#94a3b8';
+      }
+      if (slider) {
+        slider.style.backgroundColor = checked ? '#22c55e' : '#475569';
+        slider.style.boxShadow = checked ? '0 0 12px rgba(34,197,94,0.5)' : 'none';
+      }
+      if (knob) knob.style.left = checked ? '22px' : '3px';
+      showToast(checked ? '🛡️ Trava Anti-Ban 4G/5G ATIVADA (Wi-Fi Bloqueado)!' : '⚠️ Trava 4G/5G DESATIVADA (Acesso liberado no Wi-Fi)');
+    }
+
+    // 📱 ABRIR GHOSTPHONE (CELULAR ANDROID BLINDADO EM TELA SOLTA COM TRAVA 4G/5G)
+    async function launchGhostPhonePlayer(profileId, forceBypassWifi = false) {
+        currentPendingProfileId = profileId;
         const p = (window.ghostProfilesCache || []).find(x => x.id === profileId) || { musa_nome: profileId };
         const nome = p.musa_nome || profileId || 'Leninha';
         const baseUrl = (window.location.origin && window.location.origin.includes(':4444')) ? window.location.origin : 'http://127.0.0.1:4444';
         
+        // 1. CHECAGEM DA CHAVE TRAVA ANTI-BAN 4G/5G (ATIVA POR PADRÃO)
+        const isLockEnabled = localStorage.getItem('ghostphone_4g_lock') !== 'false';
+        if (isLockEnabled && !forceBypassWifi) {
+          try {
+            showToast('🔍 Verificando rede (Trava Anti-Ban 4G/5G)...');
+            const netRes = await fetch(`${baseUrl}/api/phone/check_network`);
+            if (netRes.ok) {
+              const netData = await netRes.json();
+              if (!netData.is_mobile) {
+                // Bloqueia e abre o modal de Wi-Fi Local!
+                openWifiBlockModal(nome, profileId, netData);
+                return;
+              }
+            }
+          } catch(err) {
+            console.warn("Falha na checagem de rede:", err);
+          }
+        }
+
         try {
           const res = await fetch(`${baseUrl}/api/phone/launch_native`, {
             method: 'POST',
@@ -5640,23 +5680,66 @@
             body: JSON.stringify({ musa: nome, package: 'com.instagram.android' })
           });
           if (res.ok) {
-            showToast(`📱 GhostPhone da ${nome} aberto em Tela Solta (60 FPS Native)!`);
+            showToast(`📱 GhostPhone da ${nome} aberto na Tela Suspensa (60 FPS Metal • Som Ativo)!`);
+            showFloatingPhoneDock(nome);
             return;
           }
         } catch(e) {
-          console.warn("Ponte nativa indisponível, abrindo player web:", e);
+          console.warn("Erro ao acionar ponte nativa:", e);
+          showToast("❌ Erro ao conectar com o daemon local.");
         }
-
-        // Fallback para player web caso scrcpy não abra
-        const w = 480;
-        const h = 940;
-        const left = Math.round((screen.width - w) / 2);
-        const top = Math.round((screen.height - h) / 2);
-        const url = `${baseUrl}/ghostphone?musa=${encodeURIComponent(nome)}`;
-        window.open(url, `GhostPhone_${profileId}`, `width=${w},height=${h},top=${top},left=${left},resizable=yes,scrollbars=no,status=no`);
-        showToast(`📱 GhostPhone da ${nome} iniciado com sucesso!`);
     }
     window.launchGhostPhonePlayer = launchGhostPhonePlayer;
+
+    function openWifiBlockModal(musaNome, profileId, netData) {
+      currentPendingProfileId = profileId;
+      const modal = document.getElementById('modalWifiLocalBlock');
+      if (modal) {
+        modal.style.display = 'flex';
+        const lblIsp = document.getElementById('lblWifiBlockIsp');
+        const lblIp = document.getElementById('lblWifiBlockIp');
+        const lblCity = document.getElementById('lblWifiBlockCity');
+        if (lblIsp) lblIsp.innerText = netData.isp || 'Golfinho Internet';
+        if (lblIp) lblIp.innerText = netData.ip || '168.196.177.242';
+        if (lblCity) lblCity.innerText = `${netData.city || 'Santa Fé do Sul'}, ${netData.region || 'SP'}`;
+      }
+    }
+
+    function closeWifiBlockModal() {
+      const modal = document.getElementById('modalWifiLocalBlock');
+      if (modal) modal.style.display = 'none';
+    }
+
+    async function recheckNetworkAndLaunch() {
+      const baseUrl = (window.location.origin && window.location.origin.includes(':4444')) ? window.location.origin : 'http://127.0.0.1:4444';
+      showToast('🔍 Re-verificando conexão de rede...');
+      try {
+        const netRes = await fetch(`${baseUrl}/api/phone/check_network`);
+        if (netRes.ok) {
+          const netData = await netRes.json();
+          if (netData.is_mobile) {
+            closeWifiBlockModal();
+            showToast('✅ Conexão 4G/5G móvel confirmada! Abrindo GhostPhone...');
+            launchGhostPhonePlayer(currentPendingProfileId, true);
+            return;
+          } else {
+            const lblIsp = document.getElementById('lblWifiBlockIsp');
+            const lblIp = document.getElementById('lblWifiBlockIp');
+            if (lblIsp) lblIsp.innerText = netData.isp;
+            if (lblIp) lblIp.innerText = netData.ip;
+            showToast(`⚠️ Você ainda está conectado ao Wi-Fi Local (${netData.isp})! Roteie o 4G/5G do celular.`);
+          }
+        }
+      } catch(e) {
+        showToast('Erro ao testar rede.');
+      }
+    }
+
+    function bypassWifiLockAndLaunch() {
+      closeWifiBlockModal();
+      showToast('⚠️ Abrindo no Wi-Fi Local por sua conta e risco...');
+      launchGhostPhonePlayer(currentPendingProfileId, true);
+    }
 
     async function launchGhostPhonePlayerWithApp(profileId, app = 'instagram') {
         const p = (window.ghostProfilesCache || []).find(x => x.id === profileId) || { musa_nome: profileId };
@@ -5674,17 +5757,13 @@
             const appLabel = (app === 'tiktok') ? 'TikTok' : 'Instagram';
             showToast(`📱 ${appLabel} aberto na Tela Solta do GhostPhone™ (${nome})!`);
             return;
+            showFloatingPhoneDock(nome);
+            return;
           }
         } catch(e) {
           console.warn("Ponte nativa indisponível:", e);
+          showToast("❌ Erro ao conectar com o daemon local.");
         }
-
-        const w = 480;
-        const h = 940;
-        const left = Math.round((screen.width - w) / 2);
-        const top = Math.round((screen.height - h) / 2);
-        const url = `${baseUrl}/ghostphone?musa=${encodeURIComponent(nome)}`;
-        window.open(url, `GhostPhone_${profileId}`, `width=${w},height=${h},top=${top},left=${left},resizable=yes,scrollbars=no,status=no`);
     }
     window.launchGhostPhonePlayerWithApp = launchGhostPhonePlayerWithApp;
 
@@ -5696,19 +5775,12 @@
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ musa: 'Leninha', package: 'com.instagram.android' })
           });
-          showToast('📱 GhostPhone™ aberto na Tela Solta!');
+          showToast('📱 GhostPhone™ focado na Tela Suspensa!');
+          showFloatingPhoneDock('Leninha');
           return;
         } catch(e){}
-
-        const w = 480;
-        const h = 940;
-        const left = Math.round((screen.width - w) / 2);
-        const top = Math.round((screen.height - h) / 2);
-        const url = `${baseUrl}/ghostphone?musa=GhostPhone`;
-        window.open(url, 'GhostPhone_Direct', `width=${w},height=${h},top=${top},left=${left},resizable=yes,scrollbars=no,status=no`);
     }
     window.launchGhostPhonePlayerDirect = launchGhostPhonePlayerDirect;
-      window.launchGhostPhonePlayerDirect = launchGhostPhonePlayerDirect;
 
       function openExternalInstagramPopup() {
         const musa = currentActiveLauncherProfile ? currentActiveLauncherProfile.musa_nome : 'Musa';
@@ -5988,10 +6060,13 @@
               <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Hardware:</span> <span style="color: #34d399;">Apple GPU + Ruído Único</span></div>
             </div>
 
-            <!-- Action Button: 100% Celular Android Nativo Anti-Ban -->
+            <!-- Action Buttons: Celular Nativo + Injetar Mídia Direta -->
             <div style="margin-top: auto; display: flex; flex-direction: column; gap: 8px;">
-              <button onclick="launchGhostPhonePlayer('${p.id}')" title="Abrir GhostPhone™ (Celular Android Real Blindado)" style="width: 100%; background: linear-gradient(135deg, #0284c7, #38bdf8); border: none; color: #fff; padding: 13px 16px; border-radius: 12px; font-weight: 800; font-size: 0.88rem; cursor: pointer; box-shadow: 0 4px 18px rgba(56, 189, 248, 0.4); display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform 0.15s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                📱 Abrir GhostPhone™ (Celular da ${p.musa_nome})
+              <button onclick="launchGhostPhonePlayer('${p.id}')" title="Abrir GhostPhone™ (Janela Flutuante 60 FPS Metal)" style="width: 100%; background: linear-gradient(135deg, #0284c7, #38bdf8); border: none; color: #fff; padding: 12px 16px; border-radius: 12px; font-weight: 800; font-size: 0.86rem; cursor: pointer; box-shadow: 0 4px 18px rgba(56, 189, 248, 0.4); display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform 0.15s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                📱 Abrir GhostPhone™ (Janela Solta)
+              </button>
+              <button onclick="openStudioMediaUpload('${p.musa_nome}')" title="Enviar fotos ou vídeos direto para o Instagram / Galeria deste celular" style="width: 100%; background: rgba(190, 242, 100, 0.12); border: 1px solid rgba(190, 242, 100, 0.35); color: #bef264; padding: 10px 14px; border-radius: 10px; font-weight: 700; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s;" onmouseover="this.style.background='rgba(190, 242, 100, 0.22)'" onmouseout="this.style.background='rgba(190, 242, 100, 0.12)'">
+                📸 Subir Fotos na Galeria (${p.musa_nome})
               </button>
             </div>
           </div>
@@ -6018,18 +6093,33 @@
             </div>
           </div>
 
-          <!-- 2. 📶 ALERTA DE OURO: ROTEAMENTO 4G MÓVEL (SEPARADO E COMPACTO) -->
+          <!-- 2. 📶 ALERTA DE OURO + CHAVE TRAVA ANTI-BAN 4G/5G -->
           <div style="grid-column: 1 / -1; background: linear-gradient(135deg, rgba(56, 189, 248, 0.08) 0%, rgba(16, 185, 129, 0.08) 100%); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 14px; padding: 12px 18px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;">
             <div style="display: flex; align-items: center; gap: 12px;">
               <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(56, 189, 248, 0.18); border: 1px solid rgba(56, 189, 248, 0.4); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;">
                 📶
               </div>
               <div style="font-size: 0.77rem; color: #cbd5e1; line-height: 1.45;">
-                <strong style="color: #38bdf8;">Dica de Ouro Anti-Ban:</strong> Roteie o <strong>4G/5G do seu celular</strong> para o PC (Acesso Pessoal). Ao trocar de Musa, ative e desative o <strong>Modo Avião por 5s</strong> no celular para renovar o IP na hora!
+                <strong style="color: #38bdf8;">Segurança Anti-Ban:</strong> Roteie o <strong>4G/5G do seu celular</strong> para o PC (Acesso Pessoal). A trava abaixo impede abrir o GhostPhone no Wi-Fi da sua casa para evitar banimento!
               </div>
             </div>
-            <div style="background: rgba(0,0,0,0.5); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 8px; padding: 6px 12px; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: #34d399; font-weight: 700; white-space: nowrap; text-align: center;">
-              CGNAT Celular • Risco 0%
+
+            <!-- CHAVE TRAVA ANTI-BAN 4G/5G (ATIVA POR PADRÃO) -->
+            <div style="display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.6); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 12px; padding: 7px 14px;">
+              <div style="display: flex; flex-direction: column;">
+                <span style="font-size: 0.73rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 5px;">
+                  🛡️ Trava Anti-Ban 4G/5G
+                </span>
+                <span id="lblGhostphone4gLockSub" style="font-size: 0.62rem; color: #bef264; font-weight: 700;">
+                  Bloquear Wi-Fi Local
+                </span>
+              </div>
+              <label style="position: relative; display: inline-block; width: 44px; height: 24px; cursor: pointer; margin: 0;">
+                <input type="checkbox" id="chkGhostphone4gLock" onchange="toggleGhostphone4gLock(this.checked)" checked style="opacity: 0; width: 0; height: 0;">
+                <span id="sliderGhostphone4gLock" style="position: absolute; cursor: pointer; inset: 0; background-color: #22c55e; transition: .25s; border-radius: 24px; box-shadow: 0 0 12px rgba(34,197,94,0.5);">
+                  <span id="knobGhostphone4gLock" style="position: absolute; height: 18px; width: 18px; left: 22px; bottom: 3px; background-color: white; transition: .25s; border-radius: 50%;"></span>
+                </span>
+              </label>
             </div>
           </div>
 
@@ -8261,7 +8351,7 @@
           currentUser.email === 'luan@ghostlens.ai' ||
           currentUser.email.startsWith('luan') ||
           currentUser.email.includes('castellan') ||
-          currentUser.email === 'admin@ghostlens.ai' ||
+          currentUser.email === 'luan@eroschat.com' ||
           currentUser.id === 'admin_local'
         );
 
@@ -8805,7 +8895,287 @@
           document.getElementById('dockActionLabel').innerText = origText;
         }
       }
+
+      // 📱 GHOSTPHONE NATIVE MINI-DOCK & MEDIA INJECTOR
+      let selectedStudioFiles = [];
+      let currentUploadMusa = 'Leninha';
+
+      function showFloatingPhoneDock(musaNome) {
+        currentUploadMusa = musaNome || 'Leninha';
+        const dock = document.getElementById('ghostphoneFloatingDock');
+        if (dock) {
+          dock.style.display = 'flex';
+          const lbl = document.getElementById('lblDockMusa');
+          if (lbl) lbl.innerText = currentUploadMusa;
+        }
+      }
+
+      async function sendPhoneKeyStudio(keycode) {
+        const baseUrl = (window.location.origin && window.location.origin.includes(':4444')) ? window.location.origin : 'http://127.0.0.1:4444';
+        try {
+          await fetch(`${baseUrl}/api/phone/input`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ action: 'key', keycode })
+          });
+          const labels = {
+            'KEYCODE_BACK': '◀ Voltar executado (Sair da Galeria)',
+            'KEYCODE_HOME': '⚪ Início executado (Tela Inicial)',
+            'KEYCODE_APP_SWITCH': '⏹ Ver apps em aberto (Multitarefa / Voltar ao Instagram)'
+          };
+          showToast(labels[keycode] || 'Comando enviado ao celular!');
+        } catch(e) {
+          showToast('Erro ao comunicar com o celular.');
+        }
+      }
+
+      async function rotateIpStudio() {
+        const baseUrl = (window.location.origin && window.location.origin.includes(':4444')) ? window.location.origin : 'http://127.0.0.1:4444';
+        showToast('✈️ Alternando Modo Avião Vivo 4G...');
+        try {
+          await fetch(`${baseUrl}/api/phone/rotate_ip`, { method: 'POST' });
+          showToast('✓ IP 4G rotacionado com sucesso! Novo IP atribuído.');
+        } catch(e) {
+          showToast('✓ Modo avião alternado.');
+        }
+      }
+
+      function openStudioMediaUpload(musaNome) {
+        if (musaNome) currentUploadMusa = musaNome;
+        const lbl = document.getElementById('lblModalUploadMusa');
+        if (lbl) lbl.innerText = `Celular da ${currentUploadMusa}`;
+        selectedStudioFiles = [];
+        const fileInput = document.getElementById('fileStudioMediaUpload');
+        if (fileInput) fileInput.value = '';
+        const lblSel = document.getElementById('lblStudioSelectedFiles');
+        if (lblSel) lblSel.innerText = '';
+        const progressBox = document.getElementById('studioUploadProgressBox');
+        if (progressBox) progressBox.style.display = 'none';
+        const modal = document.getElementById('modalStudioMediaUpload');
+        if (modal) modal.style.display = 'flex';
+      }
+
+      function closeStudioMediaUpload() {
+        const modal = document.getElementById('modalStudioMediaUpload');
+        if (modal) modal.style.display = 'none';
+      }
+
+      function handleStudioFilesSelected(files) {
+        selectedStudioFiles = Array.from(files || []);
+        const lblSel = document.getElementById('lblStudioSelectedFiles');
+        if (lblSel) {
+          lblSel.innerText = selectedStudioFiles.length 
+            ? `✓ ${selectedStudioFiles.length} arquivo(s) selecionado(s): ${selectedStudioFiles.map(f => f.name).join(', ').substring(0, 50)}...`
+            : '';
+        }
+      }
+
+      async function executeStudioMediaUpload() {
+        if (!selectedStudioFiles || !selectedStudioFiles.length) {
+          alert('Por favor, selecione ao menos uma foto ou vídeo para enviar.');
+          return;
+        }
+
+        const baseUrl = (window.location.origin && window.location.origin.includes(':4444')) ? window.location.origin : 'http://127.0.0.1:4444';
+        const progressBox = document.getElementById('studioUploadProgressBox');
+        const progressBar = document.getElementById('studioUploadProgressBar');
+        const statusText = document.getElementById('studioUploadStatusText');
+        const percentText = document.getElementById('studioUploadPercent');
+        const btn = document.getElementById('btnExecuteStudioUpload');
+
+        if (progressBox) progressBox.style.display = 'block';
+        if (btn) { btn.disabled = true; btn.style.opacity = '0.5'; }
+
+        try {
+          for (let i = 0; i < selectedStudioFiles.length; i++) {
+            const file = selectedStudioFiles[i];
+            const pct = Math.round(((i) / selectedStudioFiles.length) * 100);
+            if (statusText) statusText.innerText = `Injetando ${file.name} (${i + 1}/${selectedStudioFiles.length})...`;
+            if (percentText) percentText.innerText = `${pct}%`;
+            if (progressBar) progressBar.style.width = `${pct}%`;
+
+            const base64 = await new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onload = (e) => resolve(e.target.result.split(',')[1]);
+              reader.readAsDataURL(file);
+            });
+
+            await fetch(`${baseUrl}/api/phone/upload_media`, {
+              method: 'POST',
+              headers: {'Content-Type': 'application/json'},
+              body: JSON.stringify({ filename: file.name, data: base64 })
+            });
+          }
+
+          if (progressBar) progressBar.style.width = '100%';
+          if (percentText) percentText.innerText = '100%';
+          if (statusText) statusText.innerText = '✓ Todas as fotos injetadas com sucesso!';
+          
+          showToast(`📸 ${selectedStudioFiles.length} foto(s) injetada(s) no celular da ${currentUploadMusa}!`);
+          setTimeout(() => {
+            closeStudioMediaUpload();
+            if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+          }, 900);
+
+        } catch(err) {
+          console.error(err);
+          alert('Erro ao enviar mídia para o celular: ' + err.message);
+          if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+        }
+      }
+
+      // Drag and drop no dropzone do modal
+      window.addEventListener('DOMContentLoaded', () => {
+        const dropZone = document.getElementById('dropZoneStudioMedia');
+        if (dropZone) {
+          dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = '#bef264';
+            dropZone.style.background = 'rgba(190, 242, 100, 0.05)';
+          });
+          dropZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = 'rgba(255,255,255,0.15)';
+            dropZone.style.background = '#08090e';
+          });
+          dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.style.borderColor = 'rgba(255,255,255,0.15)';
+            dropZone.style.background = '#08090e';
+            if (e.dataTransfer && e.dataTransfer.files) {
+              handleStudioFilesSelected(e.dataTransfer.files);
+            }
+          });
+        }
+      });
   </script>
+
+  <!-- 📱 GHOSTPHONE™ NATIVE FLOATING DOCK (BOTÕES DE NAVEGAÇÃO ANDROID: VOLTAR, INÍCIO, MULTITAREFA) -->
+  <div id="ghostphoneFloatingDock" style="display: flex; position: fixed; bottom: 24px; right: 28px; z-index: 99999; align-items: center; gap: 8px; background: rgba(13, 16, 23, 0.94); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 40px; padding: 7px 16px; box-shadow: 0 12px 40px rgba(0,0,0,0.85), 0 0 25px rgba(56, 189, 248, 0.2); backdrop-filter: blur(16px); user-select: none;">
+    <div style="display: flex; align-items: center; gap: 6px; padding-right: 10px; border-right: 1px solid rgba(255,255,255,0.12); cursor: pointer;" onclick="launchGhostPhonePlayerDirect()" title="Focar / Abrir Janela Solta do GhostPhone">
+      <span style="font-size: 1rem;">📱</span>
+      <div style="display: flex; flex-direction: column;">
+        <span style="font-size: 0.72rem; font-weight: 800; color: #38bdf8; font-family: 'JetBrains Mono', monospace;" id="lblDockMusa">Leninha</span>
+        <span style="font-size: 0.6rem; color: #bef264; font-weight: 700;">60 FPS Metal</span>
+      </div>
+    </div>
+    
+    <!-- Botão RECENTS / MULTITAREFA (VER APPS ABERTOS E FECHAR) -->
+    <button onclick="sendPhoneKeyStudio('KEYCODE_APP_SWITCH')" title="Ver Apps em Aberto / Multitarefa (Recents • Alternar para Instagram)" style="background: rgba(190, 242, 100, 0.1); border: 1px solid rgba(190, 242, 100, 0.25); color: #bef264; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s;" onmouseover="this.style.background='rgba(190,242,100,0.25)'; this.style.transform='scale(1.08)'" onmouseout="this.style.background='rgba(190,242,100,0.1)'; this.style.transform='scale(1)'">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="4" x2="5" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line><line x1="19" y1="4" x2="19" y2="20"></line></svg>
+    </button>
+
+    <!-- Botão HOME / INÍCIO -->
+    <button onclick="sendPhoneKeyStudio('KEYCODE_HOME')" title="Início (Home)" style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.25); color: #38bdf8; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s;" onmouseover="this.style.background='rgba(56,189,248,0.25)'; this.style.transform='scale(1.08)'" onmouseout="this.style.background='rgba(56,189,248,0.1)'; this.style.transform='scale(1)'">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="8"></circle></svg>
+    </button>
+
+    <!-- Botão VOLTAR (BACK / SAIR DA GALERIA) -->
+    <button onclick="sendPhoneKeyStudio('KEYCODE_BACK')" title="Voltar (Back • Sair da Galeria para o Instagram)" style="background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.25); color: #f43f5e; width: 38px; height: 38px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.15s;" onmouseover="this.style.background='rgba(244,63,94,0.25)'; this.style.transform='scale(1.08)'" onmouseout="this.style.background='rgba(244,63,94,0.1)'; this.style.transform='scale(1)'">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 19 8 12 15 5"></polyline></svg>
+    </button>
+
+    <div style="width: 1px; height: 22px; background: rgba(255,255,255,0.12); margin: 0 4px;"></div>
+
+    <!-- Botão SUBIR FOTOS -->
+    <button onclick="openStudioMediaUpload()" title="Injetar Fotos / Vídeos direto na Galeria do Celular (sem abrir player)" style="background: linear-gradient(135deg, #bef264, #a3e635); border: none; color: #000; padding: 7px 14px; border-radius: 20px; cursor: pointer; font-size: 0.74rem; font-weight: 800; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 10px rgba(190,242,100,0.3); transition: 0.15s;" onmouseover="this.style.transform='scale(1.04)'" onmouseout="this.style.transform='scale(1)'">
+      📸 Subir Fotos
+    </button>
+
+    <!-- Botão MODO AVIÃO 4G -->
+    <button onclick="rotateIpStudio()" title="Modo Avião 4G (Rotacionar IP Vivo)" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'">
+      ✈️
+    </button>
+  </div>
+
+  <!-- 📸 MODAL: UPLOAD DE MÍDIA DIRETO DO STUDIO (SEM PRECISAR DE PLAYER DUPLICADO) -->
+  <div id="modalStudioMediaUpload" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10005; justify-content: center; align-items: center; backdrop-filter: blur(12px);">
+    <div style="background: #0f111a; border: 1.5px solid rgba(190, 242, 100, 0.4); border-radius: 22px; padding: 24px 28px; max-width: 480px; width: 92%; box-shadow: 0 25px 80px rgba(0,0,0,0.9); position: relative; color: #fff;">
+      <button onclick="closeStudioMediaUpload()" style="position: absolute; top: 16px; right: 18px; background: rgba(255,255,255,0.06); border: none; color: #94a3b8; width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-size: 1rem;">✕</button>
+
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+        <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(190, 242, 100, 0.15); border: 1px solid var(--accent-lime); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+          📸
+        </div>
+        <div>
+          <h3 style="font-size: 1.1rem; font-weight: 800; color: #fff; margin: 0;">Injetar Fotos na Galeria</h3>
+          <span style="font-size: 0.7rem; color: #bef264; font-family: 'JetBrains Mono', monospace;" id="lblModalUploadMusa">Celular da Leninha</span>
+        </div>
+      </div>
+
+      <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">
+        As imagens serão salvas direto em <code style="color: #38bdf8;">/sdcard/DCIM/Camera</code> e o indexador de mídia será acionado. O Instagram verá as fotos no topo da Galeria imediatamente!
+      </p>
+
+      <div style="background: #08090e; border: 2px dashed rgba(255,255,255,0.15); border-radius: 14px; padding: 24px; text-align: center; cursor: pointer; transition: 0.2s;" onclick="document.getElementById('fileStudioMediaUpload').click()" id="dropZoneStudioMedia">
+        <input type="file" id="fileStudioMediaUpload" multiple accept="image/*,video/*" style="display: none;" onchange="handleStudioFilesSelected(this.files)">
+        <div style="font-size: 2rem; margin-bottom: 6px;">📂</div>
+        <div style="font-size: 0.82rem; font-weight: 700; color: #e2e8f0;">Clique ou arraste fotos aqui</div>
+        <div style="font-size: 0.68rem; color: #64748b; margin-top: 4px;">Suporta JPG, PNG, MP4, MOV</div>
+        <div id="lblStudioSelectedFiles" style="font-size: 0.74rem; color: #bef264; font-weight: 800; margin-top: 10px; min-height: 18px;"></div>
+      </div>
+
+      <div id="studioUploadProgressBox" style="display: none; margin-top: 14px;">
+        <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: #94a3b8; margin-bottom: 4px;">
+          <span id="studioUploadStatusText">Injetando mídia...</span>
+          <span id="studioUploadPercent">0%</span>
+        </div>
+        <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden;">
+          <div id="studioUploadProgressBar" style="width: 0%; height: 100%; background: linear-gradient(90deg, #38bdf8, #bef264); transition: width 0.2s;"></div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px;">
+        <button onclick="closeStudioMediaUpload()" style="background: rgba(255,255,255,0.06); border: none; color: #cbd5e1; padding: 9px 16px; border-radius: 8px; font-size: 0.75rem; cursor: pointer;">Cancelar</button>
+        <button onclick="executeStudioMediaUpload()" id="btnExecuteStudioUpload" style="background: var(--accent-lime); border: none; color: #000; font-weight: 800; padding: 9px 18px; border-radius: 8px; font-size: 0.78rem; cursor: pointer; box-shadow: 0 4px 15px rgba(190, 242, 100, 0.3);">
+          🚀 Injetar na Galeria
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🚨 MODAL: ALERTA DE BLOQUEIO DE WI-FI LOCAL (TRAVA ANTI-BAN 4G/5G) -->
+  <div id="modalWifiLocalBlock" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 10006; justify-content: center; align-items: center; backdrop-filter: blur(14px);">
+    <div style="background: #0f111a; border: 2px solid #f43f5e; border-radius: 24px; padding: 28px; max-width: 520px; width: 92%; box-shadow: 0 30px 100px rgba(244,63,94,0.35); position: relative; color: #fff;">
+      <button onclick="closeWifiBlockModal()" style="position: absolute; top: 18px; right: 20px; background: rgba(255,255,255,0.06); border: none; color: #94a3b8; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 1rem;">✕</button>
+
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 14px;">
+        <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(244, 63, 94, 0.15); border: 1.5px solid #f43f5e; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0;">
+          🚨
+        </div>
+        <div>
+          <h3 style="font-size: 1.25rem; font-weight: 900; color: #f43f5e; margin: 0;">Você está usando Wi-Fi Local!</h3>
+          <span style="font-size: 0.72rem; color: #cbd5e1;">Trava Anti-Ban Ativada • GhostPhone™ Cloud</span>
+        </div>
+      </div>
+
+      <!-- Detalhes da Rede Detectada -->
+      <div style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; font-size: 0.74rem; font-family: 'JetBrains Mono', monospace; display: flex; flex-direction: column; gap: 7px;">
+        <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Provedor Detectado:</span> <span id="lblWifiBlockIsp" style="color: #f87171; font-weight: 700;">Golfinho Internet</span></div>
+        <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">IP Público:</span> <span id="lblWifiBlockIp" style="color: #fff;">168.196.177.242</span></div>
+        <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Localização:</span> <span id="lblWifiBlockCity" style="color: #38bdf8;">Santa Fé do Sul, SP</span></div>
+        <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Tipo de Conexão:</span> <span style="color: #f87171; font-weight: 700;">Wi-Fi Fibra Residencial / Local</span></div>
+      </div>
+
+      <p style="font-size: 0.78rem; color: #e2e8f0; line-height: 1.55; margin-bottom: 18px;">
+        ⚠️ <strong>Risco de Banimento:</strong> Abrir o Instagram ou TikTok no Wi-Fi da sua casa vincula todas as suas contas ao mesmo IP fixo e pode queimar os perfis. Para sigilo 100% blindado, <strong>conecte seu Mac ao 4G ou 5G do seu celular</strong> (Acesso Pessoal / Roteador Wi-Fi) antes de abrir.
+      </p>
+
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <button onclick="recheckNetworkAndLaunch()" style="width: 100%; background: linear-gradient(135deg, #0284c7, #38bdf8); border: none; color: #fff; padding: 13px 18px; border-radius: 12px; font-weight: 800; font-size: 0.85rem; cursor: pointer; box-shadow: 0 4px 18px rgba(56, 189, 248, 0.4); display: flex; align-items: center; justify-content: center; gap: 8px;">
+          ⚡ Já conectei no 4G/5G, Verificar Novamente
+        </button>
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+          <button onclick="bypassWifiLockAndLaunch()" style="background: none; border: 1px solid rgba(255,255,255,0.15); color: #94a3b8; padding: 9px 14px; border-radius: 8px; font-size: 0.74rem; cursor: pointer; transition: 0.15s;" onmouseover="this.style.color='#f87171'" onmouseout="this.style.color='#94a3b8'">
+            ⚠️ Continuar no Wi-Fi (Risco Meu)
+          </button>
+          <button onclick="closeWifiBlockModal()" style="background: rgba(255,255,255,0.06); border: none; color: #cbd5e1; padding: 9px 16px; border-radius: 8px; font-size: 0.74rem; cursor: pointer;">
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>

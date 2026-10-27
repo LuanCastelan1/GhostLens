@@ -313,52 +313,155 @@
       color: var(--accent-lime);
     }
 
-    /* BOX OFERTA VIP */
-    .offer-box {
-      background: linear-gradient(180deg, rgba(20, 28, 40, 0.95) 0%, rgba(12, 16, 26, 0.95) 100%);
-      border: 2px solid var(--accent-lime);
-      border-radius: 28px;
-      padding: 50px 36px;
-      text-align: center;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 45px rgba(190, 242, 100, 0.2);
-      margin-bottom: 50px;
-      position: relative;
+    /* BOX OFERTA E TABELA DE 3 PLANOS */
+    .pricing-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 35px;
+      align-items: stretch;
+      text-align: left;
     }
 
-    .badge-offer-popular {
-      position: absolute;
-      top: -14px;
-      left: 50%;
-      transform: translateX(-50%);
+    @media (max-width: 960px) {
+      .pricing-cards-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .plan-card {
+      background: linear-gradient(180deg, rgba(20, 26, 38, 0.95) 0%, rgba(11, 15, 24, 0.95) 100%);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: all 0.25s ease;
+    }
+
+    .plan-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(190, 242, 100, 0.4);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+    }
+
+    .plan-card.featured {
+      border: 2px solid var(--accent-lime);
+      background: linear-gradient(180deg, rgba(26, 36, 52, 0.98) 0%, rgba(13, 19, 30, 0.98) 100%);
+      box-shadow: 0 0 40px rgba(190, 242, 100, 0.22);
+      transform: scale(1.03);
+      z-index: 2;
+    }
+
+    @media (max-width: 960px) {
+      .plan-card.featured {
+        transform: none;
+      }
+    }
+
+    .plan-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+      width: fit-content;
+    }
+
+    .plan-card.featured .plan-badge {
       background: var(--accent-lime);
       color: #000;
-      font-size: 0.75rem;
-      font-weight: 900;
-      padding: 6px 18px;
-      border-radius: 999px;
-      letter-spacing: 1px;
-      box-shadow: 0 4px 15px rgba(190, 242, 100, 0.4);
+      box-shadow: 0 0 15px rgba(190, 242, 100, 0.4);
     }
 
-    .price-strike {
+    .plan-price-wrap {
+      margin: 16px 0 20px 0;
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .plan-price-currency {
       font-size: 1.2rem;
-      color: #64748b;
-      text-decoration: line-through;
-      margin-bottom: 4px;
+      font-weight: 700;
+      color: var(--accent-lime);
     }
 
-    .price-main {
-      font-size: clamp(2.8rem, 6vw, 4rem);
+    .plan-price-val {
+      font-size: 2.8rem;
       font-weight: 900;
       color: #fff;
       line-height: 1;
-      margin-bottom: 10px;
     }
 
-    .price-main span {
-      font-size: 1.2rem;
-      color: var(--accent-lime);
-      font-weight: 700;
+    .plan-price-period {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .plan-features-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      margin-bottom: 26px;
+      flex-grow: 1;
+    }
+
+    .plan-features-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      line-height: 1.4;
+    }
+
+    .plan-btn-cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 0.88rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+      border: none;
+    }
+
+    .plan-btn-primary {
+      background: linear-gradient(135deg, #bef264, #a3e635);
+      color: #000;
+      box-shadow: 0 4px 20px rgba(190, 242, 100, 0.35);
+    }
+
+    .plan-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(190, 242, 100, 0.5);
+    }
+
+    .plan-btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    .plan-btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
     }
 
     .pix-box {
@@ -366,7 +469,7 @@
       border: 1px dashed rgba(190, 242, 100, 0.4);
       border-radius: 16px;
       padding: 20px;
-      max-width: 460px;
+      max-width: 480px;
       margin: 24px auto 30px auto;
     }
 
@@ -432,10 +535,10 @@
 
       <div class="hero-cta-group">
         <a href="#comprar" class="btn-primary-cta">
-          <span>🚀 Garantir Licença Vitalícia PRO</span>
-          <span style="font-size: 0.85rem; opacity: 0.8;">(R$ 297 à vista)</span>
+          <span>🚀 Escolher Meu Plano Oficial</span>
+          <span style="font-size: 0.85rem; opacity: 0.8;">(A partir de R$ 49,90)</span>
         </a>
-        <a href="ghostlens_studio.html" target="_blank" class="btn-secondary-cta">
+        <a href="player.html" target="_blank" class="btn-secondary-cta">
           <span>🎬 Ver Demonstração ao Vivo</span>
         </a>
       </div>
@@ -563,42 +666,139 @@
       </div>
     </div>
 
-    <!-- CAIXA DE OFERTA EXCLUSIVA -->
-    <div class="offer-box" id="comprar">
-      <div class="badge-offer-popular">OFERTA DE FUNDADOR • ACESSO VITALÍCIO</div>
-
-      <div style="font-size: 1.15rem; color: var(--accent-lime); font-weight: 800; margin-bottom: 6px;">
-        LICENÇA PRO COMPLETA (SEM MENSALIDADES)
+    <!-- SEÇÃO DE PLANOS & PREÇOS OFICIAIS -->
+    <div id="comprar" style="margin-bottom: 50px;">
+      <div style="text-align: center; margin-bottom: 35px;">
+        <div class="badge-offer-popular" style="display: inline-block; margin-bottom: 12px;">PLANOS OFICIAIS • ATIVAÇÃO INSTANTÂNEA</div>
+        <h2 style="font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; color: #fff; letter-spacing: -1px; margin-bottom: 8px;">
+          Escolha a Capacidade da sua Operação
+        </h2>
+        <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 600px; margin: 0 auto;">
+          Tenha controle total, camuflagem nativa iOS e fluxo de vídeos a 60 FPS com chave criptográfica assinada vinculada ao seu hardware.
+        </p>
       </div>
-      <h3 style="font-size: 2rem; color: #fff; margin-bottom: 14px;">Tudo Liberado Para Sempre</h3>
 
-      <div class="price-strike">De R$ 997,00</div>
-      <div class="price-main">
-        <span>R$</span> 297<span>,00</span>
+      <div class="pricing-cards-grid">
+        <!-- PLANO 1: 1 DISPOSITIVO -->
+        <div class="plan-card">
+          <div class="plan-badge">1 DISPOSITIVO</div>
+          <h3 style="font-size: 1.4rem; font-weight: 800; color: #fff; margin-bottom: 4px;">Solo Starter</h3>
+          <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px;">Perfeito para criadores autônomos e 1 aparelho conectado.</p>
+          
+          <div class="plan-price-wrap">
+            <span class="plan-price-currency">R$</span>
+            <span class="plan-price-val">49</span>
+            <span style="font-size: 1.5rem; font-weight: 800; color: #fff; line-height: 1;">,90</span>
+            <span class="plan-price-period">/mês</span>
+          </div>
+
+          <ul class="plan-features-list">
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> <strong>1 Celular Android / Emulador Conectado</strong></li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Espelhamento Ultra-Rápido 60 FPS (Scrcpy Nativo)</li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Injetor de Mídia com Remoção de Metadados</li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Camuflagem Exif Apple iPhone 16 Pro Max</li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Companion Dock Flutuante & Controle Touch</li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Suporte Individual via WhatsApp</li>
+          </ul>
+
+          <div style="display: flex; flex-direction: column; gap: 10px; margin-top: auto;">
+            <a href="https://wa.me/55?text=Ol%C3%A1%20Luan!%20Quero%20ativar%20meu%20GhostLens%20Plano%201%20Dispositivo%20(R$%2049,90/m%C3%AAs)" target="_blank" class="plan-btn-cta plan-btn-secondary">
+              <span>⚡ Assinar 1 Dispositivo</span>
+            </a>
+            <button type="button" class="btn-copy-pix" onclick="copyPixKey('49,90', 'Solo (1 Dispositivo)')" style="width: 100%; justify-content: center;">
+              📋 Copiar Pix (R$ 49,90)
+            </button>
+          </div>
+        </div>
+
+        <!-- PLANO 2: 3 DISPOSITIVOS (FEATURED) -->
+        <div class="plan-card featured">
+          <div class="plan-badge">⚡ MAIS ESCOLHIDO • 3 DISPOSITIVOS</div>
+          <h3 style="font-size: 1.45rem; font-weight: 900; color: #fff; margin-bottom: 4px;">Pro Multi-Device</h3>
+          <p style="font-size: 0.78rem; color: #cbd5e1; margin-bottom: 12px;">Equivale a apenas <strong style="color: var(--accent-lime);">R$ 32,33 por celular/mês</strong>.</p>
+          
+          <div class="plan-price-wrap">
+            <span class="plan-price-currency">R$</span>
+            <span class="plan-price-val">97</span>
+            <span style="font-size: 1.5rem; font-weight: 800; color: #fff; line-height: 1;">,00</span>
+            <span class="plan-price-period">/mês</span>
+          </div>
+
+          <ul class="plan-features-list">
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> <strong>Até 3 Celulares Conectados Simultâneos</strong></li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Tudo incluso do Plano Solo</li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Gerador de Prévia Blur VIP com Cadeado Stories</li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Modulador de Áudio Sensual (DSP Velvet Whisper)</li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Motor de Interpolação RIFE 60 FPS Inteligente</li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Modo Stealth Anti-Detect Avançado</li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Suporte Prioritário VIP no WhatsApp</li>
+          </ul>
+
+          <div style="display: flex; flex-direction: column; gap: 10px; margin-top: auto;">
+            <a href="https://wa.me/55?text=Ol%C3%A1%20Luan!%20Quero%20ativar%20meu%20GhostLens%20Plano%203%20Dispositivos%20(R$%2097,00/m%C3%AAs)" target="_blank" class="plan-btn-cta plan-btn-primary">
+              <span>🚀 Assinar 3 Dispositivos (R$ 97)</span>
+            </a>
+            <button type="button" class="btn-copy-pix" onclick="copyPixKey('97,00', 'Pro (3 Dispositivos)')" style="width: 100%; justify-content: center; background: rgba(190,242,100,0.15); border-color: var(--accent-lime); color: var(--accent-lime);">
+              📋 Copiar Pix (R$ 97,00)
+            </button>
+          </div>
+        </div>
+
+        <!-- PLANO 3: 10 DISPOSITIVOS -->
+        <div class="plan-card">
+          <div class="plan-badge">AGÊNCIA • 10 DISPOSITIVOS</div>
+          <h3 style="font-size: 1.4rem; font-weight: 800; color: #fff; margin-bottom: 4px;">Agency Scale</h3>
+          <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px;">Equivale a apenas <strong style="color: var(--accent-lime);">R$ 30,00 por celular/mês</strong>.</p>
+          
+          <div class="plan-price-wrap">
+            <span class="plan-price-currency">R$</span>
+            <span class="plan-price-val">300</span>
+            <span style="font-size: 1.5rem; font-weight: 800; color: #fff; line-height: 1;">,00</span>
+            <span class="plan-price-period">/mês</span>
+          </div>
+
+          <ul class="plan-features-list">
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> <strong>Até 10 Celulares / Emuladores Simultâneos</strong></li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Painel de Gerenciamento de Licenças & HWID Lock</li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Injeção em Massa de Fotos e Vídeos HD</li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Suíte Completa: Blur VIP + Modulador de Áudio</li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Atualizações Contínuas de Camuflagem iOS</li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Onboarding & Suporte Direto para a Equipe</li>
+          </ul>
+
+          <div style="display: flex; flex-direction: column; gap: 10px; margin-top: auto;">
+            <a href="https://wa.me/55?text=Ol%C3%A1%20Luan!%20Quero%20ativar%20meu%20GhostLens%20Plano%2010%20Dispositivos%20(R$%20300,00/m%C3%AAs)" target="_blank" class="plan-btn-cta plan-btn-secondary">
+              <span>⚡ Assinar 10 Dispositivos</span>
+            </a>
+            <button type="button" class="btn-copy-pix" onclick="copyPixKey('300,00', 'Agency (10 Dispositivos)')" style="width: 100%; justify-content: center;">
+              📋 Copiar Pix (R$ 300,00)
+            </button>
+          </div>
+        </div>
       </div>
-      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
-        Pagamento único via Pix • Sem limite de vídeos • Atualizações inclusas
-      </p>
-
-      <!-- BOTÃO DIRETO DE WHATSAPP -->
-      <a href="https://wa.me/55?text=Ol%C3%A1%20Luan!%20Quero%20adquirir%20minha%20licen%C3%A7a%20vital%C3%ADcia%20do%20GhostLens%20Studio%20PRO" target="_blank" class="btn-primary-cta" style="margin-bottom: 20px; font-size: 1.1rem; padding: 18px 40px;">
-        <span>⚡ Falar no WhatsApp e Liberar Acesso Agora</span>
-      </a>
 
       <!-- BOX DE CHAVE PIX DIRETA -->
-      <div class="pix-box">
-        <div style="font-size: 0.8rem; color: var(--accent-lime); font-weight: 800; text-transform: uppercase;">
-          Chave Pix Direta para Liberação Imediata:
+      <div class="pix-box" style="max-width: 680px; margin: 0 auto 30px auto; text-align: center;">
+        <div style="font-size: 0.8rem; color: var(--accent-lime); font-weight: 800; text-transform: uppercase; margin-bottom: 4px;">
+          Chave Pix Oficial para Liberação Instantânea:
         </div>
         <div class="pix-key" id="pixKeyDisplay">contato@ghostlens.ai</div>
-        <button type="button" class="btn-copy-pix" onclick="copyPixKey()">
-          📋 Copiar Chave Pix (R$ 297,00)
-        </button>
+        <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+          <button type="button" class="btn-copy-pix" onclick="copyPixKey('49,90', 'Solo 1 Celular')">
+            📋 Copiar Pix R$ 49,90 (1 Cel)
+          </button>
+          <button type="button" class="btn-copy-pix" onclick="copyPixKey('97,00', 'Pro 3 Celulares')" style="background: rgba(190,242,100,0.2); border-color: var(--accent-lime); color: var(--accent-lime); font-weight: 800;">
+            ⭐ Copiar Pix R$ 97,00 (3 Cel)
+          </button>
+          <button type="button" class="btn-copy-pix" onclick="copyPixKey('300,00', 'Agency 10 Celulares')">
+            📋 Copiar Pix R$ 300,00 (10 Cel)
+          </button>
+        </div>
       </div>
 
       <div style="display: flex; justify-content: center; gap: 24px; color: #94a3b8; font-size: 0.82rem; flex-wrap: wrap;">
         <span>🔒 Garantia Incondicional de 7 Dias</span>
-        <span>⚡ Liberação Imediata do Código Fonte</span>
+        <span>⚡ Ativação Automática via Token Blindado</span>
         <span>💻 Suporte Direto no WhatsApp</span>
       </div>
     </div>
@@ -634,12 +834,12 @@
   </div>
 
   <script>
-    function copyPixKey() {
-      const pixKey = document.getElementById('pixKeyDisplay').innerText;
+    function copyPixKey(amount = "97,00", planName = "Pro (3 Dispositivos)") {
+      const pixKey = (document.getElementById('pixKeyDisplay') ? document.getElementById('pixKeyDisplay').innerText : 'contato@ghostlens.ai').trim();
       navigator.clipboard.writeText(pixKey).then(() => {
-        alert("✅ Chave Pix copiada com sucesso!\n\nApós o pagamento de R$ 297, envie o comprovante no WhatsApp para receber o acesso e o código imediatamente.");
+        alert("✅ Chave Pix copiada com sucesso!\n\n🔑 Chave: " + pixKey + "\n💰 Valor: R$ " + amount + " (" + planName + ")\n\nApós o pagamento, envie o comprovante no WhatsApp para ativação imediata da sua licença blindada!");
       }).catch(() => {
-        prompt("Copie a chave Pix abaixo:", pixKey);
+        prompt("Copie a chave Pix abaixo para o plano " + planName + " (R$ " + amount + "):", pixKey);
       });
     }
   </script>
