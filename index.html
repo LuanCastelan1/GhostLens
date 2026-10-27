@@ -4844,15 +4844,17 @@
       const emailSpan = document.getElementById('headerUserEmail');
       const btnAdmin = document.getElementById('btnAdminMaster');
 
-      const isLuan = currentUser && (
+      const isMasterAdmin = currentUser && (
         currentUser.email === 'luan@ghostlens.ai' ||
         currentUser.email.startsWith('luan') ||
         currentUser.email.includes('castellan') ||
+        currentUser.email === 'anthony@ghostlens.ai' ||
+        currentUser.email.startsWith('anthony') ||
         localStorage.getItem('ghostlens_master_admin') === 'true'
       );
 
       if (btnAdmin) {
-        btnAdmin.style.display = isLuan ? 'inline-flex' : 'none';
+        btnAdmin.style.display = isMasterAdmin ? 'inline-flex' : 'none';
       }
 
       if (currentUser) {

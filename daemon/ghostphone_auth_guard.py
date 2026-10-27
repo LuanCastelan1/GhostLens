@@ -143,7 +143,7 @@ class GhostAuthGuard:
         with self.lock:
             key = license_key.strip().upper()
             
-            # 1. Licença Master do Luan (Desenvolvimento e Admin)
+            # 1. Licença Master do Luan e Anthony (Desenvolvimento e Admin)
             if key in ("GHOST-MASTER-LUAN-2026", "MASTER", "LUAN"):
                 self.license_data = {
                     "key": key,
@@ -163,7 +163,28 @@ class GhostAuthGuard:
                 )
                 self.save_license()
                 self.is_active = True
-                return {"success": True, "message": "Nó Master ativado com sucesso!", "data": self.license_data}
+                return {"success": True, "message": "Nó Master Luan ativado com sucesso!", "data": self.license_data}
+
+            if key in ("GHOST-MASTER-ANTHONY-2026", "ANTHONY", "GHOST-ANTHONY", "GHOST-MASTER-34C0-D445-8E18"):
+                self.license_data = {
+                    "key": key,
+                    "email": "anthony@ghostlens.ai",
+                    "plan": "Enterprise Master (Ilimitado)",
+                    "hwid": self.hwid,
+                    "max_devices": 50,
+                    "expires_at": 2082729600, # Ano 2035
+                    "status": "active"
+                }
+                self.license_data["signature"] = self.generate_signature(
+                    self.license_data["email"],
+                    self.license_data["plan"],
+                    self.hwid,
+                    self.license_data["max_devices"],
+                    self.license_data["expires_at"]
+                )
+                self.save_license()
+                self.is_active = True
+                return {"success": True, "message": "Nó Master Anthony (Admin) ativado com sucesso!", "data": self.license_data}
 
             # 2. Busca no banco de licenças emitidas
             licenses_file = os.path.join(LICENSE_DIR, "issued_licenses.json")

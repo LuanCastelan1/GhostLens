@@ -9,6 +9,7 @@ import sys
 import json
 import signal
 import urllib.parse
+import urllib.request
 import subprocess
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
@@ -39,32 +40,10 @@ LATEST_FRAME = None
 FRAME_LOCK = threading.Lock()
 FRAME_LAST_TIME = 0
 
+# Screencap contínuo desativado: O GhostPhone opera 100% via Janela Suspensa Nativa (Scrcpy 60 FPS)
+# poupando CPU e memória do Mac.
 def screencap_background_worker():
-    global LATEST_FRAME, FRAME_LAST_TIME
-    while True:
-        try:
-            # Se scrcpy estiver rodando, reduz frequência para liberar 100% de banda de hardware
-            scrcpy_check = subprocess.run(['pgrep', '-f', 'scrcpy'], capture_output=True).stdout
-            if scrcpy_check:
-                time.sleep(1.0)
-                continue
-
-            res = subprocess.run([ADB_BIN, 'exec-out', 'screencap', '-p'], capture_output=True, timeout=2)
-            if res.returncode == 0 and res.stdout:
-                im = PIL.Image.open(io.BytesIO(res.stdout)).convert('RGB')
-                im = im.resize((540, 1200), PIL.Image.Resampling.BILINEAR)
-                buf = io.BytesIO()
-                im.save(buf, format='JPEG', quality=75)
-                data = buf.getvalue()
-                with FRAME_LOCK:
-                    LATEST_FRAME = data
-                    FRAME_LAST_TIME = time.time()
-        except Exception:
-            pass
-        time.sleep(0.08)
-
-# Inicia sentinela de captura de tela contínua em segundo plano
-threading.Thread(target=screencap_background_worker, daemon=True).start()
+    pass
 
 def run_adb_async(args):
     """Executa comandos ADB em segundo plano sem travar o servidor HTTP."""
@@ -354,8 +333,10 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
 
         # 7. GHOSTPHONE API: SPECS
         elif parsed.path == '/api/phone/specs':
+            scrcpy_pids = subprocess.run(['pgrep', '-f', 'scrcpy'], capture_output=True).stdout.decode().split()
             self.send_json({
                 "code": 0,
+                "scrcpy_active": len(scrcpy_pids) > 0,
                 "device": "Samsung Galaxy S24 Ultra (SM-S928B)",
                 "system": "Android 14 (OneUI 6.1 • ARM64)",
                 "carrier": "Telefônica Brasil (Vivo 4G Móvel)",
@@ -365,6 +346,43 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                 "resolution": "1080x2400",
                 "dpi": 420
             })
+
+        # 7.1 GHOSTPHONE API: CHECK NETWORK TYPE (4G/5G vs WI-FI LOCAL ANTI-BAN CHECK)
+        elif parsed.path == '/api/phone/check_network':
+            try:
+                req = urllib.request.Request("http://ip-api.com/json", headers={"User-Agent": "GhostPhone/2.0"})
+                with urllib.request.urlopen(req, timeout=3) as resp:
+                    net_info = json.loads(resp.read().decode())
+                    isp = net_info.get("isp", "Desconhecido")
+                    org = net_info.get("org", "")
+                    ip = net_info.get("query", "")
+                    city = net_info.get("city", "")
+                    region = net_info.get("regionName", "")
+                    
+                    mobile_keywords = ["vivo", "telefonica", "telefônica", "claro", "tim", "algar", "mobile", "cellular", "cgnat", "4g", "5g", "lte"]
+                    is_mobile = any(k in isp.lower() or k in org.lower() for k in mobile_keywords)
+                    
+                    self.send_json({
+                        "code": 0,
+                        "is_mobile": is_mobile,
+                        "network_type": "4G / 5G Celular Móvel" if is_mobile else "Wi-Fi Local",
+                        "isp": isp,
+                        "org": org,
+                        "ip": ip,
+                        "city": city,
+                        "region": region
+                    })
+                    return
+            except Exception as e:
+                self.send_json({
+                    "code": 0,
+                    "is_mobile": False,
+                    "network_type": "Wi-Fi Local",
+                    "isp": "Local",
+                    "ip": "127.0.0.1",
+                    "error": str(e)
+                })
+                return
 
         # 8. DOWNLOAD & REQUISITOS DE SISTEMA
         elif parsed.path in ('/download', '/baixar'):
