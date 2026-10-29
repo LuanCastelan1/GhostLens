@@ -4739,23 +4739,29 @@
       btn.disabled = true;
       btn.style.opacity = '0.7';
 
-      // 👑 Master Admin / Bypass Instantâneo para Luan & Desenvolvedor
-      const isLuan = email.toLowerCase().includes('luan') || 
-                     email.toLowerCase().includes('castellan') || 
-                     email.toLowerCase().endsWith('@ghostlens.ai') ||
-                     email.toLowerCase() === 'admin@ghostlens.ai';
+      // 👑 Master Admin exclusivo para Luan & Anthony
+      const isLuanOrAnthony = email && (
+        email.toLowerCase().includes('luan') || 
+        email.toLowerCase().includes('castellan') || 
+        email.toLowerCase() === 'luan@ghostlens.ai' ||
+        email.toLowerCase().includes('anthony') ||
+        email.toLowerCase() === 'anthony@ghostlens.ai'
+      );
       
-      const isMasterPass = password === 'ghostlens123456' || 
-                           password === '2026' || 
-                           password === 'luan2026' || 
-                           password === 'ghostlens' || 
-                           password.length >= 4;
+      const isMasterPass = password && (
+        password === 'ghostlens2026' || 
+        password === 'luan2026' || 
+        password === 'anthony2026' ||
+        password === 'ghostlens123456' || 
+        password === '2026'
+      );
 
-      if (isLuan || isMasterPass) {
+      if (isLuanOrAnthony && isMasterPass) {
+        const isAdminName = email.toLowerCase().includes('anthony') ? 'Anthony' : 'Luan Castellan';
         currentUser = {
           id: 'admin_local',
           email: email || 'luan@ghostlens.ai',
-          user_metadata: { role: 'master_admin', name: 'Luan Castellan' }
+          user_metadata: { role: 'master_admin', name: isAdminName }
         };
         localStorage.setItem('ghostlens_master_admin', 'true');
         localStorage.setItem('ghostlens_session_user', JSON.stringify(currentUser));
@@ -4771,8 +4777,19 @@
       }
 
       if (!supabaseClient) {
-        currentUser = { id: 'user_' + Date.now(), email: email };
+        currentUser = { id: 'user_' + Date.now(), email: email, user_metadata: { role: 'user' } };
+        localStorage.removeItem('ghostlens_master_admin');
         localStorage.setItem('ghostlens_session_user', JSON.stringify(currentUser));
+        userBalance = 0.00;
+
+        closeGhostAuthModal();
+        updateAuthUI();
+        updateWalletDisplay();
+
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        return;
+      }
         closeGhostAuthModal();
         updateAuthUI();
         btn.disabled = false;
@@ -4871,20 +4888,24 @@
     }
 
     async function initGhostAuth() {
-      // 1. Restaura sessão salva ou ativa Master por padrão
+      // 1. Restaura sessão salva se existir no navegador
       const savedUser = localStorage.getItem('ghostlens_session_user');
       const isMasterAdmin = localStorage.getItem('ghostlens_master_admin') === 'true';
 
       if (savedUser) {
-        try { currentUser = JSON.parse(savedUser); } catch(e){}
+        try { 
+          currentUser = JSON.parse(savedUser); 
+        } catch(e) {
+          currentUser = null;
+        }
+      } else {
+        currentUser = null;
       }
-      
-      // Garante Luan Master ativo imediatamente
-      if (!currentUser || currentUser.email === 'luan@ghostlens.ai' || isMasterAdmin || !savedUser) {
-        currentUser = { id: 'admin_local', email: 'luan@ghostlens.ai', name: 'Luan Castellan' };
-        localStorage.setItem('ghostlens_master_admin', 'true');
-        localStorage.setItem('ghostlens_session_user', JSON.stringify(currentUser));
-        userBalance = 999.00;
+
+      // Se não houver usuário logado salvo, o visitante começa deslogado
+      if (!currentUser) {
+        localStorage.removeItem('ghostlens_master_admin');
+        userBalance = 0.00;
       }
 
       updateAuthUI();
