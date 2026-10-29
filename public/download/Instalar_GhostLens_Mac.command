@@ -16,4 +16,4 @@ nohup python3 "$DIR/daemon/servidor_ponte_local.py" > /tmp/ghostlens_bridge.log 
 echo "✓ Motor GhostStealth Bridge Ativo na porta 4444!"
 echo "✓ Abrindo o GhostLens Web Studio no navegador..."
 sleep 2
-open "https://ghostlens.vercel.app/studio" || open "http://localhost:4444"
+open "https://ghostlens.cloud/studio" || open "http://localhost:4444"

@@ -6,6 +6,6 @@ echo ==========================================================
 echo Iniciando o daemon em background...
 start /B python daemon\servidor_ponte_local.py
 timeout /t 2 >nul
-start https://ghostlens.vercel.app/studio
+start https://ghostlens.cloud/studio
 echo Instalacao concluida com sucesso!
 pause
