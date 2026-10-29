@@ -2147,25 +2147,26 @@
     </div>
   </div>
 
-  <!-- 🔐 MODAL DE AUTENTICAÇÃO GHOSTLENS (SUPABASE AUTH) -->
+  <!-- 🔐 MODAL DE AUTENTICAÇÃO GHOSTLENS (SUPABASE AUTH / CENTRAL GATEWAY) -->
   <div id="ghostAuthModal"
-    style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(10px);">
+    style="display: flex; position: fixed; inset: 0; background: rgba(5,7,12,0.88); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);">
     <div
-      style="background: #11131a; border: 1px solid rgba(190, 242, 100, 0.35); border-radius: 24px; padding: 32px 30px; max-width: 420px; width: 92%; box-shadow: 0 25px 80px rgba(0,0,0,0.9); position: relative;">
+      style="background: rgba(17, 24, 39, 0.95); border: 1px solid rgba(190, 242, 100, 0.45); border-radius: 24px; padding: 36px 32px; max-width: 440px; width: 92%; box-shadow: 0 30px 90px rgba(0,0,0,0.95), 0 0 40px rgba(190, 242, 100, 0.15); position: relative; animation: ghostModalFadeIn 0.3s ease-out;">
 
-      <!-- Botão Fechar -->
-      <button onclick="closeGhostAuthModal()"
-        style="position: absolute; top: 18px; right: 18px; background: rgba(255,255,255,0.06); border: none; color: #94a3b8; width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-size: 1rem;">✕</button>
+      <!-- Botão Fechar / Modo Preview -->
+      <button onclick="closeGhostAuthModal()" title="Modo Visualização / Fechar"
+        style="position: absolute; top: 18px; right: 18px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; width: 32px; height: 32px; border-radius: 10px; cursor: pointer; font-size: 0.95rem; display: flex; align-items: center; justify-content: center; transition: 0.2s;"
+        onmouseover="this.style.color='#fff'; this.style.borderColor='rgba(255,255,255,0.3)'"
+        onmouseout="this.style.color='#94a3b8'; this.style.borderColor='rgba(255,255,255,0.1)'">✕</button>
 
-      <div style="text-align: center; margin-bottom: 22px;">
+      <div style="text-align: center; margin-bottom: 24px;">
         <div
-          style="display: inline-flex; align-items: center; gap: 6px; font-weight: 800; font-size: 1.15rem; color: var(--accent-lime); margin-bottom: 6px;">
-          <span>⚡</span> GHOSTLENS STUDIO
+          style="display: inline-flex; align-items: center; gap: 8px; font-weight: 900; font-size: 1.25rem; color: var(--accent-lime); margin-bottom: 6px; letter-spacing: 0.5px;">
+          <span>⚡</span> GHOSTLENS STUDIO PRO™
         </div>
-        <h3 id="ghostAuthTitle" style="font-size: 1.25rem; font-weight: 800; color: #fff; margin-bottom: 4px;">Acessar
-          sua Conta</h3>
-        <p id="ghostAuthSubtitle" style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.4;">
-          Entre para gerenciar seus perfis anti-detect, camuflar fotos/vídeos e recarregar seu saldo.
+        <h3 id="ghostAuthTitle" style="font-size: 1.25rem; font-weight: 800; color: #fff; margin-bottom: 6px;">Autenticação & Acesso</h3>
+        <p id="ghostAuthSubtitle" style="font-size: 0.8rem; color: #94a3b8; line-height: 1.45;">
+          Acesso restrito. Digite suas credenciais ou crie sua conta para liberar o estúdio e camuflagem de mídias.
         </p>
       </div>
 
@@ -2173,11 +2174,11 @@
       <div
         style="display: flex; background: rgba(255,255,255,0.04); border-radius: 12px; padding: 4px; margin-bottom: 20px; border: 1px solid var(--border-subtle);">
         <button type="button" id="tabAuthLogin" onclick="switchAuthTab('login')"
-          style="flex: 1; padding: 8px; border-radius: 8px; border: none; font-weight: 700; font-size: 0.8rem; cursor: pointer; background: var(--accent-lime); color: #000; transition: 0.2s;">
-          Entrar
+          style="flex: 1; padding: 9px; border-radius: 9px; border: none; font-weight: 800; font-size: 0.82rem; cursor: pointer; background: var(--accent-lime); color: #000; transition: 0.2s;">
+          Acessar Conta
         </button>
         <button type="button" id="tabAuthRegister" onclick="switchAuthTab('register')"
-          style="flex: 1; padding: 8px; border-radius: 8px; border: none; font-weight: 700; font-size: 0.8rem; cursor: pointer; background: transparent; color: var(--text-secondary); transition: 0.2s;">
+          style="flex: 1; padding: 9px; border-radius: 9px; border: none; font-weight: 700; font-size: 0.82rem; cursor: pointer; background: transparent; color: var(--text-secondary); transition: 0.2s;">
           Criar Conta
         </button>
       </div>
@@ -2188,17 +2189,17 @@
           <label
             style="display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px;">Seu
             E-mail</label>
-          <input type="email" id="ghostAuthEmail" value="luan@ghostlens.ai" required placeholder="exemplo@dominio.com"
-            style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 11px 14px; color: #fff; font-size: 0.85rem; outline: none; font-family: inherit;">
+          <input type="email" id="ghostAuthEmail" required placeholder="seuemail@exemplo.com"
+            style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px 14px; color: #fff; font-size: 0.88rem; outline: none; font-family: inherit;">
         </div>
 
         <div>
           <label
             style="display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px;">Sua
             Senha</label>
-          <input type="password" id="ghostAuthPassword" value="ghostlens123456" required
-            placeholder="Mínimo 6 caracteres"
-            style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 11px 14px; color: #fff; font-size: 0.85rem; outline: none; font-family: inherit;">
+          <input type="password" id="ghostAuthPassword" required
+            placeholder="Digite sua senha de acesso"
+            style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px 14px; color: #fff; font-size: 0.88rem; outline: none; font-family: inherit;">
         </div>
 
         <!-- Mensagem de Erro / Sucesso -->
@@ -2206,10 +2207,18 @@
           style="display: none; font-size: 0.76rem; border-radius: 8px; padding: 8px 12px; text-align: left;"></div>
 
         <button type="submit" id="btnSubmitAuth"
-          style="background: var(--accent-lime); color: #000; border: none; padding: 12px; border-radius: 12px; font-weight: 800; font-size: 0.88rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 16px rgba(190, 242, 100, 0.3); margin-top: 4px;">
-          <span id="txtSubmitAuth">Acessar GhostLens</span>
+          style="background: var(--accent-lime); color: #000; border: none; padding: 13px; border-radius: 12px; font-weight: 900; font-size: 0.92rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 18px rgba(190, 242, 100, 0.35); margin-top: 6px;">
+          <span id="txtSubmitAuth">🚀 Entrar no GhostLens Studio</span>
         </button>
       </form>
+
+      <!-- Rodapé do Modal com Link para Planos -->
+      <div style="margin-top: 20px; text-align: center; font-size: 0.78rem; color: #94a3b8; border-top: 1px solid rgba(255,255,255,0.07); padding-top: 16px;">
+        Ainda não possui uma licença? <br>
+        <a href="/proposta" style="color: var(--accent-lime); font-weight: 800; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; margin-top: 4px;">
+          <span>Conhecer Planos a partir de R$ 49,90</span> ➔
+        </a>
+      </div>
     </div>
   </div>
 
@@ -4868,12 +4877,16 @@
         btnAdmin.style.display = isMasterAdmin ? 'inline-flex' : 'none';
       }
 
+      const authModal = document.getElementById('ghostAuthModal');
+
       if (currentUser) {
+        if (authModal) authModal.style.display = 'none';
         if (btnLogin) btnLogin.style.display = 'none';
         if (loggedGroup) loggedGroup.style.display = 'flex';
         if (emailSpan) emailSpan.innerText = currentUser.email.split('@')[0];
         updateWalletDisplay();
       } else {
+        if (authModal) authModal.style.display = 'flex';
         if (btnLogin) btnLogin.style.display = 'flex';
         if (loggedGroup) loggedGroup.style.display = 'none';
         const balEl = document.getElementById('userWalletBalance');
