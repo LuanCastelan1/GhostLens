@@ -1,10 +1,6 @@
 {
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/download", "destination": "/download.html" },
-    { "source": "/player", "destination": "/player.html" },
-    { "source": "/proposta", "destination": "/proposta.html" },
-    { "source": "/obrigado", "destination": "/obrigado.html" },
     { "source": "/studio", "destination": "/index.html" }
   ],
   "headers": [

@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GhostLens Studio PRO™ • O Sistema Definitivo para Agências de Modelos de IA & Criadores Hot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090a0f;
+      --card-bg: rgba(18, 22, 34, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --accent-lime: #bef264;
+      --accent-lime-glow: rgba(190, 242, 100, 0.35);
+      --accent-cyan: #38bdf8;
+      --accent-rose: #fb7185;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 15% 20%, rgba(190, 242, 100, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 85% 75%, rgba(56, 189, 248, 0.06) 0%, transparent 45%);
+    }
+
+    .container {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    /* BADGE TOPO */
+    .hero-badge-wrap {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      background: rgba(190, 242, 100, 0.1);
+      border: 1px solid rgba(190, 242, 100, 0.3);
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--accent-lime);
+      letter-spacing: 0.5px;
+      box-shadow: 0 0 25px rgba(190, 242, 100, 0.15);
+    }
+
+    /* HERO */
+    .hero {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.3rem, 5vw, 3.8rem);
+      font-weight: 900;
+      letter-spacing: -1.5px;
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 span.gradient-text {
+      background: linear-gradient(135deg, #fff 20%, var(--accent-lime) 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      font-size: clamp(1.05rem, 2vw, 1.25rem);
+      color: var(--text-muted);
+      max-width: 760px;
+      margin: 0 auto 34px auto;
+      font-weight: 400;
+    }
+
+    .hero-cta-group {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-primary-cta {
+      background: var(--accent-lime);
+      color: #000;
+      font-weight: 900;
+      font-size: 1.05rem;
+      padding: 16px 36px;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 10px 30px var(--accent-lime-glow);
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-primary-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 40px rgba(190, 242, 100, 0.5);
+    }
+
+    .btn-secondary-cta {
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 15px 28px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      cursor: pointer;
+      text-decoration: none;
+      transition: 0.2s;
+    }
+
+    .btn-secondary-cta:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* CARD DE DOR vs SOLUÇÃO */
+    .pain-box {
+      background: rgba(239, 68, 68, 0.04);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      border-radius: 20px;
+      padding: 26px;
+      margin-bottom: 50px;
+    }
+
+    .pain-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 18px;
+    }
+
+    .pain-item {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 16px;
+      border-radius: 12px;
+      border-left: 3px solid #ef4444;
+      font-size: 0.9rem;
+      color: #cbd5e1;
+    }
+
+    .pain-item strong {
+      color: #f87171;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    /* COMPARATIVO LADO A LADO */
+    .section-title {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    .section-title h2 {
+      font-size: 2.1rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .section-title p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 60px;
+    }
+
+    @media (max-width: 768px) {
+      .comparison-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .compare-card {
+      background: var(--card-bg);
+      border-radius: 20px;
+      padding: 30px;
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      position: relative;
+    }
+
+    .compare-card.winner {
+      border: 1.5px solid var(--accent-lime);
+      box-shadow: 0 0 35px rgba(190, 242, 100, 0.15);
+    }
+
+    .compare-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .compare-badge.loser {
+      background: rgba(239, 68, 68, 0.15);
+      color: #ef4444;
+    }
+
+    .compare-badge.winner-badge {
+      background: rgba(190, 242, 100, 0.18);
+      color: var(--accent-lime);
+    }
+
+    .feature-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 20px;
+    }
+
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-size: 0.92rem;
+    }
+
+    /* MÓDULOS DE ARMAS SECRETAS */
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 22px;
+      margin-bottom: 60px;
+    }
+
+    .module-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 28px;
+      backdrop-filter: blur(16px);
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .module-card:hover {
+      border-color: rgba(190, 242, 100, 0.4);
+      transform: translateY(-3px);
+    }
+
+    .module-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 18px;
+    }
+
+    .module-card h3 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+
+    .module-card p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+    }
+
+    .module-specs {
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--accent-lime);
+    }
+
+    /* BOX OFERTA E TABELA DE 3 PLANOS */
+    .pricing-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 35px;
+      align-items: stretch;
+      text-align: left;
+    }
+
+    @media (max-width: 960px) {
+      .pricing-cards-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .plan-card {
+      background: linear-gradient(180deg, rgba(20, 26, 38, 0.95) 0%, rgba(11, 15, 24, 0.95) 100%);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: all 0.25s ease;
+    }
+
+    .plan-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(190, 242, 100, 0.4);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+    }
+
+    .plan-card.featured {
+      border: 2px solid var(--accent-lime);
+      background: linear-gradient(180deg, rgba(26, 36, 52, 0.98) 0%, rgba(13, 19, 30, 0.98) 100%);
+      box-shadow: 0 0 40px rgba(190, 242, 100, 0.22);
+      transform: scale(1.03);
+      z-index: 2;
+    }
+
+    @media (max-width: 960px) {
+      .plan-card.featured {
+        transform: none;
+      }
+    }
+
+    .plan-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+      width: fit-content;
+    }
+
+    .plan-card.featured .plan-badge {
+      background: var(--accent-lime);
+      color: #000;
+      box-shadow: 0 0 15px rgba(190, 242, 100, 0.4);
+    }
+
+    .plan-price-wrap {
+      margin: 16px 0 20px 0;
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .plan-price-currency {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--accent-lime);
+    }
+
+    .plan-price-val {
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: #fff;
+      line-height: 1;
+    }
+
+    .plan-price-period {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .plan-features-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+      margin-bottom: 26px;
+      flex-grow: 1;
+    }
+
+    .plan-features-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      line-height: 1.4;
+    }
+
+    .plan-btn-cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 0.88rem;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+      border: none;
+    }
+
+    .plan-btn-primary {
+      background: linear-gradient(135deg, #bef264, #a3e635);
+      color: #000;
+      box-shadow: 0 4px 20px rgba(190, 242, 100, 0.35);
+    }
+
+    .plan-btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(190, 242, 100, 0.5);
+    }
+
+    .plan-btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    .plan-btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .pix-box {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px dashed rgba(190, 242, 100, 0.4);
+      border-radius: 16px;
+      padding: 20px;
+      max-width: 480px;
+      margin: 24px auto 30px auto;
+    }
+
+    .pix-key {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      color: #fff;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin: 10px 0;
+      word-break: break-all;
+    }
+
+    .btn-copy-pix {
+      background: rgba(190, 242, 100, 0.15);
+      border: 1px solid var(--accent-lime);
+      color: var(--accent-lime);
+      font-weight: 800;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .btn-copy-pix:hover {
+      background: var(--accent-lime);
+      color: #000;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 30px 10px;
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- BADGE TOPO -->
+    <div class="hero-badge-wrap">
+      <div class="hero-badge">
+        <span>🛡️</span>
+        <span>EXCLUSIVO PARA AGÊNCIAS E CRIADORES DE MODELOS VIRTUAIS</span>
+      </div>
+    </div>
+
+    <!-- HERO PRINCIPAL -->
+    <section class="hero">
+      <h1>
+        Destrua o Shadowban do TikTok & Instagram com a <br>
+        <span class="gradient-text">Assinatura Oficial Apple iPhone 16 Pro</span>
+      </h1>
+      <p>
+        O <strong>GhostLens Studio PRO™</strong> é a suíte tudo-em-um que limpa 100% dos metadados de IA (C2PA Shield), transforma vídeos em <strong>60 FPS ultra-fluidos</strong> com aceleração Apple Silicon e blinda suas contas com containers anti-detect.
+      </p>
+
+      <div class="hero-cta-group">
+        <a href="#comprar" class="btn-primary-cta">
+          <span>🚀 Escolher Meu Plano Oficial</span>
+          <span style="font-size: 0.85rem; opacity: 0.8;">(A partir de R$ 49,90)</span>
+        </a>
+        <a href="player.html" target="_blank" class="btn-secondary-cta">
+          <span>🎬 Ver Demonstração ao Vivo</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- BOX DE DOR DE QUEM TRABALHA COM IA -->
+    <div class="pain-box">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <span style="font-size: 1.4rem;">⚠️</span>
+        <h3 style="font-size: 1.15rem; color: #f87171;">O Que Está Matando o Alcance das Agências e Criadores Hoje:</h3>
+      </div>
+      <div class="pain-grid">
+        <div class="pain-item">
+          <strong>1. O Selo C2PA dos Renderizadores</strong>
+          Midjourney, Flux, Grok, Kling e SeaArt carimbam assinaturas invisíveis no arquivo. Os algoritmos do TikTok e Meta detectam em 0,1s e cortam a entrega de visualizações para menos de 200 views.
+        </div>
+        <div class="pain-item">
+          <strong>2. Vídeos Travados a 24 FPS de "Boneco"</strong>
+          Vídeos gerados por IA parecem falsos e sem vida. Quem assiste percebe que é montagem e passa o feed reto sem engajar.
+        </div>
+        <div class="pain-item">
+          <strong>3. Queda em Massa de Perfis por Cruzamento</strong>
+          Gerenciar 5 ou 10 musas no mesmo navegador sem isolamento de hardware, canvas e cookies gera banimento em cascata em todas as contas.
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPARATIVO LADO A LADO -->
+    <div class="section-title">
+      <h2>O Efeito GhostLens na Prática</h2>
+      <p>A diferença entre ficar estagnado em 200 views ou explodir com retenção de câmera real</p>
+    </div>
+
+    <div class="comparison-grid">
+      <!-- LADO RUIM -->
+      <div class="compare-card">
+        <span class="compare-badge loser">❌ Conteúdo Comum de IA</span>
+        <h4 style="font-size: 1.15rem; color: #ef4444; margin-bottom: 10px;">Sem Camuflagem & Sem Pipeline</h4>
+        <ul class="feature-list">
+          <li><span>⚠️</span> <span>Metadados revelam software sintético e IA generativa.</span></li>
+          <li><span>⚠️</span> <span>Vídeo a 24 FPS com micro-travamentos e bordas borradas.</span></li>
+          <li><span>⚠️</span> <span>Algoritmo do TikTok marca como "Conteúdo Gerado por IA".</span></li>
+          <li><span>⚠️</span> <span>Dependência de assinaturas caras em dólar (CapCut Pro, GhostPhone, etc.).</span></li>
+        </ul>
+      </div>
+
+      <!-- LADO VENCEDOR GHOSTLENS -->
+      <div class="compare-card winner">
+        <span class="compare-badge winner-badge">✨ Com GhostLens Studio PRO</span>
+        <h4 style="font-size: 1.15rem; color: var(--accent-lime); margin-bottom: 10px;">Assinatura Genuína Apple Hardware</h4>
+        <ul class="feature-list">
+          <li><span>✅</span> <span><strong>Apple Stealth Purger:</strong> Injeta metadados EXIF/QuickTime de iPhone 16 Pro real (iOS 18.1).</span></li>
+          <li><span>✅</span> <span><strong>Optical Flow 60 FPS:</strong> Movimento cinematográfico hiper-fluido gerado localmente.</span></li>
+          <li><span>✅</span> <span><strong>Musa Glow Retouch:</strong> Filtros shaders de alta retenção que valorizam o tom de pele e bronzeado.</span></li>
+          <li><span>✅</span> <span><strong>100% Local & Sem Mensalidade:</strong> Roda na sua máquina com zero custo por vídeo.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- MÓDULOS INCLUÍDOS NA SUÍTE -->
+    <div class="section-title">
+      <h2>5 Armas Secretas em um Único Sistema</h2>
+      <p>Tudo o que uma agência precisa para escalar múltiplos perfis e faturar no piloto automático</p>
+    </div>
+
+    <div class="modules-grid">
+      <!-- MÓDULO 1 -->
+      <div class="module-card">
+        <div>
+          <div class="module-icon">🛡️</div>
+          <h3>Apple Stealth Purger</h3>
+          <p>Remove C2PA, IPTC e marcas d'água invisíveis. Injeta geolocalização por GPS de bairros nobres (Leblon, Jardins, Miami) e tags de câmera Leica/Sony/Apple.</p>
+        </div>
+        <div class="module-specs">Core Media Video • Clean Signature</div>
+      </div>
+
+      <!-- MÓDULO 2 -->
+      <div class="module-card">
+        <div>
+          <div class="module-icon">🚀</div>
+          <h3>Ghost Studio FX 60 FPS</h3>
+          <p>Interpolação de quadros por fluxo óptico bidirecional acelerado por Apple Metal. Dá a fluidez de câmera nativa de Stories sem distorção anatômica.</p>
+        </div>
+        <div class="module-specs">MCI Bi-dir • 60 FPS Nativo</div>
+      </div>
+
+      <!-- MÓDULO 3 -->
+      <div class="module-card">
+        <div>
+          <div class="module-icon">🎬</div>
+          <h3>Ghost Editor Studio</h3>
+          <p>Editor de vídeo multi-track completo: linha do tempo, corte e split com agulha milimétrica, 8 shaders de estética Musa Glow, transições e extração de áudio em 0,2s.</p>
+        </div>
+        <div class="module-specs">Multi-Track • Audio Extraction</div>
+      </div>
+
+      <!-- MÓDULO 4 -->
+      <div class="module-card">
+        <div>
+          <div class="module-icon">📱</div>
+          <h3>GhostProfile™ Containers</h3>
+          <p>O assassino do GhostPhone: crie perfis isolados com cookies independentes, hardware Apple mascarado e stealth extension anti-banimento para TikTok e Instagram.</p>
+        </div>
+        <div class="module-specs">Anti-Detect • Hardware Isolation</div>
+      </div>
+
+      <!-- MÓDULO 5 -->
+      <div class="module-card">
+        <div>
+          <div class="module-icon">🔒</div>
+          <h3>Gerador de Prévia Blur VIP</h3>
+          <p>Transforme fotos sensuais em prévias com efeito de vidro fosco e cadeado VIP em 1 clique para postar nos Stories e forçar o cliente a pagar no Direct.</p>
+        </div>
+        <div class="module-specs">Stories VIP • Padlock Overlay</div>
+      </div>
+
+      <!-- MÓDULO 6 -->
+      <div class="module-card">
+        <div>
+          <div class="module-icon">🎙️</div>
+          <h3>Modulador de Voz Sensual</h3>
+          <p>Ajuste de afinação (Pitch Shift) e filtros de veludo para transformar gravações de áudio no estilo sussurrado e íntimo que faz os clientes comprarem packs.</p>
+        </div>
+        <div class="module-specs">DSP Audio • Velvet Whisper</div>
+      </div>
+    </div>
+
+    <!-- SEÇÃO DE PLANOS & PREÇOS OFICIAIS -->
+    <div id="comprar" style="margin-bottom: 50px;">
+      <div style="text-align: center; margin-bottom: 35px;">
+        <div class="badge-offer-popular" style="display: inline-block; margin-bottom: 12px;">PLANOS OFICIAIS • ATIVAÇÃO INSTANTÂNEA</div>
+        <h2 style="font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 900; color: #fff; letter-spacing: -1px; margin-bottom: 8px;">
+          Escolha a Capacidade da sua Operação
+        </h2>
+        <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 600px; margin: 0 auto;">
+          Tenha controle total, camuflagem nativa iOS e fluxo de vídeos a 60 FPS com chave criptográfica assinada vinculada ao seu hardware.
+        </p>
+      </div>
+
+      <div class="pricing-cards-grid">
+        <!-- PLANO 1: 1 DISPOSITIVO -->
+        <div class="plan-card">
+          <div class="plan-badge">1 DISPOSITIVO</div>
+          <h3 style="font-size: 1.4rem; font-weight: 800; color: #fff; margin-bottom: 4px;">Solo Starter</h3>
+          <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px;">Perfeito para criadores autônomos e 1 aparelho conectado.</p>
+          
+          <div class="plan-price-wrap">
+            <span class="plan-price-currency">R$</span>
+            <span class="plan-price-val">49</span>
+            <span style="font-size: 1.5rem; font-weight: 800; color: #fff; line-height: 1;">,90</span>
+            <span class="plan-price-period">/mês</span>
+          </div>
+
+          <ul class="plan-features-list">
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> <strong>1 Celular Android / Emulador Conectado</strong></li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Espelhamento Ultra-Rápido 60 FPS (Scrcpy Nativo)</li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Injetor de Mídia com Remoção de Metadados</li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Camuflagem Exif Apple iPhone 16 Pro Max</li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Companion Dock Flutuante & Controle Touch</li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Suporte Individual via WhatsApp</li>
+          </ul>
+
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: auto;">
+            <a href="https://www.asaas.com/000/c/dsow2hofkz8qv5da" target="_blank" class="plan-btn-cta plan-btn-secondary" style="background: rgba(190,242,100,0.1); border-color: rgba(190,242,100,0.3); color: #fff;">
+              <span>⚡ Pagar via Pix / Asaas (R$ 49,90)</span>
+            </a>
+            <a href="https://buy.stripe.com/6oU3cv0Pp6NQcrV7UG7Vm03" target="_blank" class="plan-btn-cta plan-btn-secondary" style="background: rgba(99,102,241,0.15); border-color: rgba(99,102,241,0.4); color: #e0e7ff; font-size: 0.8rem; padding: 10px;">
+              <span>💳 Cartão de Crédito / Stripe</span>
+            </a>
+            <button type="button" class="btn-copy-pix" onclick="copyPixKey('49,90', 'Solo (1 Dispositivo)')" style="width: 100%; justify-content: center;">
+              📋 Copiar Chave Pix Direta
+            </button>
+            <a href="https://wa.me/5517997082645?text=Ol%C3%A1!%20Tenho%20d%C3%BAvidas%20sobre%20o%20GhostLens%20Plano%201%20Dispositivo" target="_blank" style="color: #94a3b8; font-size: 0.72rem; text-align: center; text-decoration: none; padding: 2px;">
+              💬 Dúvidas? Falar no WhatsApp
+            </a>
+          </div>
+        </div>
+
+        <!-- PLANO 2: 3 DISPOSITIVOS (FEATURED) -->
+        <div class="plan-card featured">
+          <div class="plan-badge">⚡ MAIS ESCOLHIDO • 3 DISPOSITIVOS</div>
+          <h3 style="font-size: 1.45rem; font-weight: 900; color: #fff; margin-bottom: 4px;">Pro Multi-Device</h3>
+          <p style="font-size: 0.78rem; color: #cbd5e1; margin-bottom: 12px;">Equivale a apenas <strong style="color: var(--accent-lime);">R$ 32,33 por celular/mês</strong>.</p>
+          
+          <div class="plan-price-wrap">
+            <span class="plan-price-currency">R$</span>
+            <span class="plan-price-val">97</span>
+            <span style="font-size: 1.5rem; font-weight: 800; color: #fff; line-height: 1;">,00</span>
+            <span class="plan-price-period">/mês</span>
+          </div>
+
+          <ul class="plan-features-list">
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> <strong>Até 3 Celulares Conectados Simultâneos</strong></li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Tudo incluso do Plano Solo</li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Gerador de Prévia Blur VIP com Cadeado Stories</li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Modulador de Áudio Sensual (DSP Velvet Whisper)</li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Motor de Interpolação RIFE 60 FPS Inteligente</li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Modo Stealth Anti-Detect Avançado</li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Suporte Prioritário VIP no WhatsApp</li>
+          </ul>
+
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: auto;">
+            <a href="https://www.asaas.com/000/c/cnvos5dqm3ig3p8y" target="_blank" class="plan-btn-cta plan-btn-primary">
+              <span>🚀 Pagar via Pix / Asaas (R$ 97)</span>
+            </a>
+            <a href="https://buy.stripe.com/28E5kDgOn8VYdvZ3Eq7Vm04" target="_blank" class="plan-btn-cta plan-btn-secondary" style="background: rgba(99,102,241,0.2); border-color: rgba(99,102,241,0.5); color: #fff; font-size: 0.82rem; padding: 10px;">
+              <span>💳 Cartão de Crédito / Stripe</span>
+            </a>
+            <button type="button" class="btn-copy-pix" onclick="copyPixKey('97,00', 'Pro (3 Dispositivos)')" style="width: 100%; justify-content: center; background: rgba(190,242,100,0.12); border-color: var(--accent-lime); color: var(--accent-lime);">
+              ⭐ Copiar Chave Pix Direta
+            </button>
+            <a href="https://wa.me/5517997082645?text=Ol%C3%A1!%20Tenho%20d%C3%BAvidas%20sobre%20o%20GhostLens%20Plano%203%20Dispositivos" target="_blank" style="color: #94a3b8; font-size: 0.72rem; text-align: center; text-decoration: none; padding: 2px;">
+              💬 Dúvidas? Falar no WhatsApp
+            </a>
+          </div>
+        </div>
+
+        <!-- PLANO 3: 10 DISPOSITIVOS -->
+        <div class="plan-card">
+          <div class="plan-badge">AGÊNCIA • 10 DISPOSITIVOS</div>
+          <h3 style="font-size: 1.4rem; font-weight: 800; color: #fff; margin-bottom: 4px;">Agency Scale</h3>
+          <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 12px;">Equivale a apenas <strong style="color: var(--accent-lime);">R$ 30,00 por celular/mês</strong>.</p>
+          
+          <div class="plan-price-wrap">
+            <span class="plan-price-currency">R$</span>
+            <span class="plan-price-val">300</span>
+            <span style="font-size: 1.5rem; font-weight: 800; color: #fff; line-height: 1;">,00</span>
+            <span class="plan-price-period">/mês</span>
+          </div>
+
+          <ul class="plan-features-list">
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> <strong>Até 10 Celulares / Emuladores Simultâneos</strong></li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Painel de Gerenciamento de Licenças & HWID Lock</li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Injeção em Massa de Fotos e Vídeos HD</li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Suíte Completa: Blur VIP + Modulador de Áudio</li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Atualizações Contínuas de Camuflagem iOS</li>
+            <li><span style="color: var(--accent-lime); font-weight: 800;">✓</span> Onboarding & Suporte Direto para a Equipe</li>
+          </ul>
+
+          <div style="display: flex; flex-direction: column; gap: 8px; margin-top: auto;">
+            <a href="https://www.asaas.com/000/c/n4rumib5azs87drh" target="_blank" class="plan-btn-cta plan-btn-secondary" style="background: rgba(190,242,100,0.1); border-color: rgba(190,242,100,0.3); color: #fff;">
+              <span>⚡ Pagar via Pix / Asaas (R$ 300)</span>
+            </a>
+            <a href="https://buy.stripe.com/aFa5kD55FgoqajN5My7Vm05" target="_blank" class="plan-btn-cta plan-btn-secondary" style="background: rgba(99,102,241,0.15); border-color: rgba(99,102,241,0.4); color: #e0e7ff; font-size: 0.8rem; padding: 10px;">
+              <span>💳 Cartão de Crédito / Stripe</span>
+            </a>
+            <button type="button" class="btn-copy-pix" onclick="copyPixKey('300,00', 'Agency (10 Dispositivos)')" style="width: 100%; justify-content: center;">
+              📋 Copiar Chave Pix Direta
+            </button>
+            <a href="https://wa.me/5517997082645?text=Ol%C3%A1!%20Tenho%20d%C3%BAvidas%20sobre%20o%20GhostLens%20Plano%2010%20Dispositivos" target="_blank" style="color: #94a3b8; font-size: 0.72rem; text-align: center; text-decoration: none; padding: 2px;">
+              💬 Dúvidas? Falar no WhatsApp
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOX DE CHAVE PIX DIRETA -->
+      <div class="pix-box" style="max-width: 680px; margin: 0 auto 30px auto; text-align: center;">
+        <div style="font-size: 0.8rem; color: var(--accent-lime); font-weight: 800; text-transform: uppercase; margin-bottom: 4px;">
+          Chave Pix Oficial para Liberação Instantânea:
+        </div>
+        <div class="pix-key" id="pixKeyDisplay">contato@ghostlens.ai</div>
+        <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
+          <button type="button" class="btn-copy-pix" onclick="copyPixKey('49,90', 'Solo 1 Celular')">
+            📋 Copiar Pix R$ 49,90 (1 Cel)
+          </button>
+          <button type="button" class="btn-copy-pix" onclick="copyPixKey('97,00', 'Pro 3 Celulares')" style="background: rgba(190,242,100,0.2); border-color: var(--accent-lime); color: var(--accent-lime); font-weight: 800;">
+            ⭐ Copiar Pix R$ 97,00 (3 Cel)
+          </button>
+          <button type="button" class="btn-copy-pix" onclick="copyPixKey('300,00', 'Agency 10 Celulares')">
+            📋 Copiar Pix R$ 300,00 (10 Cel)
+          </button>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: center; gap: 24px; color: #94a3b8; font-size: 0.82rem; flex-wrap: wrap;">
+        <span>🔒 Garantia Incondicional de 7 Dias</span>
+        <span>⚡ Ativação Automática via Token Blindado</span>
+        <span>💻 Suporte Direto no WhatsApp</span>
+      </div>
+    </div>
+
+    <!-- FAQ RÁPIDO -->
+    <div style="max-width: 780px; margin: 0 auto 50px auto;">
+      <h3 style="font-size: 1.4rem; font-weight: 800; text-align: center; margin-bottom: 24px;">Perguntas Frequentes</h3>
+      
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 16px 20px;">
+          <h4 style="font-size: 0.95rem; color: #fff; margin-bottom: 6px;">Funciona em Mac e Windows?</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Sim! O GhostLens Studio roda no navegador com suporte a aceleração nativa via FFmpeg em Mac (Apple Silicon M1/M2/M3/M4) e Windows.</p>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 16px 20px;">
+          <h4 style="font-size: 0.95rem; color: #fff; margin-bottom: 6px;">Tem limite de vídeos ou fotos por dia?</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Não. O software roda localmente na sua máquina. Você pode renderizar 10, 50 ou 500 vídeos por dia sem pagar nenhum centavo a mais.</p>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 16px 20px;">
+          <h4 style="font-size: 0.95rem; color: #fff; margin-bottom: 6px;">O que eu recebo ao comprar?</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">Você recebe a suíte completa GhostLens Studio, os scripts de injeção de hardware Apple iPhone 16 Pro, o servidor ponte local acelerado e o gerador de perfis isolados anti-detect.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- RODAPÉ -->
+    <footer>
+      <p>© 2026 GhostLens Studio PRO™ • Tecnologia Proprietária de Camuflagem Apple & Fluxo Óptico.</p>
+      <p style="margin-top: 4px; font-size: 0.75rem; color: #64748b;">Todos os direitos reservados. Feito para agências e criadores de alta performance.</p>
+    </footer>
+
+  </div>
+
+  <script>
+    function copyPixKey(amount = "97,00", planName = "Pro (3 Dispositivos)") {
+      const pixKey = (document.getElementById('pixKeyDisplay') ? document.getElementById('pixKeyDisplay').innerText : 'contato@ghostlens.ai').trim();
+      navigator.clipboard.writeText(pixKey).then(() => {
+        alert("✅ Chave Pix copiada com sucesso!\n\n🔑 Chave: " + pixKey + "\n💰 Valor: R$ " + amount + " (" + planName + ")\n\nApós o pagamento, envie o comprovante no WhatsApp para ativação imediata da sua licença blindada!");
+      }).catch(() => {
+        prompt("Copie a chave Pix abaixo para o plano " + planName + " (R$ " + amount + "):", pixKey);
+      });
+    }
+  </script>
+</body>
+</html>

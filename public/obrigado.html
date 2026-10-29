@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acesso Liberado • GhostLens Studio PRO™</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090a0f;
+      --card-bg: rgba(18, 22, 34, 0.85);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --accent-lime: #bef264;
+      --accent-lime-glow: rgba(190, 242, 100, 0.35);
+      --accent-cyan: #38bdf8;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      line-height: 1.6;
+      background-image: 
+        radial-gradient(circle at 50% 10%, rgba(190, 242, 100, 0.12) 0%, transparent 50%),
+        radial-gradient(circle at 85% 85%, rgba(56, 189, 248, 0.08) 0%, transparent 45%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 50px 20px;
+    }
+
+    .success-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 28px;
+      padding: 44px 36px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .success-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #bef264, #38bdf8);
+    }
+
+    .success-icon-wrap {
+      width: 76px;
+      height: 76px;
+      background: rgba(190, 242, 100, 0.15);
+      border: 2px solid var(--accent-lime);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      margin: 0 auto 20px auto;
+      box-shadow: 0 0 30px rgba(190, 242, 100, 0.35);
+      animation: pulseGlow 2.5s infinite;
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 25px rgba(190, 242, 100, 0.3); }
+      50% { transform: scale(1.05); box-shadow: 0 0 45px rgba(190, 242, 100, 0.5); }
+    }
+
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(190, 242, 100, 0.12);
+      border: 1px solid var(--accent-lime);
+      color: var(--accent-lime);
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -1px;
+      line-height: 1.15;
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 620px;
+      margin: 0 auto 32px auto;
+    }
+
+    /* DOWNLOAD GRID */
+    .download-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-bottom: 35px;
+      text-align: left;
+    }
+
+    @media (max-width: 650px) {
+      .download-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .dl-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 18px;
+      padding: 20px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: all 0.2s ease;
+    }
+
+    .dl-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--accent-lime);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    }
+
+    .dl-btn.primary {
+      background: linear-gradient(135deg, rgba(190, 242, 100, 0.12) 0%, rgba(56, 189, 248, 0.08) 100%);
+      border-color: rgba(190, 242, 100, 0.4);
+    }
+
+    .dl-icon {
+      font-size: 2.2rem;
+    }
+
+    .dl-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+
+    .dl-desc {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* GUIA DE 3 PASSOS */
+    .steps-container {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 32px;
+      text-align: left;
+    }
+
+    .steps-title {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--accent-lime);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .step-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .step-num {
+      width: 26px;
+      height: 26px;
+      background: var(--accent-lime);
+      color: #000;
+      font-weight: 900;
+      font-size: 0.8rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .step-text h4 {
+      font-size: 0.92rem;
+      color: #fff;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .step-text p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    /* BOX SUPORTE VIP */
+    .support-box {
+      background: linear-gradient(135deg, rgba(22, 101, 52, 0.25) 0%, rgba(15, 23, 42, 0.6) 100%);
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      border-radius: 20px;
+      padding: 24px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      text-align: left;
+      flex-wrap: wrap;
+    }
+
+    .support-btn {
+      background: #22c55e;
+      color: #000;
+      padding: 14px 26px;
+      border-radius: 12px;
+      font-weight: 900;
+      font-size: 0.92rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 20px rgba(34, 197, 94, 0.4);
+      transition: all 0.2s;
+    }
+
+    .support-btn:hover {
+      background: #16a34a;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(34, 197, 94, 0.55);
+    }
+
+    footer {
+      text-align: center;
+      padding: 30px 20px;
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="success-card">
+      <div class="success-icon-wrap">⚡</div>
+      <div class="badge-status">✓ Pagamento Aprovado com Sucesso</div>
+      
+      <h1>Sua Licença Está Liberada!</h1>
+      <p class="subtitle">
+        Parabéns por entrar para o grupo seleto de agências e criadores que operam com <strong>camuflagem óptica iOS e celulares anti-ban</strong>.
+      </p>
+
+      <!-- BOTÕES DE DOWNLOAD DIRETO -->
+      <div class="download-grid">
+        <a href="download.html" class="dl-btn primary">
+          <div class="dl-icon">🍎</div>
+          <div>
+            <div class="dl-title">Download para Mac</div>
+            <div class="dl-desc">Apple Silicon (M1/M2/M3/M4) & Intel</div>
+          </div>
+        </a>
+
+        <a href="download.html" class="dl-btn">
+          <div class="dl-icon">🪟</div>
+          <div>
+            <div class="dl-title">Download para Windows</div>
+            <div class="dl-desc">Windows 10 / 11 64-bit com Scrcpy Nativo</div>
+          </div>
+        </a>
+      </div>
+
+      <!-- PASSO A PASSO DE ATIVAÇÃO RÁPIDA -->
+      <div class="steps-container">
+        <div class="steps-title">
+          <span>🚀</span> Como Começar em Menos de 2 Minutos
+        </div>
+        
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-text">
+            <h4>Conecte seu celular Android via USB</h4>
+            <p>Ative a "Depuração USB" nas Opções do Desenvolvedor do seu aparelho.</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-text">
+            <h4>Abra o GhostLens Desktop</h4>
+            <p>Execute o aplicativo. Seu celular será reconhecido e o dock companion flutuante abrirá instantaneamente em 60 FPS.</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-text">
+            <h4>Inicie sua Operação sem Limites</h4>
+            <p>Injete fotos e vídeos com camuflagem de hardware iPhone 16 Pro Max e gere prévias VIP para seus Stories.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- CANAL DIRETO DE SUPORTE VIP -->
+      <div class="support-box">
+        <div>
+          <h3 style="font-size: 1.15rem; color: #fff; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
+            <span>💬</span> Precisa de Suporte na Instalação ou Chave?
+          </h3>
+          <p style="font-size: 0.82rem; color: #cbd5e1;">
+            Fale diretamente com o nosso suporte técnico para ativação e dúvidas no onboarding.
+          </p>
+        </div>
+        <a id="btnSupportWhatsapp" href="https://wa.me/5517997082645?text=Ol%C3%A1!%20Acabei%20de%20assinar%20o%20GhostLens%20Studio%20no%20Asaas%20e%20gostaria%20de%20receber%20minha%20chave%20de%20ativa%C3%A7%C3%A3o." target="_blank" class="support-btn">
+          <span>💬 Chamar Suporte VIP no WhatsApp</span>
+        </a>
+      </div>
+
+      <div style="margin-top: 30px;">
+        <a href="/studio" style="color: var(--accent-cyan); font-size: 0.85rem; font-weight: 700; text-decoration: none;">
+          ➔ Abrir GhostLens Web Studio Online
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2026 GhostLens Studio PRO™ • Todos os direitos reservados.</p>
+    <p style="margin-top: 4px;">Comprovante e dados de acesso também foram enviados ao seu e-mail cadastrado.</p>
+  </footer>
+
+  <script>
+    // WhatsApp comercial configurado: (17) 99708-2645
+    const supportPhone = "5517997082645";
+    const btn = document.getElementById('btnSupportWhatsapp');
+    if (btn) {
+      btn.href = `https://wa.me/${supportPhone}?text=${encodeURIComponent("Olá! Acabei de assinar o GhostLens Studio no Asaas e gostaria de receber minha chave de ativação.")}`;
+    }
+  </script>
+</body>
+</html>
