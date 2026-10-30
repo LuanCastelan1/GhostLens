@@ -2882,7 +2882,7 @@
           <div style="font-size: 0.72rem; font-weight: 800; color: #bef264; text-transform: uppercase; margin-bottom: 4px;">
             🥉 INICIANTE SOLO</div>
           <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0 0 6px 0;">1 GhostPhone™</h3>
-          <div style="font-size: 1.6rem; font-weight: 900; color: #fff; margin-bottom: 4px;">R$ 47<span
+          <div style="font-size: 1.6rem; font-weight: 900; color: #fff; margin-bottom: 4px;">R$ 49,90<span
               style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600;">/mês</span></div>
           <div style="font-size: 0.7rem; color: #94a3b8; margin-bottom: 14px;">Ideal para sua 1ª musa no Instagram</div>
           <div
@@ -2896,7 +2896,7 @@
           <button id="btn_sub_solo" onclick="startGhostProfileSubscription('solo')"
             style="background: rgba(255,255,255,0.08); border: 1px solid var(--border-subtle); color: #fff; font-weight: 800; padding: 11px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; transition: 0.15s;"
             onmouseover="this.style.background='var(--accent-lime)'; this.style.color='#000';">
-            Assinar Solo • R$ 47/mês
+            Assinar Solo • R$ 49,90/mês
           </button>
         </div>
 
@@ -5187,10 +5187,31 @@
     }
 
     // ─── GERENCIADOR DE PERFIS ANTI-DETECT (GHOSTSTEALTH™) ───
+    function getUserMaxProfilesLimit() {
+      if (!currentUser) return 1;
+      const email = (currentUser.email || '').toLowerCase();
+      // Master Admins (Luan & Anthony) têm perfis ilimitados
+      if (email.includes('luan') || email.includes('castellan') || email.includes('anthony') || localStorage.getItem('ghostlens_master_admin') === 'true') {
+        return 999;
+      }
+      const plan = (currentUser.user_metadata?.plan || localStorage.getItem('ghostlens_user_plan') || 'SOLO').toUpperCase();
+      if (plan.includes('AGENCY') || plan.includes('10')) return 10;
+      if (plan.includes('PRO') || plan.includes('3')) return 3;
+      return 1; // SOLO padrão: 1 celular
+    }
+
     function openGhostProfileModal() {
       if (!currentUser) {
         alert("🔒 Entre na sua conta para criar perfis anti-detect.");
         openGhostAuthModal('login');
+        return;
+      }
+      const storageKey = getProfilesStorageKey();
+      const localProfs = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      const maxAllowed = getUserMaxProfilesLimit();
+      if (localProfs.length >= maxAllowed) {
+        alert(`🔒 Limite do seu plano atingido!\n\nSeu plano atual permite até ${maxAllowed} dispositivo(s)/perfil(is).\nFaça um upgrade para adicionar mais musas ao seu arsenal!`);
+        openGhostPlansModal();
         return;
       }
       document.getElementById('ghostProfileModal').style.display = 'flex';
@@ -9086,14 +9107,40 @@
           });
         }
       });
+
+      // Sistema Global de Toast Notificações do Studio
+      function showToast(msg, duration = 3000) {
+        let toastEl = document.getElementById('studioToast');
+        if (!toastEl) {
+          toastEl = document.createElement('div');
+          toastEl.id = 'studioToast';
+          toastEl.style.cssText = 'position: fixed; bottom: 84px; right: 28px; z-index: 999999; background: rgba(15, 23, 42, 0.95); border: 1.5px solid rgba(190, 242, 100, 0.5); color: #fff; padding: 12px 20px; border-radius: 14px; font-size: 0.82rem; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.85); backdrop-filter: blur(12px); display: flex; align-items: center; gap: 8px; transition: opacity 0.3s, transform 0.3s; opacity: 0; transform: translateY(10px); pointer-events: none;';
+          document.body.appendChild(toastEl);
+        }
+        toastEl.innerText = msg;
+        toastEl.style.opacity = '1';
+        toastEl.style.transform = 'translateY(0)';
+        clearTimeout(window.__toastTimer);
+        window.__toastTimer = setTimeout(() => {
+          toastEl.style.opacity = '0';
+          toastEl.style.transform = 'translateY(10px)';
+        }, duration);
+      }
+      window.showToast = showToast;
+
+      function closeFloatingPhoneDock() {
+        const dock = document.getElementById('ghostphoneFloatingDock');
+        if (dock) dock.style.display = 'none';
+      }
+      window.closeFloatingPhoneDock = closeFloatingPhoneDock;
   </script>
 
   <!-- 📱 GHOSTPHONE™ NATIVE FLOATING DOCK (BOTÕES DE NAVEGAÇÃO ANDROID: VOLTAR, INÍCIO, MULTITAREFA) -->
-  <div id="ghostphoneFloatingDock" style="display: none; position: fixed; bottom: 24px; right: 28px; z-index: 99999; align-items: center; gap: 8px; background: rgba(13, 16, 23, 0.94); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 40px; padding: 7px 16px; box-shadow: 0 12px 40px rgba(0,0,0,0.85), 0 0 25px rgba(56, 189, 248, 0.2); backdrop-filter: blur(16px); user-select: none;">
+  <div id="ghostphoneFloatingDock" style="display: none; position: fixed; top: 20px; right: 28px; z-index: 99999; align-items: center; gap: 8px; background: rgba(13, 16, 23, 0.94); border: 1.5px solid rgba(56, 189, 248, 0.4); border-radius: 40px; padding: 6px 14px; box-shadow: 0 12px 40px rgba(0,0,0,0.85), 0 0 25px rgba(56, 189, 248, 0.2); backdrop-filter: blur(16px); user-select: none;">
     <div style="display: flex; align-items: center; gap: 6px; padding-right: 10px; border-right: 1px solid rgba(255,255,255,0.12); cursor: pointer;" onclick="launchGhostPhonePlayerDirect()" title="Focar / Abrir Janela Solta do GhostPhone">
       <span style="font-size: 1rem;">📱</span>
       <div style="display: flex; flex-direction: column;">
-        <span style="font-size: 0.72rem; font-weight: 800; color: #38bdf8; font-family: 'JetBrains Mono', monospace;" id="lblDockMusa">Leninha</span>
+        <span style="font-size: 0.72rem; font-weight: 800; color: #38bdf8; font-family: 'JetBrains Mono', monospace;" id="lblDockMusa">Musa</span>
         <span style="font-size: 0.6rem; color: #bef264; font-weight: 700;">60 FPS Metal</span>
       </div>
     </div>
@@ -9123,6 +9170,11 @@
     <!-- Botão MODO AVIÃO 4G -->
     <button onclick="rotateIpStudio()" title="Modo Avião 4G (Rotacionar IP Vivo)" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.06)'">
       ✈️
+    </button>
+
+    <!-- Botão FECHAR DOCK -->
+    <button onclick="closeFloatingPhoneDock()" title="Fechar Barra de Controles" style="background: transparent; border: none; color: #64748b; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; padding: 0;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#64748b'">
+      ✕
     </button>
   </div>
 
