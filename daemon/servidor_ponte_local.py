@@ -26,7 +26,12 @@ import shutil
 import mimetypes
 import io
 import threading
-import PIL.Image
+
+try:
+    import PIL.Image
+    HAS_PIL = True
+except ImportError:
+    HAS_PIL = False
 
 try:
     from ghostphone_auth_guard import auth_guard
@@ -128,11 +133,14 @@ def get_fast_screencap():
     try:
         res = subprocess.run([ADB_BIN, 'exec-out', 'screencap', '-p'], capture_output=True, timeout=3)
         if res.returncode == 0 and res.stdout:
-            im = PIL.Image.open(io.BytesIO(res.stdout)).convert('RGB')
-            im = im.resize((540, 1200), PIL.Image.Resampling.BILINEAR)
-            buf = io.BytesIO()
-            im.save(buf, format='JPEG', quality=75)
-            data = buf.getvalue()
+            if HAS_PIL:
+                im = PIL.Image.open(io.BytesIO(res.stdout)).convert('RGB')
+                im = im.resize((540, 1200), PIL.Image.Resampling.BILINEAR)
+                buf = io.BytesIO()
+                im.save(buf, format='JPEG', quality=75)
+                data = buf.getvalue()
+            else:
+                data = res.stdout # retorna o PNG original direto
             with FRAME_LOCK:
                 LATEST_FRAME = data
                 FRAME_LAST_TIME = time.time()
