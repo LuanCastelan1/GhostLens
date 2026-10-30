@@ -5801,33 +5801,70 @@
     }
 
     async function launchGhostPhonePlayerWithApp(profileId, app = 'instagram') {
+        currentPendingProfileId = profileId;
         const p = (window.ghostProfilesCache || []).find(x => x.id === profileId) || { musa_nome: profileId };
         const nome = p.musa_nome || profileId || 'Leninha';
         const baseUrl = (window.location.origin && window.location.origin.includes(':4444')) ? window.location.origin : 'http://127.0.0.1:4444';
         const pkg = (app === 'tiktok') ? 'com.zhiliaoapp.musically' : 'com.instagram.android';
         
+        // Checagem da Trava Anti-Ban 4G/5G
+        const isLockEnabled = localStorage.getItem('ghostphone_4g_lock') !== 'false';
+        if (isLockEnabled) {
+          try {
+            showToast('🔍 Verificando rede (Trava Anti-Ban 4G/5G)...');
+            const netRes = await fetch(`${baseUrl}/api/phone/check_network`);
+            if (netRes.ok) {
+              const netData = await netRes.json();
+              if (!netData.is_mobile) {
+                openWifiBlockModal(nome, profileId, netData);
+                return;
+              }
+            }
+          } catch(err) {
+            console.warn("Falha na checagem de rede:", err);
+          }
+        }
+
         try {
           const res = await fetch(`${baseUrl}/api/phone/launch_native`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ musa: nome, package: pkg })
           });
-          if (res.ok) {
+          const resData = await res.json().catch(() => ({}));
+          if (res.ok && resData.code === 0) {
             const appLabel = (app === 'tiktok') ? 'TikTok' : 'Instagram';
-            showToast(`📱 ${appLabel} aberto na Tela Solta do GhostPhone™ (${nome})!`);
-            return;
+            showToast(`📱 ${appLabel} aberto na Tela Suspensa (${nome})!`);
             showFloatingPhoneDock(nome);
             return;
+          } else {
+            showToast(resData.error || `⚠️ Falha ao abrir celular: ${resData.status || 'verifique conexão USB/ADB'}`);
           }
         } catch(e) {
           console.warn("Ponte nativa indisponível:", e);
-          showToast("❌ Erro ao conectar com o daemon local.");
+          showToast("❌ Daemon local desligado. Inicie o GhostLens Suite.");
         }
     }
     window.launchGhostPhonePlayerWithApp = launchGhostPhonePlayerWithApp;
 
     async function launchGhostPhonePlayerDirect() {
         const baseUrl = (window.location.origin && window.location.origin.includes(':4444')) ? window.location.origin : 'http://127.0.0.1:4444';
+        
+        // Checagem da Trava Anti-Ban 4G/5G
+        const isLockEnabled = localStorage.getItem('ghostphone_4g_lock') !== 'false';
+        if (isLockEnabled) {
+          try {
+            const netRes = await fetch(`${baseUrl}/api/phone/check_network`);
+            if (netRes.ok) {
+              const netData = await netRes.json();
+              if (!netData.is_mobile) {
+                openWifiBlockModal('Leninha', 'leninha', netData);
+                return;
+              }
+            }
+          } catch(err) {}
+        }
+
         try {
           await fetch(`${baseUrl}/api/phone/launch_native`, {
             method: 'POST',
