@@ -34,21 +34,88 @@ except ImportError:
     sys.path.append(BASE_DIR)
     from ghostphone_auth_guard import auth_guard
 
-ADB_BIN = "/opt/homebrew/bin/adb"
+import platform
+
+IS_WINDOWS = platform.system() == 'Windows'
+
+def find_binary(bin_name):
+    """Localiza binários no PATH local ou nos diretórios padrões do Windows e macOS."""
+    ext = ".exe" if IS_WINDOWS else ""
+    local_bin = os.path.join(BASE_DIR, "bin", bin_name + ext)
+    if os.path.exists(local_bin):
+        return local_bin
+
+    # Caminho no PATH do sistema
+    which_res = shutil.which(bin_name + ext) or shutil.which(bin_name)
+    if which_res:
+        return which_res
+
+    # Caminhos padrões Windows
+    if IS_WINDOWS:
+        win_candidates = [
+            os.path.join(os.environ.get("ProgramFiles", "C:\\Program Files"), bin_name, bin_name + ".exe"),
+            os.path.join(os.environ.get("LOCALAPPDATA", "C:\\"), "Android", "Sdk", "platform-tools", bin_name + ".exe"),
+            os.path.join("C:\\tools", bin_name, bin_name + ".exe"),
+            os.path.join(BASE_DIR, bin_name + ".exe")
+        ]
+        for c in win_candidates:
+            if os.path.exists(c):
+                return c
+        return bin_name + ".exe"
+
+    # Caminhos padrões macOS
+    mac_candidates = [
+        f"/opt/homebrew/bin/{bin_name}",
+        f"/usr/local/bin/{bin_name}",
+        f"/usr/bin/{bin_name}"
+    ]
+    for c in mac_candidates:
+        if os.path.exists(c):
+            return c
+    return bin_name
+
+ADB_BIN = find_binary("adb")
+
+def get_scrcpy_bin():
+    return find_binary("scrcpy")
+
+def is_scrcpy_running():
+    try:
+        if IS_WINDOWS:
+            out = subprocess.run(["tasklist", "/FI", "IMAGENAME eq scrcpy.exe", "/NH"], capture_output=True, text=True, timeout=3).stdout
+            return "scrcpy.exe" in out.lower()
+        else:
+            pids = subprocess.run(['pgrep', '-f', 'scrcpy'], capture_output=True, timeout=3).stdout.decode().split()
+            return len(pids) > 0
+    except Exception:
+        return False
+
+def get_connected_device_serial():
+    """Detecta o primeiro dispositivo Android conectado (físico ou emulador) via ADB."""
+    try:
+        out = subprocess.run([ADB_BIN, 'devices'], capture_output=True, text=True, timeout=4).stdout
+        for line in out.splitlines()[1:]:
+            parts = line.strip().split()
+            if len(parts) >= 2 and parts[1] == 'device':
+                return parts[0]
+    except Exception:
+        pass
+    return None
 
 LATEST_FRAME = None
 FRAME_LOCK = threading.Lock()
 FRAME_LAST_TIME = 0
 
 # Screencap contínuo desativado: O GhostPhone opera 100% via Janela Suspensa Nativa (Scrcpy 60 FPS)
-# poupando CPU e memória do Mac.
+# poupando CPU e memória.
 def screencap_background_worker():
     pass
 
 def run_adb_async(args):
     """Executa comandos ADB em segundo plano sem travar o servidor HTTP."""
     try:
-        subprocess.Popen([ADB_BIN] + args)
+        creationflags = 0x08000000 if IS_WINDOWS else 0 # CREATE_NO_WINDOW
+        subprocess.Popen([ADB_BIN] + args, creationflags=creationflags)
     except Exception:
         pass
 
@@ -170,23 +237,25 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
 
         # LAUNCH SCRCPY NATIVE VIA GET (TELA SOLTA)
         if parsed.path == '/api/phone/launch_native':
-            musa = params.get('musa', ['Leninha'])[0]
+            musa = params.get('musa', ['Musa'])[0]
             pkg = params.get('package', ['com.instagram.android'])[0]
             if pkg:
                 run_adb_async(['shell', 'monkey', '-p', pkg, '1'])
 
-            scrcpy_pids = subprocess.run(['pgrep', '-f', 'scrcpy'], capture_output=True).stdout.decode().split()
-            if not scrcpy_pids:
-                scrcpy_bin = '/opt/homebrew/bin/scrcpy' if os.path.exists('/opt/homebrew/bin/scrcpy') else 'scrcpy'
-                cmd = [
-                    scrcpy_bin,
-                    '-s', 'emulator-5554',
+            if not is_scrcpy_running():
+                scrcpy_bin = get_scrcpy_bin()
+                device_serial = get_connected_device_serial()
+                cmd = [scrcpy_bin]
+                if device_serial:
+                    cmd += ['-s', device_serial]
+                cmd += [
                     '--window-title', f'GhostPhone™ • {musa}',
                     '--always-on-top',
                     '--stay-awake',
                     '--window-width', '440'
                 ]
-                subprocess.Popen(cmd)
+                creationflags = 0x08000000 if IS_WINDOWS else 0
+                subprocess.Popen(cmd, creationflags=creationflags)
 
             self.send_json({"code": 0, "status": "native_window_launched", "musa": musa})
             return
@@ -333,10 +402,10 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
 
         # 7. GHOSTPHONE API: SPECS
         elif parsed.path == '/api/phone/specs':
-            scrcpy_pids = subprocess.run(['pgrep', '-f', 'scrcpy'], capture_output=True).stdout.decode().split()
+            active = is_scrcpy_running()
             self.send_json({
                 "code": 0,
-                "scrcpy_active": len(scrcpy_pids) > 0,
+                "scrcpy_active": active,
                 "device": "Samsung Galaxy S24 Ultra (SM-S928B)",
                 "system": "Android 14 (OneUI 6.1 • ARM64)",
                 "carrier": "Telefônica Brasil (Vivo 4G Móvel)",
@@ -1156,7 +1225,7 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
 
         # 7. GHOSTPHONE API: LAUNCH SCRCPY NATIVE (60 FPS METAL ULTRA FLUIDO - TELA SOLTA)
         elif parsed.path == '/api/phone/launch_native':
-            musa = body.get('musa', 'Leninha')
+            musa = body.get('musa', 'Musa')
             pkg = body.get('package', 'com.instagram.android')
             
             # Acorda app no Android
@@ -1164,18 +1233,20 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                 run_adb_async(['shell', 'monkey', '-p', pkg, '1'])
 
             # Verifica se scrcpy já está rodando
-            scrcpy_pids = subprocess.run(['pgrep', '-f', 'scrcpy'], capture_output=True).stdout.decode().split()
-            if not scrcpy_pids:
-                scrcpy_bin = '/opt/homebrew/bin/scrcpy' if os.path.exists('/opt/homebrew/bin/scrcpy') else 'scrcpy'
-                cmd = [
-                    scrcpy_bin,
-                    '-s', 'emulator-5554',
+            if not is_scrcpy_running():
+                scrcpy_bin = get_scrcpy_bin()
+                device_serial = get_connected_device_serial()
+                cmd = [scrcpy_bin]
+                if device_serial:
+                    cmd += ['-s', device_serial]
+                cmd += [
                     '--window-title', f'GhostPhone™ • {musa}',
                     '--always-on-top',
                     '--stay-awake',
                     '--window-width', '440'
                 ]
-                subprocess.Popen(cmd)
+                creationflags = 0x08000000 if IS_WINDOWS else 0
+                subprocess.Popen(cmd, creationflags=creationflags)
 
             self.send_json({"code": 0, "status": "native_window_launched", "musa": musa})
 

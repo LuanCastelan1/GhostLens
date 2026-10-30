@@ -5200,12 +5200,23 @@
       document.getElementById('ghostProfileModal').style.display = 'none';
     }
 
-    async function loadAntidetectProfiles() {
-      let localProfs = JSON.parse(localStorage.getItem('ghostlens_local_profiles') || '[]');
+    function getProfilesStorageKey() {
+      const uid = (currentUser && currentUser.email) ? currentUser.email.toLowerCase().replace(/[^a-z0-9_-]/g, '_') : 'guest';
+      return `ghostlens_profiles_${uid}`;
+    }
 
-      // Garante perfis padrão (Luana e Leninha) sempre ativos
-      if (localProfs.length === 0 || !localProfs.find(x => x.id === 'leninha')) {
-        const defaults = [
+    async function loadAntidetectProfiles() {
+      const storageKey = getProfilesStorageKey();
+      let localProfs = JSON.parse(localStorage.getItem(storageKey) || '[]');
+
+      // Perfis de demonstração (Luana e Leninha) exclusivos da conta do Luan
+      const isLuan = currentUser && currentUser.email && (
+        currentUser.email.includes('luan') ||
+        currentUser.email.includes('castellan')
+      );
+
+      if (isLuan && localProfs.length === 0) {
+        localProfs = [
           {
             id: 'luana',
             musa_nome: 'Luana',
@@ -5229,13 +5240,7 @@
             status: 'ativo'
           }
         ];
-        // Mescla sem duplicar
-        for (const def of defaults) {
-          if (!localProfs.find(x => x.id === def.id)) {
-            localProfs.push(def);
-          }
-        }
-        localStorage.setItem('ghostlens_local_profiles', JSON.stringify(localProfs));
+        localStorage.setItem(storageKey, JSON.stringify(localProfs));
       }
 
       // Consulta status em tempo real da ponte local (porta 4444)
@@ -5330,7 +5335,8 @@
       } catch (e) { }
 
       // 2. Salva sempre no cofre local de imediato
-      let localProfs = JSON.parse(localStorage.getItem('ghostlens_local_profiles') || '[]');
+      const storageKey = getProfilesStorageKey();
+      let localProfs = JSON.parse(localStorage.getItem(storageKey) || '[]');
       const newProf = {
         id: musaNome.toLowerCase().replace(/[^a-z0-9_-]/g, ''),
         musa_nome: musaNome,
@@ -5344,7 +5350,7 @@
         created_at: new Date().toISOString()
       };
       localProfs.unshift(newProf);
-      localStorage.setItem('ghostlens_local_profiles', JSON.stringify(localProfs));
+      localStorage.setItem(storageKey, JSON.stringify(localProfs));
 
       // 3. Se autenticado em nuvem, sincroniza com Supabase
       if (currentUser && currentUser.id !== 'admin_local' && supabaseClient) {
@@ -5372,13 +5378,19 @@
 
     async function deleteAntidetectProfile(id) {
       if (!confirm("Excluir este perfil anti-detect isolado?")) return;
-      if (!currentUser || !supabaseClient) return;
-      try {
-        await supabaseClient.from('ghost_antidetect_profiles').delete().eq('id', id);
-        renderAntidetectMusasSection(document.getElementById('mediaGrid'));
-      } catch (err) {
-        alert("Erro ao excluir perfil: " + err.message);
+      const storageKey = getProfilesStorageKey();
+      let localProfs = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      localProfs = localProfs.filter(p => p.id !== id);
+      localStorage.setItem(storageKey, JSON.stringify(localProfs));
+
+      if (currentUser && supabaseClient && currentUser.id !== 'admin_local') {
+        try {
+          await supabaseClient.from('ghost_antidetect_profiles').delete().eq('id', id);
+        } catch (err) {
+          console.warn("Erro ao deletar no Supabase:", err);
+        }
       }
+      renderAntidetectMusasSection(document.getElementById('mediaGrid'));
     }
 
     // ─── GERENCIADOR DE LANÇADOR NATIVO ANTI-DETECT (GHOSTSTEALTH™) ───
@@ -5702,14 +5714,17 @@
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ musa: nome, package: 'com.instagram.android' })
           });
-          if (res.ok) {
-            showToast(`📱 GhostPhone da ${nome} aberto na Tela Suspensa (60 FPS Metal • Som Ativo)!`);
+          const resData = await res.json().catch(() => ({}));
+          if (res.ok && resData.code === 0) {
+            showToast(`📱 GhostPhone da ${nome} aberto na Tela Suspensa!`);
             showFloatingPhoneDock(nome);
             return;
+          } else {
+            showToast(resData.error || `⚠️ Falha ao abrir celular: ${resData.status || 'verifique conexão USB/ADB'}`);
           }
         } catch(e) {
           console.warn("Erro ao acionar ponte nativa:", e);
-          showToast("❌ Erro ao conectar com o daemon local.");
+          showToast("❌ Daemon local desligado. Inicie o GhostLens Suite no computador.");
         }
     }
     window.launchGhostPhonePlayer = launchGhostPhonePlayer;
