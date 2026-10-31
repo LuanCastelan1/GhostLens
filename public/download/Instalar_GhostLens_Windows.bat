@@ -7,19 +7,42 @@ echo   GHOSTLENS DESKTOP SUITE - INICIALIZADOR WINDOWS 10 / 11
 echo ==========================================================
 echo [1/3] Verificando ambiente Python...
 
+set "PY_CMD="
 where python >nul 2>&1
-if %ERRORLEVEL% NEQ 0 (
-    echo.
-    echo [!] Python não encontrado no PATH do Windows.
-    echo Baixe e instale o Python em https://www.python.org/
-    echo IMPORTANTE: Na primeira tela do instalador do Python, MARQUE:
-    echo   [X] Add Python to PATH (Adicionar Python ao PATH)
-    echo.
-    pause
-    exit /b 1
+if %ERRORLEVEL% EQU 0 set "PY_CMD=python"
+if not defined PY_CMD (
+    where py >nul 2>&1
+    if %ERRORLEVEL% EQU 0 set "PY_CMD=py"
 )
 
-echo [✓] Python localizado com sucesso!
+if not defined PY_CMD (
+    echo.
+    echo [!] Python não detectado no seu computador.
+    echo [*] BAIXANDO E INSTALANDO O PYTHON OFICIAL AUTOMATICAMENTE...
+    echo [*] Isso leva cerca de 30 a 60 segundos, por favor aguarde...
+    echo.
+    set "PY_INSTALLER=%TEMP%\python-installer.exe"
+    powershell -Command "[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; (New-Object System.Net.WebClient).DownloadFile('https://www.python.org/ftp/python/3.11.9/python-3.11.9-amd64.exe', '%PY_INSTALLER%')"
+    
+    if exist "%PY_INSTALLER%" (
+        echo [*] Executando instalador silencioso do Python (configurando PATH)...
+        "%PY_INSTALLER%" /passive PrependPath=1 Include_pip=1
+        timeout /t 5 >nul
+        del "%PY_INSTALLER%" >nul 2>&1
+        
+        :: Atualiza PATH da sessão atual
+        set "PATH=%LocalAppData%\Programs\Python\Python311;%LocalAppData%\Programs\Python\Python311\Scripts;%ProgramFiles%\Python311;%ProgramFiles%\Python311\Scripts;%PATH%"
+        set "PY_CMD=python"
+        echo [✓] Python instalado com sucesso e integrado ao sistema!
+    ) else (
+        echo [!] Falha no download automático. Baixe manualmente em https://www.python.org/downloads/
+        pause
+        exit /b 1
+    )
+) else (
+    echo [✓] Python localizado com sucesso!
+)
+
 echo.
 echo [2/3] Localizando o servidor ponte GhostLens...
 cd /d "%~dp0"
@@ -40,7 +63,7 @@ if not defined TARGET_SCRIPT (
 
 echo [✓] Servidor localizado: "%TARGET_SCRIPT%"
 echo [✓] Iniciando motor GhostStealth Bridge (Porta 4444)...
-start "GhostLens Bridge Daemon" /B python "%TARGET_SCRIPT%"
+start "GhostLens Bridge Daemon" /B %PY_CMD% "%TARGET_SCRIPT%"
 
 timeout /t 2 >nul
 

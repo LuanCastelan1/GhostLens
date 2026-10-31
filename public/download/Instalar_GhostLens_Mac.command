@@ -10,12 +10,22 @@ echo "[1/3] Verificando ambiente Python 3..."
 
 if ! command -v python3 &> /dev/null; then
     echo ""
-    echo "[!] Python 3 não encontrado no seu Mac."
-    echo "Abra o Terminal e digite: xcode-select --install"
-    echo "Ou baixe o instalador oficial em: https://www.python.org/downloads/macos/"
-    echo ""
-    read -p "Pressione ENTER para fechar..."
-    exit 1
+    echo "[!] Python 3 não detectado no seu Mac."
+    echo "[*] BAIXANDO O INSTALADOR OFICIAL DO PYTHON 3 AUTOMATICAMENTE..."
+    echo "[*] Aguarde alguns instantes..."
+    
+    PKG_PATH="/tmp/python-macos.pkg"
+    curl -sL "https://www.python.org/ftp/python/3.11.9/python-3.11.9-macos11.pkg" -o "$PKG_PATH"
+    
+    if [ -f "$PKG_PATH" ]; then
+        echo "[*] Abrindo assistente de instalação do Python da Apple..."
+        open -W "$PKG_PATH"
+        rm -f "$PKG_PATH"
+    else
+        echo "[!] Falha no download. Baixe em https://www.python.org/downloads/macos/"
+        read -p "Pressione ENTER para fechar..."
+        exit 1
+    fi
 fi
 
 echo "[✓] Python 3 localizado com sucesso!"
