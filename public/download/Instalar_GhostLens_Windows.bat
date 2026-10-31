@@ -15,6 +15,18 @@ if not defined PY_CMD (
     if %ERRORLEVEL% EQU 0 set "PY_CMD=py"
 )
 
+:: Verifica caminhos comuns caso o Python tenha sido instalado sem marcar o PATH
+if not defined PY_CMD (
+    for /d %%D in ("%LocalAppData%\Programs\Python\Python*") do (
+        if exist "%%D\python.exe" set "PY_CMD=%%D\python.exe"
+    )
+)
+if not defined PY_CMD (
+    for /d %%D in ("%ProgramFiles%\Python*") do (
+        if exist "%%D\python.exe" set "PY_CMD=%%D\python.exe"
+    )
+)
+
 if not defined PY_CMD (
     echo.
     echo [!] Python não detectado no seu computador.
@@ -62,18 +74,23 @@ if not defined TARGET_SCRIPT (
 )
 
 echo [✓] Servidor localizado: "%TARGET_SCRIPT%"
-echo [✓] Iniciando motor GhostStealth Bridge (Porta 4444)...
-start "GhostLens Bridge Daemon" /B %PY_CMD% "%TARGET_SCRIPT%"
-
-timeout /t 2 >nul
-
-echo.
-echo [3/3] Abrindo o GhostLens Studio no seu navegador...
+echo [✓] Abrindo o GhostLens Studio no navegador...
 start https://ghostlens.cloud/studio
 
 echo.
 echo ==========================================================
-echo   ✓ GHOSTLENS SUITE PRONTO PARA OPERAR!
-echo   Mantenha esta janela aberta enquanto utiliza o GhostLens.
+echo   🚀 INICIANDO MOTOR GHOSTLENS LOCAL (PORTA 4444)
+echo   Esta janela mantém a conexão ativa com o seu celular.
+echo   NÃO FECHE esta janela enquanto estiver usando o Studio!
+echo ==========================================================
+echo.
+
+:: Executa o servidor na própria janela para vermos qualquer log/erro em tempo real
+%PY_CMD% "%TARGET_SCRIPT%"
+
+echo.
+echo ==========================================================
+echo [!] O servidor foi encerrado.
+echo Se você viu alguma mensagem de erro acima, tire um print!
 echo ==========================================================
 pause

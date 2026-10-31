@@ -1264,12 +1264,25 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
 def main():
     try:
         server = HTTPServer(('127.0.0.1', PORT), GhostBridgeHandler)
-        print(f"🚀 GhostLens Stealth Bridge 2.0 (GhostStealth Native) ativo na porta {PORT}!")
+        print(f"============================================================")
+        print(f"🚀 GhostLens Stealth Bridge 2.0 ATIVO na porta {PORT}!")
         print(f"📁 Diretório de Perfis: {PERFIS_DIR}")
-        print(f"⚡ Endpoints: /status | /api/env/list | /api/env/start | /api/env/stop | /api/phone/*")
+        print(f"⚡ Endpoints: /status | /api/env/list | /api/phone/specs")
+        print(f"============================================================")
+        print("Mantenha esta janela aberta enquanto utiliza o GhostLens.")
         server.serve_forever()
+    except OSError as e:
+        if "Address already in use" in str(e) or getattr(e, 'errno', None) == 48 or getattr(e, 'winerror', None) == 10048:
+            print(f"\n[!] AVISO: O servidor ponte GhostLens JÁ ESTÁ RODANDO na porta {PORT}!")
+            print("[✓] Você já pode usar o GhostLens Studio normalmente no navegador.")
+        else:
+            print(f"\n❌ Erro de inicialização de rede: {e}", file=sys.stderr)
+        input("\nPressione ENTER para fechar...")
+    except KeyboardInterrupt:
+        print("\n[✓] Servidor GhostLens encerrado pelo usuário.")
     except Exception as e:
-        print(f"❌ Erro no servidor ponte: {e}", file=sys.stderr)
+        print(f"\n❌ Erro inesperado no servidor ponte: {e}", file=sys.stderr)
+        input("\nPressione ENTER para fechar...")
 
 if __name__ == '__main__':
     main()
