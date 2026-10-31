@@ -43,12 +43,56 @@ import platform
 
 IS_WINDOWS = platform.system() == 'Windows'
 
+def ensure_windows_scrcpy():
+    """Baixa e descompacta automaticamente o pacote do scrcpy (que já inclui adb.exe) caso falte no Windows."""
+    if not IS_WINDOWS:
+        return
+    bin_dir = os.path.join(BASE_DIR, "bin")
+    scrcpy_exe = os.path.join(bin_dir, "scrcpy.exe")
+    adb_exe = os.path.join(bin_dir, "adb.exe")
+    if os.path.exists(scrcpy_exe) and os.path.exists(adb_exe):
+        return
+
+    os.makedirs(bin_dir, exist_ok=True)
+    zip_dest = os.path.join(BASE_DIR, "scrcpy-temp.zip")
+    url = "https://github.com/Genymobile/scrcpy/releases/download/v3.1/scrcpy-win64-v3.1.zip"
+    print("\n" + "="*60)
+    print("⚡ BAIXANDO DRIVERS DE CELULAR E SCRCPY AUTOMATICAMENTE...")
+    print("Isso acontece apenas na primeira inicialização (~12 MB). Aguarde...")
+    print("="*60)
+    try:
+        import zipfile
+        req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+        with urllib.request.urlopen(req, timeout=30) as resp, open(zip_dest, 'wb') as out_f:
+            shutil.copyfileobj(resp, out_f)
+        
+        with zipfile.ZipFile(zip_dest, 'r') as zf:
+            for member in zf.infolist():
+                filename = os.path.basename(member.filename)
+                if not filename:
+                    continue
+                target_path = os.path.join(bin_dir, filename)
+                with zf.open(member) as source, open(target_path, "wb") as target:
+                    shutil.copyfileobj(source, target)
+        
+        if os.path.exists(zip_dest):
+            os.remove(zip_dest)
+        print("✓ Drivers Scrcpy e ADB instalados com sucesso na pasta bin!\n")
+    except Exception as e:
+        print(f"⚠️ Falha no download automático do Scrcpy: {e}")
+
 def find_binary(bin_name):
     """Localiza binários no PATH local ou nos diretórios padrões do Windows e macOS."""
     ext = ".exe" if IS_WINDOWS else ""
     local_bin = os.path.join(BASE_DIR, "bin", bin_name + ext)
     if os.path.exists(local_bin):
         return local_bin
+
+    # Se estiver no Windows e faltar scrcpy ou adb, tenta baixar automaticamente
+    if IS_WINDOWS and bin_name in ["scrcpy", "adb"]:
+        ensure_windows_scrcpy()
+        if os.path.exists(local_bin):
+            return local_bin
 
     # Caminho no PATH do sistema
     which_res = shutil.which(bin_name + ext) or shutil.which(bin_name)
@@ -66,7 +110,7 @@ def find_binary(bin_name):
         for c in win_candidates:
             if os.path.exists(c):
                 return c
-        return bin_name + ".exe"
+        return local_bin if os.path.exists(local_bin) else (bin_name + ".exe")
 
     # Caminhos padrões macOS
     mac_candidates = [
@@ -1243,6 +1287,10 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
             # Verifica se scrcpy já está rodando
             if not is_scrcpy_running():
                 scrcpy_bin = get_scrcpy_bin()
+                if not os.path.isabs(scrcpy_bin) and not shutil.which(scrcpy_bin):
+                    ensure_windows_scrcpy()
+                    scrcpy_bin = get_scrcpy_bin()
+
                 device_serial = get_connected_device_serial()
                 cmd = [scrcpy_bin]
                 if device_serial:
@@ -1254,7 +1302,16 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                     '--window-width', '440'
                 ]
                 creationflags = 0x08000000 if IS_WINDOWS else 0
-                subprocess.Popen(cmd, creationflags=creationflags)
+                try:
+                    subprocess.Popen(cmd, creationflags=creationflags)
+                except FileNotFoundError as fnf:
+                    print(f"❌ Scrcpy não encontrado: {fnf}")
+                    self.send_json({"error": "Binário do Scrcpy não encontrado. Conecte o celular via USB com Depuração USB ativada.", "detail": str(fnf)}, code=500)
+                    return
+                except Exception as ex:
+                    print(f"❌ Erro ao iniciar Scrcpy: {ex}")
+                    self.send_json({"error": f"Erro ao abrir janela do celular: {ex}"}, code=500)
+                    return
 
             self.send_json({"code": 0, "status": "native_window_launched", "musa": musa})
 
