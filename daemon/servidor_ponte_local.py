@@ -209,8 +209,15 @@ def boot_ghostphone_emulator(avd_name="ghostphone_musa"):
     
     print(f"🚀 Iniciando GhostPhone™ Engine em segundo plano: {' '.join(cmd)}")
     creationflags = 0x08000000 if IS_WINDOWS else 0
+    env = os.environ.copy()
+    if not IS_WINDOWS:
+        env["JAVA_HOME"] = "/opt/homebrew/opt/openjdk@17"
+        env["ANDROID_HOME"] = "/opt/homebrew/share/android-commandlinetools"
+        env["ANDROID_SDK_ROOT"] = "/opt/homebrew/share/android-commandlinetools"
+        env["PATH"] = f"/opt/homebrew/bin:/opt/homebrew/share/android-commandlinetools/emulator:{env.get('PATH', '')}"
+
     try:
-        subprocess.Popen(cmd, creationflags=creationflags)
+        subprocess.Popen(cmd, creationflags=creationflags, env=env)
     except Exception as e:
         print(f"❌ Erro ao disparar subprocesso do emulador: {e}")
         return None
@@ -444,11 +451,23 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                 return
 
         # GHOSTLENS STUDIO WEB INTERFACE
-        elif parsed.path in ('/', '/studio', '/ghostlens', '/ghostlens_studio.html'):
-            studio_path = os.path.join(BASE_DIR, 'ghostlens_studio.html')
-            if os.path.exists(studio_path):
-                with open(studio_path, 'rb') as f:
-                    content = f.read()
+        elif parsed.path in ('/', '/studio', '/ghostlens', '/ghostlens_studio.html', '/index.html'):
+            possible_paths = [
+                os.path.join(EROS_DIR, 'index.html'),
+                os.path.join(BASE_DIR, 'ghostlens_studio.html'),
+                os.path.join(EROS_DIR, 'public', 'index.html'),
+                os.path.join(BASE_DIR, 'index.html')
+            ]
+            content = None
+            for p_path in possible_paths:
+                if os.path.exists(p_path):
+                    try:
+                        with open(p_path, 'rb') as f:
+                            content = f.read()
+                        break
+                    except Exception:
+                        pass
+            if content:
                 self.send_response(200)
                 self.send_header('Content-Type', 'text/html; charset=utf-8')
                 self.send_header('Content-Length', str(len(content)))
