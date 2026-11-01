@@ -62,10 +62,13 @@ if defined SETUP_PY (
     if %ERRORLEVEL% NEQ 0 (
         echo [!] Ocorreu um erro durante a instalacao.
         pause
+        exit /b 1
     )
-    exit /b 0
+    echo [✓] Instalacao e provisionamento concluidos!
+    echo.
 )
 
+:START_SERVER
 set SCRIPT=
 if exist "%~dp0daemon\servidor_ponte_local.py" set SCRIPT="%~dp0daemon\servidor_ponte_local.py"
 if exist "%~dp0servidor_ponte_local.py" set SCRIPT="%~dp0servidor_ponte_local.py"
@@ -82,7 +85,8 @@ start http://127.0.0.1:4444
 
 echo.
 echo ==========================================================
-echo   MOTOR GHOSTLENS ATIVO (PORTA 4444)
+echo   🚀 GHOSTLENS SUITE & GHOSTPHONE ATIVO (PORTA 4444)
+echo   Painel Web: http://127.0.0.1:4444
 echo   Mantenha esta janela aberta enquanto utiliza o sistema.
 echo ==========================================================
 echo.

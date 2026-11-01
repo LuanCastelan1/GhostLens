@@ -46,9 +46,19 @@ class GhostAuthGuard:
                 out = subprocess.check_output(cmd, shell=True).decode()
                 raw = out.split('"')[-2]
             elif system == "Windows":
-                cmd = "wmic csproduct get uuid"
-                out = subprocess.check_output(cmd, shell=True).decode()
-                raw = out.split('\n')[1].strip()
+                try:
+                    cmd = 'powershell -NoProfile -Command "(Get-CimInstance -Class Win32_ComputerSystemProduct).UUID"'
+                    raw = subprocess.check_output(cmd, shell=True, stderr=subprocess.DEVNULL).decode().strip()
+                except Exception:
+                    raw = ""
+                if not raw:
+                    try:
+                        cmd = "wmic csproduct get uuid"
+                        out = subprocess.check_output(cmd, shell=True, stderr=subprocess.DEVNULL).decode()
+                        lines = [l.strip() for l in out.splitlines() if l.strip() and "UUID" not in l]
+                        raw = lines[0] if lines else ""
+                    except Exception:
+                        raw = ""
             else:
                 with open("/etc/machine-id", "r") as f:
                     raw = f.read().strip()

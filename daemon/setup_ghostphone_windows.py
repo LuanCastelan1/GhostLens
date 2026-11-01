@@ -23,7 +23,11 @@ import urllib.request
 import subprocess
 import webbrowser
 
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+this_dir = os.path.dirname(os.path.abspath(__file__))
+if os.path.basename(this_dir) == "daemon":
+    BASE_DIR = os.path.abspath(os.path.join(this_dir, ".."))
+else:
+    BASE_DIR = this_dir
 BIN_DIR = os.path.join(BASE_DIR, "bin")
 SDK_DIR = os.path.join(BIN_DIR, "android-sdk")
 JRE_DIR = os.path.join(BIN_DIR, "jre")
@@ -337,23 +341,8 @@ def main():
     print("\n==============================================================================")
     print("✨ TUDO PRONTO! O GHOSTLENS ESTA 100% CONFIGURADO NO SEU COMPUTADOR!")
     print("==============================================================================")
-    print("[*] Iniciando o servidor GhostBridge na porta 4444...")
-    
-    server_script = os.path.join(BASE_DIR, "daemon", "servidor_ponte_local.py")
-    if not os.path.exists(server_script):
-        server_script = os.path.join(BASE_DIR, "servidor_ponte_local.py")
-        
-    # Dispara o servidor GhostBridge em segundo plano
-    creationflags = 0x08000000 if sys.platform == "win32" else 0
-    subprocess.Popen([sys.executable, server_script], creationflags=creationflags)
-    
-    time.sleep(1.5)
-    print("[*] Abrindo painel GhostLens Studio no seu navegador...")
-    webbrowser.open("http://127.0.0.1:4444")
-    
-    print("\n[+] Pronto! Voce ja pode usar o GhostPhone diretamente pelo painel.")
-    print("    Esta janela pode ser fechada com seguranca.\n")
-    time.sleep(3)
+    print("[*] Ambiente de motor Android e Scrcpy pronto para uso.")
+    return True
 
 if __name__ == "__main__":
     main()

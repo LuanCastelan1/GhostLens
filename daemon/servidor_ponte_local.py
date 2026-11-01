@@ -36,7 +36,9 @@ except ImportError:
 try:
     from ghostphone_auth_guard import auth_guard
 except ImportError:
-    sys.path.append(BASE_DIR)
+    for candidate in [BASE_DIR, os.path.join(BASE_DIR, "daemon"), os.path.dirname(BASE_DIR), os.getcwd()]:
+        if candidate not in sys.path:
+            sys.path.insert(0, candidate)
     from ghostphone_auth_guard import auth_guard
 
 import platform
@@ -454,9 +456,13 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
         elif parsed.path in ('/', '/studio', '/ghostlens', '/ghostlens_studio.html', '/index.html'):
             possible_paths = [
                 os.path.join(EROS_DIR, 'index.html'),
+                os.path.join(EROS_DIR, 'ghostlens_studio.html'),
                 os.path.join(BASE_DIR, 'ghostlens_studio.html'),
+                os.path.join(BASE_DIR, 'index.html'),
+                os.path.join(os.getcwd(), 'ghostlens_studio.html'),
+                os.path.join(os.getcwd(), 'index.html'),
                 os.path.join(EROS_DIR, 'public', 'index.html'),
-                os.path.join(BASE_DIR, 'index.html')
+                os.path.join(BASE_DIR, 'daemon', 'ghostlens_studio.html'),
             ]
             content = None
             for p_path in possible_paths:
