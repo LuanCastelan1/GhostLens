@@ -151,6 +151,99 @@ def get_connected_device_serial():
         pass
     return None
 
+def find_emulator_bin():
+    ext = ".exe" if IS_WINDOWS else ""
+    local_bin = os.path.join(BASE_DIR, "bin", "android-sdk", "emulator", "emulator" + ext)
+    if os.path.exists(local_bin):
+        return local_bin
+    
+    # Checa variáveis de ambiente
+    for env_var in ["ANDROID_HOME", "ANDROID_SDK_ROOT"]:
+        sdk = os.environ.get(env_var)
+        if sdk:
+            c = os.path.join(sdk, "emulator", "emulator" + ext)
+            if os.path.exists(c):
+                return c
+
+    # Checa caminhos padrões Windows
+    if IS_WINDOWS:
+        candidates = [
+            os.path.join(os.environ.get("LOCALAPPDATA", "C:\\"), "Android", "Sdk", "emulator", "emulator.exe"),
+            os.path.join(os.environ.get("ProgramFiles", "C:\\Program Files"), "Android", "emulator", "emulator.exe"),
+            os.path.join(BASE_DIR, "bin", "emulator.exe")
+        ]
+        for c in candidates:
+            if os.path.exists(c):
+                return c
+    else:
+        # macOS
+        candidates = [
+            "/opt/homebrew/share/android-commandlinetools/emulator/emulator",
+            os.path.expanduser("~/Library/Android/sdk/emulator/emulator")
+        ]
+        for c in candidates:
+            if os.path.exists(c):
+                return c
+
+    return shutil.which("emulator" + ext) or ("emulator" + ext)
+
+def boot_ghostphone_emulator(avd_name="ghostphone_musa"):
+    """Dá o boot no GhostPhone AOSP em modo Headless (oculto em background) e aguarda ADB."""
+    serial = get_connected_device_serial()
+    if serial:
+        return serial
+        
+    emu_bin = find_emulator_bin()
+    if not emu_bin or not os.path.exists(emu_bin):
+        print(f"⚠️ Binário do emulador não encontrado: {emu_bin}")
+        return None
+        
+    cmd = [
+        emu_bin,
+        "-avd", avd_name,
+        "-no-window",
+        "-no-boot-anim",
+        "-no-metrics",
+        "-gpu", "host"
+    ]
+    
+    print(f"🚀 Iniciando GhostPhone™ Engine em segundo plano: {' '.join(cmd)}")
+    creationflags = 0x08000000 if IS_WINDOWS else 0
+    try:
+        subprocess.Popen(cmd, creationflags=creationflags)
+    except Exception as e:
+        print(f"❌ Erro ao disparar subprocesso do emulador: {e}")
+        return None
+        
+    print("⏳ Aguardando boot do Android via ADB (até 45s)...")
+    for _ in range(45):
+        time.sleep(1)
+        serial = get_connected_device_serial()
+        if serial:
+            break
+            
+    if not serial:
+        print("⚠️ Timeout aguardando dispositivo Android no ADB.")
+        return None
+        
+    print(f"📱 Dispositivo conectado ({serial}). Aguardando boot completo...")
+    for _ in range(40):
+        out = run_adb(['-s', serial, 'shell', 'getprop', 'sys.boot_completed'])
+        if out.strip() == "1":
+            print("✅ ANDROID BOOT COMPLETO!")
+            break
+        time.sleep(1)
+        
+    # Injeta a identidade anti-detect da Samsung Galaxy S24 Ultra
+    print("⚙️ Injetando Fingerprint Samsung Galaxy S24 Ultra...")
+    run_adb(['-s', serial, 'shell', 'setprop', 'ro.product.brand', 'samsung'])
+    run_adb(['-s', serial, 'shell', 'setprop', 'ro.product.manufacturer', 'samsung'])
+    run_adb(['-s', serial, 'shell', 'setprop', 'ro.product.model', 'SM-S928B'])
+    run_adb(['-s', serial, 'shell', 'setprop', 'ro.product.device', 'e3q'])
+    run_adb(['-s', serial, 'shell', 'setprop', 'ro.build.product', 'e3q'])
+    
+    return serial
+
 LATEST_FRAME = None
 FRAME_LOCK = threading.Lock()
 FRAME_LAST_TIME = 0
@@ -1277,12 +1370,26 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
 
         # 7. GHOSTPHONE API: LAUNCH SCRCPY NATIVE (60 FPS METAL ULTRA FLUIDO - TELA SOLTA)
         elif parsed.path == '/api/phone/launch_native':
-            musa = body.get('musa', 'Musa')
+            musa = body.get('musa', 'Leninha')
             pkg = body.get('package', 'com.instagram.android')
-            
-            # Acorda app no Android
+
+            # 1. Detecta ou inicia automaticamente o GhostPhone™ Engine (ghostphone_musa)
+            device_serial = get_connected_device_serial()
+            if not device_serial:
+                print(f"📱 Nenhum aparelho ativo via ADB. Iniciando GhostPhone™ Engine para [{musa}]...")
+                device_serial = boot_ghostphone_emulator("ghostphone_musa")
+
+            if not device_serial:
+                print("⚠️ Nenhum aparelho Android detectado via ADB após tentativa de boot.")
+                self.send_json({
+                    "error": "Não foi possível conectar ao GhostPhone. Aguarde o boot ou execute o instalador novamente.",
+                    "code": 404
+                }, code=404)
+                return
+
+            # Acorda app no Android (se pkg fornecido)
             if pkg:
-                run_adb_async(['shell', 'monkey', '-p', pkg, '1'])
+                run_adb_async(['-s', device_serial, 'shell', 'monkey', '-p', pkg, '1'])
 
             # Verifica se scrcpy já está rodando
             if not is_scrcpy_running():
@@ -1290,16 +1397,6 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                 if not os.path.isabs(scrcpy_bin) and not shutil.which(scrcpy_bin):
                     ensure_windows_scrcpy()
                     scrcpy_bin = get_scrcpy_bin()
-
-                device_serial = get_connected_device_serial()
-                if not device_serial:
-                    # Nenhum aparelho com autorização USB ativa encontrado
-                    print("⚠️ Nenhum aparelho Android detectado via ADB.")
-                    self.send_json({
-                        "error": "Nenhum celular conectado! Conecte seu aparelho via cabo USB e certifique-se de que a 'Depuração USB' está ATIVADA nas Opções do Desenvolvedor.",
-                        "code": 404
-                    }, code=404)
-                    return
 
                 cmd = [scrcpy_bin]
                 cmd += ['-s', device_serial]
@@ -1309,18 +1406,9 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                     '--stay-awake',
                     '--window-width', '440'
                 ]
-                print(f"🚀 Iniciando Scrcpy no aparelho [{device_serial}]: {' '.join(cmd)}")
+                print(f"🚀 Iniciando Scrcpy no GhostPhone [{device_serial}]: {' '.join(cmd)}")
                 try:
                     proc = subprocess.Popen(cmd)
-                    time.sleep(1.2)
-                    if proc.poll() is not None:
-                        err_code = proc.returncode
-                        print(f"❌ Scrcpy fechou imediatamente (Código de saída: {err_code})")
-                        self.send_json({
-                            "error": f"O celular recusou a conexão (Código {err_code}). Verifique a tela do seu celular e clique em 'Permitir Depuração USB sempre a partir deste computador'.",
-                            "code": 500
-                        }, code=500)
-                        return
                 except FileNotFoundError as fnf:
                     print(f"❌ Scrcpy não encontrado: {fnf}")
                     self.send_json({"error": "Binário do Scrcpy não encontrado na máquina.", "detail": str(fnf)}, code=500)
@@ -1330,7 +1418,7 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                     self.send_json({"error": f"Erro ao abrir janela do celular: {ex}"}, code=500)
                     return
 
-            self.send_json({"code": 0, "status": "native_window_launched", "musa": musa})
+            self.send_json({"code": 0, "status": "native_window_launched", "musa": musa, "device": device_serial})
 
         else:
             self.send_json({"error": "Endpoint não encontrado"}, code=404)
