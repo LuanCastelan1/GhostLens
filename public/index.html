@@ -6156,14 +6156,19 @@
               <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Hardware:</span> <span style="color: #34d399;">Apple GPU + Ruído Único</span></div>
             </div>
 
-            <!-- Action Buttons: Celular Nativo + Injetar Mídia Direta -->
+            <!-- Action Buttons: Celular Virtual na Nuvem + Celular Físico USB + Injetar Mídia -->
             <div style="margin-top: auto; display: flex; flex-direction: column; gap: 8px;">
-              <button onclick="launchGhostPhonePlayer('${p.id}')" title="Abrir GhostPhone™ (Janela Flutuante 60 FPS Metal)" style="width: 100%; background: linear-gradient(135deg, #0284c7, #38bdf8); border: none; color: #fff; padding: 12px 16px; border-radius: 12px; font-weight: 800; font-size: 0.86rem; cursor: pointer; box-shadow: 0 4px 18px rgba(56, 189, 248, 0.4); display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform 0.15s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                📱 Abrir GhostPhone™ (Janela Solta)
+              <button onclick="openGhostCloudPhoneSimulator('${p.id}')" title="Abrir iPhone Virtual na Nuvem (100% no Navegador • Sem Celular Físico)" style="width: 100%; background: linear-gradient(135deg, #10b981, #34d399); border: none; color: #000; padding: 12px 16px; border-radius: 12px; font-weight: 900; font-size: 0.88rem; cursor: pointer; box-shadow: 0 4px 18px rgba(52, 211, 153, 0.4); display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform 0.15s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                ☁️ Abrir iPhone na Nuvem (Zero Aparelho)
               </button>
-              <button onclick="openStudioMediaUpload('${p.musa_nome}')" title="Enviar fotos ou vídeos direto para o Instagram / Galeria deste celular" style="width: 100%; background: rgba(190, 242, 100, 0.12); border: 1px solid rgba(190, 242, 100, 0.35); color: #bef264; padding: 10px 14px; border-radius: 10px; font-weight: 700; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s;" onmouseover="this.style.background='rgba(190, 242, 100, 0.22)'" onmouseout="this.style.background='rgba(190, 242, 100, 0.12)'">
-                📸 Subir Fotos na Galeria (${p.musa_nome})
-              </button>
+              <div style="display: flex; gap: 8px;">
+                <button onclick="launchGhostPhonePlayer('${p.id}')" title="Espelhar Celular Físico Conectado via USB (Janela Flutuante 60 FPS)" style="flex: 1; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; padding: 10px; border-radius: 10px; font-weight: 800; font-size: 0.76rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;">
+                  📱 Celular USB
+                </button>
+                <button onclick="openStudioMediaUpload('${p.musa_nome}')" title="Enviar fotos ou vídeos direto para a Galeria" style="flex: 1; background: rgba(190, 242, 100, 0.12); border: 1px solid rgba(190, 242, 100, 0.35); color: #bef264; padding: 10px; border-radius: 10px; font-weight: 700; font-size: 0.76rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;">
+                  📸 Subir Fotos
+                </button>
+              </div>
             </div>
           </div>
         `).join('');
