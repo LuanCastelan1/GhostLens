@@ -1292,21 +1292,38 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                     scrcpy_bin = get_scrcpy_bin()
 
                 device_serial = get_connected_device_serial()
+                if not device_serial:
+                    # Nenhum aparelho com autorização USB ativa encontrado
+                    print("⚠️ Nenhum aparelho Android detectado via ADB.")
+                    self.send_json({
+                        "error": "Nenhum celular conectado! Conecte seu aparelho via cabo USB e certifique-se de que a 'Depuração USB' está ATIVADA nas Opções do Desenvolvedor.",
+                        "code": 404
+                    }, code=404)
+                    return
+
                 cmd = [scrcpy_bin]
-                if device_serial:
-                    cmd += ['-s', device_serial]
+                cmd += ['-s', device_serial]
                 cmd += [
                     '--window-title', f'GhostPhone™ • {musa}',
                     '--always-on-top',
                     '--stay-awake',
                     '--window-width', '440'
                 ]
-                creationflags = 0x08000000 if IS_WINDOWS else 0
+                print(f"🚀 Iniciando Scrcpy no aparelho [{device_serial}]: {' '.join(cmd)}")
                 try:
-                    subprocess.Popen(cmd, creationflags=creationflags)
+                    proc = subprocess.Popen(cmd)
+                    time.sleep(1.2)
+                    if proc.poll() is not None:
+                        err_code = proc.returncode
+                        print(f"❌ Scrcpy fechou imediatamente (Código de saída: {err_code})")
+                        self.send_json({
+                            "error": f"O celular recusou a conexão (Código {err_code}). Verifique a tela do seu celular e clique em 'Permitir Depuração USB sempre a partir deste computador'.",
+                            "code": 500
+                        }, code=500)
+                        return
                 except FileNotFoundError as fnf:
                     print(f"❌ Scrcpy não encontrado: {fnf}")
-                    self.send_json({"error": "Binário do Scrcpy não encontrado. Conecte o celular via USB com Depuração USB ativada.", "detail": str(fnf)}, code=500)
+                    self.send_json({"error": "Binário do Scrcpy não encontrado na máquina.", "detail": str(fnf)}, code=500)
                     return
                 except Exception as ex:
                     print(f"❌ Erro ao iniciar Scrcpy: {ex}")
