@@ -4,6 +4,12 @@ __pycache__/
 *.pyc
 .DS_Store
 
+# Segredos locais / metadados de deploy
+.env
+.env.*
+!.env.example
+.vercel/
+
 # Executables & Builds
 dist/
 build/
