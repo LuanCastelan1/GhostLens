@@ -615,6 +615,7 @@
             </div>
           </div>
           <button type="button" id="btn-plan-solo" onclick="startLicenseCheckout('solo', this)" style="width: 100%; text-align: center; background: rgba(255,255,255,0.06); border: 1px solid var(--border-card); color: #fff; padding: 14px; border-radius: 14px; font-weight: 800; cursor: pointer; transition: 0.2s;" onmouseover="this.style.borderColor='var(--accent-lime)'" onmouseout="this.style.borderColor='var(--border-card)'">Assinar Solo • R$ 49,90/mês</button>
+          <a id="pix-plan-solo" href="/pix?plan=solo&billing=monthly" style="display: block; text-align: center; margin-top: 9px; color: var(--accent-lime); font-size: 0.8rem; font-weight: 700; text-decoration: none;">Pagar com Pix</a>
         </div>
 
         <!-- Plano Pro (Destaque) -->
@@ -637,6 +638,7 @@
             </div>
           </div>
           <button type="button" id="btn-plan-pro" onclick="startLicenseCheckout('pro', this)" style="width: 100%; text-align: center; background: var(--accent-lime); color: #000; border: none; padding: 14px; border-radius: 14px; font-weight: 900; cursor: pointer; box-shadow: 0 10px 25px rgba(190, 242, 100, 0.3);">Assinar Pro • R$ 97/mês</button>
+          <a id="pix-plan-pro" href="/pix?plan=pro&billing=monthly" style="display: block; text-align: center; margin-top: 9px; color: var(--accent-lime); font-size: 0.8rem; font-weight: 700; text-decoration: none;">Pagar com Pix</a>
         </div>
 
         <!-- Plano Enterprise -->
@@ -658,13 +660,13 @@
             </div>
           </div>
           <button type="button" id="btn-plan-agency" onclick="startLicenseCheckout('agency', this)" style="width: 100%; text-align: center; background: rgba(56, 189, 248, 0.1); border: 1px solid var(--accent-blue); color: #fff; padding: 14px; border-radius: 14px; font-weight: 800; cursor: pointer;">Assinar Agência • R$ 300/mês</button>
+          <a id="pix-plan-agency" href="/pix?plan=agency&billing=monthly" style="display: block; text-align: center; margin-top: 9px; color: var(--accent-lime); font-size: 0.8rem; font-weight: 700; text-decoration: none;">Pagar com Pix</a>
         </div>
 
       </div>
 
       <p style="text-align: center; color: #94a3b8; font-size: 0.82rem; max-width: 700px; margin: -50px auto 60px auto;">
-        Prefere Pix manual? Pague para <strong style="color: #bef264;">contato@ghostlens.ai</strong> e envie o comprovante no
-        <a href="https://wa.me/5517997082645" target="_blank" style="color: #bef264; text-decoration: none;">WhatsApp</a> para ativação.
+        Pagamento por cartão (Stripe) ou Pix (Asaas), com ativação automática da licença.
       </p>
     </section>
 
@@ -814,9 +816,12 @@
     function updatePlanButtons() {
       const labels = buttonLabels[currentBilling] || buttonLabels.mensal;
       const ids = { solo: 'btn-plan-solo', pro: 'btn-plan-pro', agency: 'btn-plan-agency' };
+      const pixBilling = currentBilling === 'anual' ? 'annual' : 'monthly';
       Object.keys(ids).forEach((plan) => {
         const el = document.getElementById(ids[plan]);
         if (el) el.innerText = labels[plan];
+        const pix = document.getElementById('pix-plan-' + plan);
+        if (pix) pix.href = `/pix?plan=${plan}&billing=${pixBilling}`;
       });
     }
 

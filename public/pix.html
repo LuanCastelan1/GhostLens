@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pagamento Pix • GhostLens</title>
+  <style>
+    :root {
+      --bg: #0b0d12;
+      --card: #12151d;
+      --line: rgba(255,255,255,0.10);
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --lime: #bef264;
+      --green: #34d399;
+      --red: #f87171;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(1000px 500px at 50% -10%, rgba(190,242,100,0.08), transparent 70%), var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 32px 16px 64px;
+    }
+    .wrap { width: 100%; max-width: 560px; }
+    .brand {
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      margin-bottom: 22px; font-weight: 900; letter-spacing: 0.5px;
+    }
+    .brand-icon {
+      width: 34px; height: 34px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--lime), #10b981);
+      display: flex; align-items: center; justify-content: center;
+      color: #000; font-size: 18px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 26px 24px;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.55);
+    }
+    h1 { font-size: 1.35rem; margin: 0 0 6px; }
+    .sub { color: var(--muted); font-size: 0.85rem; margin: 0 0 20px; line-height: 1.5; }
+    .plan {
+      background: rgba(190,242,100,0.07);
+      border: 1px solid rgba(190,242,100,0.28);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 18px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+    }
+    .plan strong { display: block; font-size: 0.95rem; }
+    .plan span { color: var(--muted); font-size: 0.78rem; }
+    .plan .price { color: var(--lime); font-weight: 900; font-size: 1.1rem; white-space: nowrap; }
+    label { display: block; font-size: 0.76rem; font-weight: 700; color: var(--muted); margin: 0 0 5px; }
+    input {
+      width: 100%;
+      background: #0b0f17;
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 11px;
+      padding: 12px 14px;
+      color: #fff;
+      font-size: 0.92rem;
+      margin-bottom: 13px;
+      outline: none;
+    }
+    input:focus { border-color: rgba(190,242,100,0.6); }
+    button.primary {
+      width: 100%;
+      background: var(--lime);
+      color: #000;
+      border: none;
+      border-radius: 12px;
+      padding: 14px;
+      font-weight: 900;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+    button.primary:disabled { opacity: 0.6; cursor: wait; }
+    .qr-wrap { text-align: center; margin-top: 18px; }
+    .qr-box {
+      display: inline-block;
+      background: #fff;
+      padding: 10px;
+      border-radius: 14px;
+      min-width: 170px;
+      min-height: 170px;
+    }
+    .qr-box img { width: 170px; height: 170px; display: block; }
+    .pix-code {
+      width: 100%;
+      margin-top: 12px;
+      background: #0b0f17;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--lime);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.72rem;
+      padding: 10px;
+      word-break: break-all;
+      resize: none;
+      height: 64px;
+    }
+    .copy {
+      margin-top: 8px;
+      width: 100%;
+      background: rgba(190,242,100,0.1);
+      color: var(--lime);
+      border: 1px solid rgba(190,242,100,0.35);
+      border-radius: 10px;
+      padding: 11px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .status {
+      margin-top: 14px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      line-height: 1.5;
+      text-align: center;
+    }
+    .status.ok { color: var(--green); }
+    .status.err { color: var(--red); }
+    .license {
+      display: none;
+      margin-top: 18px;
+      background: rgba(52,211,153,0.08);
+      border: 1.5px solid rgba(52,211,153,0.45);
+      border-radius: 16px;
+      padding: 18px;
+      text-align: left;
+    }
+    .license h2 { margin: 0 0 8px; font-size: 1rem; color: var(--green); }
+    .license code {
+      display: block;
+      background: #0b0f17;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+      color: var(--lime);
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.9rem;
+      word-break: break-all;
+      margin-bottom: 10px;
+    }
+    .license .meta { color: var(--muted); font-size: 0.78rem; margin-bottom: 12px; }
+    .license a {
+      display: block;
+      text-align: center;
+      background: var(--lime);
+      color: #000;
+      text-decoration: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: 900;
+      font-size: 0.88rem;
+    }
+    .back {
+      display: block; text-align: center; margin-top: 16px;
+      color: var(--muted); font-size: 0.78rem; text-decoration: none;
+    }
+    .hidden { display: none !important; }
+    @media (max-width: 480px) {
+      .card { padding: 22px 18px; }
+      .plan { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand">
+      <div class="brand-icon">👁️</div>
+      <div>GhostLens<span style="color: var(--lime);">.</span></div>
+    </div>
+
+    <div class="card">
+      <h1>Pagamento via Pix</h1>
+      <p class="sub">Licença ativada automaticamente após a confirmação do pagamento. Não feche esta página.</p>
+
+      <div class="plan">
+        <div>
+          <strong id="planName">Carregando…</strong>
+          <span id="planBilling"></span>
+        </div>
+        <div class="price" id="planPrice">—</div>
+      </div>
+
+      <form id="pixForm">
+        <label for="name">Nome completo</label>
+        <input id="name" name="name" autocomplete="name" placeholder="Seu nome" required>
+
+        <label for="email">E-mail</label>
+        <input id="email" name="email" type="email" autocomplete="email" placeholder="voce@exemplo.com" required>
+
+        <label for="cpf">CPF ou CNPJ do pagador</label>
+        <input id="cpf" name="cpf" inputmode="numeric" maxlength="18" placeholder="000.000.000-00" required>
+
+        <button type="submit" class="primary" id="btnGenerate">Gerar Pix</button>
+      </form>
+
+      <div id="qrSection" class="hidden">
+        <div class="qr-wrap">
+          <div class="qr-box"><img id="qrImg" alt="QR Code Pix"></div>
+        </div>
+        <textarea id="pixCode" class="pix-code" readonly></textarea>
+        <button type="button" class="copy" id="btnCopy">Copiar código Pix</button>
+      </div>
+
+      <div id="status" class="status"></div>
+
+      <div id="licenseBox" class="license">
+        <h2>✅ Licença emitida</h2>
+        <code id="licenseKey">—</code>
+        <div class="meta" id="licenseMeta"></div>
+        <a href="/download">Baixar o GhostLens</a>
+      </div>
+
+      <a class="back" href="/download">← Voltar e escolher outro plano</a>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const PLANS = {
+        solo: {
+          name: 'GhostLens Solo (1 dispositivo)',
+          monthly: { price: 49.90, label: 'Mensal' },
+          annual: { price: 478.80, label: 'Anual' }
+        },
+        pro: {
+          name: 'GhostLens Pro (3 dispositivos)',
+          monthly: { price: 97.00, label: 'Mensal' },
+          annual: { price: 924.00, label: 'Anual' }
+        },
+        agency: {
+          name: 'GhostLens Agency (10 dispositivos)',
+          monthly: { price: 300.00, label: 'Mensal' },
+          annual: { price: 2880.00, label: 'Anual' }
+        }
+      };
+
+      const params = new URLSearchParams(window.location.search);
+      const planKey = PLANS[params.get('plan')] ? params.get('plan') : 'pro';
+      const billing = params.get('billing') === 'annual' ? 'annual' : 'monthly';
+      const plan = PLANS[planKey];
+      const tier = plan[billing];
+
+      document.getElementById('planName').textContent = plan.name;
+      document.getElementById('planBilling').textContent = 'Licença ' + tier.label.toLowerCase() + ' • ativação imediata';
+      document.getElementById('planPrice').textContent = 'R$ ' + tier.price.toFixed(2).replace('.', ',');
+
+      const form = document.getElementById('pixForm');
+      const btn = document.getElementById('btnGenerate');
+      const statusEl = document.getElementById('status');
+      const qrSection = document.getElementById('qrSection');
+      const qrImg = document.getElementById('qrImg');
+      const pixCode = document.getElementById('pixCode');
+      const licenseBox = document.getElementById('licenseBox');
+      const licenseKey = document.getElementById('licenseKey');
+      const licenseMeta = document.getElementById('licenseMeta');
+
+      let paymentId = '';
+      let pollTimer = null;
+
+      function setStatus(text, kind) {
+        statusEl.textContent = text || '';
+        statusEl.className = 'status' + (kind ? ' ' + kind : '');
+      }
+
+      function onlyDigits(value) {
+        return String(value || '').replace(/\D/g, '');
+      }
+
+      function showLicense(license) {
+        if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+        licenseKey.textContent = license.key;
+        const expiry = license.expires_at
+          ? new Date(license.expires_at * 1000).toLocaleDateString('pt-BR')
+          : '—';
+        licenseMeta.textContent = license.plan + ' • válida até ' + expiry;
+        licenseBox.style.display = 'block';
+        setStatus('Pagamento confirmado. Sua licença está pronta!', 'ok');
+        licenseBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+
+      async function checkLicense() {
+        if (!paymentId) return;
+        try {
+          const res = await fetch('/api/license_lookup?payment_id=' + encodeURIComponent(paymentId), { cache: 'no-store' });
+          const data = await res.json().catch(function () { return {}; });
+          if (res.ok && data.license && data.license.key) {
+            showLicense(data.license);
+          } else if (res.status === 404) {
+            setStatus('Aguardando a confirmação do Pix... Isso leva alguns segundos.');
+          } else if (res.status === 429) {
+            setStatus('Muitas consultas. Aguarde um instante...');
+          }
+        } catch (e) {
+          // mantém o polling
+        }
+      }
+
+      form.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        if (btn.disabled) return;
+
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const cpfCnpj = onlyDigits(document.getElementById('cpf').value);
+
+        if (name.length < 2) { setStatus('Informe seu nome completo.', 'err'); return; }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setStatus('Informe um e-mail válido.', 'err'); return; }
+        if (cpfCnpj.length !== 11 && cpfCnpj.length !== 14) { setStatus('Informe um CPF (11 dígitos) ou CNPJ (14 dígitos).', 'err'); return; }
+
+        btn.disabled = true;
+        btn.textContent = 'Gerando Pix...';
+        licenseBox.style.display = 'none';
+        qrSection.classList.add('hidden');
+        setStatus('');
+
+        try {
+          const res = await fetch('/api/create_license_pix', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ plan: planKey, billing: billing, name: name, email: email, cpfCnpj: cpfCnpj })
+          });
+          const data = await res.json().catch(function () { return {}; });
+
+          if (!res.ok || !data.ok || !data.encodedImage || !data.payload) {
+            throw new Error(data.message || data.error || 'Falha ao gerar a cobrança Pix.');
+          }
+
+          paymentId = data.payment_id;
+          qrImg.src = 'data:image/png;base64,' + data.encodedImage;
+          pixCode.value = data.payload;
+          qrSection.classList.remove('hidden');
+          setStatus('Escaneie o QR ou copie o código. A licença aparece aqui após o pagamento.');
+          if (pollTimer) clearInterval(pollTimer);
+          pollTimer = setInterval(checkLicense, 3000);
+          checkLicense();
+        } catch (err) {
+          setStatus(err.message || 'Não foi possível gerar o Pix. Tente novamente.', 'err');
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Gerar novo Pix';
+        }
+      });
+
+      document.getElementById('btnCopy').addEventListener('click', function () {
+        const code = pixCode.value;
+        if (!code) return;
+        navigator.clipboard.writeText(code).then(function () {
+          setStatus('Código Pix copiado!', 'ok');
+        }, function () {
+          pixCode.select();
+          document.execCommand('copy');
+        });
+      });
+
+      window.addEventListener('beforeunload', function () {
+        if (pollTimer) clearInterval(pollTimer);
+      });
+    })();
+  </script>
+</body>
+</html>

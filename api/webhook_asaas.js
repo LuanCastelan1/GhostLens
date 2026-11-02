@@ -14,7 +14,8 @@ const {
   sendLicenseEmail,
   planForAmountBRL,
   normalizeLicense,
-  setCors
+  setCors,
+  supabaseRest
 } = require('../lib/ghostlens-backend');
 const { PLANS } = require('../lib/ghostlens-license-plans');
 
@@ -80,10 +81,73 @@ module.exports = async (req, res) => {
 
     const externalReference = String(payment.externalReference || '').trim();
 
-    // Recarga de carteira GhostLens: o crédito é feito pelo pix-webhook do
-    // Supabase. Este endpoint NÃO deve emitir licença para esses pagamentos.
+    // Recarga de carteira GhostLens (novo formato): creditada aqui na Vercel.
+    // O lock em ghost_rate_limits impede crédito duplicado se o Asaas reenviar
+    // o mesmo evento ou se PAYMENT_RECEIVED e PAYMENT_CONFIRMED chegarem juntos.
+    if (externalReference.startsWith('GHOSTV2|')) {
+      const parts = externalReference.split('|');
+      const email = String(parts[1] || '').trim();
+      const amount = parseFloat(parts[2] || '0') || 0;
+
+      if (!email || !email.includes('@') || amount <= 0) {
+        return res.status(200).json({ received: true, ignored: 'invalid_ghost_recharge' });
+      }
+
+      const bucket = `wallet-credit:${paymentId}`;
+
+      let lock;
+      try {
+        lock = await supabaseRest('rpc/check_rate_limit', {
+          method: 'POST',
+          body: JSON.stringify({ p_bucket: bucket, p_limit: 1, p_window_seconds: 31536000 })
+        });
+      } catch (lockErr) {
+        console.error('[asaas] idempotência indisponível:', lockErr.message);
+        return res.status(500).json({ error: 'idempotency_unavailable' });
+      }
+
+      if (!lock || lock.allowed !== true) {
+        return res.status(200).json({ received: true, ignored: 'duplicate_credit' });
+      }
+
+      try {
+        const result = await supabaseRest('rpc/credit_ghost_wallet', {
+          method: 'POST',
+          body: JSON.stringify({
+            p_user_id_or_email: email,
+            p_amount: amount,
+            p_asaas_id: paymentId
+          })
+        });
+
+        if (!result || result.success !== true) {
+          console.error('[asaas] falha ao creditar carteira:', result);
+          // Libera o lock para permitir nova tentativa.
+          try {
+            await supabaseRest(`ghost_rate_limits?bucket=eq.${encodeURIComponent(bucket)}`, {
+              method: 'PATCH',
+              body: JSON.stringify({ count: 0, window_start: new Date().toISOString() })
+            });
+          } catch (releaseErr) {
+            console.error('[asaas] falha ao liberar idempotência:', releaseErr.message);
+          }
+          return res.status(200).json({ received: true, credited: false });
+        }
+
+        return res.status(200).json({
+          received: true,
+          credited: true,
+          new_balance: result.new_balance
+        });
+      } catch (creditErr) {
+        console.error('[asaas] erro no crédito da carteira:', creditErr.message, creditErr.data || '');
+        return res.status(200).json({ received: true, credited: false });
+      }
+    }
+
+    // Formato antigo do Supabase pix-webhook; não credita aqui.
     if (externalReference.startsWith('GHOST|')) {
-      return res.status(200).json({ received: true, ignored: 'ghost_wallet_recharge' });
+      return res.status(200).json({ received: true, ignored: 'legacy_ghost_recharge' });
     }
 
     let customerEmail = payment.customerEmail || payment.clientEmail || '';

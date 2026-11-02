@@ -2279,6 +2279,15 @@
         </button>
       </div>
 
+      <div style="margin-bottom: 12px; text-align: left;">
+        <label for="studioPixCpfInput" style="font-size: 0.72rem; color: #94a3b8; font-weight: 700; display: block; margin-bottom: 4px;">
+          CPF ou CNPJ do pagador (exigido pelo Asaas)
+        </label>
+        <input id="studioPixCpfInput" type="text" inputmode="numeric" maxlength="18" placeholder="000.000.000-00"
+          style="width: 100%; background: #0b0f17; border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; padding: 10px 12px; color: #fff; font-size: 0.85rem;" />
+        <div style="font-size: 0.66rem; color: #64748b; margin-top: 4px;">Usado apenas para gerar a cobrança no Asaas.</div>
+      </div>
+
       <div id="studioPixPriceTag" style="font-size: 1.85rem; font-weight: 900; color: #bef264; margin-bottom: 2px;">R$
         10,00</div>
       <div id="studioPixYieldHint" style="font-size: 0.72rem; color: #a1a1aa; margin-bottom: 12px;">Rende 50 Fotos Apple
@@ -5038,6 +5047,16 @@
       const qrLoading = document.getElementById('pixQrLoading');
       const qrImg = document.getElementById('studioPixQrImg');
       const codeInput = document.getElementById('studioPixCodeInput');
+      const cpfInput = document.getElementById('studioPixCpfInput');
+      const cpfCnpj = (cpfInput?.value || '').replace(/\D/g, '');
+
+      if (cpfCnpj.length !== 11 && cpfCnpj.length !== 14) {
+        qrLoading.style.display = 'none';
+        qrImg.style.display = 'none';
+        codeInput.value = 'Informe seu CPF/CNPJ acima e clique no pacote novamente.';
+        if (cpfInput) cpfInput.focus();
+        return;
+      }
 
       qrLoading.style.display = 'flex';
       qrImg.style.display = 'none';
@@ -5050,15 +5069,15 @@
           throw new Error('Faça login novamente para gerar o Pix.');
         }
 
-        const res = await fetch('https://mbelyevitfksmknlyhgr.supabase.co/functions/v1/pix-checkout', {
+        const res = await fetch('/api/create_credit_pix', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${accessToken}`
           },
           body: JSON.stringify({
-            user_email: currentUser.email,
-            pack_id: `ghost_${amount}`
+            pack_id: `ghost_${amount}`,
+            cpfCnpj
           })
         });
         const data = await res.json();
@@ -5072,13 +5091,11 @@
           throw new Error(data.error || 'Falha ao obter QR code');
         }
       } catch (err) {
-        console.warn("Fallback de QR Pix:", err.message);
-        const fallbackCode = `00020101021226840014br.gov.bcb.pix2562pix.asaas.com/qr/v3/pay/GHOST${amount}5204000053039865405${amount.toFixed(2)}5802BR5920GHOSTLENS DIGITAL LTDA6009SAO PAULO62070503***6304`;
-        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(fallbackCode)}`;
-        qrImg.style.display = 'block';
+        console.warn("Falha ao gerar Pix:", err.message);
+        qrImg.style.display = 'none';
         qrLoading.style.display = 'none';
-        codeInput.value = fallbackCode;
-        startPixPolling(amount);
+        codeInput.value = 'Não foi possível gerar o Pix. Tente novamente.';
+        alert('❌ Não foi possível gerar o Pix agora. Tente novamente em instantes.');
       }
     }
 

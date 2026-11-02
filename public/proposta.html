@@ -702,9 +702,9 @@
           </ul>
 
           <div style="display: flex; flex-direction: column; gap: 8px; margin-top: auto;">
-            <button type="button" class="plan-btn-cta plan-btn-secondary" style="background: rgba(190,242,100,0.1); border-color: rgba(190,242,100,0.3); color: #fff; cursor: pointer;" onclick="copyPixKey('49,90', 'Solo (1 Dispositivo)')">
-              <span>⚡ Pagar via Pix (manual) — R$ 49,90</span>
-            </button>
+            <a href="/pix?plan=solo&billing=monthly" class="plan-btn-cta plan-btn-secondary" style="background: rgba(190,242,100,0.1); border-color: rgba(190,242,100,0.3); color: #fff; text-decoration: none;">
+              <span>⚡ Pagar via Pix — R$ 49,90</span>
+            </a>
             <a href="https://buy.stripe.com/6oU3cv0Pp6NQcrV7UG7Vm03" target="_blank" class="plan-btn-cta plan-btn-secondary" style="background: rgba(99,102,241,0.15); border-color: rgba(99,102,241,0.4); color: #e0e7ff; font-size: 0.8rem; padding: 10px;">
               <span>💳 Cartão de Crédito / Stripe</span>
             </a>
@@ -741,9 +741,9 @@
           </ul>
 
           <div style="display: flex; flex-direction: column; gap: 8px; margin-top: auto;">
-            <button type="button" class="plan-btn-cta plan-btn-primary" style="cursor: pointer;" onclick="copyPixKey('97,00', 'Pro (3 Dispositivos)')">
-              <span>🚀 Pagar via Pix (manual) — R$ 97</span>
-            </button>
+            <a href="/pix?plan=pro&billing=monthly" class="plan-btn-cta plan-btn-primary" style="text-decoration: none;">
+              <span>🚀 Pagar via Pix — R$ 97</span>
+            </a>
             <a href="https://buy.stripe.com/28E5kDgOn8VYdvZ3Eq7Vm04" target="_blank" class="plan-btn-cta plan-btn-secondary" style="background: rgba(99,102,241,0.2); border-color: rgba(99,102,241,0.5); color: #fff; font-size: 0.82rem; padding: 10px;">
               <span>💳 Cartão de Crédito / Stripe</span>
             </a>
@@ -779,9 +779,9 @@
           </ul>
 
           <div style="display: flex; flex-direction: column; gap: 8px; margin-top: auto;">
-            <button type="button" class="plan-btn-cta plan-btn-secondary" style="background: rgba(190,242,100,0.1); border-color: rgba(190,242,100,0.3); color: #fff; cursor: pointer;" onclick="copyPixKey('300,00', 'Agency (10 Dispositivos)')">
-              <span>⚡ Pagar via Pix (manual) — R$ 300</span>
-            </button>
+            <a href="/pix?plan=agency&billing=monthly" class="plan-btn-cta plan-btn-secondary" style="background: rgba(190,242,100,0.1); border-color: rgba(190,242,100,0.3); color: #fff; text-decoration: none;">
+              <span>⚡ Pagar via Pix — R$ 300</span>
+            </a>
             <a href="https://buy.stripe.com/aFa5kD55FgoqajN5My7Vm05" target="_blank" class="plan-btn-cta plan-btn-secondary" style="background: rgba(99,102,241,0.15); border-color: rgba(99,102,241,0.4); color: #e0e7ff; font-size: 0.8rem; padding: 10px;">
               <span>💳 Cartão de Crédito / Stripe</span>
             </a>
@@ -795,22 +795,18 @@
         </div>
       </div>
 
-      <!-- BOX DE CHAVE PIX DIRETA -->
+      <!-- PIX AUTOMÁTICO -->
       <div class="pix-box" style="max-width: 680px; margin: 0 auto 30px auto; text-align: center;">
-        <div style="font-size: 0.8rem; color: var(--accent-lime); font-weight: 800; text-transform: uppercase; margin-bottom: 4px;">
-          Chave Pix Oficial para Liberação Instantânea:
+        <div style="font-size: 0.8rem; color: var(--accent-lime); font-weight: 800; text-transform: uppercase; margin-bottom: 6px;">
+          Pagamento Pix Automático
         </div>
-        <div class="pix-key" id="pixKeyDisplay">contato@ghostlens.ai</div>
+        <p style="color: #cbd5e1; font-size: 0.85rem; margin: 0 0 12px 0;">
+          Escolha o plano e pague com Pix. A licença é emitida automaticamente após a confirmação.
+        </p>
         <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-          <button type="button" class="btn-copy-pix" onclick="copyPixKey('49,90', 'Solo 1 Celular')">
-            📋 Copiar Pix R$ 49,90 (1 Cel)
-          </button>
-          <button type="button" class="btn-copy-pix" onclick="copyPixKey('97,00', 'Pro 3 Celulares')" style="background: rgba(190,242,100,0.2); border-color: var(--accent-lime); color: var(--accent-lime); font-weight: 800;">
-            ⭐ Copiar Pix R$ 97,00 (3 Cel)
-          </button>
-          <button type="button" class="btn-copy-pix" onclick="copyPixKey('300,00', 'Agency 10 Celulares')">
-            📋 Copiar Pix R$ 300,00 (10 Cel)
-          </button>
+          <a href="/pix?plan=solo&billing=monthly" class="btn-copy-pix" style="text-decoration: none;">⚡ Pix Solo — R$ 49,90</a>
+          <a href="/pix?plan=pro&billing=monthly" class="btn-copy-pix" style="text-decoration: none; background: rgba(190,242,100,0.2); border-color: var(--accent-lime); color: var(--accent-lime); font-weight: 800;">⭐ Pix Pro — R$ 97</a>
+          <a href="/pix?plan=agency&billing=monthly" class="btn-copy-pix" style="text-decoration: none;">⚡ Pix Agency — R$ 300</a>
         </div>
       </div>
 

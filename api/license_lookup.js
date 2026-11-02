@@ -41,11 +41,13 @@ module.exports = async (req, res) => {
 
   const query = req.query || {};
   let sessionId = String(query.session_id || '').trim();
-  if (!sessionId && req.body && typeof req.body === 'object') {
-    sessionId = String(req.body.session_id || '').trim();
+  let paymentId = String(query.payment_id || '').trim();
+  if (req.body && typeof req.body === 'object') {
+    if (!sessionId) sessionId = String(req.body.session_id || '').trim();
+    if (!paymentId) paymentId = String(req.body.payment_id || '').trim();
   }
 
-  if (req.method === 'GET' && !sessionId) {
+  if (req.method === 'GET' && !sessionId && !paymentId) {
     return res.status(200).json({
       status: 'online',
       service: 'GhostLens License Lookup 1.0',
@@ -57,8 +59,47 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'method_not_allowed' });
   }
 
-  if (!sessionId) {
-    return res.status(400).json({ error: 'session_id_required' });
+  if (!sessionId && !paymentId) {
+    return res.status(400).json({ error: 'session_id_or_payment_id_required' });
+  }
+
+  // Entrega de licença comprada via PIX/Asaas. A licença só existe depois que
+  // o webhook autenticado do Asaas confirmou o pagamento.
+  if (paymentId && !sessionId) {
+    if (!/^pay_[A-Za-z0-9_]+$/.test(paymentId)) {
+      return res.status(400).json({ error: 'invalid_payment_id' });
+    }
+    try {
+      try {
+        const ip = getClientIp(req);
+        const limit = await enforceRateLimit(`license-lookup-ip:${ip}`, 30, 600);
+        if (!limit.allowed) {
+          return res.status(429).json({ error: 'rate_limited', reset_at: limit.reset_at });
+        }
+      } catch (rateErr) {
+        console.warn('[license_lookup] rate limit indisponível:', rateErr.message);
+      }
+
+      const license = await findLicenseByPaymentId(paymentId);
+      if (!license) {
+        return res.status(404).json({ error: 'license_pending', retry: true });
+      }
+      const normalized = normalizeLicense(license);
+      return res.status(200).json({
+        success: true,
+        license: {
+          key: normalized.key,
+          plan: normalized.plan,
+          code: normalized.code,
+          max_devices: normalized.max_devices,
+          status: normalized.status,
+          expires_at: normalized.expires_at
+        }
+      });
+    } catch (err) {
+      console.error('[license_lookup] erro pix:', err.message);
+      return res.status(502).json({ error: 'lookup_unavailable' });
+    }
   }
 
   if (!STRIPE_SECRET_KEY) {
