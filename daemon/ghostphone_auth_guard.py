@@ -23,6 +23,7 @@ Variáveis de ambiente:
 import os
 import sys
 import json
+import ssl
 import time
 import secrets
 import hashlib
@@ -31,6 +32,25 @@ import threading
 import subprocess
 import urllib.request
 import urllib.error
+
+
+def _build_ssl_context():
+    """Usa certifi/sistema quando disponível; no Windows cai no store nativo."""
+    try:
+        import certifi
+        return ssl.create_default_context(cafile=certifi.where())
+    except Exception:
+        pass
+    for candidate in (os.environ.get("SSL_CERT_FILE"), "/etc/ssl/cert.pem"):
+        if candidate and os.path.exists(candidate):
+            try:
+                return ssl.create_default_context(cafile=candidate)
+            except Exception:
+                pass
+    return ssl.create_default_context()
+
+
+SSL_CONTEXT = _build_ssl_context()
 
 
 class _NullWriter:
@@ -227,7 +247,7 @@ class GhostAuthGuard:
         for url in _session_urls():
             try:
                 req = urllib.request.Request(url, data=payload, headers=headers, method="POST")
-                with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT) as resp:
+                with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT, context=SSL_CONTEXT) as resp:
                     data = json.loads(resp.read().decode("utf-8", "ignore"))
             except urllib.error.HTTPError as e:
                 if e.code >= 500:

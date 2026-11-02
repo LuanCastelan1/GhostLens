@@ -14,11 +14,30 @@ banco são ignoradas (idempotente).
 
 import json
 import os
+import ssl
 import sys
 import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta, timezone
+
+
+def _ssl_context():
+    try:
+        import certifi
+        return ssl.create_default_context(cafile=certifi.where())
+    except Exception:
+        pass
+    for candidate in (os.environ.get("SSL_CERT_FILE"), "/etc/ssl/cert.pem"):
+        if candidate and os.path.exists(candidate):
+            try:
+                return ssl.create_default_context(cafile=candidate)
+            except Exception:
+                pass
+    return ssl.create_default_context()
+
+
+SSL_CONTEXT = _ssl_context()
 
 SUPABASE_URL = (os.environ.get("SUPABASE_URL") or "https://mbelyevitfksmknlyhgr.supabase.co").rstrip("/")
 SERVICE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
@@ -38,7 +57,7 @@ def api(path, method="GET", body=None):
             "Prefer": "return=representation",
         },
     )
-    with urllib.request.urlopen(req, timeout=20) as resp:
+    with urllib.request.urlopen(req, timeout=20, context=SSL_CONTEXT) as resp:
         raw = resp.read().decode("utf-8", "ignore")
     return json.loads(raw) if raw else None
 
