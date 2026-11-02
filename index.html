@@ -5069,7 +5069,7 @@
           throw new Error('Faça login novamente para gerar o Pix.');
         }
 
-        const res = await fetch('/api/create_credit_pix', {
+        const res = await fetch('https://www.ghostlens.cloud/api/create_credit_pix', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
