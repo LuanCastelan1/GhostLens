@@ -1,0 +1,20 @@
+.git
+.vercel
+node_modules
+__pycache__
+*.log
+
+# Artefatos de build locais (não são servidos pelo Vercel)
+/daemon
+/windows_build
+/mac_build
+/download
+/perfis_antidetect
+
+# Infra e documentação (não precisam ir no deploy)
+/supabase
+/tools
+/.env.example
+/.env.local
+/DEPLOY_SEGURANCA.md
+/INSTALL_GHOSTLENS_LICENSES.sql
