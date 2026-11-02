@@ -1,20 +1,23 @@
 #!/usr/bin/env python3
 """
-🛡️ GHOSTLENS LICENSE & HWID GUARD 3.0
+🛡️ GHOSTLENS LICENSE & HWID GUARD 3.1
 
-Regras:
-- A ativação de uma chave comercial é feita ONLINE contra /api/verify_license,
-  que consulta public.ghost_licenses no Supabase.
-- Não existe chave master hardcoded, auto-ativação por ambiente de dev nem
-  aceitação de qualquer string "GHOST-*": sem registro no banco, não ativa.
-- O arquivo local guarda a licença já validada e é checado a cada 60s
-  (HWID + expiração). Falha = bloqueio das instâncias.
+Modelo de segurança:
+- A ativação e a renovação passam por /api/license_session (JWT curto).
+- O servidor valida a licença e o device no Supabase a cada renovação.
+- Revogação, limite de devices e expiração valem no servidor.
+- O cliente guarda a sessão localmente, mas precisa renová-la periodicamente.
+- Janelas de tolerância:
+    * OFFLINE_GRACE_HOURS: tempo que uma sessão vencida ainda funciona offline.
+    * LEGACY_GRACE_HOURS: janela de migração para licenças antigas sem sessão.
 
 Variáveis de ambiente:
-- GHOSTLENS_ACTIVATION_URL   (sobrepõe a lista de servidores)
-- GHOSTLENS_ACTIVATION_URLS  (lista separada por vírgula)
-- GHOSTLENS_ADMIN_TOKEN      (se ausente, é gerado em ~/.ghostphone/admin_token)
-- GHOSTLENS_HTTP_TIMEOUT     (default 8s)
+- GHOSTLENS_SESSION_URL / GHOSTLENS_SESSION_URLS
+- GHOSTLENS_ADMIN_TOKEN (se ausente, gerado em ~/.ghostphone/admin_token)
+- GHOSTLENS_HTTP_TIMEOUT (default 8s)
+- GHOSTLENS_OFFLINE_GRACE_HOURS (default 24)
+- GHOSTLENS_LEGACY_GRACE_HOURS (default 72)
+- GHOSTLENS_REFRESH_RETRY_SECONDS (default 300)
 """
 
 import os
@@ -62,13 +65,17 @@ LICENSE_FILE = os.path.join(LICENSE_DIR, "license.key")
 ADMIN_TOKEN_FILE = os.path.join(LICENSE_DIR, "admin_token")
 ISSUED_FILE = os.path.join(LICENSE_DIR, "issued_licenses.json")
 
-_DEFAULT_ACTIVATION_URLS = (
-    "https://ghostlens.cloud/api/verify_license,"
-    "https://www.ghostlens.cloud/api/verify_license,"
-    "https://ghostlens.com.br/api/verify_license"
+_DEFAULT_SESSION_URLS = (
+    "https://ghostlens.cloud/api/license_session,"
+    "https://www.ghostlens.cloud/api/license_session,"
+    "https://ghostlens.com.br/api/license_session"
 )
 
 HTTP_TIMEOUT = float(os.environ.get("GHOSTLENS_HTTP_TIMEOUT", "8"))
+OFFLINE_GRACE_HOURS = float(os.environ.get("GHOSTLENS_OFFLINE_GRACE_HOURS", "24"))
+LEGACY_GRACE_HOURS = float(os.environ.get("GHOSTLENS_LEGACY_GRACE_HOURS", "72"))
+REFRESH_RETRY_SECONDS = int(os.environ.get("GHOSTLENS_REFRESH_RETRY_SECONDS", "300"))
+SESSION_REFRESH_MARGIN = 0.25
 
 _ERROR_MESSAGES = {
     "license_not_found": "Chave não encontrada. Confira a chave enviada por e-mail.",
@@ -77,6 +84,11 @@ _ERROR_MESSAGES = {
     "license_inactive": "Licença revogada ou inativa. Fale com o suporte.",
     "invalid_license_format": "Formato de chave inválido.",
     "license_backend_unavailable": "Servidor de licenças indisponível. Tente novamente em instantes.",
+    "invalid_session": "Sessão inválida ou expirada.",
+    "device_limit_reached": "Limite de dispositivos do seu plano foi atingido.",
+    "device_revoked": "Este dispositivo foi desautorizado pelo administrador.",
+    "rate_limited": "Muitas tentativas. Aguarde alguns minutos.",
+    "invalid_server_response": "Resposta inválida do servidor de licenças.",
     "missing_service_role": "Servidor de licenças não configurado."
 }
 
@@ -119,11 +131,11 @@ def get_admin_token():
         return _ADMIN_TOKEN_CACHE
 
 
-def _activation_urls():
-    override = os.environ.get("GHOSTLENS_ACTIVATION_URL", "").strip()
+def _session_urls():
+    override = os.environ.get("GHOSTLENS_SESSION_URL", "").strip()
     if override:
         return [override]
-    raw = os.environ.get("GHOSTLENS_ACTIVATION_URLS", _DEFAULT_ACTIVATION_URLS)
+    raw = os.environ.get("GHOSTLENS_SESSION_URLS", _DEFAULT_SESSION_URLS)
     return [u.strip() for u in raw.split(",") if u.strip()]
 
 
@@ -139,7 +151,7 @@ class GhostAuthGuard:
         self.start_heartbeat_sentinel()
 
     def calculate_hwid(self):
-        """Calcula o Hardware ID exclusivo da máquina."""
+        """Calcula o Hardware ID exclusivo da máquina (mesma derivação das versões antigas)."""
         system = platform.system()
         raw = ""
         try:
@@ -193,83 +205,107 @@ class GhostAuthGuard:
         except Exception:
             raw = platform.node() + platform.machine() + platform.processor()
 
-        # Mantém a MESMA derivação das versões anteriores para não invalidar
-        # licenças já instaladas. O namespace não é um segredo — é só um prefixo.
         hwid_namespace = "GHOSTPHONE_CORE_SECRET_2026_ANTI_REVERSE_789412"
         digest = hashlib.sha256((hwid_namespace + raw).encode("utf-8")).hexdigest()[:24].upper()
         return f"GP-{system[:3].upper()}-{digest[:4]}-{digest[4:8]}-{digest[8:12]}"
 
-    # ── Comunicação com o servidor de licenças ────────────────────────────
+    # ── Sessão server-side ─────────────────────────────────────────────────
 
-    def _post_activation(self, url, key, email):
-        payload = json.dumps({
-            "key": key,
-            "hwid": self.hwid,
-            "email": email or ""
-        }).encode("utf-8")
+    def _request_session(self, key, hwid, token=None):
+        """Retorna (data, None) ou (None, error_code)."""
+        payload = json.dumps({"key": key, "hwid": hwid}).encode("utf-8")
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "User-Agent": "GhostLens/3.1",
+            "X-GhostLens-Hwid": hwid,
+        }
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
 
-        req = urllib.request.Request(
-            url,
-            data=payload,
-            headers={
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-                "User-Agent": "GhostLens/3.0",
-                "X-GhostLens-Hwid": self.hwid
-            },
-            method="POST"
-        )
-        with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT) as resp:
-            raw = resp.read().decode("utf-8", "ignore")
-
-        try:
-            return json.loads(raw)
-        except Exception:
-            raise ValueError("Resposta inválida do servidor de licenças.")
-
-    def verify_with_cloud(self, key, email=""):
-        """
-        Consulta os servidores de licença em ordem.
-        Retorna (True, license, msg) | (False, None, msg) | (None, None, msg).
-        """
         last_error = None
-        for url in _activation_urls():
+        for url in _session_urls():
             try:
-                data = self._post_activation(url, key, email)
+                req = urllib.request.Request(url, data=payload, headers=headers, method="POST")
+                with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT) as resp:
+                    data = json.loads(resp.read().decode("utf-8", "ignore"))
             except urllib.error.HTTPError as e:
                 if e.code >= 500:
                     last_error = f"HTTP {e.code}"
                     continue
-                # 4xx é resposta definitiva; não tenta o próximo host.
                 try:
                     err = json.loads(e.read().decode("utf-8", "ignore"))
                 except Exception:
                     err = {}
-                error_code = err.get("error") or "license_not_found"
-                return False, None, _ERROR_MESSAGES.get(error_code, "Licença recusada.")
+                code = err.get("error") or ("invalid_session" if e.code == 401 else "license_not_found")
+                return None, code
             except Exception as e:
                 last_error = str(e)
                 continue
 
             if not data.get("success"):
-                error_code = data.get("error") or "license_not_found"
-                return False, None, _ERROR_MESSAGES.get(error_code, "Licença recusada.")
+                return None, data.get("error") or "license_not_found"
 
-            lic = data.get("license") or {}
-            if not lic.get("key"):
-                return False, None, "Resposta inválida do servidor de licenças."
+            if not data.get("token") or not data.get("license"):
+                return None, "invalid_server_response"
 
-            bound = str(lic.get("target_hwid") or "").upper()
-            if bound and bound != self.hwid.upper():
-                return False, None, _ERROR_MESSAGES["hwid_mismatch"]
+            return data, None
 
-            return True, lic, data.get("message") or "Licença validada."
+        sys.stderr.write(f"[GhostGuard] Servidores de sessão inacessíveis: {last_error}\n")
+        return None, "license_backend_unavailable"
 
-        sys.stderr.write(f"[GhostGuard] Servidores de licença inacessíveis: {last_error}\n")
-        return None, None, _ERROR_MESSAGES["license_backend_unavailable"]
+    def _apply_session(self, data, email_fallback=""):
+        lic = data.get("license") or {}
+        token = data.get("token") or ""
+
+        try:
+            license_expires = int(lic.get("expires_at"))
+            session_expires = int(data.get("expires_at"))
+        except (TypeError, ValueError):
+            return False, "invalid_server_response"
+
+        now = int(time.time())
+        if not token or session_expires <= now or license_expires <= now:
+            return False, "invalid_server_response"
+
+        self.license_data = {
+            "key": str(lic.get("key") or "").strip().upper(),
+            "email": lic.get("email") or email_fallback,
+            "plan": lic.get("plan") or "GhostLens",
+            "hwid": self.hwid,
+            "max_devices": int(lic.get("max_devices") or 1),
+            "expires_at": license_expires,
+            "status": "active",
+            "verified_at": now,
+            "session_token": token,
+            "session_expires_at": session_expires,
+            "session_updated_at": now,
+        }
+        self.save_license()
+        self.is_active = True
+        return True, None
+
+    def _mark_session_rejected(self, reason):
+        if self.license_data:
+            self.license_data["session_rejected"] = True
+            self.license_data["session_rejected_reason"] = reason
+            self.license_data["session_rejected_at"] = int(time.time())
+            self.save_license()
+        self.is_active = False
+        sys.stderr.write(f"[GhostGuard] Sessão recusada: {reason}\n")
+
+    def _in_legacy_grace(self):
+        if not self.license_data:
+            return False
+        if self.license_data.get("session_token"):
+            return False
+        started = self.license_data.get("legacy_grace_started_at")
+        if not started:
+            return False
+        return time.time() < float(started) + (LEGACY_GRACE_HOURS * 3600)
 
     def activate_license(self, license_key, email="cliente@ghostlens.cloud"):
-        """Ativa uma chave consultando o servidor central. Falha fechada."""
+        """Ativa uma chave via /api/license_session. Falha fechada."""
         with self.lock:
             key = (license_key or "").strip().upper()
             if not key:
@@ -282,42 +318,21 @@ class GhostAuthGuard:
                     "error": "invalid_license_format"
                 }
 
-            cloud_ok, lic, message = self.verify_with_cloud(key, email)
-            if cloud_ok is not True:
+            data, error = self._request_session(key, self.hwid)
+            if not data:
                 return {
                     "success": False,
-                    "message": message,
-                    "error": "license_rejected" if cloud_ok is False else "license_backend_unavailable"
+                    "message": _ERROR_MESSAGES.get(error, "Licença recusada."),
+                    "error": error
                 }
 
-            try:
-                expires_at = int(lic.get("expires_at"))
-            except (TypeError, ValueError):
+            ok, apply_error = self._apply_session(data, email)
+            if not ok:
                 return {
                     "success": False,
-                    "message": "Resposta inválida do servidor de licenças.",
-                    "error": "invalid_expiry"
+                    "message": _ERROR_MESSAGES.get(apply_error, "Resposta inválida do servidor."),
+                    "error": apply_error
                 }
-
-            if expires_at <= int(time.time()):
-                return {
-                    "success": False,
-                    "message": _ERROR_MESSAGES["license_expired"],
-                    "error": "license_expired"
-                }
-
-            self.license_data = {
-                "key": key,
-                "email": lic.get("email") or email,
-                "plan": lic.get("plan") or "GhostLens",
-                "hwid": self.hwid,
-                "max_devices": int(lic.get("max_devices") or 1),
-                "expires_at": expires_at,
-                "status": "active",
-                "verified_at": int(time.time())
-            }
-            self.save_license()
-            self.is_active = True
 
             sys.stdout.write(f"[GhostGuard] ✓ Licença ativada: {self.license_data['plan']}\n")
             sys.stdout.flush()
@@ -326,6 +341,37 @@ class GhostAuthGuard:
                 "message": f"Licença ativada com sucesso! Plano: {self.license_data['plan']}",
                 "data": self.license_data
             }
+
+    def ensure_session(self):
+        """
+        Renova a sessão usando o token atual; se ele já venceu/foi rejeitado,
+        tenta uma sessão nova com a chave armazenada.
+        """
+        with self.lock:
+            if not self.license_data:
+                return False, "no_license"
+
+            key = self.license_data.get("key")
+            token = self.license_data.get("session_token")
+
+            data = None
+            error = None
+            if token:
+                data, error = self._request_session(key, self.hwid, token=token)
+
+            if not data and error in (None, "invalid_session"):
+                data, error = self._request_session(key, self.hwid)
+
+            if not data:
+                return False, error or "license_backend_unavailable"
+
+            ok, apply_error = self._apply_session(data, self.license_data.get("email", ""))
+            return ok, apply_error
+
+    def refresh_session(self):
+        return self.ensure_session()
+
+    # ── Persistência local ─────────────────────────────────────────────────
 
     def save_license(self):
         try:
@@ -340,7 +386,7 @@ class GhostAuthGuard:
             sys.stderr.write(f"[GhostGuard] Erro ao salvar licença: {e}\n")
 
     def load_and_validate_license(self):
-        """Valida HWID, status e expiração do arquivo local. Sem auto-ativação."""
+        """Valida HWID, expiração e a janela da sessão local. Sem auto-ativação."""
         with self.lock:
             if not os.path.exists(LICENSE_FILE):
                 self.license_data = None
@@ -361,24 +407,47 @@ class GhostAuthGuard:
                 self.is_active = False
                 return
 
-            if data.get("status") != "active":
+            if data.get("status") != "active" or data.get("session_rejected"):
                 self.license_data = data
                 self.is_active = False
                 return
 
             try:
-                expires_at = int(data.get("expires_at", 0))
+                license_expires = int(data.get("expires_at", 0))
             except (TypeError, ValueError):
-                expires_at = 0
+                license_expires = 0
 
-            if expires_at <= int(time.time()):
+            now = time.time()
+            if license_expires <= now:
                 sys.stderr.write("[GhostGuard] ❌ Licença expirada.\n")
                 self.license_data = data
                 self.is_active = False
                 return
 
+            token = data.get("session_token") or ""
+            try:
+                session_expires = int(data.get("session_expires_at", 0))
+            except (TypeError, ValueError):
+                session_expires = 0
+
+            if token and session_expires + (OFFLINE_GRACE_HOURS * 3600) > now:
+                self.license_data = data
+                self.is_active = True
+                return
+
+            # Licença antiga sem sessão: abre janela de migração uma única vez.
+            if not token:
+                if "legacy_grace_started_at" not in data:
+                    data["legacy_grace_started_at"] = int(now)
+                    self.license_data = data
+                    self.save_license()
+                self.license_data = data
+                if self._in_legacy_grace():
+                    self.is_active = True
+                    return
+
             self.license_data = data
-            self.is_active = True
+            self.is_active = False
 
     # ── Emissão manual (admin) ─────────────────────────────────────────────
 
@@ -441,20 +510,52 @@ class GhostAuthGuard:
     # ── Sentinela ──────────────────────────────────────────────────────────
 
     def start_heartbeat_sentinel(self):
-        """Revalida o arquivo local a cada 60s; desliga o emulador se cair."""
+        """Revalida a cada 60s e renova a sessão antes de vencer."""
         def sentinel():
+            last_attempt = 0
             while True:
                 time.sleep(60)
                 was_active = self.is_active
                 self.load_and_validate_license()
+                now = time.time()
+
+                needs_session = False
+                if self.license_data and not self.license_data.get("session_rejected"):
+                    license_expires = int(self.license_data.get("expires_at") or 0)
+                    token = self.license_data.get("session_token") or ""
+                    session_expires = int(self.license_data.get("session_expires_at") or 0)
+                    updated = int(self.license_data.get("session_updated_at") or session_expires)
+                    ttl = max(session_expires - updated, 1)
+
+                    if license_expires > now:
+                        if not token:
+                            needs_session = True
+                        elif session_expires + (OFFLINE_GRACE_HOURS * 3600) <= now:
+                            needs_session = True
+                        elif session_expires - now <= ttl * SESSION_REFRESH_MARGIN:
+                            needs_session = True
+
+                if needs_session and (now - last_attempt) >= REFRESH_RETRY_SECONDS:
+                    last_attempt = now
+                    ok, error = self.ensure_session()
+                    if not ok:
+                        if error == "license_not_found" and self._in_legacy_grace():
+                            sys.stderr.write(
+                                "[GhostGuard] Chave ainda não registrada no servidor; "
+                                "mantendo janela de migração.\n"
+                            )
+                        elif error in ("license_backend_unavailable", "no_license", "invalid_server_response"):
+                            sys.stderr.write(
+                                f"[GhostGuard] Não foi possível renovar sessão ({error}); "
+                                "mantendo até o limite offline.\n"
+                            )
+                        else:
+                            self._mark_session_rejected(error)
+
                 if was_active and not self.is_active:
-                    sys.stderr.write("[GhostGuard] ⚠️ Licença inválida. Bloqueando instâncias.\n")
+                    sys.stderr.write("[GhostGuard] ⚠️ Sessão inválida. Bloqueando instâncias.\n")
                     try:
-                        subprocess.run(
-                            ["adb", "emu", "kill"],
-                            capture_output=True,
-                            timeout=5
-                        )
+                        subprocess.run(["adb", "emu", "kill"], capture_output=True, timeout=5)
                     except Exception:
                         pass
 
@@ -464,6 +565,8 @@ class GhostAuthGuard:
 
     def get_status(self):
         with self.lock:
+            token = self.license_data.get("session_token") if self.license_data else ""
+            session_expires = self.license_data.get("session_expires_at", 0) if self.license_data else 0
             return {
                 "active": self.is_active,
                 "hwid": self.hwid,
@@ -471,6 +574,8 @@ class GhostAuthGuard:
                 "plan": self.license_data.get("plan") if self.license_data else "Não Ativado",
                 "max_devices": self.license_data.get("max_devices") if self.license_data else 0,
                 "expires_at": self.license_data.get("expires_at") if self.license_data else 0,
+                "session_expires_at": session_expires,
+                "session_valid": bool(token and session_expires > time.time()),
                 "status": "authorized" if self.is_active else "unauthorized"
             }
 
@@ -479,7 +584,7 @@ auth_guard = GhostAuthGuard()
 
 
 if __name__ == "__main__":
-    print("=== [GHOSTLENS AUTH GUARD 3.0] ===")
+    print("=== [GHOSTLENS AUTH GUARD 3.1] ===")
     print("HWID:", auth_guard.hwid)
     print("Admin token file:", ADMIN_TOKEN_FILE)
     print("Status:", json.dumps(auth_guard.get_status(), indent=2))

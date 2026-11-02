@@ -13,7 +13,8 @@ const {
   supabaseRest,
   normalizeLicense,
   isValidKeyShape,
-  planForAmountBRL,
+  getClientIp,
+  enforceRateLimit,
   setCors
 } = require('../lib/ghostlens-backend');
 
@@ -21,7 +22,9 @@ const ERROR_STATUS = {
   license_not_found: 404,
   hwid_mismatch: 403,
   license_expired: 410,
-  license_inactive: 403
+  license_inactive: 403,
+  device_limit_reached: 403,
+  device_revoked: 403
 };
 
 module.exports = async (req, res) => {
@@ -68,7 +71,17 @@ module.exports = async (req, res) => {
       });
     }
 
-    const result = await supabaseRest('rpc/bind_ghost_license', {
+    const ip = getClientIp(req);
+    const ipLimit = await enforceRateLimit(`verify-ip:${ip}`, 20, 600);
+    if (!ipLimit.allowed) {
+      return res.status(429).json({
+        success: false,
+        error: 'rate_limited',
+        reset_at: ipLimit.reset_at
+      });
+    }
+
+    const result = await supabaseRest('rpc/bind_ghost_license_device', {
       method: 'POST',
       body: JSON.stringify({ p_key: cleanKey, p_hwid: cleanHwid })
     });

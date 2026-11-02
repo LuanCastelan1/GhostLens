@@ -8,6 +8,7 @@ import os
 import sys
 import json
 import hmac
+import hashlib
 import signal
 import tempfile
 import urllib.parse
@@ -55,6 +56,9 @@ ALLOWED_ORIGINS = {
     "https://ghostlens.com.br",
     "https://www.ghostlens.com.br",
 }
+
+# SHA-256 do scrcpy-win64-v3.1.zip oficial (GitHub Releases)
+SCRCPY_ZIP_SHA256 = "0c05ea395d95cfe36bee974eeb435a3db87ea5594ff738370d5dc3068a9538ca"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 EROS_DIR = os.path.dirname(BASE_DIR)
 PERFIS_DIR = os.path.join(EROS_DIR, "perfis_antidetect")
@@ -140,7 +144,16 @@ def ensure_windows_scrcpy():
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         with urllib.request.urlopen(req, timeout=30) as resp, open(zip_dest, 'wb') as out_f:
             shutil.copyfileobj(resp, out_f)
-        
+
+        digest = hashlib.sha256()
+        with open(zip_dest, 'rb') as check_f:
+            for chunk in iter(lambda: check_f.read(1024 * 1024), b''):
+                digest.update(chunk)
+        if digest.hexdigest().lower() != SCRCPY_ZIP_SHA256:
+            os.remove(zip_dest)
+            print("⚠️ Checksum inválido do scrcpy — download descartado por segurança.")
+            return
+
         with zipfile.ZipFile(zip_dest, 'r') as zf:
             for member in zf.infolist():
                 filename = os.path.basename(member.filename)

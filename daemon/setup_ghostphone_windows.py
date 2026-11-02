@@ -17,6 +17,7 @@ Zero suporte, zero dor de cabeça para o cliente.
 import os
 import sys
 import time
+import hashlib
 import zipfile
 import shutil
 import urllib.request
@@ -32,6 +33,14 @@ BIN_DIR = os.path.join(BASE_DIR, "bin")
 SDK_DIR = os.path.join(BIN_DIR, "android-sdk")
 JRE_DIR = os.path.join(BIN_DIR, "jre")
 
+# Checksums oficiais dos pacotes baixados em runtime.
+# scrcpy: SHA-256 calculado sobre o asset oficial do GitHub Releases.
+# Adoptium: SHA-256 publicado pelo próprio release.
+# Android cmdline-tools: SHA-1 publicado no repository2-3.xml do Google.
+SCRCPY_SHA256 = "9dc56f21bfa455352ec0c58b40feaf2fb02d67372910a4235e298ece286ff3a9"
+JRE_SHA256 = "646f1f60286670da309b586d0905f1df1a5c2f674d24006823d688bca65388f4"
+CMDLINE_TOOLS_SHA1 = "3d2917302740f476999a091bc5558837c7a863c5"
+
 def print_banner():
     print(r"""
 ==============================================================================
@@ -45,11 +54,33 @@ def print_banner():
 ==============================================================================
 """)
 
-def download_with_progress(url, dest_path, desc):
-    """Download de arquivos com barra de progresso visual em tempo real."""
+def file_digest(path, algorithm):
+    digest = hashlib.new(algorithm)
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def verify_checksum(path, expected_sha256=None, expected_sha1=None):
+    if expected_sha256:
+        return file_digest(path, "sha256").lower() == expected_sha256.lower()
+    if expected_sha1:
+        return file_digest(path, "sha1").lower() == expected_sha1.lower()
+    return True
+
+
+def download_with_progress(url, dest_path, desc, expected_sha256=None, expected_sha1=None):
+    """Download de arquivos com barra de progresso e verificação de checksum."""
     if os.path.exists(dest_path):
-        return True
-    
+        if verify_checksum(dest_path, expected_sha256, expected_sha1):
+            return True
+        print(f"    [!] Checksum inválido no arquivo existente. Baixando novamente: {dest_path}")
+        try:
+            os.remove(dest_path)
+        except Exception:
+            pass
+
     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
     temp_path = dest_path + ".tmp"
     
@@ -89,7 +120,15 @@ def download_with_progress(url, dest_path, desc):
                     sys.stdout.write(f"\r    Baixados: {mb_down:.1f} MB...")
                     sys.stdout.flush()
                     
-        print("\n    [+] Download concluido com sucesso!")
+        if not verify_checksum(temp_path, expected_sha256, expected_sha1):
+            print("\n    [!] CHECKSUM INVÁLIDO. Download descartado por segurança.")
+            try:
+                os.remove(temp_path)
+            except Exception:
+                pass
+            return False
+
+        print("\n    [+] Download concluido e checksum verificado!")
         os.replace(temp_path, dest_path)
         return True
     except Exception as e:
@@ -126,7 +165,7 @@ def setup_scrcpy_adb():
     url = "https://github.com/Genymobile/scrcpy/releases/download/v2.4/scrcpy-win64-v2.4.zip"
     zip_dest = os.path.join(BIN_DIR, "scrcpy_pkg.zip")
     
-    if download_with_progress(url, zip_dest, "Scrcpy v2.4 (Ultra HD 60 FPS)"):
+    if download_with_progress(url, zip_dest, "Scrcpy v2.4 (Ultra HD 60 FPS)", expected_sha256=SCRCPY_SHA256):
         tmp_extract = os.path.join(BIN_DIR, "scrcpy_tmp")
         if extract_zip(zip_dest, tmp_extract, "Pacote Scrcpy"):
             extracted_sub = os.path.join(tmp_extract, "scrcpy-win64-v2.4")
@@ -156,7 +195,7 @@ def setup_portable_jre():
     url = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.12%2B7/OpenJDK17U-jre_x64_windows_hotspot_17.0.12_7.zip"
     zip_dest = os.path.join(BIN_DIR, "jre17.zip")
     
-    if download_with_progress(url, zip_dest, "OpenJDK 17 JRE (Adoptium)"):
+    if download_with_progress(url, zip_dest, "OpenJDK 17 JRE (Adoptium)", expected_sha256=JRE_SHA256):
         tmp_extract = os.path.join(BIN_DIR, "jre_tmp")
         if extract_zip(zip_dest, tmp_extract, "Java 17 JRE"):
             # Move conteudo da pasta interna para JRE_DIR
@@ -190,7 +229,7 @@ def setup_cmdline_tools():
     url = "https://dl.google.com/android/repository/commandlinetools-win-11076708_latest.zip"
     zip_dest = os.path.join(BIN_DIR, "cmdline_tools.zip")
     
-    if download_with_progress(url, zip_dest, "Android Command-Line Tools (Oficial Google)"):
+    if download_with_progress(url, zip_dest, "Android Command-Line Tools (Oficial Google)", expected_sha1=CMDLINE_TOOLS_SHA1):
         target_latest = os.path.join(SDK_DIR, "cmdline-tools", "latest")
         tmp_extract = os.path.join(BIN_DIR, "cmdline_tmp")
         if extract_zip(zip_dest, tmp_extract, "Command-Line Tools"):

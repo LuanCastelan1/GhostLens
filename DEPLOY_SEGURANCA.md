@@ -1,8 +1,9 @@
-# GhostLens • Deploy e correções de segurança (v3.0)
+# GhostLens • Deploy e correções de segurança (v3.1)
 
 Este documento cobre as mudanças aplicadas nos itens P0/P1: licenciamento
-server-side, remoção dos bypasses de admin, validação de webhooks, proteção do
-daemon e remoção de segredos do frontend.
+server-side, sessão JWT curta, limite de devices, rate limit, remoção dos
+bypasses de admin, validação de webhooks, proteção do daemon e checksums dos
+downloads automáticos.
 
 ---
 
@@ -14,8 +15,16 @@ No SQL Editor do projeto `mbelyevitfksmknlyhgr`:
 supabase/schema_ghostlens_licenses.sql
 ```
 
-Cria `public.ghost_licenses`, RLS sem policies públicas e a função atômica
-`bind_ghost_license`. Somente a `service_role` acessa.
+Cria/atualiza:
+
+- `public.ghost_licenses` (licenças)
+- `public.ghost_license_devices` (devices por licença, respeitando `max_devices`)
+- `public.ghost_rate_limits` (rate limit compartilhado entre instâncias)
+- Funções `bind_ghost_license`, `bind_ghost_license_device` e `check_rate_limit`
+
+O script é idempotente. Rode-o de novo após atualizar o código para criar as
+tabelas/funções novas. RLS sem policies públicas: somente a `service_role`
+acessa.
 
 ## 2. Configurar variáveis na Vercel
 
@@ -23,10 +32,12 @@ Use `.env.example` como referência. Obrigatórias para o fluxo de licenças:
 
 | Variável | Para quê |
 |---|---|
-| `SUPABASE_SERVICE_ROLE_KEY` | Ler/gravar licenças (sem ela, `verify_license` responde 503) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Ler/gravar licenças e devices (sem ela, os endpoints respondem 503) |
+| `GHOSTLENS_SESSION_SECRET` | Assinar os JWT de sessão (mínimo 32 caracteres; sem ele → 503) |
 | `STRIPE_WEBHOOK_SECRET` | Validar `stripe-signature` |
 | `ASAAS_WEBHOOK_TOKEN` | Validar `asaas-access-token` |
 | `RESEND_API_KEY` | Enviar a chave ao cliente (opcional) |
+| `GHOSTLENS_SESSION_TTL` | Validade da sessão em segundos (default 86400) |
 
 ## 3. Rotacionar a chave WaveSpeed (URGENTE)
 
@@ -58,12 +69,19 @@ Comportamento novo:
 > alto, migre essa rota para Next.js com `bodyParser: false` para usar os bytes
 > crus.
 
-## 5. Daemon local
+## 5. Daemon local e sessão server-side
 
-- A ativação agora chama `POST /api/verify_license` (tenta
-  `ghostlens.cloud`, `www.ghostlens.cloud` e `ghostlens.com.br`) e exige licença
-  registrada no banco. Sem internet ou sem registro → ativação recusada (falha
-  fechada). Ajuste com `GHOSTLENS_ACTIVATION_URL` se o domínio for outro.
+- A ativação/renovação chama `POST /api/license_session` (tenta
+  `ghostlens.cloud`, `www.ghostlens.cloud` e `ghostlens.com.br`).
+- O servidor valida licença + device no Supabase e devolve um **JWT curto**
+  (default 24h). O daemon renova antes de vencer.
+- Revogação, `max_devices` e expiração valem já na próxima renovação.
+- Janelas de tolerância:
+  - `GHOSTLENS_OFFLINE_GRACE_HOURS` (default 24h): sessão vencida ainda roda
+    offline nesse intervalo.
+  - `GHOSTLENS_LEGACY_GRACE_HOURS` (default 72h): janela de migração para
+    licenças antigas que ainda não têm sessão.
+  - Ajuste as URLs com `GHOSTLENS_SESSION_URL`/`GHOSTLENS_SESSION_URLS`.
 - Chaves master hardcoded, auto-ativação e aceitação de qualquer `GHOST-*`
   foram removidas.
 - Endpoints administrativos (`/api/auth/generate_token`,
@@ -81,9 +99,10 @@ cat ~/.ghostphone/admin_token
 
 ## 6. Migrar licenças já emitidas
 
-Os clientes que já têm `license.key` continuam funcionando até a expiração
-(o arquivo local é validado por HWID + data, sem consulta online). Mas, para
-**reativar** uma chave antiga, ela precisa existir em `ghost_licenses`.
+Licenças antigas (sem sessão) ganham uma janela de migração de
+`GHOSTLENS_LEGACY_GRACE_HOURS` (default 72h), durante a qual o daemon tenta
+obter a sessão. Se a chave não estiver em `ghost_licenses`, após a janela o
+acesso é bloqueado. Migre **antes** de distribuir a v3.1 para os clientes.
 
 Migre o histórico local do admin:
 
@@ -108,9 +127,10 @@ values ('GHOST-PRO-XXXX-XXXX-XXXX', 'cliente@exemplo.com',
         'GhostLens Pro (3 Dispositivos)', 'PRO', 3, 'manual', now() + interval '30 days');
 ```
 
-## 8. Instaladores regerados (v3.0.0)
+## 8. Instaladores regerados (v3.1.0)
 
-Os pacotes publicados foram regerados com o código corrigido:
+Os pacotes publicados foram regerados com o código corrigido (sessão JWT,
+checksums e correção da janela de migração):
 
 | Pacote | Origem |
 |---|---|
@@ -120,18 +140,22 @@ Os pacotes publicados foram regerados com o código corrigido:
 | `public/download/GhostLens-Installer-macOS.zip` | pacote portátil macOS |
 | `download/` e `public/download/` | cópias dos `.exe`/`.dmg` substituídas |
 
-Versão 3.0.0 no instalador NSIS e no `Info.plist` do app.
+Versão 3.1.0 no instalador NSIS e no `Info.plist` do app.
 
 ## 9. Testes rápidos
 
 ```bash
-# health
+# health das duas rotas
 curl -s https://SEU-DOMINIO/api/verify_license
+curl -s https://SEU-DOMINIO/api/license_session
 
-# deve falhar sem licença no banco
-curl -s -X POST https://SEU-DOMINIO/api/verify_license \
+# sessão sem licença registrada → 404 (e rate limit após 10 tentativas)
+curl -s -X POST https://SEU-DOMINIO/api/license_session \
   -H 'Content-Type: application/json' \
   -d '{"key":"GHOST-PRO-AAAA-BBBB-CCCC","hwid":"GP-MAC-TEST"}'
+
+# refresh sem token → 401
+curl -s -o /dev/null -w '%{http_code}\n' -X POST https://SEU-DOMINIO/api/license_session
 
 # webhook Asaas sem token deve dar 401
 curl -s -o /dev/null -w '%{http_code}\n' -X POST https://SEU-DOMINIO/api/webhook_asaas \
@@ -140,9 +164,19 @@ curl -s -o /dev/null -w '%{http_code}\n' -X POST https://SEU-DOMINIO/api/webhook
 
 ## 10. Itens ainda pendentes
 
+- **Assinatura de código** (Apple Developer ID + notarização; Authenticode no
+  Windows). É o que impede um instalador falso de se passar pelo oficial.
+- **Update assinado** (Ed25519/minisign) para o cliente verificar atualizações.
+- **Auditoria das edge functions/RLS** (`process-media`, `pix-checkout`,
+  `create-vip-checkout`, `ghost_wallets`). A cobrança real tem de ser
+  server-side.
+- **Empacotar o Mac com Nuitka** — hoje o `.app` entrega `.py` legível; o
+  Windows entrega `.pyc`, que é decompilável. Obfuscação atrasa, não impede.
 - Rotação da chave WaveSpeed é manual (painel + revogação). Ela ainda existe no
   histórico do git e nos arquivos do ErosChat (produto separado).
 - Consolidação do `index.html` em um único fonte (hoje são 4 cópias iguais).
 - `check_network` ainda mede o IP do host, não do emulador.
 - Os `.exe/.dmg` versionados são os instaladores de entrega do GhostPhone; não
   devem ser removidos do repositório.
+- Checksums: scrcpy, JRE e command-line tools estão pinados. Os pacotes que o
+  `sdkmanager` baixa depois são verificados pelo próprio SDK.
