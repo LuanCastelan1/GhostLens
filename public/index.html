@@ -5044,9 +5044,18 @@
       codeInput.value = 'Gerando cobrança oficial no Asaas...';
 
       try {
+        const session = (await supabaseClient?.auth?.getSession())?.data?.session;
+        const accessToken = session?.access_token;
+        if (!accessToken) {
+          throw new Error('Faça login novamente para gerar o Pix.');
+        }
+
         const res = await fetch('https://mbelyevitfksmknlyhgr.supabase.co/functions/v1/pix-checkout', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`
+          },
           body: JSON.stringify({
             user_email: currentUser.email,
             pack_id: `ghost_${amount}`
@@ -5167,9 +5176,18 @@
       }
 
       try {
+        const session = (await supabaseClient?.auth?.getSession())?.data?.session;
+        const accessToken = session?.access_token;
+        if (!accessToken) {
+          throw new Error('Faça login novamente para assinar.');
+        }
+
         const res = await fetch('https://mbelyevitfksmknlyhgr.supabase.co/functions/v1/create-vip-checkout', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`
+          },
           body: JSON.stringify({
             user_email: currentUser.email,
             plan: planKey
