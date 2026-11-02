@@ -178,10 +178,10 @@ Falhas encontradas no banco compartilhado (projeto ErosChat):
 Correção: rodar `ErosChat/supabase/fix_wallet_rpc_security.sql` no SQL Editor.
 Depois validar que anon recebe 401/403 nas três funções.
 
-Corrigido no código: `pix-checkout` e `create-vip-checkout` agora exigem
-`Authorization: Bearer` e derivam o e-mail do token. Falta apenas o deploy
-das edge functions (`supabase functions deploy ...`). O GhostLens já envia
-o token nas duas chamadas.
+Corrigido e deployado em 2026-11-02: `pix-checkout` e `create-vip-checkout`
+exigem `Authorization: Bearer` e derivam o e-mail do token. Validado:
+sem JWT → 401; com JWT de teste + pack/plano inválido → 400 (sem criar
+cobrança). O GhostLens envia o token nas duas chamadas.
 
 ## 11. Itens ainda pendentes
 
