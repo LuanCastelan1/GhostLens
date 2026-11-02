@@ -127,7 +127,7 @@ values ('GHOST-PRO-XXXX-XXXX-XXXX', 'cliente@exemplo.com',
         'GhostLens Pro (3 Dispositivos)', 'PRO', 3, 'manual', now() + interval '30 days');
 ```
 
-## 8. Instaladores regerados (v3.1.0)
+## 8. Instaladores regerados (v3.1.1)
 
 Os pacotes publicados foram regerados com o código corrigido (sessão JWT,
 checksums e correção da janela de migração):
@@ -140,7 +140,7 @@ checksums e correção da janela de migração):
 | `public/download/GhostLens-Installer-macOS.zip` | pacote portátil macOS |
 | `download/` e `public/download/` | cópias dos `.exe`/`.dmg` substituídas |
 
-Versão 3.1.0 no instalador NSIS e no `Info.plist` do app.
+Versão 3.1.1 no instalador NSIS e no `Info.plist` do app.
 
 ## 9. Testes rápidos
 
