@@ -1,82 +1,126 @@
-// Webhook Stripe Serverless Handler para GhostLens Studio
-// Rota na Vercel: /api/webhook_stripe
+// ============================================================================
+// GhostLens • Webhook Stripe (Vercel Serverless)
+// Rota: /api/webhook_stripe
+//
+// - Valida a assinatura stripe-signature (STRIPE_WEBHOOK_SECRET).
+// - Persiste a licença em public.ghost_licenses (idempotente por payment_id).
+// - Envia a chave por e-mail (Resend, opcional via RESEND_API_KEY).
+//
+// ⚠️ A Vercel pode entregar o body já parseado. Quando isso acontece, a
+// assinatura é conferida sobre o JSON re-serializado. Para produção de alto
+// volume, prefira uma rota Next.js com bodyParser desligado ou capture o
+// rawBody no edge/proxy.
+// ============================================================================
+'use strict';
 
-const crypto = require('crypto');
-
-function generateLicenseKey(code) {
-  const p1 = crypto.randomBytes(2).toString('hex').toUpperCase();
-  const p2 = crypto.randomBytes(2).toString('hex').toUpperCase();
-  const p3 = crypto.randomBytes(2).toString('hex').toUpperCase();
-  return `GHOST-${code}-${p1}-${p2}-${p3}`;
-}
+const {
+  readRawBody,
+  verifyStripeSignature,
+  createOrGetLicense,
+  sendLicenseEmail,
+  planForAmountBRL,
+  normalizeLicense,
+  setCors
+} = require('../lib/ghostlens-backend');
 
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, stripe-signature');
+  setCors(res, 'Content-Type, stripe-signature');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
 
   if (req.method === 'GET') {
-    return res.status(200).json({ status: 'online', service: 'GhostLens Stripe Webhook Engine 2.0' });
+    return res.status(200).json({
+      status: 'online',
+      service: 'GhostLens Stripe Webhook Engine 3.0'
+    });
   }
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ error: 'method_not_allowed' });
   }
 
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || '';
+  if (!webhookSecret) {
+    console.error('[stripe] STRIPE_WEBHOOK_SECRET ausente — evento recusado.');
+    return res.status(503).json({ error: 'webhook_not_configured' });
+  }
+
+  const rawBody = await readRawBody(req);
+  const signature = req.headers['stripe-signature'];
+
+  if (!verifyStripeSignature(rawBody, signature, webhookSecret)) {
+    console.warn('[stripe] Assinatura inválida — evento recusado.');
+    return res.status(400).json({ error: 'invalid_signature' });
+  }
+
+  let event;
   try {
-    const event = req.body || {};
-    console.log(`⚡ [Stripe Webhook] Evento: ${event.type} | ID: ${event.id}`);
+    event = JSON.parse(rawBody.toString('utf8') || '{}');
+  } catch {
+    return res.status(400).json({ error: 'invalid_json' });
+  }
 
-    if (event.type === 'checkout.session.completed' || event.type === 'invoice.payment_succeeded') {
-      const session = event.data?.object || {};
-      const amount = session.amount_total || session.amount_paid || 0; // centavos
-      const customerEmail = session.customer_details?.email || session.customer_email || 'cliente@ghostlens.ai';
+  const eventType = event.type || 'unknown';
+  const object = (event.data && event.data.object) || {};
+  console.log(`⚡ [stripe] Evento ${eventType} | ${event.id || 'sem_id'}`);
 
-      let planCode = 'PRO';
-      let planName = 'GhostLens Pro (3 Dispositivos)';
-      let maxDevices = 3;
+  try {
+    let amountCents = 0;
+    let customerEmail = '';
+    let paymentId = '';
 
-      if (amount < 7000) {
-        planCode = 'SOLO';
-        planName = 'GhostLens Solo (1 Dispositivo)';
-        maxDevices = 1;
-      } else if (amount >= 20000) {
-        planCode = 'AGENCY';
-        planName = 'GhostLens Agency (10 Dispositivos)';
-        maxDevices = 10;
-      }
-
-      const licenseKey = generateLicenseKey(planCode);
-
-      const licenseRecord = {
-        key: licenseKey,
-        email: customerEmail,
-        plan: planName,
-        code: planCode,
-        max_devices: maxDevices,
-        provider: 'stripe',
-        session_id: session.id,
-        amount_brl: (amount / 100).toFixed(2),
-        created_at: new Date().toISOString(),
-        expires_at: new Date(Date.now() + (30 * 86400 * 1000)).toISOString()
-      };
-
-      console.log('✅ [GhostLens] Licença blindada emitida via Stripe:', licenseRecord);
-
-      return res.status(200).json({
-        success: true,
-        message: 'Pagamento Stripe processado com sucesso',
-        license: licenseRecord
-      });
+    if (eventType === 'checkout.session.completed') {
+      amountCents = object.amount_total || 0;
+      customerEmail = (object.customer_details && object.customer_details.email) ||
+        object.customer_email || '';
+      paymentId = object.id || '';
+    } else if (eventType === 'invoice.payment_succeeded') {
+      amountCents = object.amount_paid || 0;
+      customerEmail = object.customer_email || '';
+      paymentId = object.id || '';
+    } else {
+      return res.status(200).json({ received: true, ignored: eventType });
     }
 
-    return res.status(200).json({ received: true, type: event.type });
+    if (!paymentId) {
+      return res.status(400).json({ error: 'missing_payment_id' });
+    }
+
+    const amountBRL = amountCents / 100;
+    const tier = planForAmountBRL(amountBRL);
+
+    const license = await createOrGetLicense({
+      email: customerEmail,
+      amountBRL,
+      provider: 'stripe',
+      paymentId,
+      days: 30,
+      ...tier
+    });
+
+    if (!license) {
+      throw new Error('license_insert_returned_empty');
+    }
+
+    const emailResult = await sendLicenseEmail(license);
+    console.log(
+      `✅ [stripe] Licença ${license.code} emitida para ${license.email || 'sem-email'} ` +
+      `(e-mail: ${emailResult.sent ? 'enviado' : emailResult.reason})`
+    );
+
+    // Stripe só precisa do 2xx. A chave NÃO é devolvida na resposta.
+    return res.status(200).json({
+      received: true,
+      license_issued: true,
+      email_sent: Boolean(emailResult.sent),
+      license: {
+        code: normalizeLicense(license).code,
+        plan: license.plan
+      }
+    });
   } catch (err) {
-    console.error('❌ Erro no webhook Stripe:', err);
-    return res.status(500).json({ error: err.message });
+    // 500 faz o Stripe reenviar o evento — desejável se o banco falhou.
+    console.error('❌ [stripe] Erro ao processar pagamento:', err.status || '', err.message, err.data || '');
+    return res.status(500).json({ error: 'processing_failed' });
   }
 };

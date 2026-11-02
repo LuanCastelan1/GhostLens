@@ -57,7 +57,9 @@ exit /b 1
 
 :RUN_SERVER
 set SCRIPT=
+if exist "%~dp0daemon\servidor_ponte_local.pyc" set SCRIPT="%~dp0daemon\servidor_ponte_local.pyc"
 if exist "%~dp0daemon\servidor_ponte_local.py" set SCRIPT="%~dp0daemon\servidor_ponte_local.py"
+if exist "%~dp0servidor_ponte_local.pyc" set SCRIPT="%~dp0servidor_ponte_local.pyc"
 if exist "%~dp0servidor_ponte_local.py" set SCRIPT="%~dp0servidor_ponte_local.py"
 
 if not defined SCRIPT (

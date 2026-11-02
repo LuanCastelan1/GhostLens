@@ -1,94 +1,121 @@
-// Webhook Asaas Serverless Handler para GhostLens Studio
-// Rota na Vercel: /api/webhook_asaas
+// ============================================================================
+// GhostLens • Webhook Asaas (Vercel Serverless)
+// Rota: /api/webhook_asaas
+//
+// - Exige ASAAS_WEBHOOK_TOKEN e REJEITA token divergente (antes só avisava).
+// - Persiste a licença em public.ghost_licenses (idempotente por payment_id).
+// - Envia a chave por e-mail (Resend, opcional via RESEND_API_KEY).
+// ============================================================================
+'use strict';
 
-const crypto = require('crypto');
+const {
+  safeEqualStr,
+  createOrGetLicense,
+  sendLicenseEmail,
+  planForAmountBRL,
+  normalizeLicense,
+  setCors
+} = require('../lib/ghostlens-backend');
 
-// Secret token configured in Asaas
-const WEBHOOK_TOKEN = process.env.ASAAS_WEBHOOK_TOKEN || 'ghostlens_webhook_seguro_2026';
-
-function generateLicenseKey(code) {
-  const p1 = crypto.randomBytes(2).toString('hex').toUpperCase();
-  const p2 = crypto.randomBytes(2).toString('hex').toUpperCase();
-  const p3 = crypto.randomBytes(2).toString('hex').toUpperCase();
-  return `GHOST-${code}-${p1}-${p2}-${p3}`;
+async function fetchAsaasCustomerEmail(customerId) {
+  const apiKey = process.env.ASAAS_API_KEY || '';
+  if (!apiKey || !customerId) return '';
+  const base = (process.env.ASAAS_BASE_URL || 'https://api.asaas.com/v3').replace(/\/+$/, '');
+  try {
+    const res = await fetch(`${base}/customers/${encodeURIComponent(customerId)}`, {
+      headers: { access_token: apiKey }
+    });
+    if (!res.ok) return '';
+    const data = await res.json();
+    return data.email || '';
+  } catch (err) {
+    console.warn('[asaas] Não foi possível buscar e-mail do cliente:', err.message);
+    return '';
+  }
 }
 
 module.exports = async (req, res) => {
-  // Configurar CORS
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, asaas-access-token');
+  setCors(res, 'Content-Type, asaas-access-token');
 
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  if (req.method === 'OPTIONS') return res.status(200).end();
 
   if (req.method === 'GET') {
-    return res.status(200).json({ status: 'online', service: 'GhostLens Asaas Webhook Engine 2.0' });
+    return res.status(200).json({
+      status: 'online',
+      service: 'GhostLens Asaas Webhook Engine 3.0'
+    });
   }
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ error: 'method_not_allowed' });
   }
 
+  const expectedToken = process.env.ASAAS_WEBHOOK_TOKEN || '';
+  if (!expectedToken) {
+    console.error('[asaas] ASAAS_WEBHOOK_TOKEN ausente — evento recusado.');
+    return res.status(503).json({ error: 'webhook_not_configured' });
+  }
+
+  const receivedToken = req.headers['asaas-access-token'] || req.query?.access_token || '';
+  if (!safeEqualStr(receivedToken, expectedToken)) {
+    console.warn('[asaas] Token de webhook inválido — evento recusado.');
+    return res.status(401).json({ error: 'invalid_webhook_token' });
+  }
+
+  const body = req.body || {};
+  const event = body.event || 'unknown';
+  const payment = body.payment || {};
+  console.log(`⚡ [asaas] Evento ${event} | ${payment.id || 'sem_id'} | R$ ${payment.value || 0}`);
+
   try {
-    const receivedToken = req.headers['asaas-access-token'] || req.query.access_token;
-    if (WEBHOOK_TOKEN && receivedToken && receivedToken !== WEBHOOK_TOKEN) {
-      console.warn('⚠️ Token de webhook divergente recebido:', receivedToken);
+    if (event !== 'PAYMENT_RECEIVED' && event !== 'PAYMENT_CONFIRMED') {
+      return res.status(200).json({ received: true, ignored: event });
     }
 
-    const body = req.body || {};
-    const event = body.event;
-    const payment = body.payment || {};
+    const paymentId = payment.id || '';
+    if (!paymentId) {
+      return res.status(400).json({ error: 'missing_payment_id' });
+    }
 
-    console.log(`⚡ [Asaas Webhook] Evento: ${event} | ID: ${payment.id} | Valor: R$ ${payment.value}`);
+    let customerEmail = payment.customerEmail || payment.clientEmail || '';
+    if (!customerEmail && payment.customer) {
+      customerEmail = await fetchAsaasCustomerEmail(payment.customer);
+    }
 
-    // Processa pagamentos aprovados
-    if (event === 'PAYMENT_RECEIVED' || event === 'PAYMENT_CONFIRMED') {
-      const val = parseFloat(payment.value || '0');
-      let planCode = 'PRO';
-      let planName = 'GhostLens Pro (3 Dispositivos)';
-      let maxDevices = 3;
+    const amountBRL = parseFloat(payment.value || '0') || 0;
+    const tier = planForAmountBRL(amountBRL);
 
-      if (val < 70) {
-        planCode = 'SOLO';
-        planName = 'GhostLens Solo (1 Dispositivo)';
-        maxDevices = 1;
-      } else if (val >= 200) {
-        planCode = 'AGENCY';
-        planName = 'GhostLens Agency (10 Dispositivos)';
-        maxDevices = 10;
+    const license = await createOrGetLicense({
+      email: customerEmail,
+      amountBRL,
+      provider: 'asaas',
+      paymentId,
+      days: 30,
+      ...tier
+    });
+
+    if (!license) {
+      throw new Error('license_insert_returned_empty');
+    }
+
+    const emailResult = await sendLicenseEmail(license);
+    console.log(
+      `✅ [asaas] Licença ${license.code} emitida para ${license.email || 'sem-email'} ` +
+      `(e-mail: ${emailResult.sent ? 'enviado' : emailResult.reason})`
+    );
+
+    return res.status(200).json({
+      received: true,
+      license_issued: true,
+      email_sent: Boolean(emailResult.sent),
+      license: {
+        code: normalizeLicense(license).code,
+        plan: license.plan
       }
-
-      const licenseKey = generateLicenseKey(planCode);
-      const customerEmail = payment.customerEmail || payment.clientEmail || 'cliente@ghostlens.ai';
-
-      const licenseRecord = {
-        key: licenseKey,
-        email: customerEmail,
-        plan: planName,
-        code: planCode,
-        max_devices: maxDevices,
-        payment_id: payment.id,
-        value: val,
-        billing_type: payment.billingType,
-        created_at: new Date().toISOString(),
-        expires_at: new Date(Date.now() + (30 * 86400 * 1000)).toISOString()
-      };
-
-      console.log('✅ [GhostLens] Licença blindada emitida automaticamente:', licenseRecord);
-
-      return res.status(200).json({
-        success: true,
-        message: 'Pagamento processado com sucesso',
-        license: licenseRecord
-      });
-    }
-
-    // Outros eventos retornam 200 para confirmar recebimento ao Asaas
-    return res.status(200).json({ received: true, event });
+    });
   } catch (err) {
-    console.error('❌ Erro no webhook Asaas:', err);
-    return res.status(500).json({ error: err.message });
+    // 500 faz o Asaas reenviar o evento — desejável se o banco falhou.
+    console.error('❌ [asaas] Erro ao processar pagamento:', err.status || '', err.message, err.data || '');
+    return res.status(500).json({ error: 'processing_failed' });
   }
 };

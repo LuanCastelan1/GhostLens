@@ -3447,7 +3447,7 @@
   </div>
 
   <script>
-    let GHOSTLENS_CLUSTER_KEY = localStorage.getItem('ghostlens_wavespeed_key') || 'wsk_live_ZgTBjZV79PLwDBXUxFWJ7grgzOZp7eZbwsGlRUmnXIo';
+    let GHOSTLENS_CLUSTER_KEY = localStorage.getItem('ghostlens_wavespeed_key') || '';
     let currentEngine = 'ghost_60fps';
     let currentDevice = 'iphone16pro';
     let currentGps = 'auto_ai';
@@ -4673,12 +4673,49 @@
       }
     }
 
-    let currentUser = { id: 'admin_local', email: 'luan@ghostlens.ai' };
-    let userBalance = 500.00;
+    let currentUser = null;
+    let userBalance = 0.00;
     let currentRechargeAmount = 10.00;
     let pixPollingInterval = null;
     let currentAuthTab = 'login';
     let walletChannel = null;
+
+    // ─── SESSÃO ADMIN (token local do daemon; sem senha no código) ───
+    function getGhostAdminToken() {
+      return sessionStorage.getItem('ghostlens_admin_token') || '';
+    }
+
+    function isGhostAdminSession() {
+      return Boolean(getGhostAdminToken());
+    }
+
+    async function validateGhostAdminToken(token) {
+      if (!token) return false;
+      try {
+        const res = await fetch('http://127.0.0.1:4444/api/auth/admin_check', {
+          method: 'GET',
+          headers: { 'X-Ghost-Admin-Token': token },
+          cache: 'no-store'
+        });
+        if (!res.ok) return false;
+        const data = await res.json();
+        return data.admin === true;
+      } catch (e) {
+        return false;
+      }
+    }
+
+    async function requestGhostAdminAccess() {
+      const token = prompt("👑 Acesso Master Admin GhostLens\nCole o token admin do daemon (~/.ghostphone/admin_token):", "");
+      if (!token) return false;
+      const clean = token.trim();
+      if (!(await validateGhostAdminToken(clean))) {
+        alert("❌ Token admin inválido ou daemon offline (porta 4444).");
+        return false;
+      }
+      sessionStorage.setItem('ghostlens_admin_token', clean);
+      return true;
+    }
 
     // ─── AUTENTICAÇÃO SUPABASE ───
     function openGhostAuthModal(tab = 'login') {
@@ -4731,31 +4768,18 @@
       btn.disabled = true;
       btn.style.opacity = '0.7';
 
-      // 👑 Master Admin exclusivo para Luan & Anthony
-      const isLuanOrAnthony = email && (
-        email.toLowerCase().includes('luan') || 
-        email.toLowerCase().includes('castellan') || 
-        email.toLowerCase() === 'luan@ghostlens.ai' ||
-        email.toLowerCase().includes('anthony') ||
-        email.toLowerCase() === 'anthony@ghostlens.ai'
-      );
-      
-      const isMasterPass = password && (
-        password === 'ghostlens2026' || 
-        password === 'luan2026' || 
-        password === 'anthony2026' ||
-        password === 'ghostlens123456' || 
-        password === '2026'
-      );
-
-      if (isLuanOrAnthony && isMasterPass) {
-        const isAdminName = email.toLowerCase().includes('anthony') ? 'Anthony' : 'Luan Castellan';
+      // 👑 Master Admin: exige o token local do daemon (sem senha no código)
+      const adminTokenCandidate = password ? password.trim() : '';
+      // Só envia ao daemon local o que realmente parece um token admin
+      const looksLikeAdminToken = adminTokenCandidate.length >= 32 && !/\s/.test(adminTokenCandidate);
+      if (looksLikeAdminToken && await validateGhostAdminToken(adminTokenCandidate)) {
+        sessionStorage.setItem('ghostlens_admin_token', adminTokenCandidate);
         currentUser = {
           id: 'admin_local',
-          email: email || 'luan@ghostlens.ai',
-          user_metadata: { role: 'master_admin', name: isAdminName }
+          email: email || 'admin@ghostlens.local',
+          user_metadata: { role: 'master_admin', name: 'Admin' }
         };
-        localStorage.setItem('ghostlens_master_admin', 'true');
+        localStorage.removeItem('ghostlens_master_admin');
         localStorage.setItem('ghostlens_session_user', JSON.stringify(currentUser));
         userBalance = 999.00;
 
@@ -4804,17 +4828,6 @@
           alert(`🎉 Conta criada com sucesso!\nBem-vindo ao GhostLens Studio, ${email.split('@')[0]}!`);
         }
       } catch (err) {
-        // Fallback resiliente caso Supabase falhe ou rejeite
-        if (isLuan) {
-          currentUser = { id: 'admin_local', email: email || 'luan@ghostlens.ai' };
-          localStorage.setItem('ghostlens_master_admin', 'true');
-          localStorage.setItem('ghostlens_session_user', JSON.stringify(currentUser));
-          userBalance = 999.00;
-          closeGhostAuthModal();
-          updateAuthUI();
-          updateWalletDisplay();
-          return;
-        }
         fb.style.display = 'block';
         fb.style.background = 'rgba(239, 68, 68, 0.15)';
         fb.style.border = '1px solid rgba(239, 68, 68, 0.35)';
@@ -4833,6 +4846,7 @@
         }
         localStorage.removeItem('ghostlens_session_user');
         localStorage.removeItem('ghostlens_master_admin');
+        sessionStorage.removeItem('ghostlens_admin_token');
         currentUser = null;
         userBalance = 0.00;
         if (walletChannel && supabaseClient) supabaseClient.removeChannel(walletChannel);
@@ -4847,14 +4861,7 @@
       const emailSpan = document.getElementById('headerUserEmail');
       const btnAdmin = document.getElementById('btnAdminMaster');
 
-      const isMasterAdmin = currentUser && (
-        currentUser.email === 'luan@ghostlens.ai' ||
-        currentUser.email.startsWith('luan') ||
-        currentUser.email.includes('castellan') ||
-        currentUser.email === 'anthony@ghostlens.ai' ||
-        currentUser.email.startsWith('anthony') ||
-        localStorage.getItem('ghostlens_master_admin') === 'true'
-      );
+      const isMasterAdmin = Boolean(currentUser) && isGhostAdminSession();
 
       if (btnAdmin) {
         btnAdmin.style.display = isMasterAdmin ? 'inline-flex' : 'none';
@@ -4880,11 +4887,14 @@
     async function initGhostAuth() {
       // 1. Restaura sessão salva se existir no navegador
       const savedUser = localStorage.getItem('ghostlens_session_user');
-      const isMasterAdmin = localStorage.getItem('ghostlens_master_admin') === 'true';
 
       if (savedUser) {
-        try { 
-          currentUser = JSON.parse(savedUser); 
+        try {
+          currentUser = JSON.parse(savedUser);
+          // Sessão admin só vale enquanto o token do daemon estiver presente
+          if (currentUser && currentUser.id === 'admin_local' && !isGhostAdminSession()) {
+            currentUser = null;
+          }
         } catch(e) {
           currentUser = null;
         }
@@ -4900,6 +4910,12 @@
 
       updateAuthUI();
       updateWalletDisplay();
+
+      // Sessão admin restaurada dentro da mesma aba (token em sessionStorage)
+      if (isGhostAdminSession() && currentUser && currentUser.id === 'admin_local') {
+        userBalance = 999.00;
+        updateWalletDisplay();
+      }
 
       if (!supabaseClient) return;
 
@@ -4922,14 +4938,13 @@
 
     // ─── CARTEIRA FXL NO SUPABASE (GHOST_WALLETS) ───
     async function loadWalletBalance() {
-      const isLuan = currentUser && (
-        currentUser.email === 'luan@ghostlens.ai' ||
-        currentUser.email.startsWith('luan') ||
-        currentUser.email.includes('castellan') ||
-        currentUser.email === 'luan@eroschat.com' ||
-        currentUser.id === 'admin_local'
-      );
-      if (isLuan || !currentUser) {
+      if (!currentUser) {
+        userBalance = 0.00;
+        updateWalletDisplay();
+        return;
+      }
+
+      if (isGhostAdminSession()) {
         userBalance = 999.00;
         updateWalletDisplay();
         return;
@@ -5180,8 +5195,8 @@
     function getUserMaxProfilesLimit() {
       if (!currentUser) return 1;
       const email = (currentUser.email || '').toLowerCase();
-      // Master Admins (Luan & Anthony) têm perfis ilimitados
-      if (email.includes('luan') || email.includes('castellan') || email.includes('anthony') || localStorage.getItem('ghostlens_master_admin') === 'true') {
+      // Master Admin (token do daemon) tem perfis ilimitados
+      if (isGhostAdminSession()) {
         return 999;
       }
       const plan = (currentUser.user_metadata?.plan || localStorage.getItem('ghostlens_user_plan') || 'SOLO').toUpperCase();
@@ -5220,13 +5235,10 @@
       const storageKey = getProfilesStorageKey();
       let localProfs = JSON.parse(localStorage.getItem(storageKey) || '[]');
 
-      // Perfis de demonstração (Luana e Leninha) exclusivos da conta do Luan
-      const isLuan = currentUser && currentUser.email && (
-        currentUser.email.includes('luan') ||
-        currentUser.email.includes('castellan')
-      );
+      // Perfis de demonstração exclusivos da sessão admin
+      const isAdmin = isGhostAdminSession();
 
-      if (isLuan && localProfs.length === 0) {
+      if (isAdmin && localProfs.length === 0) {
         localProfs = [
           {
             id: 'luana',
@@ -7967,29 +7979,21 @@
             brandHeaderClickTimer = setTimeout(() => { brandHeaderClickCount = 0; }, 1200);
             if (brandHeaderClickCount >= 3) {
               brandHeaderClickCount = 0;
-              openGhostAdminModal(true);
+              openGhostAdminModal();
             }
           });
         }
       }
 
-      function openGhostAdminModal(bypassAuth = false) {
-        const isLuan = currentUser && (currentUser.email === 'luan@ghostlens.ai' || currentUser.email.startsWith('luan'));
-        const isStoredAdmin = localStorage.getItem('ghostlens_master_admin') === 'true';
-
-        if (!bypassAuth && !isLuan && !isStoredAdmin) {
-          const pin = prompt("👑 Acesso Master Admin GhostLens\nDigite a senha mestre de acesso:", "");
-          if (pin === "2026" || pin === "luan2026" || pin === "ghostlens") {
-            localStorage.setItem('ghostlens_master_admin', 'true');
-          } else {
-            alert("❌ Acesso não autorizado.");
-            return;
-          }
+      async function openGhostAdminModal() {
+        if (!isGhostAdminSession() || !(await validateGhostAdminToken(getGhostAdminToken()))) {
+          const ok = await requestGhostAdminAccess();
+          if (!ok) return;
         }
 
-        // Preenche os campos do Admin
+        // O campo da chave WaveSpeed começa vazio; nunca é preenchido pelo código.
         const keyInput = document.getElementById('adminWaveSpeedKeyInput');
-        if (keyInput) keyInput.value = GHOSTLENS_CLUSTER_KEY;
+        if (keyInput) keyInput.value = '';
 
         const waInput = document.getElementById('adminWhatsappInput');
         if (waInput) waInput.value = localStorage.getItem('ghostlens_admin_whatsapp') || '';
@@ -8077,10 +8081,15 @@
           return;
         }
 
+        if (!getGhostAdminToken() && !(await requestGhostAdminAccess())) return;
+
         try {
           const res = await fetch('http://127.0.0.1:4444/api/auth/generate_token', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'X-Ghost-Admin-Token': getGhostAdminToken()
+            },
             body: JSON.stringify({ email, plan, days, hwid: hwid || null })
           });
 
@@ -8132,8 +8141,12 @@
         const tbody = document.getElementById('tblAdminLicensesBody');
         if (!tbody) return;
 
+        if (!getGhostAdminToken()) return;
+
         try {
-          const res = await fetch('http://127.0.0.1:4444/api/auth/issued_licenses');
+          const res = await fetch('http://127.0.0.1:4444/api/auth/issued_licenses', {
+            headers: { 'X-Ghost-Admin-Token': getGhostAdminToken() }
+          });
           if (res.ok) {
             const data = await res.json();
             const list = data.licenses || [];
@@ -8327,6 +8340,11 @@
 
       async function testWaveSpeedConnection() {
         const statusEl = document.getElementById('wavespeedKeyStatusText');
+        if (!GHOSTLENS_CLUSTER_KEY) {
+          if (statusEl) statusEl.innerText = "🔴 Nenhuma chave WaveSpeed configurada.";
+          alert("⚠️ Configure e salve a chave WaveSpeed no painel admin antes de testar.");
+          return;
+        }
         if (statusEl) statusEl.innerText = "⏳ Testando conexão com a WaveSpeed...";
 
         try {
@@ -8419,9 +8437,9 @@
 
       async function executeCurrentEngineAction() {
         if (!currentUser) {
-          currentUser = { id: 'admin_local', email: 'luan@ghostlens.ai' };
-          userBalance = 999.00;
-          updateWalletDisplay();
+          alert("🔒 Entre na sua conta para processar mídias.");
+          openGhostAuthModal('login');
+          return;
         }
 
         if (!loadedFile) {
@@ -8433,16 +8451,10 @@
         const isVideo = loadedFile.type.startsWith('video/') || loadedFile.name.match(/\.(mp4|mov)$/i);
         const cost = getEnginePrice(currentEngine, isVideo);
 
-        const isLuan = currentUser && (
-          currentUser.email === 'luan@ghostlens.ai' ||
-          currentUser.email.startsWith('luan') ||
-          currentUser.email.includes('castellan') ||
-          currentUser.email === 'luan@eroschat.com' ||
-          currentUser.id === 'admin_local'
-        );
+        const isAdmin = isGhostAdminSession();
 
         // Verificação preliminar de saldo (apenas para clientes externos)
-        if (!isLuan && userBalance < cost) {
+        if (!isAdmin && userBalance < cost) {
           alert(`⚠️ Saldo insuficiente!\n\nCusto da operação: R$ ${cost.toFixed(2).replace('.', ',')}\nSeu saldo atual: R$ ${userBalance.toFixed(2).replace('.', ',')}\n\nFaça uma recarga mínima de R$ 10,00 via Pix para continuar.`);
           openStudioPixModal(10);
           return;
@@ -8473,7 +8485,7 @@
               });
 
               if (edgeRes.status === 402) {
-                if (isLuan) {
+                if (isAdmin) {
                   console.warn("Edge Function 402, acionando fallback local ultra-rápido para admin.");
                 } else {
                   const errData = await edgeRes.json().catch(() => ({}));
@@ -8530,7 +8542,7 @@
         }
 
         // ─── 2. PROCESSAMENTO LOCAL / MOTORES IA: DÉBITO ATÔMICO NO BANCO (OU VISUAL ADMIN) ───
-        if (isLuan) {
+        if (isAdmin) {
           userBalance = Math.max(0, userBalance - cost);
           updateWalletDisplay();
         } else if (currentUser && currentUser.id !== 'admin_local' && supabaseClient) {
@@ -8609,6 +8621,9 @@
               }
 
               // 2. FALLBACK NUVEM WAVESPEED
+              if (!GHOSTLENS_CLUSTER_KEY) {
+                throw new Error('WaveSpeed não configurada. Salve a chave no painel admin.');
+              }
               document.getElementById('dockActionLabel').innerText = '⚡ Conectando Neural Cloud...';
 
               // Upload seguro para armazenamento temporário GhostLens

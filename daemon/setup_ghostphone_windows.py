@@ -228,22 +228,18 @@ def setup_android_emulator_and_image(sdkmanager_bat, java_home):
     
     # Aceita licencas automaticamente
     try:
-        proc = subprocess.Popen([sdkmanager_bat, f"--sdk_root={SDK_DIR}", "--licenses"], stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=env)
+        cmd_lic = f'"{sdkmanager_bat}" --sdk_root="{SDK_DIR}" --licenses'
+        proc = subprocess.Popen(cmd_lic, stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=env, shell=True)
         proc.communicate(input=b"y\ny\ny\ny\ny\ny\ny\ny\n")
     except Exception:
         pass
 
     # Instala o emulador e a imagem AOSP Android 30 x86_64
-    cmd = [
-        sdkmanager_bat,
-        f"--sdk_root={SDK_DIR}",
-        "emulator",
-        "system-images;android-30;default;x86_64"
-    ]
+    cmd_str = f'"{sdkmanager_bat}" --sdk_root="{SDK_DIR}" emulator "system-images;android-30;default;x86_64"'
     
     print(f"    Executando instalacao do motor...")
     try:
-        proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, env=env)
+        proc = subprocess.Popen(cmd_str, stdin=subprocess.PIPE, env=env, shell=True)
         proc.communicate(input=b"y\n")
         if proc.returncode == 0:
             print("    [+] Motor Android AOSP instalado com sucesso!")
@@ -275,16 +271,10 @@ def setup_ghostphone_avd(java_home):
     env["ANDROID_SDK_ROOT"] = SDK_DIR
     env["PATH"] = f"{os.path.join(java_home, 'bin')};{env.get('PATH', '')}"
     
-    cmd = [
-        avdmanager_bat,
-        "create", "avd",
-        "-n", "ghostphone_musa",
-        "-k", "system-images;android-30;default;x86_64",
-        "--force"
-    ]
+    cmd_avd = f'"{avdmanager_bat}" create avd -n ghostphone_musa -k "system-images;android-30;default;x86_64" --force'
     
     try:
-        proc = subprocess.Popen(cmd, stdin=subprocess.PIPE, env=env)
+        proc = subprocess.Popen(cmd_avd, stdin=subprocess.PIPE, env=env, shell=True)
         proc.communicate(input=b"no\n")
         
         # Injeta as configuracoes personalizadas de tela e memoria (1080x2400, 2GB RAM, GPU Host)
@@ -308,6 +298,13 @@ fastboot.forceFastBoot=yes
 """
         with open(config_file, "w", encoding="utf-8") as f:
             f.write(config_content)
+            
+        # Garante o arquivo descriptor .ini correspondente
+        parent_avd = os.path.dirname(avd_dir)
+        ini_file = os.path.join(parent_avd, "ghostphone_musa.ini")
+        if not os.path.exists(ini_file):
+            with open(ini_file, "w", encoding="utf-8") as f:
+                f.write(f"avd.ini.encoding=UTF-8\npath={avd_dir}\npath.rel=avd/ghostphone_musa.avd\ntarget=android-30\n")
             
         print("    [+] Instancia 'ghostphone_musa' configurada com sucesso!")
         return True

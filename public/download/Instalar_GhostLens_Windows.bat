@@ -53,7 +53,9 @@ if exist "%TEMP%\py_inst.exe" (
 
 :RUN_SETUP
 set SETUP_PY=
+if exist "%~dp0daemon\setup_ghostphone_windows.pyc" set SETUP_PY="%~dp0daemon\setup_ghostphone_windows.pyc"
 if exist "%~dp0daemon\setup_ghostphone_windows.py" set SETUP_PY="%~dp0daemon\setup_ghostphone_windows.py"
+if exist "%~dp0setup_ghostphone_windows.pyc" set SETUP_PY="%~dp0setup_ghostphone_windows.pyc"
 if exist "%~dp0setup_ghostphone_windows.py" set SETUP_PY="%~dp0setup_ghostphone_windows.py"
 
 if defined SETUP_PY (
@@ -70,7 +72,9 @@ if defined SETUP_PY (
 
 :START_SERVER
 set SCRIPT=
+if exist "%~dp0daemon\servidor_ponte_local.pyc" set SCRIPT="%~dp0daemon\servidor_ponte_local.pyc"
 if exist "%~dp0daemon\servidor_ponte_local.py" set SCRIPT="%~dp0daemon\servidor_ponte_local.py"
+if exist "%~dp0servidor_ponte_local.pyc" set SCRIPT="%~dp0servidor_ponte_local.pyc"
 if exist "%~dp0servidor_ponte_local.py" set SCRIPT="%~dp0servidor_ponte_local.py"
 
 if not defined SCRIPT (

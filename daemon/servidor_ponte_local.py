@@ -7,18 +7,83 @@ ou via chamadas REST padronizadas (/api/env/list, /api/env/start, /api/env/stop)
 import os
 import sys
 import json
+import hmac
 import signal
+import tempfile
 import urllib.parse
 import urllib.request
 import subprocess
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
+# Garante que sys.stdout e sys.stderr nunca sejam None (crítico para pythonw no Windows)
+class _SafeStream:
+    def __init__(self, fallback_file=None):
+        self.file = None
+        if fallback_file:
+            try:
+                os.makedirs(os.path.dirname(fallback_file), exist_ok=True)
+                self.file = open(fallback_file, "a", encoding="utf-8", buffering=1)
+            except Exception:
+                pass
+    def write(self, s):
+        if self.file:
+            try:
+                self.file.write(s)
+            except Exception:
+                pass
+    def flush(self):
+        if self.file:
+            try:
+                self.file.flush()
+            except Exception:
+                pass
+    def isatty(self):
+        return False
+
+log_dir = os.path.expanduser("~/.ghostphone")
+if sys.stdout is None:
+    sys.stdout = _SafeStream(os.path.join(log_dir, "ghostlens_server.log"))
+if sys.stderr is None:
+    sys.stderr = _SafeStream(os.path.join(log_dir, "ghostlens_server_err.log"))
+
 PORT = 4444
+ALLOWED_ORIGINS = {
+    "http://127.0.0.1:4444",
+    "http://localhost:4444",
+    "https://ghostlens.cloud",
+    "https://www.ghostlens.cloud",
+    "https://ghostlens.com.br",
+    "https://www.ghostlens.com.br",
+}
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 EROS_DIR = os.path.dirname(BASE_DIR)
 PERFIS_DIR = os.path.join(EROS_DIR, "perfis_antidetect")
 
 os.makedirs(PERFIS_DIR, exist_ok=True)
+
+ADMIN_TOKEN_FILE = os.path.expanduser("~/.ghostphone/admin_token")
+
+
+def resolve_project_script(name):
+    """Localiza scripts auxiliares sem assumir que estão na mesma pasta."""
+    parent = os.path.dirname(EROS_DIR)
+    candidates = [
+        os.path.join(BASE_DIR, name),
+        os.path.join(BASE_DIR, "daemon", name),
+        os.path.join(EROS_DIR, name),
+        os.path.join(parent, "ErosChat", "ferramentas", name),
+    ]
+    for candidate in candidates:
+        if os.path.isfile(candidate):
+            return candidate
+    return None
+
+
+def tmp_path(suffix):
+    """Arquivo temporário único por requisição (evita colisão em /tmp)."""
+    fd, path = tempfile.mkstemp(prefix="ghost_", suffix=suffix)
+    os.close(fd)
+    return path
 
 import time
 import base64
@@ -34,28 +99,36 @@ except ImportError:
     HAS_PIL = False
 
 try:
-    from ghostphone_auth_guard import auth_guard
+    from ghostphone_auth_guard import auth_guard, get_admin_token
 except ImportError:
     for candidate in [BASE_DIR, os.path.join(BASE_DIR, "daemon"), os.path.dirname(BASE_DIR), os.getcwd()]:
         if candidate not in sys.path:
             sys.path.insert(0, candidate)
-    from ghostphone_auth_guard import auth_guard
+    from ghostphone_auth_guard import auth_guard, get_admin_token
 
 import platform
 
 IS_WINDOWS = platform.system() == 'Windows'
 
+def get_bin_search_dirs():
+    dirs = []
+    if BASE_DIR:
+        dirs.append(os.path.join(BASE_DIR, "bin"))
+    if EROS_DIR and EROS_DIR != BASE_DIR:
+        dirs.append(os.path.join(EROS_DIR, "bin"))
+    return dirs
+
 def ensure_windows_scrcpy():
     """Baixa e descompacta automaticamente o pacote do scrcpy (que já inclui adb.exe) caso falte no Windows."""
     if not IS_WINDOWS:
         return
-    bin_dir = os.path.join(BASE_DIR, "bin")
-    scrcpy_exe = os.path.join(bin_dir, "scrcpy.exe")
-    adb_exe = os.path.join(bin_dir, "adb.exe")
-    if os.path.exists(scrcpy_exe) and os.path.exists(adb_exe):
-        return
+    ext = ".exe"
+    for d in get_bin_search_dirs():
+        if os.path.exists(os.path.join(d, "scrcpy" + ext)) and os.path.exists(os.path.join(d, "adb" + ext)):
+            return
 
-    os.makedirs(bin_dir, exist_ok=True)
+    target_bin_dir = os.path.join(EROS_DIR, "bin") if os.path.exists(os.path.join(EROS_DIR, "bin")) else os.path.join(BASE_DIR, "bin")
+    os.makedirs(target_bin_dir, exist_ok=True)
     zip_dest = os.path.join(BASE_DIR, "scrcpy-temp.zip")
     url = "https://github.com/Genymobile/scrcpy/releases/download/v3.1/scrcpy-win64-v3.1.zip"
     print("\n" + "="*60)
@@ -73,7 +146,7 @@ def ensure_windows_scrcpy():
                 filename = os.path.basename(member.filename)
                 if not filename:
                     continue
-                target_path = os.path.join(bin_dir, filename)
+                target_path = os.path.join(target_bin_dir, filename)
                 with zf.open(member) as source, open(target_path, "wb") as target:
                     shutil.copyfileobj(source, target)
         
@@ -86,15 +159,18 @@ def ensure_windows_scrcpy():
 def find_binary(bin_name):
     """Localiza binários no PATH local ou nos diretórios padrões do Windows e macOS."""
     ext = ".exe" if IS_WINDOWS else ""
-    local_bin = os.path.join(BASE_DIR, "bin", bin_name + ext)
-    if os.path.exists(local_bin):
-        return local_bin
+    for d in get_bin_search_dirs():
+        local_bin = os.path.join(d, bin_name + ext)
+        if os.path.exists(local_bin):
+            return local_bin
 
     # Se estiver no Windows e faltar scrcpy ou adb, tenta baixar automaticamente
     if IS_WINDOWS and bin_name in ["scrcpy", "adb"]:
         ensure_windows_scrcpy()
-        if os.path.exists(local_bin):
-            return local_bin
+        for d in get_bin_search_dirs():
+            local_bin = os.path.join(d, bin_name + ext)
+            if os.path.exists(local_bin):
+                return local_bin
 
     # Caminho no PATH do sistema
     which_res = shutil.which(bin_name + ext) or shutil.which(bin_name)
@@ -107,12 +183,13 @@ def find_binary(bin_name):
             os.path.join(os.environ.get("ProgramFiles", "C:\\Program Files"), bin_name, bin_name + ".exe"),
             os.path.join(os.environ.get("LOCALAPPDATA", "C:\\"), "Android", "Sdk", "platform-tools", bin_name + ".exe"),
             os.path.join("C:\\tools", bin_name, bin_name + ".exe"),
-            os.path.join(BASE_DIR, bin_name + ".exe")
+            os.path.join(BASE_DIR, bin_name + ".exe"),
+            os.path.join(EROS_DIR, bin_name + ".exe")
         ]
         for c in win_candidates:
             if os.path.exists(c):
                 return c
-        return local_bin if os.path.exists(local_bin) else (bin_name + ".exe")
+        return os.path.join(get_bin_search_dirs()[0], bin_name + ext) if get_bin_search_dirs() else (bin_name + ".exe")
 
     # Caminhos padrões macOS
     mac_candidates = [
@@ -155,9 +232,13 @@ def get_connected_device_serial():
 
 def find_emulator_bin():
     ext = ".exe" if IS_WINDOWS else ""
-    local_bin = os.path.join(BASE_DIR, "bin", "android-sdk", "emulator", "emulator" + ext)
-    if os.path.exists(local_bin):
-        return local_bin
+    for d in get_bin_search_dirs():
+        local_bin = os.path.join(d, "android-sdk", "emulator", "emulator" + ext)
+        if os.path.exists(local_bin):
+            return local_bin
+        c_bin = os.path.join(d, "emulator" + ext)
+        if os.path.exists(c_bin):
+            return c_bin
     
     # Checa variáveis de ambiente
     for env_var in ["ANDROID_HOME", "ANDROID_SDK_ROOT"]:
@@ -172,7 +253,8 @@ def find_emulator_bin():
         candidates = [
             os.path.join(os.environ.get("LOCALAPPDATA", "C:\\"), "Android", "Sdk", "emulator", "emulator.exe"),
             os.path.join(os.environ.get("ProgramFiles", "C:\\Program Files"), "Android", "emulator", "emulator.exe"),
-            os.path.join(BASE_DIR, "bin", "emulator.exe")
+            os.path.join(BASE_DIR, "bin", "emulator.exe"),
+            os.path.join(EROS_DIR, "bin", "emulator.exe")
         ]
         for c in candidates:
             if os.path.exists(c):
@@ -198,6 +280,29 @@ def boot_ghostphone_emulator(avd_name="ghostphone_musa"):
     emu_bin = find_emulator_bin()
     if not emu_bin or not os.path.exists(emu_bin):
         print(f"⚠️ Binário do emulador não encontrado: {emu_bin}")
+        if IS_WINDOWS:
+            setup_script = None
+            for cand in [
+                os.path.join(EROS_DIR, "daemon", "setup_ghostphone_windows.pyc"),
+                os.path.join(BASE_DIR, "daemon", "setup_ghostphone_windows.pyc"),
+                os.path.join(BASE_DIR, "setup_ghostphone_windows.pyc"),
+                os.path.join(EROS_DIR, "setup_ghostphone_windows.pyc"),
+                os.path.join(EROS_DIR, "daemon", "setup_ghostphone_windows.py"),
+                os.path.join(BASE_DIR, "daemon", "setup_ghostphone_windows.py"),
+                os.path.join(BASE_DIR, "setup_ghostphone_windows.py"),
+                os.path.join(EROS_DIR, "setup_ghostphone_windows.py")
+            ]:
+                if os.path.exists(cand):
+                    setup_script = cand
+                    break
+            
+            py_bin = sys.executable or "python"
+            if setup_script:
+                print(f"🚀 Iniciando provisionamento automático do motor Android em janela visível: {setup_script}")
+                try:
+                    subprocess.Popen(f'start "Configuração GhostPhone Android AVD" cmd /c "{py_bin}" "{setup_script}"', shell=True)
+                except Exception as e:
+                    print(f"Erro ao disparar setup: {e}")
         return None
         
     cmd = [
@@ -212,7 +317,21 @@ def boot_ghostphone_emulator(avd_name="ghostphone_musa"):
     print(f"🚀 Iniciando GhostPhone™ Engine em segundo plano: {' '.join(cmd)}")
     creationflags = 0x08000000 if IS_WINDOWS else 0
     env = os.environ.copy()
-    if not IS_WINDOWS:
+    if IS_WINDOWS:
+        for d in get_bin_search_dirs():
+            jre_cand = os.path.join(d, "jre")
+            if os.path.exists(jre_cand):
+                env["JAVA_HOME"] = jre_cand
+                env["PATH"] = f"{os.path.join(jre_cand, 'bin')};{env.get('PATH', '')}"
+                break
+        for d in get_bin_search_dirs():
+            sdk_cand = os.path.join(d, "android-sdk")
+            if os.path.exists(sdk_cand):
+                env["ANDROID_HOME"] = sdk_cand
+                env["ANDROID_SDK_ROOT"] = sdk_cand
+                env["PATH"] = f"{os.path.join(sdk_cand, 'emulator')};{os.path.join(sdk_cand, 'cmdline-tools', 'latest', 'bin')};{env.get('PATH', '')}"
+                break
+    else:
         env["JAVA_HOME"] = "/opt/homebrew/opt/openjdk@17"
         env["ANDROID_HOME"] = "/opt/homebrew/share/android-commandlinetools"
         env["ANDROID_SDK_ROOT"] = "/opt/homebrew/share/android-commandlinetools"
@@ -271,11 +390,11 @@ def run_adb_async(args):
         pass
 
 def get_fast_screencap():
-    global LATEST_FRAME
+    global LATEST_FRAME, FRAME_LAST_TIME
     with FRAME_LOCK:
-        if LATEST_FRAME:
+        if LATEST_FRAME and (time.time() - FRAME_LAST_TIME) < 15:
             return LATEST_FRAME
-    # Se ainda não houver frame, faz captura síncrona inicial
+    # Sem frame recente: faz captura síncrona (máx. 1 a cada 15s por cache)
     try:
         res = subprocess.run([ADB_BIN, 'exec-out', 'screencap', '-p'], capture_output=True, timeout=3)
         if res.returncode == 0 and res.stdout:
@@ -345,13 +464,36 @@ def list_profiles():
 class GhostBridgeHandler(BaseHTTPRequestHandler):
     def log_message(self, format, *args):
         # Log simplificado no terminal
-        sys.stdout.write(f"[GhostBridge] {self.command} {self.path}\n")
-        sys.stdout.flush()
+        try:
+            if sys.stdout:
+                sys.stdout.write(f"[GhostBridge] {self.command} {self.path}\n")
+                sys.stdout.flush()
+        except Exception:
+            pass
 
     def send_cors_headers(self):
-        self.send_header('Access-Control-Allow-Origin', '*')
+        origin = self.headers.get('Origin', '')
+        if origin and origin in ALLOWED_ORIGINS:
+            self.send_header('Access-Control-Allow-Origin', origin)
+            self.send_header('Vary', 'Origin')
+        elif not origin:
+            # Requisições não-navegador (curl, scripts locais, same-origin)
+            self.send_header('Access-Control-Allow-Origin', '*')
+        # Origem desconhecida: sem ACAO → o navegador bloqueia a resposta.
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-        self.send_header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With')
+        self.send_header(
+            'Access-Control-Allow-Headers',
+            'Content-Type, Authorization, X-Requested-With, X-Ghost-Admin-Token'
+        )
+
+    def require_admin(self):
+        """Protege endpoints administrativos com o token local do daemon."""
+        expected = get_admin_token()
+        received = self.headers.get('X-Ghost-Admin-Token', '')
+        if not expected or not hmac.compare_digest(str(received), str(expected)):
+            self.send_json({"error": "admin_unauthorized"}, code=401)
+            return False
+        return True
 
     def do_OPTIONS(self):
         self.send_response(200)
@@ -384,8 +526,17 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
             self.send_json({"code": 0, "auth": auth_guard.get_status()})
             return
 
+        # ADMIN TOKEN CHECK (usado pelo Studio antes de abrir o painel)
+        if parsed.path == '/api/auth/admin_check':
+            if not self.require_admin():
+                return
+            self.send_json({"code": 0, "admin": True})
+            return
+
         # LIST ISSUED LICENSES (ADMIN MASTER)
         if parsed.path == '/api/auth/issued_licenses':
+            if not self.require_admin():
+                return
             self.send_json({"code": 0, "licenses": auth_guard.get_issued_licenses()})
             return
 
@@ -426,7 +577,11 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
             })
 
         # GUARDA DE SEGURANÇA ANTIPIRATARIA (GHOSTPHONE HWID LOCK)
-        elif parsed.path.startswith('/api/phone/') and not auth_guard.is_active:
+        elif (
+            parsed.path.startswith('/api/phone/')
+            or parsed.path.startswith('/api/env/')
+            or parsed.path == '/launch'
+        ) and not auth_guard.is_active:
             self.send_json({
                 "code": 403,
                 "error": "🔒 ACESSO BLOQUEADO: Máquina não autorizada ou assinatura pendente.",
@@ -435,12 +590,25 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
             }, code=403)
             return
 
-        # GHOSTPHONE CLOUD ANDROID STFXM PLAYER
+        # GHOSTPHONE CLOUD ANDROID STREAM PLAYER
         elif parsed.path in ('/ghostphone', '/player'):
-            player_path = os.path.join(BASE_DIR, 'ghostphone_player.html')
-            if os.path.exists(player_path):
-                with open(player_path, 'rb') as f:
-                    content = f.read()
+            possible_players = [
+                os.path.join(BASE_DIR, 'ghostphone_player.html'),
+                os.path.join(BASE_DIR, 'player.html'),
+                os.path.join(EROS_DIR, 'player.html'),
+                os.path.join(EROS_DIR, 'public', 'player.html'),
+                os.path.join(os.getcwd(), 'player.html')
+            ]
+            content = None
+            for p_path in possible_players:
+                if os.path.exists(p_path):
+                    try:
+                        with open(p_path, 'rb') as f:
+                            content = f.read()
+                        break
+                    except Exception:
+                        pass
+            if content:
                 self.send_response(200)
                 self.send_header('Content-Type', 'text/html; charset=utf-8')
                 self.send_header('Content-Length', str(len(content)))
@@ -506,7 +674,13 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
             default_url = 'https://www.tiktok.com/' if app == 'tiktok' else 'https://www.instagram.com/'
             target_url = params.get('url', [default_url])[0]
 
-            script_path = os.path.join(BASE_DIR, 'launch_isolated_musa.sh')
+            script_path = resolve_project_script('launch_isolated_musa.sh')
+            if not script_path:
+                self.send_json({
+                    "code": 1,
+                    "error": "launch_isolated_musa.sh não encontrado nesta instalação."
+                }, code=501)
+                return
             subprocess.Popen(['bash', script_path, musa, proxy, device, ios, '', target_url])
 
             self.send_json({
@@ -639,8 +813,13 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
 
         # 9. STATIC FILES (piexif.min.js, CSS, PNG, etc.)
         else:
-            rel_path = parsed.path.lstrip('/')
-            file_path = os.path.join(BASE_DIR, rel_path)
+            rel_path = urllib.parse.unquote(parsed.path.lstrip('/'))
+            base_real = os.path.realpath(BASE_DIR)
+            file_path = os.path.realpath(os.path.join(base_real, rel_path))
+            # Impede path traversal (GET /../../etc/passwd, etc.)
+            if not (file_path == base_real or file_path.startswith(base_real + os.sep)):
+                self.send_json({"error": "Endpoint não encontrado"}, code=404)
+                return
             if os.path.isfile(file_path):
                 content_type, _ = mimetypes.guess_type(file_path)
                 if not content_type:
@@ -663,6 +842,22 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         parsed = urllib.parse.urlparse(self.path)
 
+        # Processamento local exige licença ativa
+        protected_paths = {
+            '/interpolate', '/api/video/interpolate',
+            '/enhance', '/api/video/enhance_4k',
+            '/voice_fx', '/api/audio/voice_fx',
+            '/extract_audio', '/api/editor/extract_audio',
+            '/trim_clip', '/api/editor/trim_clip',
+            '/render_timeline', '/api/editor/render_timeline',
+        }
+        if parsed.path in protected_paths and not auth_guard.is_active:
+            self.send_json({
+                "code": 403,
+                "error": "🔒 Licença inativa. Ative sua chave para usar o processamento local."
+            }, code=403)
+            return
+
         # 0. INTERPOLAÇÃO NATIVA DE VÍDEO 60 FPS (LOCAL FFmpeg OPTICAL FLOW)
         if parsed.path in ('/interpolate', '/api/video/interpolate'):
             content_length = int(self.headers.get('Content-Length', 0))
@@ -670,8 +865,8 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                 self.send_json({"error": "Nenhum arquivo enviado"}, code=400)
                 return
 
-            in_tmp = "/tmp/ghost_input_video.mp4"
-            out_tmp = "/tmp/ghost_output_60fps.mp4"
+            in_tmp = tmp_path(".mp4")
+            out_tmp = tmp_path(".mp4")
 
             with open(in_tmp, "wb") as f:
                 remaining = content_length
@@ -682,14 +877,7 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                     f.write(chunk)
                     remaining -= len(chunk)
 
-            ffmpeg_bin = os.path.join(BASE_DIR, "bin", "ffmpeg")
-            if not os.path.exists(ffmpeg_bin):
-                if os.path.exists("/opt/homebrew/bin/ffmpeg"):
-                    ffmpeg_bin = "/opt/homebrew/bin/ffmpeg"
-                elif os.path.exists("/usr/local/bin/ffmpeg"):
-                    ffmpeg_bin = "/usr/local/bin/ffmpeg"
-                else:
-                    ffmpeg_bin = "ffmpeg"
+            ffmpeg_bin = find_binary("ffmpeg")
 
             cmd = [
                 ffmpeg_bin, "-y",
@@ -750,8 +938,8 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
             query_params = urllib.parse.parse_qs(parsed.query)
             preset = query_params.get('preset', [self.headers.get('X-Enhance-Preset', '4k_cinematic')])[0]
 
-            in_tmp = "/tmp/ghost_enhance_input.mp4"
-            out_tmp = "/tmp/ghost_enhance_output.mp4"
+            in_tmp = tmp_path(".mp4")
+            out_tmp = tmp_path(".mp4")
 
             with open(in_tmp, "wb") as f:
                 remaining = content_length
@@ -762,9 +950,7 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                     f.write(chunk)
                     remaining -= len(chunk)
 
-            ffmpeg_bin = os.path.join(BASE_DIR, "bin", "ffmpeg")
-            if not os.path.exists(ffmpeg_bin):
-                ffmpeg_bin = "ffmpeg"
+            ffmpeg_bin = find_binary("ffmpeg")
 
             # Define filtro baseado na engenharia reversa do CapCut (Metal Denoise + Unsharp + Tone Curve)
             if preset == 'musa_glow':
@@ -839,8 +1025,8 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
             query_params = urllib.parse.parse_qs(parsed.query)
             preset = query_params.get('preset', [self.headers.get('X-Voice-Preset', 'sensual_whisper')])[0]
 
-            in_tmp = "/tmp/ghost_voice_input.mp3"
-            out_tmp = "/tmp/ghost_voice_output.mp3"
+            in_tmp = tmp_path(".mp3")
+            out_tmp = tmp_path(".mp3")
 
             with open(in_tmp, "wb") as f:
                 remaining = content_length
@@ -851,9 +1037,7 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                     f.write(chunk)
                     remaining -= len(chunk)
 
-            ffmpeg_bin = os.path.join(BASE_DIR, "bin", "ffmpeg")
-            if not os.path.exists(ffmpeg_bin):
-                ffmpeg_bin = "ffmpeg"
+            ffmpeg_bin = find_binary("ffmpeg")
 
             # Presets extraídos dos DSPs e algoritmos do CapCut e ElevenLabs (16 Presets Pro)
             voice_filters = {
@@ -926,8 +1110,8 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                 self.send_json({"error": "Nenhum arquivo enviado"}, code=400)
                 return
 
-            in_tmp = "/tmp/ghost_extract_in.mp4"
-            out_tmp = "/tmp/ghost_extracted_audio.mp3"
+            in_tmp = tmp_path(".mp4")
+            out_tmp = tmp_path(".mp3")
 
             with open(in_tmp, "wb") as f:
                 remaining = content_length
@@ -937,8 +1121,7 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                     f.write(chunk)
                     remaining -= len(chunk)
 
-            ffmpeg_bin = os.path.join(BASE_DIR, "bin", "ffmpeg")
-            if not os.path.exists(ffmpeg_bin): ffmpeg_bin = "ffmpeg"
+            ffmpeg_bin = find_binary("ffmpeg")
 
             cmd = [
                 ffmpeg_bin, "-y",
@@ -986,8 +1169,8 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
             start_sec = query_params.get('start', [self.headers.get('X-Trim-Start', '0')])[0]
             end_sec = query_params.get('end', [self.headers.get('X-Trim-End', '')])[0]
 
-            in_tmp = "/tmp/ghost_trim_in.mp4"
-            out_tmp = "/tmp/ghost_trimmed_out.mp4"
+            in_tmp = tmp_path(".mp4")
+            out_tmp = tmp_path(".mp4")
 
             with open(in_tmp, "wb") as f:
                 remaining = content_length
@@ -997,8 +1180,7 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                     f.write(chunk)
                     remaining -= len(chunk)
 
-            ffmpeg_bin = os.path.join(BASE_DIR, "bin", "ffmpeg")
-            if not os.path.exists(ffmpeg_bin): ffmpeg_bin = "ffmpeg"
+            ffmpeg_bin = find_binary("ffmpeg")
 
             cmd = [ffmpeg_bin, "-y", "-ss", str(start_sec)]
             if end_sec:
@@ -1072,12 +1254,10 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
             if upscale4k:
                 target_w, target_h = (target_w * 2, target_h * 2)
 
-            tmp_dir = f"/tmp/ghost_proj_{int(time.time())}"
-            os.makedirs(tmp_dir, exist_ok=True)
+            tmp_dir = tempfile.mkdtemp(prefix="ghost_proj_")
             clip_files = []
 
-            ffmpeg_bin = os.path.join(BASE_DIR, "bin", "ffmpeg")
-            if not os.path.exists(ffmpeg_bin): ffmpeg_bin = "ffmpeg"
+            ffmpeg_bin = find_binary("ffmpeg")
 
             for idx, c in enumerate(clips_data):
                 c_b64 = c.get('data_b64', '')
@@ -1240,6 +1420,8 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
 
         # AUTH GUARD GENERATE TOKEN (ADMIN MASTER)
         if parsed.path == '/api/auth/generate_token':
+            if not self.require_admin():
+                return
             email = body.get('email', 'cliente@ghostlens.ai')
             plan = body.get('plan', 'PRO')
             days = body.get('days', 30)
@@ -1249,7 +1431,11 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
             return
 
         # GUARDA DE SEGURANÇA ANTIPIRATARIA (GHOSTPHONE HWID LOCK)
-        if parsed.path.startswith('/api/phone/') and not auth_guard.is_active:
+        if (
+            parsed.path.startswith('/api/phone/')
+            or parsed.path.startswith('/api/env/')
+            or parsed.path == '/launch'
+        ) and not auth_guard.is_active:
             self.send_json({
                 "code": 403,
                 "error": "🔒 ACESSO BLOQUEADO: Máquina não autorizada ou assinatura pendente.",
@@ -1268,7 +1454,13 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
             default_url = 'https://www.tiktok.com/' if app == 'tiktok' else 'https://www.instagram.com/'
             target_url = body.get('url', default_url)
 
-            script_path = os.path.join(BASE_DIR, 'launch_isolated_musa.sh')
+            script_path = resolve_project_script('launch_isolated_musa.sh')
+            if not script_path:
+                self.send_json({
+                    "code": 1,
+                    "error": "launch_isolated_musa.sh não encontrado nesta instalação."
+                }, code=501)
+                return
             subprocess.Popen(['bash', script_path, musa, proxy, device, ios, '', target_url])
 
             self.send_json({
@@ -1310,11 +1502,18 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
             musa = body.get('musa') or body.get('name') or 'nova_musa'
             safe_name = "".join(c for c in musa.lower() if c.isalnum() or c in ('_', '-'))
             p_dir = os.path.join(PERFIS_DIR, safe_name)
-            os.makedirs(p_dir, exist_ok=True)
 
-            # Gera extensão stealth de imediato
-            gen_script = os.path.join(BASE_DIR, 'gerador_stealth_extension.py')
-            subprocess.run([sys.executable, gen_script, p_dir, safe_name])
+            # Gera extensão stealth de imediato (quando o gerador está instalado)
+            gen_script = resolve_project_script('gerador_stealth_extension.py')
+            if not gen_script:
+                self.send_json({
+                    "code": 1,
+                    "error": "gerador_stealth_extension.py não encontrado nesta instalação."
+                }, code=501)
+                return
+
+            os.makedirs(p_dir, exist_ok=True)
+            subprocess.run([sys.executable, gen_script, p_dir, safe_name], check=False)
 
             self.send_json({
                 "code": 0,
@@ -1396,7 +1595,7 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
         # 7. GHOSTPHONE API: LAUNCH SCRCPY NATIVE (60 FPS METAL ULTRA FLUIDO - TELA SOLTA)
         elif parsed.path == '/api/phone/launch_native':
             musa = body.get('musa', 'Leninha')
-            pkg = body.get('package', 'com.instagram.android')
+            pkg = body.get('package', None)
 
             # 1. Detecta ou inicia automaticamente o GhostPhone™ Engine (ghostphone_musa)
             device_serial = get_connected_device_serial()
@@ -1412,9 +1611,12 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                 }, code=404)
                 return
 
-            # Acorda app no Android (se pkg fornecido)
+            # Acorda app no Android (se pkg fornecido explicitamente)
             if pkg:
                 run_adb_async(['-s', device_serial, 'shell', 'monkey', '-p', pkg, '1'])
+            else:
+                # Apenas acorda a tela do Android
+                run_adb_async(['-s', device_serial, 'shell', 'input', 'keyevent', '224'])
 
             # Verifica se scrcpy já está rodando
             if not is_scrcpy_running():
@@ -1455,6 +1657,7 @@ def main():
         print(f"🚀 GhostLens Stealth Bridge 2.0 ATIVO na porta {PORT}!")
         print(f"📁 Diretório de Perfis: {PERFIS_DIR}")
         print(f"⚡ Endpoints: /status | /api/env/list | /api/phone/specs")
+        print(f"🔑 Admin token: {ADMIN_TOKEN_FILE} (ou GHOSTLENS_ADMIN_TOKEN)")
         print(f"============================================================")
         print("Mantenha esta janela aberta enquanto utiliza o GhostLens.")
         server.serve_forever()
@@ -1464,12 +1667,20 @@ def main():
             print("[✓] Você já pode usar o GhostLens Studio normalmente no navegador.")
         else:
             print(f"\n❌ Erro de inicialização de rede: {e}", file=sys.stderr)
-        input("\nPressione ENTER para fechar...")
+        try:
+            if sys.stdin and sys.stdin.isatty():
+                input("\nPressione ENTER para fechar...")
+        except Exception:
+            pass
     except KeyboardInterrupt:
         print("\n[✓] Servidor GhostLens encerrado pelo usuário.")
     except Exception as e:
         print(f"\n❌ Erro inesperado no servidor ponte: {e}", file=sys.stderr)
-        input("\nPressione ENTER para fechar...")
+        try:
+            if sys.stdin and sys.stdin.isatty():
+                input("\nPressione ENTER para fechar...")
+        except Exception:
+            pass
 
 if __name__ == '__main__':
     main()
