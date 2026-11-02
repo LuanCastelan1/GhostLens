@@ -162,7 +162,26 @@ curl -s -o /dev/null -w '%{http_code}\n' -X POST https://SEU-DOMINIO/api/webhook
   -H 'Content-Type: application/json' -d '{"event":"PAYMENT_RECEIVED"}'
 ```
 
-## 10. Itens ainda pendentes
+## 10. Auditoria de carteira (crítico — 2026-11-02)
+
+Falhas encontradas no banco compartilhado (projeto ErosChat):
+
+- `debit_ghost_wallet` confiava no `p_user_id` enviado pelo cliente. Sem o
+  parâmetro, anon recebia `nao_autenticado`; com ele, a função consultava a
+  carteira daquele usuário — permitindo debitar a carteira de terceiros.
+- `credit_ghost_wallet` estava executável por anon/authenticated: retornou
+  `usuario_nao_encontrado` para um e-mail inexistente, ou seja, poderia
+  creditar qualquer carteira existente.
+- `set_musas_fans` estava executável por anon/authenticated (VIP grátis).
+- `credit_real_eros` e `set_vip` já estavam bloqueadas para anon (401).
+
+Correção: rodar `ErosChat/supabase/fix_wallet_rpc_security.sql` no SQL Editor.
+Depois validar que anon recebe 401/403 nas três funções.
+
+Pendente (requer deploy das edge functions): `pix-checkout` e
+`create-vip-checkout` não exigem autenticação e aceitam `user_email` do cliente.
+
+## 11. Itens ainda pendentes
 
 - **Assinatura de código** (Apple Developer ID + notarização; Authenticode no
   Windows). É o que impede um instalador falso de se passar pelo oficial.
