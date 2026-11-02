@@ -86,8 +86,8 @@ ADMIN_TOKEN_FILE = os.path.join(LICENSE_DIR, "admin_token")
 ISSUED_FILE = os.path.join(LICENSE_DIR, "issued_licenses.json")
 
 _DEFAULT_SESSION_URLS = (
-    "https://ghostlens.cloud/api/license_session,"
     "https://www.ghostlens.cloud/api/license_session,"
+    "https://ghostlens.cloud/api/license_session,"
     "https://ghostlens.com.br/api/license_session"
 )
 
@@ -253,10 +253,16 @@ class GhostAuthGuard:
                 if e.code >= 500:
                     last_error = f"HTTP {e.code}"
                     continue
+                raw = e.read().decode("utf-8", "ignore")
                 try:
-                    err = json.loads(e.read().decode("utf-8", "ignore"))
+                    err = json.loads(raw)
                 except Exception:
-                    err = {}
+                    err = None
+                # 404/308 de HTML (host errado, redirect) não é licença inválida:
+                # tenta o próximo endpoint da lista.
+                if not isinstance(err, dict):
+                    last_error = f"HTTP {e.code} (resposta não-JSON)"
+                    continue
                 code = err.get("error") or ("invalid_session" if e.code == 401 else "license_not_found")
                 return None, code
             except Exception as e:
