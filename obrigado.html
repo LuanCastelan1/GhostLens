@@ -288,6 +288,17 @@
         Parabéns por entrar para o grupo seleto de agências e criadores que operam com <strong>camuflagem óptica iOS e celulares anti-ban</strong>.
       </p>
 
+      <!-- ENTREGA DA LICENÇA (Stripe) -->
+      <div id="licenseDeliveryCard" style="display:none; margin: 22px auto 8px auto; max-width: 640px; background: rgba(16,185,129,0.08); border: 1.5px solid rgba(16,185,129,0.45); border-radius: 16px; padding: 20px; text-align: left;">
+        <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:1.2px; color:#34d399; font-weight:800; margin-bottom:6px;">🔑 Sua chave de licença</div>
+        <div id="licensePlanText" style="color:#cbd5e1; font-size:0.85rem; margin-bottom:10px;"></div>
+        <div style="display:flex; gap:8px; align-items:stretch; flex-wrap:wrap;">
+          <code id="licenseKeyText" style="flex:1; min-width:240px; background:#0b0f17; border:1px solid rgba(255,255,255,0.12); border-radius:10px; padding:12px 14px; color:#bef264; font-family:'JetBrains Mono',monospace; font-size:0.95rem; word-break:break-all;">—</code>
+          <button type="button" onclick="copyDeliveredLicense()" style="background:#bef264; color:#000; border:none; border-radius:10px; padding:0 18px; font-weight:900; cursor:pointer;">Copiar</button>
+        </div>
+        <div id="licenseStatusText" style="margin-top:10px; font-size:0.8rem; color:#94a3b8;">Confirmando pagamento e emitindo sua chave...</div>
+      </div>
+
       <!-- BOTÕES DE DOWNLOAD DIRETO -->
       <div class="download-grid">
         <a href="download.html" class="dl-btn primary">
@@ -363,7 +374,7 @@
 
   <footer>
     <p>© 2026 GhostLens Studio PRO™ • Todos os direitos reservados.</p>
-    <p style="margin-top: 4px;">Comprovante e dados de acesso também foram enviados ao seu e-mail cadastrado.</p>
+    <p style="margin-top: 4px;">Se a chave não aparecer nesta página, fale com o suporte VIP.</p>
   </footer>
 
   <script>
@@ -373,6 +384,68 @@
     if (btn) {
       btn.href = `https://wa.me/${supportPhone}?text=${encodeURIComponent("Olá! Acabei de assinar o GhostLens Studio no Asaas e gostaria de receber minha chave de ativação.")}`;
     }
+
+    // ── Entrega da licença via Stripe Checkout ──
+    let deliveredLicenseKey = '';
+
+    function copyDeliveredLicense() {
+      if (!deliveredLicenseKey) {
+        alert('A chave ainda está sendo emitida. Aguarde alguns segundos.');
+        return;
+      }
+      navigator.clipboard.writeText(deliveredLicenseKey).then(
+        () => alert('📋 Chave copiada! Cole no assistente de ativação do GhostLens.'),
+        () => prompt('Copie a chave abaixo:', deliveredLicenseKey)
+      );
+    }
+
+    async function loadDeliveredLicense() {
+      const params = new URLSearchParams(window.location.search);
+      const sessionId = params.get('session_id');
+      if (!sessionId) return;
+
+      const card = document.getElementById('licenseDeliveryCard');
+      const keyEl = document.getElementById('licenseKeyText');
+      const planEl = document.getElementById('licensePlanText');
+      const statusEl = document.getElementById('licenseStatusText');
+      if (!card || !keyEl || !planEl || !statusEl) return;
+
+      card.style.display = 'block';
+
+      for (let attempt = 0; attempt < 40; attempt++) {
+        try {
+          const res = await fetch('/api/license_lookup?session_id=' + encodeURIComponent(sessionId), { cache: 'no-store' });
+          const data = await res.json().catch(() => ({}));
+
+          if (res.ok && data.license && data.license.key) {
+            deliveredLicenseKey = data.license.key;
+            keyEl.innerText = data.license.key;
+            const expiry = data.license.expires_at
+              ? new Date(data.license.expires_at * 1000).toLocaleDateString('pt-BR')
+              : '—';
+            planEl.innerText = `${data.license.plan} • válida até ${expiry}`;
+            statusEl.innerText = 'Licença pronta. Copie a chave e ative no aplicativo.';
+            statusEl.style.color = '#34d399';
+            return;
+          }
+
+          if (res.status === 402) {
+            statusEl.innerText = 'Pagamento ainda não confirmado pela Stripe. Aguarde...';
+          } else if (res.status === 404) {
+            statusEl.innerText = 'Pagamento confirmado. Emitindo sua licença...';
+          } else {
+            statusEl.innerText = 'Não foi possível consultar agora. Tentando novamente...';
+          }
+        } catch (e) {
+          statusEl.innerText = 'Conexão instável. Tentando novamente...';
+        }
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+      }
+
+      statusEl.innerText = 'A licença ainda está sendo processada. Fale com o suporte se não aparecer em alguns minutos.';
+    }
+
+    loadDeliveredLicense();
   </script>
 </body>
 </html>

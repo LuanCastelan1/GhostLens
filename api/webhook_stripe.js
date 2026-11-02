@@ -22,6 +22,12 @@ const {
   normalizeLicense,
   setCors
 } = require('../lib/ghostlens-backend');
+const {
+  PLANS,
+  normalizePlan,
+  normalizeBilling,
+  daysForBilling
+} = require('../lib/ghostlens-license-plans');
 
 module.exports = async (req, res) => {
   setCors(res, 'Content-Type, stripe-signature');
@@ -87,14 +93,32 @@ module.exports = async (req, res) => {
     }
 
     const amountBRL = amountCents / 100;
-    const tier = planForAmountBRL(amountBRL);
+    const metadata = object.metadata ||
+      (object.subscription_details && object.subscription_details.metadata) || {};
+
+    let tier;
+    let days = 30;
+
+    if (metadata.type === 'license') {
+      const plan = PLANS[normalizePlan(metadata.plan)];
+      if (!plan) {
+        console.error('[stripe] metadata de licença com plano inválido:', metadata.plan);
+        return res.status(400).json({ error: 'invalid_license_plan' });
+      }
+      const billing = normalizeBilling(metadata.billing);
+      tier = { code: plan.code, plan: plan.plan, maxDevices: plan.maxDevices };
+      days = parseInt(metadata.days, 10) || daysForBilling(billing);
+    } else {
+      // Compatibilidade com links antigos que não enviam metadata.
+      tier = planForAmountBRL(amountBRL);
+    }
 
     const license = await createOrGetLicense({
       email: customerEmail,
       amountBRL,
       provider: 'stripe',
       paymentId,
-      days: 30,
+      days,
       ...tier
     });
 

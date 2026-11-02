@@ -579,7 +579,7 @@
         Escolha o Plano Ideal para a sua Operação
       </h2>
       <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 600px; margin: 0 auto 32px auto;">
-        Desbloqueie o potencial máximo de antidetect móvel e aceleração de vídeo. Cancele quando quiser.
+        Desbloqueie o potencial máximo de antidetect móvel e aceleração de vídeo. Licença mensal ou anual com ativação imediata.
       </p>
 
       <!-- Toggle Mensal / Anual -->
@@ -614,7 +614,7 @@
               <div class="spec-item"><span class="icon">✓</span> Companion Dock Flutuante</div>
             </div>
           </div>
-          <a href="https://www.asaas.com/000/c/dsow2hofkz8qv5da" target="_blank" style="display: block; text-align: center; background: rgba(255,255,255,0.06); border: 1px solid var(--border-card); color: #fff; padding: 14px; border-radius: 14px; font-weight: 800; text-decoration: none; transition: 0.2s;" onmouseover="this.style.borderColor='var(--accent-lime)'" onmouseout="this.style.borderColor='var(--border-card)'">Assinar Solo (R$ 49,90)</a>
+          <button type="button" id="btn-plan-solo" onclick="startLicenseCheckout('solo', this)" style="width: 100%; text-align: center; background: rgba(255,255,255,0.06); border: 1px solid var(--border-card); color: #fff; padding: 14px; border-radius: 14px; font-weight: 800; cursor: pointer; transition: 0.2s;" onmouseover="this.style.borderColor='var(--accent-lime)'" onmouseout="this.style.borderColor='var(--border-card)'">Assinar Solo • R$ 49,90/mês</button>
         </div>
 
         <!-- Plano Pro (Destaque) -->
@@ -636,7 +636,7 @@
               <div class="spec-item"><span class="icon">✓</span> Modulador de Áudio & Suporte VIP</div>
             </div>
           </div>
-          <a href="https://www.asaas.com/000/c/cnvos5dqm3ig3p8y" target="_blank" style="display: block; text-align: center; background: var(--accent-lime); color: #000; padding: 14px; border-radius: 14px; font-weight: 900; text-decoration: none; box-shadow: 0 10px 25px rgba(190, 242, 100, 0.3);">Assinar Pro (R$ 97)</a>
+          <button type="button" id="btn-plan-pro" onclick="startLicenseCheckout('pro', this)" style="width: 100%; text-align: center; background: var(--accent-lime); color: #000; border: none; padding: 14px; border-radius: 14px; font-weight: 900; cursor: pointer; box-shadow: 0 10px 25px rgba(190, 242, 100, 0.3);">Assinar Pro • R$ 97/mês</button>
         </div>
 
         <!-- Plano Enterprise -->
@@ -657,10 +657,15 @@
               <div class="spec-item"><span class="icon">✓</span> Suporte de Alta Prioridade</div>
             </div>
           </div>
-          <a href="https://www.asaas.com/000/c/n4rumib5azs87drh" target="_blank" style="display: block; text-align: center; background: rgba(56, 189, 248, 0.1); border: 1px solid var(--accent-blue); color: #fff; padding: 14px; border-radius: 14px; font-weight: 800; text-decoration: none;">Assinar Agência (R$ 300)</a>
+          <button type="button" id="btn-plan-agency" onclick="startLicenseCheckout('agency', this)" style="width: 100%; text-align: center; background: rgba(56, 189, 248, 0.1); border: 1px solid var(--accent-blue); color: #fff; padding: 14px; border-radius: 14px; font-weight: 800; cursor: pointer;">Assinar Agência • R$ 300/mês</button>
         </div>
 
       </div>
+
+      <p style="text-align: center; color: #94a3b8; font-size: 0.82rem; max-width: 700px; margin: -50px auto 60px auto;">
+        Prefere Pix manual? Pague para <strong style="color: #bef264;">contato@ghostlens.ai</strong> e envie o comprovante no
+        <a href="https://wa.me/5517997082645" target="_blank" style="color: #bef264; text-decoration: none;">WhatsApp</a> para ativação.
+      </p>
     </section>
 
     <!-- Requisitos de Hardware com Enquadramento de Cibersegurança -->
@@ -793,6 +798,57 @@
       }
     };
 
+    const buttonLabels = {
+      mensal: {
+        solo: 'Assinar Solo • R$ 49,90/mês',
+        pro: 'Assinar Pro • R$ 97/mês',
+        agency: 'Assinar Agência • R$ 300/mês'
+      },
+      anual: {
+        solo: 'Assinar Solo • R$ 478,80/ano',
+        pro: 'Assinar Pro • R$ 924,00/ano',
+        agency: 'Assinar Agência • R$ 2.880,00/ano'
+      }
+    };
+
+    function updatePlanButtons() {
+      const labels = buttonLabels[currentBilling] || buttonLabels.mensal;
+      const ids = { solo: 'btn-plan-solo', pro: 'btn-plan-pro', agency: 'btn-plan-agency' };
+      Object.keys(ids).forEach((plan) => {
+        const el = document.getElementById(ids[plan]);
+        if (el) el.innerText = labels[plan];
+      });
+    }
+
+    async function startLicenseCheckout(plan, btn) {
+      const original = btn ? btn.innerText : '';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerText = 'Redirecionando para o pagamento...';
+      }
+
+      try {
+        const billing = currentBilling === 'anual' ? 'annual' : 'monthly';
+        const res = await fetch('/api/create_license_checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ plan, billing })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.url) {
+          window.location.href = data.url;
+          return;
+        }
+        throw new Error(data.error || 'Falha ao criar o checkout');
+      } catch (err) {
+        alert('❌ ' + (err.message || 'Não foi possível iniciar o pagamento. Tente novamente.'));
+        if (btn) {
+          btn.disabled = false;
+          btn.innerText = original;
+        }
+      }
+    }
+
     function setBilling(mode) {
       currentBilling = mode;
       const knob = document.getElementById('toggle-knob');
@@ -820,11 +876,14 @@
 
       document.getElementById('price-enterprise').innerText = pricing[mode].enterprise.price;
       document.getElementById('period-enterprise').innerText = pricing[mode].enterprise.period;
+      updatePlanButtons();
     }
 
     function toggleBilling() {
       setBilling(currentBilling === 'mensal' ? 'anual' : 'mensal');
     }
+
+    updatePlanButtons();
   </script>
 </body>
 </html>

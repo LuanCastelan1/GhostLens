@@ -16,6 +16,7 @@ const {
   normalizeLicense,
   setCors
 } = require('../lib/ghostlens-backend');
+const { PLANS } = require('../lib/ghostlens-license-plans');
 
 async function fetchAsaasCustomerEmail(customerId) {
   const apiKey = process.env.ASAAS_API_KEY || '';
@@ -77,20 +78,53 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'missing_payment_id' });
     }
 
+    const externalReference = String(payment.externalReference || '').trim();
+
+    // Recarga de carteira GhostLens: o crédito é feito pelo pix-webhook do
+    // Supabase. Este endpoint NÃO deve emitir licença para esses pagamentos.
+    if (externalReference.startsWith('GHOST|')) {
+      return res.status(200).json({ received: true, ignored: 'ghost_wallet_recharge' });
+    }
+
     let customerEmail = payment.customerEmail || payment.clientEmail || '';
     if (!customerEmail && payment.customer) {
       customerEmail = await fetchAsaasCustomerEmail(payment.customer);
     }
 
     const amountBRL = parseFloat(payment.value || '0') || 0;
-    const tier = planForAmountBRL(amountBRL);
+    let tier;
+    let days = 30;
+
+    if (externalReference.startsWith('LICENSE|')) {
+      // Formato: LICENSE|PLAN|BILLING|EMAIL
+      const parts = externalReference.split('|');
+      const planCode = String(parts[1] || '').toUpperCase();
+      const billing = String(parts[2] || '').toUpperCase();
+      const refEmail = String(parts[3] || '').trim();
+      const plan = PLANS[planCode.toLowerCase()];
+
+      if (!plan) {
+        console.error('[asaas] referência de licença com plano inválido:', planCode);
+        return res.status(400).json({ error: 'invalid_license_plan' });
+      }
+
+      tier = { code: plan.code, plan: plan.plan, maxDevices: plan.maxDevices };
+      days = billing === 'ANNUAL' || billing === 'ANUAL' ? 365 : 30;
+
+      if (!customerEmail && refEmail.includes('@')) {
+        customerEmail = refEmail;
+      }
+    } else {
+      // Compatibilidade com links antigos que não enviam metadata.
+      tier = planForAmountBRL(amountBRL);
+    }
 
     const license = await createOrGetLicense({
       email: customerEmail,
       amountBRL,
       provider: 'asaas',
       paymentId,
-      days: 30,
+      days,
       ...tier
     });
 
