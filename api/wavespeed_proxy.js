@@ -8,6 +8,8 @@
 // POST { action: 'upload_ticket', filename, size }
 // POST { action: 'infer', kind: 'fps'|'upscale', download_url }
 // POST { action: 'poll', poll_url }
+// POST { action: 'tts', text, voice, language, style }
+// POST { action: 'fetch_audio', url }
 // ============================================================================
 'use strict';
 
@@ -26,6 +28,12 @@ const OWNER_EMAILS = (process.env.GHOSTLENS_OWNER_EMAILS || 'luan@ghostlens.ai')
   .map((e) => e.trim().toLowerCase())
   .filter(Boolean);
 
+const TTS_MODEL = 'wavespeed-ai/qwen3-tts/text-to-speech';
+const TTS_VOICES = new Set(['Vivian', 'Serena', 'Ono_Anna', 'Sohee', 'Uncle_Fu', 'Dylan', 'Eric', 'Ryan', 'Aiden']);
+const TTS_LANGUAGES = new Set(['auto', 'Portuguese', 'English', 'Spanish', 'French', 'German', 'Italian', 'Japanese', 'Korean', 'Russian', 'Chinese']);
+const TTS_MAX_CHARS = 2000;
+const TTS_MAX_AUDIO_BYTES = 25 * 1024 * 1024;
+
 async function getSupabaseUser(token) {
   const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
     headers: {
@@ -40,6 +48,7 @@ async function getSupabaseUser(token) {
 async function isEntitled(user) {
   const email = String(user.email || '').toLowerCase();
   if (!email) return false;
+  if (user.app_metadata && user.app_metadata.role === 'admin') return true;
   if (OWNER_EMAILS.includes(email)) return true;
 
   const now = new Date().toISOString();
@@ -197,6 +206,59 @@ module.exports = async (req, res) => {
       }
       const data = await wavespeed(pollUrl.replace(`${WAVESPEED_API}/`, ''), { method: 'GET' });
       return res.status(200).json(data);
+    }
+
+    if (action === 'tts') {
+      const text = String(body.text || '').trim();
+      if (!text || text.length > TTS_MAX_CHARS) {
+        return res.status(400).json({ error: 'invalid_tts_text', max_chars: TTS_MAX_CHARS });
+      }
+      const voice = String(body.voice || 'Vivian');
+      if (!TTS_VOICES.has(voice)) {
+        return res.status(400).json({ error: 'invalid_tts_voice' });
+      }
+      const requestedLanguage = String(body.language || 'auto');
+      const language = TTS_LANGUAGES.has(requestedLanguage) ? requestedLanguage : 'auto';
+      const style = String(body.style || '').slice(0, 300).trim();
+
+      try {
+        const limit = await enforceRateLimit(`tts-user:${user.id}`, 10, 600);
+        if (!limit.allowed) {
+          return res.status(429).json({ error: 'rate_limited', reset_at: limit.reset_at });
+        }
+      } catch (rateErr) {
+        console.warn('[wavespeed_proxy] rate limit TTS indisponível:', rateErr.message);
+      }
+
+      const payload = { text, voice, language };
+      if (style) payload.style_instruction = style;
+      const data = await wavespeed(TTS_MODEL, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      return res.status(200).json({ data: data && data.data ? data.data : data });
+    }
+
+    if (action === 'fetch_audio') {
+      const audioUrl = String(body.url || '');
+      if (!isAllowedDownloadUrl(audioUrl)) {
+        return res.status(400).json({ error: 'invalid_audio_url' });
+      }
+      const audioRes = await fetch(audioUrl);
+      if (!audioRes.ok) {
+        return res.status(502).json({ error: 'audio_unavailable' });
+      }
+      const contentLength = Number(audioRes.headers.get('content-length') || 0);
+      if (contentLength > TTS_MAX_AUDIO_BYTES) {
+        return res.status(413).json({ error: 'audio_too_large' });
+      }
+      const buffer = Buffer.from(await audioRes.arrayBuffer());
+      if (buffer.length > TTS_MAX_AUDIO_BYTES) {
+        return res.status(413).json({ error: 'audio_too_large' });
+      }
+      res.setHeader('Content-Type', audioRes.headers.get('content-type') || 'audio/mpeg');
+      res.setHeader('Content-Length', String(buffer.length));
+      return res.status(200).send(buffer);
     }
 
     return res.status(400).json({ error: 'invalid_action' });

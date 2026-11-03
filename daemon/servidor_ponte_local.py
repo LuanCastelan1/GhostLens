@@ -502,6 +502,8 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
             'Access-Control-Allow-Headers',
             'Content-Type, Authorization, X-Requested-With, X-Ghost-Admin-Token'
         )
+        if self.headers.get('Access-Control-Request-Private-Network') == 'true':
+            self.send_header('Access-Control-Allow-Private-Network', 'true')
 
     def _is_supabase_admin(self):
         """Valida o JWT do Supabase e exige app_metadata.role == 'admin'."""
@@ -850,6 +852,22 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                 self.wfile.write(data)
                 return
 
+        # 8.1 GHOST STUDIO PRO: EDITOR MULTI-TRILHA SERVIDO PELO DAEMON LOCAL
+        elif parsed.path in ('/editor', '/editor/'):
+            editor_path = os.path.join(BASE_DIR, 'editor.html')
+            if os.path.isfile(editor_path):
+                with open(editor_path, 'rb') as f:
+                    data = f.read()
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/html; charset=utf-8')
+                self.send_header('Content-Length', str(len(data)))
+                self.send_cors_headers()
+                self.end_headers()
+                self.wfile.write(data)
+                return
+            self.send_json({"error": "Editor não encontrado nesta instalação"}, code=404)
+            return
+
         # 9. STATIC FILES (piexif.min.js, CSS, PNG, etc.)
         else:
             rel_path = urllib.parse.unquote(parsed.path.lstrip('/'))
@@ -889,6 +907,7 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
             '/extract_audio', '/api/editor/extract_audio',
             '/trim_clip', '/api/editor/trim_clip',
             '/render_timeline', '/api/editor/render_timeline',
+            '/transcode', '/api/editor/transcode',
         }
         if parsed.path in protected_paths and not auth_guard.is_active:
             self.send_json({
@@ -896,6 +915,74 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                 "error": "🔒 Licença inativa. Ative sua chave para usar o processamento local."
             }, code=403)
             return
+
+        # 0.4 GHOST STUDIO PRO: CONVERTER WEBM/MOV DA EXPORTAÇÃO EM MP4
+        if parsed.path in ('/transcode', '/api/editor/transcode'):
+            content_length = int(self.headers.get('Content-Length', 0))
+            if content_length <= 0:
+                self.send_json({"error": "Nenhum vídeo enviado"}, code=400)
+                return
+            if content_length > 500 * 1024 * 1024:
+                self.send_json({"error": "Vídeo muito grande (máximo 500 MB)"}, code=413)
+                return
+
+            in_tmp = tmp_path(".webm")
+            out_tmp = tmp_path(".mp4")
+            try:
+                with open(in_tmp, "wb") as f:
+                    remaining = content_length
+                    while remaining > 0:
+                        chunk = self.rfile.read(min(remaining, 1024 * 1024))
+                        if not chunk:
+                            break
+                        f.write(chunk)
+                        remaining -= len(chunk)
+
+                ffmpeg_bin = find_binary("ffmpeg")
+                cmd = [
+                    ffmpeg_bin, "-y",
+                    "-i", in_tmp,
+                    "-c:v", "libx264",
+                    "-preset", "veryfast",
+                    "-crf", "20",
+                    "-pix_fmt", "yuv420p",
+                    "-c:a", "aac",
+                    "-b:a", "192k",
+                    "-map_metadata", "-1",
+                    "-movflags", "+faststart",
+                    out_tmp
+                ]
+                res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=600)
+                if res.returncode == 0 and os.path.exists(out_tmp):
+                    file_size = os.path.getsize(out_tmp)
+                    self.send_response(200)
+                    self.send_header('Content-Type', 'video/mp4')
+                    self.send_header('Content-Length', str(file_size))
+                    self.send_header('Content-Disposition', 'attachment; filename="ghost_studio_pro.mp4"')
+                    self.send_cors_headers()
+                    self.end_headers()
+                    with open(out_tmp, "rb") as f:
+                        while True:
+                            chunk = f.read(1024 * 1024)
+                            if not chunk:
+                                break
+                            self.wfile.write(chunk)
+                    return
+                err_msg = res.stderr.decode('utf-8', errors='ignore')[-400:]
+                self.send_json({"error": f"Falha ao converter para MP4: {err_msg}"}, code=500)
+                return
+            except subprocess.TimeoutExpired:
+                self.send_json({"error": "A conversão para MP4 excedeu 10 minutos"}, code=504)
+                return
+            except Exception as exc:
+                self.send_json({"error": f"Falha na conversão: {exc}"}, code=500)
+                return
+            finally:
+                try:
+                    if os.path.exists(in_tmp): os.remove(in_tmp)
+                    if os.path.exists(out_tmp): os.remove(out_tmp)
+                except Exception:
+                    pass
 
         # 0. INTERPOLAÇÃO NATIVA DE VÍDEO 60 FPS (LOCAL FFmpeg OPTICAL FLOW)
         if parsed.path in ('/interpolate', '/api/video/interpolate'):
@@ -1601,8 +1688,8 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
             b64_data = body.get('data', '')
             if b64_data:
                 file_bytes = base64.b64decode(b64_data)
-                tmp_path = os.path.join('/tmp', clean_name)
-                with open(tmp_path, 'wb') as f:
+                upload_path = os.path.join('/tmp', clean_name)
+                with open(upload_path, 'wb') as f:
                     f.write(file_bytes)
                 
                 ext = os.path.splitext(clean_name)[1].lower()
@@ -1616,7 +1703,7 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                 
                 # 2. Envia arquivo para a galeria
                 target_device_path = f'/storage/emulated/0/DCIM/Camera/{clean_name}'
-                run_adb(['push', tmp_path, target_device_path])
+                run_adb(['push', upload_path, target_device_path])
                 
                 # 3. Dispara MediaScanner para indexação em tempo real
                 run_adb_async(['shell', 'am', 'broadcast', '-a', 'android.intent.action.MEDIA_SCANNER_SCAN_FILE', '-d', f'file://{target_device_path}'])

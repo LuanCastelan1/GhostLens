@@ -246,6 +246,18 @@
       border: 1px solid var(--border-subtle);
     }
 
+    /* ─── MODO EDITOR: APROVEITA A ÁREA INTEIRA DO WORKSPACE ─── */
+    main.workspace.editor-mode {
+      padding: 10px 12px 12px 12px;
+      overflow: hidden;
+    }
+    main.workspace.editor-mode .workspace-header,
+    main.workspace.editor-mode .ghost-promo-banner-wrap,
+    main.workspace.editor-mode .studio-gallery-toolbar,
+    main.workspace.editor-mode #galleryCountLabel {
+      display: none !important;
+    }
+
     /* ─── GRID DE CARDS DE VÍDEO / IMAGEM ─── */
     .media-grid {
       display: grid;
@@ -1501,6 +1513,11 @@
           <div class="nav-icon">📹</div>
           <span class="nav-text">Vídeos & 60 FPS</span>
         </li>
+        <li class="nav-item" onclick="switchSection('editor', this)"
+          style="border: 1px solid rgba(56, 189, 248, 0.35); background: rgba(56, 189, 248, 0.08); margin: 6px 0; box-shadow: 0 0 14px rgba(56,189,248,0.12);">
+          <div class="nav-icon" style="color: #38bdf8; font-size: 1.15rem;">🎬</div>
+          <span class="nav-text" style="color: #38bdf8; font-weight: 800; letter-spacing: -0.3px;">Editor de Vídeo</span>
+        </li>
         <li class="nav-item" onclick="switchSection('musas', this)"
           style="border: 1px solid rgba(56, 189, 248, 0.35); background: rgba(56, 189, 248, 0.08); margin: 6px 0; box-shadow: 0 0 14px rgba(56,189,248,0.12);">
           <div class="nav-icon" style="color: #38bdf8; font-size: 1.15rem;">📱</div>
@@ -1615,7 +1632,7 @@
     </div>
 
     <!-- Toolbar da Galeria -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+    <div class="studio-gallery-toolbar" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
       <span id="galleryCountLabel" style="font-size: 0.8rem; color: var(--text-secondary); font-weight: 600;">Mídias na
         Seção (0)</span>
       <button type="button" onclick="clearStudioGallery()" class="btn-clean"
@@ -3657,6 +3674,10 @@
         renderGhostStudioSection(grid);
         return;
       }
+      if (section === 'editor') {
+        renderGhostEditorSection(grid);
+        return;
+      }
 
       // Filtra itens pela seção atual
       let filtered = studioGalleryItems;
@@ -3736,6 +3757,7 @@
         'inicio': 'Visão Geral • GhostLens',
         'imagem': 'Imagens & Camuflagem Apple',
         'video': 'Vídeos & Interpolação 60 FPS',
+        'editor': 'Ghost Studio Pro • Editor de Vídeo Multi-Trilha',
         'ghoststudio': 'Ghost Studio FX™ • Ghost Studio FX Engine',
         'musas': 'GhostPhone™ & Personas • Celulares Android & Perfis'
       };
@@ -3743,6 +3765,7 @@
         'inicio': 'Camuflagem Apple iPhone, remoção total de IA e interpolação de alta fluidez',
         'imagem': 'Purga de C2PA, injeção de EXIF Apple iPhone 16 Pro e geração de Prévia Blur VIP',
         'video': 'Interpolação de 60 FPS fluida e exportação nativa Apple QuickTime .MOV',
+        'editor': 'Timeline, transições, efeitos, texto, áudio, vozes IA e exportação MP4 no motor local',
         'ghoststudio': 'Remasterização 4K Apple Metal, Optical Flow 60 FPS e Laboratório de Voz Sensual',
         'musas': 'Celulares reais emulados e containers com fingerprints exclusivas de iPhone para cada musa'
       };
@@ -3751,6 +3774,9 @@
       const subEl = document.getElementById('sectionSubtitle');
       if (titleEl) titleEl.innerText = titles[section] || 'GhostLens Studio';
       if (subEl) subEl.innerText = subtitles[section] || '';
+
+      const workspace = document.getElementById('mainWorkspace');
+      if (workspace) workspace.classList.toggle('editor-mode', section === 'editor');
 
       renderGridForSection(section);
 
@@ -6376,6 +6402,31 @@
         activeEffect: 'musa_glow',
         activeTransition: 'fade'
       };
+
+      function renderGhostEditorSection(grid) {
+        if (!grid) return;
+        const countLabel = document.getElementById('galleryCountLabel');
+        if (countLabel) countLabel.innerText = 'Ghost Studio Pro • Editor de Vídeo Multi-Trilha';
+        const isLocal = ['127.0.0.1', 'localhost'].includes(window.location.hostname);
+        grid.innerHTML = `
+          <div style="grid-column: 1 / -1; display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 12px 16px; border-radius: 14px; border: 1px solid rgba(56, 189, 248, 0.25); background: linear-gradient(135deg, rgba(56, 189, 248, 0.10), rgba(15, 17, 23, 0.95));">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: rgba(56, 189, 248, 0.14); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; font-size: 1.1rem;">🎬</div>
+                <div>
+                  <div style="font-size: 0.88rem; font-weight: 800; color: #fff;">Ghost Studio Pro</div>
+                  <div style="font-size: 0.72rem; color: var(--text-muted);">Timeline, transições, efeitos, texto, áudio, vozes IA e exportação MP4</div>
+                </div>
+              </div>
+              <a href="/editor" target="_blank" rel="noopener" style="text-decoration: none; background: rgba(190, 242, 100, 0.14); border: 1px solid rgba(190, 242, 100, 0.4); color: var(--accent-lime); font-size: 0.75rem; font-weight: 800; padding: 8px 13px; border-radius: 9px;">Abrir em tela cheia ↗</a>
+            </div>
+            <div style="width: 100%; height: calc(100vh - 128px); min-height: 540px; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.10); background: #07080c;">
+              <iframe src="/editor" title="Ghost Studio Pro" style="width: 100%; height: 100%; border: 0; display: block;" allow="microphone; autoplay; fullscreen" allowfullscreen></iframe>
+            </div>
+            ${isLocal ? '' : `<div style="font-size: 0.72rem; color: var(--text-muted); line-height: 1.45; text-align: center;">Para exportar MP4 e usar o motor local, abra o GhostLens instalado em <a href="http://127.0.0.1:4444/editor" target="_blank" rel="noopener" style="color: #38bdf8;">127.0.0.1:4444/editor</a>.</div>`}
+          </div>
+        `;
+      }
 
       function renderGhostStudioSection(grid) {
         if (!grid) return;

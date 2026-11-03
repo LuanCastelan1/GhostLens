@@ -55,7 +55,7 @@ sleep 2
 
 echo ""
 echo "[3/3] Abrindo o GhostLens Studio no navegador..."
-open "https://ghostlens.cloud/studio" || open "http://localhost:4444"
+open "http://127.0.0.1:4444" || open "https://www.ghostlens.cloud/studio"
 
 echo ""
 echo "=========================================================="

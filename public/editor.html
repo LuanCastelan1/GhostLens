@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07080c">
+  <title>Ghost Studio Pro • Editor de Vídeo</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="editor/editor.css">
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark">GS</div>
+        <div class="brand-copy">
+          <div class="brand-line">
+            <strong>Ghost Studio Pro</strong>
+            <span class="badge">EDITOR LOCAL</span>
+          </div>
+          <input id="projectName" class="project-name" value="Meu projeto" spellcheck="false" aria-label="Nome do projeto">
+        </div>
+      </div>
+
+      <div class="topbar-center">
+        <button class="icon-btn" id="btnUndo" title="Desfazer (Ctrl+Z)" aria-label="Desfazer">
+          <svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>
+        </button>
+        <button class="icon-btn" id="btnRedo" title="Refazer (Ctrl+Y)" aria-label="Refazer">
+          <svg viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg>
+        </button>
+        <div class="server-pill" id="serverPill" title="Servidor local de renderização">
+          <span class="dot" id="serverDot"></span>
+          <span id="serverLabel">Verificando motor local…</span>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <div class="account" id="accountBox">
+          <button class="ghost-btn small" id="btnAccount">Entrar</button>
+        </div>
+        <button class="ghost-btn" id="btnSave" title="Salvar projeto (Ctrl+S)">Salvar</button>
+        <button class="primary-btn" id="btnExport">
+          <svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+          Exportar
+        </button>
+      </div>
+    </header>
+
+    <div class="workspace">
+      <aside class="left-panel">
+        <nav class="panel-tabs" aria-label="Biblioteca do editor">
+          <button class="panel-tab active" data-tab="media">Mídia</button>
+          <button class="panel-tab" data-tab="effects">Efeitos</button>
+          <button class="panel-tab" data-tab="transitions">Transições</button>
+          <button class="panel-tab" data-tab="text">Texto</button>
+          <button class="panel-tab" data-tab="audio">Áudio</button>
+          <button class="panel-tab" data-tab="voice">Voz</button>
+        </nav>
+
+        <section class="panel-view active" id="viewMedia">
+          <div class="panel-heading">
+            <div>
+              <h2>Biblioteca</h2>
+              <p>Vídeos, fotos e áudios do projeto</p>
+            </div>
+            <button class="mini-btn" id="btnImportMedia">+ Importar</button>
+          </div>
+          <input type="file" id="mediaInput" accept="video/*,audio/*,image/*" multiple hidden>
+          <div class="dropzone" id="dropzone">
+            <svg viewBox="0 0 24 24"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M5 20h14"/></svg>
+            <strong>Arraste arquivos aqui</strong>
+            <span>MP4, MOV, WEBM, MP3, WAV, JPG, PNG</span>
+          </div>
+          <div class="media-list" id="mediaList"></div>
+        </section>
+
+        <section class="panel-view" id="viewEffects">
+          <div class="panel-heading">
+            <div>
+              <h2>Efeitos & filtros</h2>
+              <p>Aplicado ao clipe selecionado</p>
+            </div>
+          </div>
+          <div class="chip-row" id="effectCategories"></div>
+          <div class="effect-grid" id="effectGrid"></div>
+          <div class="panel-note">Selecione um clipe de vídeo ou imagem na timeline para aplicar.</div>
+        </section>
+
+        <section class="panel-view" id="viewTransitions">
+          <div class="panel-heading">
+            <div>
+              <h2>Transições</h2>
+              <p>Entre o clipe selecionado e o anterior</p>
+            </div>
+          </div>
+          <div class="transition-grid" id="transitionGrid"></div>
+          <div class="panel-note">Selecione o segundo clipe de um corte e escolha a transição.</div>
+        </section>
+
+        <section class="panel-view" id="viewText">
+          <div class="panel-heading">
+            <div>
+              <h2>Texto & títulos</h2>
+              <p>Legendas, títulos e chamadas</p>
+            </div>
+          </div>
+          <button class="wide-btn" id="btnAddText">+ Adicionar texto na agulha</button>
+          <div class="template-grid" id="textTemplates"></div>
+          <div class="panel-note">Dica: arraste o texto diretamente no preview para posicionar.</div>
+        </section>
+
+        <section class="panel-view" id="viewAudio">
+          <div class="panel-heading">
+            <div>
+              <h2>Áudio</h2>
+              <p>Música, efeitos e gravação</p>
+            </div>
+          </div>
+          <button class="wide-btn" id="btnImportAudio">+ Importar áudio</button>
+          <button class="wide-btn danger-soft" id="btnRecordVoice">
+            <span class="rec-dot"></span> Gravar voz do microfone
+          </button>
+          <input type="file" id="audioInput" accept="audio/*" hidden>
+          <div class="audio-list" id="audioList"></div>
+          <div class="panel-note">O áudio importado entra na trilha de música. A gravação entra na trilha de voz.</div>
+        </section>
+
+        <section class="panel-view" id="viewVoice">
+          <div class="panel-heading">
+            <div>
+              <h2>Voz IA</h2>
+              <p>Narração com vozes neurais</p>
+            </div>
+          </div>
+          <label class="field-label" for="ttsText">Texto da narração</label>
+          <textarea id="ttsText" class="tts-text" rows="5" maxlength="2000" placeholder="Digite o que a voz deve falar…"></textarea>
+          <div class="tts-meta"><span id="ttsCount">0 / 2000</span><span id="ttsCost">~$0.000</span></div>
+          <div class="field-row">
+            <label>
+              <span>Voz</span>
+              <select id="ttsVoice"></select>
+            </label>
+            <label>
+              <span>Idioma</span>
+              <select id="ttsLanguage">
+                <option value="auto">Automático</option>
+                <option value="Portuguese">Português</option>
+                <option value="English">Inglês</option>
+                <option value="Spanish">Espanhol</option>
+              </select>
+            </label>
+          </div>
+          <label class="field-label" for="ttsStyle">Estilo / emoção</label>
+          <select id="ttsStyle"></select>
+          <button class="primary-btn wide" id="btnGenerateTTS">
+            <svg viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M8 7v10"/><path d="M16 7v10"/><path d="M4 10v4"/><path d="M20 10v4"/></svg>
+            Gerar voz IA
+          </button>
+          <div class="panel-note" id="ttsLoginNote">Entre na sua conta GhostLens para usar as vozes IA.</div>
+
+          <div class="divider"></div>
+          <h3 class="subheading">Efeito de voz no clipe</h3>
+          <p class="muted">Selecione um áudio na trilha de voz e aplique um preset do motor local.</p>
+          <select id="voiceFxSelect"></select>
+          <button class="ghost-btn wide" id="btnApplyVoiceFx">Aplicar efeito de voz</button>
+        </section>
+      </aside>
+
+      <main class="stage-panel">
+        <div class="local-banner" id="localBanner" hidden>
+          <strong>Motor local indisponível nesta página.</strong>
+          <span>Para editar e exportar com o FFmpeg do seu computador, abra <a href="http://127.0.0.1:4444/editor">http://127.0.0.1:4444/editor</a>.</span>
+        </div>
+        <div class="stage-toolbar">
+          <div class="aspect-group" id="aspectGroup">
+            <button data-aspect="9:16" class="active">9:16</button>
+            <button data-aspect="16:9">16:9</button>
+            <button data-aspect="1:1">1:1</button>
+            <button data-aspect="4:5">4:5</button>
+          </div>
+          <div class="stage-info">
+            <span id="resolutionLabel">1080 × 1920</span>
+            <span class="sep">•</span>
+            <span id="fpsLabel">30 fps</span>
+          </div>
+        </div>
+
+        <div class="preview-shell" id="previewShell">
+          <div class="preview-frame" id="previewFrame">
+            <canvas id="previewCanvas" width="1080" height="1920"></canvas>
+            <div class="preview-empty" id="previewEmpty">
+              <div class="empty-icon">🎬</div>
+              <strong>Comece importando uma mídia</strong>
+              <span>Arraste um vídeo para a biblioteca e adicione na timeline.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="transport">
+          <button class="play-btn" id="btnPlay" aria-label="Reproduzir">
+            <svg viewBox="0 0 24 24" class="icon-play"><path d="M8 5v14l11-7z"/></svg>
+            <svg viewBox="0 0 24 24" class="icon-pause" hidden><path d="M7 5h4v14H7z"/><path d="M13 5h4v14h-4z"/></svg>
+          </button>
+          <div class="time-readout">
+            <span id="currentTime">00:00.00</span>
+            <span class="time-sep">/</span>
+            <span id="totalTime">00:00.00</span>
+          </div>
+          <div class="transport-spacer"></div>
+          <label class="volume-control" title="Volume do preview">
+            <svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
+            <input type="range" id="masterVolume" min="0" max="100" value="100">
+          </label>
+          <button class="icon-btn" id="btnFullscreen" title="Tela cheia">
+            <svg viewBox="0 0 24 24"><path d="M8 3H3v5"/><path d="M16 3h5v5"/><path d="M8 21H3v-5"/><path d="M16 21h5v-5"/></svg>
+          </button>
+        </div>
+      </main>
+
+      <aside class="inspector" id="inspector">
+        <div class="inspector-empty" id="inspectorEmpty">
+          <div class="inspector-icon">⚙️</div>
+          <h2>Inspetor</h2>
+          <p>Selecione um clipe na timeline para ajustar velocidade, volume, filtros, posição e transições.</p>
+          <div class="inspector-hints">
+            <span><kbd>Espaço</kbd> reproduzir</span>
+            <span><kbd>S</kbd> dividir</span>
+            <span><kbd>Del</kbd> excluir</span>
+          </div>
+        </div>
+        <div id="inspectorBody" hidden></div>
+      </aside>
+    </div>
+
+    <section class="timeline-panel">
+      <div class="timeline-toolbar">
+        <div class="tool-group">
+          <button class="tool-btn" id="btnSplit" title="Dividir na agulha (S)">
+            <svg viewBox="0 0 24 24"><path d="M12 3v18"/><path d="M7 7l10 10"/><path d="M17 7 7 17"/></svg>
+            Dividir
+          </button>
+          <button class="tool-btn" id="btnDelete" title="Excluir clipe (Del)">
+            <svg viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 14h10l1-14"/></svg>
+            Excluir
+          </button>
+          <button class="tool-btn" id="btnDuplicate" title="Duplicar clipe">
+            <svg viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
+            Duplicar
+          </button>
+        </div>
+        <div class="tool-group timeline-zoom">
+          <span class="zoom-label">Zoom</span>
+          <button class="mini-icon" id="btnZoomOut">−</button>
+          <input type="range" id="timelineZoom" min="20" max="240" value="60">
+          <button class="mini-icon" id="btnZoomIn">+</button>
+          <button class="mini-btn" id="btnSnap" aria-pressed="true">Snap</button>
+        </div>
+      </div>
+
+      <div class="timeline-body">
+        <div class="track-labels" id="trackLabels"></div>
+        <div class="timeline-scroll" id="timelineScroll">
+          <div class="timeline-content" id="timelineContent">
+            <div class="ruler" id="ruler"></div>
+            <div class="tracks" id="tracks"></div>
+            <div class="playhead" id="playhead"><span class="playhead-handle"></span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="toast-wrap" id="toastWrap"></div>
+
+  <!-- Modal de login -->
+  <div class="modal-backdrop" id="loginModal" hidden>
+    <div class="modal small">
+      <button class="modal-close" data-close="loginModal">×</button>
+      <h2>Entrar na GhostLens</h2>
+      <p class="muted">Use a mesma conta do GhostLens Studio para gerar vozes IA.</p>
+      <form id="loginForm">
+        <label class="field-label" for="loginEmail">E-mail</label>
+        <input id="loginEmail" type="email" autocomplete="email" required>
+        <label class="field-label" for="loginPassword">Senha</label>
+        <input id="loginPassword" type="password" autocomplete="current-password" required>
+        <div class="form-error" id="loginError"></div>
+        <button class="primary-btn wide" type="submit" id="btnLoginSubmit">Entrar</button>
+      </form>
+      <p class="modal-footnote">A conta é a mesma do painel GhostLens. Nenhum dado do editor sai do seu computador.</p>
+    </div>
+  </div>
+
+  <!-- Modal de exportação -->
+  <div class="modal-backdrop" id="exportModal" hidden>
+    <div class="modal">
+      <button class="modal-close" data-close="exportModal">×</button>
+      <div class="export-head">
+        <div>
+          <h2>Exportar vídeo</h2>
+          <p class="muted">A renderização usa o seu computador. O tempo é parecido com a duração do vídeo.</p>
+        </div>
+        <div class="export-badge">LOCAL ENGINE</div>
+      </div>
+
+      <div id="exportSettings">
+        <div class="field-row three">
+          <label>
+            <span>Resolução</span>
+            <select id="exportResolution">
+              <option value="720">720p</option>
+              <option value="1080" selected>1080p</option>
+              <option value="1440">1440p</option>
+            </select>
+          </label>
+          <label>
+            <span>FPS</span>
+            <select id="exportFps">
+              <option value="30" selected>30 fps</option>
+              <option value="60">60 fps</option>
+            </select>
+          </label>
+          <label>
+            <span>Formato</span>
+            <select id="exportFormat">
+              <option value="mp4" selected>MP4 (H.264)</option>
+              <option value="webm">WebM</option>
+            </select>
+          </label>
+        </div>
+        <div class="export-summary" id="exportSummary"></div>
+        <button class="primary-btn wide" id="btnStartExport">
+          <svg viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>
+          Renderizar e baixar
+        </button>
+      </div>
+
+      <div id="exportProgress" hidden>
+        <div class="progress-head"><strong id="exportStatus">Preparando…</strong><span id="exportPercent">0%</span></div>
+        <div class="progress-track"><div class="progress-fill" id="exportFill"></div></div>
+        <div class="export-meta" id="exportMeta"></div>
+        <button class="ghost-btn wide" id="btnCancelExport">Cancelar</button>
+      </div>
+
+      <div id="exportDone" hidden>
+        <div class="done-icon">✓</div>
+        <h3>Vídeo pronto</h3>
+        <p class="muted" id="exportDoneMeta"></p>
+        <a class="primary-btn wide" id="btnDownloadExport" download>Baixar vídeo</a>
+        <button class="ghost-btn wide" id="btnExportAgain">Exportar outro</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+  <script src="editor/editor.js"></script>
+</body>
+</html>
