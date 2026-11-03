@@ -2473,7 +2473,7 @@
       <!-- ABA 1: CHAVE WAVESPEED -->
       <div id="adminTabWavespeed" style="display: block;">
         <div
-          style="background: rgba(234, 179, 8, 0.06); border: 1px solid rgba(234, 179, 8, 0.2); border-radius: 14px; padding: 16px; margin-bottom: 18px;">
+          style="display: none; background: rgba(234, 179, 8, 0.06); border: 1px solid rgba(234, 179, 8, 0.2); border-radius: 14px; padding: 16px; margin-bottom: 18px;">
           <label style="font-size: 0.76rem; font-weight: 800; color: #fde047; display: block; margin-bottom: 6px;">
             Sua Chave de API WaveSpeed (Privada e Criptografada Localmente)
           </label>
@@ -2498,6 +2498,12 @@
               ⚡ Testar Conexão
             </button>
           </div>
+        </div>
+
+        <div
+          style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.35); border-radius: 14px; padding: 16px; margin-bottom: 18px;">
+          <div style="font-size: 0.8rem; font-weight: 800; color: #34d399;">🔐 WaveSpeed configurada no servidor</div>
+          <p style="font-size: 0.75rem; color: #cbd5e1; margin: 8px 0 0 0;">A chave usada no 4K/8K fica na Vercel e nunca é enviada ao navegador.</p>
         </div>
 
         <div
@@ -3035,9 +3041,13 @@
 
       <!-- ABA 1: CLOUD PHONE VIP (NUVEM 100% DIRETO NO NAVEGADOR) -->
       <div id="launcherTabCloud">
+        <div style="background: rgba(234, 179, 8, 0.08); border: 1px solid rgba(234, 179, 8, 0.35); border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; color: #fde047; font-size: 0.82rem;">
+          ⚠️ Cloud Phone está temporariamente indisponível. Licenças e créditos seguem funcionando normalmente.
+        </div>
+
         <!-- Card quando o Plano Cloud NÃO está ativo -->
         <div id="cloudSubLockedBox"
-          style="display: none; background: linear-gradient(135deg, rgba(234, 179, 8, 0.1) 0%, rgba(15, 17, 23, 0.95) 100%); border: 1.5px solid rgba(234, 179, 8, 0.5); border-radius: 18px; padding: 22px; margin-bottom: 16px;">
+          style="display: none !important; background: linear-gradient(135deg, rgba(234, 179, 8, 0.1) 0%, rgba(15, 17, 23, 0.95) 100%); border: 1.5px solid rgba(234, 179, 8, 0.5); border-radius: 18px; padding: 22px; margin-bottom: 16px;">
           <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
             <div>
               <span
@@ -3457,6 +3467,27 @@
 
   <script>
     let GHOSTLENS_CLUSTER_KEY = localStorage.getItem('ghostlens_wavespeed_key') || '';
+
+    async function wavespeedProxy(payload) {
+      const session = (await supabaseClient?.auth?.getSession())?.data?.session;
+      const accessToken = session?.access_token;
+      if (!accessToken) {
+        throw new Error('Faça login na sua conta GhostLens para usar 4K/8K.');
+      }
+      const res = await fetch('https://www.ghostlens.cloud/api/wavespeed_proxy', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.message || data.error || 'Serviço 4K/8K indisponível.');
+      }
+      return data;
+    }
     let currentEngine = 'ghost_60fps';
     let currentDevice = 'iphone16pro';
     let currentGps = 'auto_ai';
@@ -8655,19 +8686,14 @@
                 }
               }
 
-              // 2. FALLBACK NUVEM WAVESPEED
-              if (!GHOSTLENS_CLUSTER_KEY) {
-                throw new Error('WaveSpeed não configurada. Salve a chave no painel admin.');
-              }
+              // 2. FALLBACK NUVEM WAVESPEED (proxy na Vercel; a chave fica no servidor)
               document.getElementById('dockActionLabel').innerText = '⚡ Conectando Neural Cloud...';
 
-              // Upload seguro para armazenamento temporário GhostLens
-              const ticketRes = await fetch('https://api.wavespeed.ai/api/v3/media/uploads', {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${GHOSTLENS_CLUSTER_KEY}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ filename: loadedFile.name, size: loadedFile.size })
+              const ticketData = await wavespeedProxy({
+                action: 'upload_ticket',
+                filename: loadedFile.name,
+                size: loadedFile.size
               });
-              const ticketData = await ticketRes.json();
               if (!ticketData.data || !ticketData.data.upload) {
                 throw new Error(ticketData.message || 'Falha ao obter ticket de upload');
               }
@@ -8681,20 +8707,11 @@
                 ? '🧠 Interpolação Neural 60 FPS (RIFE)...'
                 : '💎 Upscale Vídeo 4K Ultra HD (WaveSpeed)...';
 
-              const endpoint = is60Fps
-                ? 'https://api.wavespeed.ai/api/v3/wavespeed-ai/video-fps-increaser'
-                : 'https://api.wavespeed.ai/api/v3/wavespeed-ai/video-upscaler';
-
-              const payload = is60Fps
-                ? { video: downloadUrl, target_fps: 60 }
-                : { video: downloadUrl, target_resolution: "4k" };
-
-              const inferRes = await fetch(endpoint, {
-                method: 'POST',
-                headers: { 'Authorization': `Bearer ${GHOSTLENS_CLUSTER_KEY}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+              const inferData = await wavespeedProxy({
+                action: 'infer',
+                kind: is60Fps ? 'fps' : 'upscale',
+                download_url: downloadUrl
               });
-              const inferData = await inferRes.json();
               const pollUrl = (inferData && inferData.data && inferData.data.urls && inferData.data.urls.get) ||
                 (inferData && inferData.urls && inferData.urls.get);
 
@@ -8706,12 +8723,11 @@
               let exactApiCostUsd = null;
               for (let i = 0; i < 60; i++) {
                 await new Promise(r => setTimeout(r, 2500));
-                const pollRes = await fetch(pollUrl, { headers: { 'Authorization': `Bearer ${GHOSTLENS_CLUSTER_KEY}` } });
-                const pollData = await pollRes.json();
+                const pollData = await wavespeedProxy({ action: 'poll', poll_url: pollUrl });
                 const status = pollData.status || (pollData.data && pollData.data.status);
                 exactApiCostUsd = pollData.cost || (pollData.data && pollData.data.cost) || exactApiCostUsd;
 
-                document.getElementById('dockActionLabel').innerText = `⚡ ${status.toUpperCase()} (${((i + 1) * 2.5) | 0}s)`;
+                document.getElementById('dockActionLabel').innerText = `⚡ ${String(status || '').toUpperCase()} (${((i + 1) * 2.5) | 0}s)`;
                 if (status === 'completed' || status === 'succeeded') {
                   finalUrl = (pollData.outputs && pollData.outputs[0]) || (pollData.data && pollData.data.outputs && pollData.data.outputs[0]);
                   break;
