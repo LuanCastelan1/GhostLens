@@ -67,6 +67,10 @@ os.makedirs(PERFIS_DIR, exist_ok=True)
 
 ADMIN_TOKEN_FILE = os.path.expanduser("~/.ghostphone/admin_token")
 
+# Valores públicos do projeto Supabase (anon key é pública por design).
+SUPABASE_URL = "https://mbelyevitfksmknlyhgr.supabase.co"
+SUPABASE_ANON_KEY = "sb_publishable_MePEjLaShnmXt8xwafSxew_iXNXhfi1"
+
 
 def resolve_project_script(name):
     """Localiza scripts auxiliares sem assumir que estão na mesma pasta."""
@@ -103,12 +107,12 @@ except ImportError:
     HAS_PIL = False
 
 try:
-    from ghostphone_auth_guard import auth_guard, get_admin_token
+    from ghostphone_auth_guard import auth_guard, get_admin_token, SSL_CONTEXT
 except ImportError:
     for candidate in [BASE_DIR, os.path.join(BASE_DIR, "daemon"), os.path.dirname(BASE_DIR), os.getcwd()]:
         if candidate not in sys.path:
             sys.path.insert(0, candidate)
-    from ghostphone_auth_guard import auth_guard, get_admin_token
+    from ghostphone_auth_guard import auth_guard, get_admin_token, SSL_CONTEXT
 
 import platform
 
@@ -499,14 +503,36 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
             'Content-Type, Authorization, X-Requested-With, X-Ghost-Admin-Token'
         )
 
+    def _is_supabase_admin(self):
+        """Valida o JWT do Supabase e exige app_metadata.role == 'admin'."""
+        auth = self.headers.get('Authorization', '')
+        token = auth[7:].strip() if auth.lower().startswith('bearer ') else ''
+        if not token:
+            return False
+        try:
+            req = urllib.request.Request(
+                f"{SUPABASE_URL}/auth/v1/user",
+                headers={
+                    "apikey": SUPABASE_ANON_KEY,
+                    "Authorization": f"Bearer {token}"
+                }
+            )
+            with urllib.request.urlopen(req, timeout=6, context=SSL_CONTEXT) as resp:
+                user = json.loads(resp.read().decode('utf-8'))
+            return (user.get('app_metadata') or {}).get('role') == 'admin'
+        except Exception:
+            return False
+
     def require_admin(self):
-        """Protege endpoints administrativos com o token local do daemon."""
+        """Aceita o token local do daemon OU um JWT de admin do Supabase."""
         expected = get_admin_token()
         received = self.headers.get('X-Ghost-Admin-Token', '')
-        if not expected or not hmac.compare_digest(str(received), str(expected)):
-            self.send_json({"error": "admin_unauthorized"}, code=401)
-            return False
-        return True
+        if expected and hmac.compare_digest(str(received), str(expected)):
+            return True
+        if self._is_supabase_admin():
+            return True
+        self.send_json({"error": "admin_unauthorized"}, code=401)
+        return False
 
     def do_OPTIONS(self):
         self.send_response(200)

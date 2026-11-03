@@ -2203,6 +2203,11 @@
           style="background: var(--accent-lime); color: #000; border: none; padding: 13px; border-radius: 12px; font-weight: 900; font-size: 0.92rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 18px rgba(190, 242, 100, 0.35); margin-top: 6px;">
           <span id="txtSubmitAuth">🚀 Entrar no GhostLens Studio</span>
         </button>
+
+        <div style="text-align: center; margin-top: 10px;">
+          <a href="#" onclick="forgotGhostPassword(event)"
+            style="color: #94a3b8; font-size: 0.75rem; text-decoration: none;">Esqueci minha senha</a>
+        </div>
       </form>
 
       <!-- Rodapé do Modal com Link para Planos -->
@@ -4714,6 +4719,7 @@
     }
 
     let currentUser = null;
+    let supabaseAdminVerified = false;
     let userBalance = 0.00;
     let currentRechargeAmount = 10.00;
     let pixPollingInterval = null;
@@ -4727,6 +4733,23 @@
 
     function isGhostAdminSession() {
       return Boolean(getGhostAdminToken());
+    }
+
+    function isSupabaseAdmin() {
+      return Boolean(supabaseAdminVerified);
+    }
+
+    function isAdminUser() {
+      return isSupabaseAdmin() || isGhostAdminSession();
+    }
+
+    async function getSupabaseAccessToken() {
+      try {
+        const session = (await supabaseClient?.auth?.getSession())?.data?.session;
+        return session?.access_token || '';
+      } catch (e) {
+        return '';
+      }
     }
 
     async function validateGhostAdminToken(token) {
@@ -4767,6 +4790,28 @@
       document.getElementById('ghostAuthModal').style.display = 'none';
       const fb = document.getElementById('ghostAuthFeedback');
       if (fb) fb.style.display = 'none';
+    }
+
+    async function forgotGhostPassword(event) {
+      if (event) event.preventDefault();
+      const email = document.getElementById('ghostAuthEmail').value.trim();
+      if (!email || !email.includes('@')) {
+        alert('Digite seu e-mail no campo acima primeiro.');
+        return;
+      }
+      if (!supabaseClient) {
+        alert('Supabase indisponível no momento.');
+        return;
+      }
+      try {
+        const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin + '/studio'
+        });
+        if (error) throw error;
+        alert('📧 Enviamos um link de redefinição de senha para ' + email + '.');
+      } catch (err) {
+        alert('❌ Não foi possível enviar o link: ' + (err.message || err));
+      }
     }
 
     function switchAuthTab(tab) {
@@ -4858,6 +4903,10 @@
           currentUser = data.user;
         }
 
+        supabaseAdminVerified = Boolean(
+          currentUser && currentUser.app_metadata && currentUser.app_metadata.role === 'admin'
+        );
+
         localStorage.setItem('ghostlens_session_user', JSON.stringify(currentUser));
         closeGhostAuthModal();
         updateAuthUI();
@@ -4887,6 +4936,7 @@
         localStorage.removeItem('ghostlens_session_user');
         localStorage.removeItem('ghostlens_master_admin');
         sessionStorage.removeItem('ghostlens_admin_token');
+        supabaseAdminVerified = false;
         currentUser = null;
         userBalance = 0.00;
         if (walletChannel && supabaseClient) supabaseClient.removeChannel(walletChannel);
@@ -4901,7 +4951,7 @@
       const emailSpan = document.getElementById('headerUserEmail');
       const btnAdmin = document.getElementById('btnAdminMaster');
 
-      const isMasterAdmin = Boolean(currentUser) && isGhostAdminSession();
+      const isMasterAdmin = Boolean(currentUser) && isAdminUser();
 
       if (btnAdmin) {
         btnAdmin.style.display = isMasterAdmin ? 'inline-flex' : 'none';
@@ -4925,6 +4975,7 @@
     }
 
     async function initGhostAuth() {
+      supabaseAdminVerified = false;
       // 1. Restaura sessão salva se existir no navegador
       const savedUser = localStorage.getItem('ghostlens_session_user');
 
@@ -4963,11 +5014,19 @@
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session && session.user) {
           currentUser = session.user;
+          supabaseAdminVerified = Boolean(
+            session.user.app_metadata && session.user.app_metadata.role === 'admin'
+          );
           localStorage.setItem('ghostlens_session_user', JSON.stringify(currentUser));
           updateAuthUI();
           await loadWalletBalance();
           subscribeWalletChanges();
         } else {
+          supabaseAdminVerified = false;
+          if (currentUser && currentUser.id !== 'admin_local') {
+            currentUser = null;
+            localStorage.removeItem('ghostlens_session_user');
+          }
           updateAuthUI();
         }
       } catch (e) {
@@ -4984,7 +5043,7 @@
         return;
       }
 
-      if (isGhostAdminSession()) {
+      if (isAdminUser()) {
         userBalance = 999.00;
         updateWalletDisplay();
         return;
@@ -5261,8 +5320,8 @@
     function getUserMaxProfilesLimit() {
       if (!currentUser) return 1;
       const email = (currentUser.email || '').toLowerCase();
-      // Master Admin (token do daemon) tem perfis ilimitados
-      if (isGhostAdminSession()) {
+      // Master Admin (Supabase ou token do daemon) tem perfis ilimitados
+      if (isAdminUser()) {
         return 999;
       }
       const plan = (currentUser.user_metadata?.plan || localStorage.getItem('ghostlens_user_plan') || 'SOLO').toUpperCase();
@@ -5302,7 +5361,7 @@
       let localProfs = JSON.parse(localStorage.getItem(storageKey) || '[]');
 
       // Perfis de demonstração exclusivos da sessão admin
-      const isAdmin = isGhostAdminSession();
+      const isAdmin = isAdminUser();
 
       if (isAdmin && localProfs.length === 0) {
         localProfs = [
@@ -8052,7 +8111,7 @@
       }
 
       async function openGhostAdminModal() {
-        if (!isGhostAdminSession() || !(await validateGhostAdminToken(getGhostAdminToken()))) {
+        if (!isAdminUser()) {
           const ok = await requestGhostAdminAccess();
           if (!ok) return;
         }
@@ -8147,15 +8206,20 @@
           return;
         }
 
-        if (!getGhostAdminToken() && !(await requestGhostAdminAccess())) return;
+        if (!isAdminUser() && !(await requestGhostAdminAccess())) return;
 
         try {
+          const adminToken = getGhostAdminToken();
+          const supabaseToken = await getSupabaseAccessToken();
+          const adminHeaders = {
+            'Content-Type': 'application/json',
+            'X-Ghost-Admin-Token': adminToken
+          };
+          if (supabaseToken) adminHeaders['Authorization'] = `Bearer ${supabaseToken}`;
+
           const res = await fetch('http://127.0.0.1:4444/api/auth/generate_token', {
             method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-Ghost-Admin-Token': getGhostAdminToken()
-            },
+            headers: adminHeaders,
             body: JSON.stringify({ email, plan, days, hwid: hwid || null })
           });
 
@@ -8207,11 +8271,16 @@
         const tbody = document.getElementById('tblAdminLicensesBody');
         if (!tbody) return;
 
-        if (!getGhostAdminToken()) return;
+        if (!isAdminUser()) return;
 
         try {
+          const adminToken = getGhostAdminToken();
+          const supabaseToken = await getSupabaseAccessToken();
+          const adminHeaders = { 'X-Ghost-Admin-Token': adminToken };
+          if (supabaseToken) adminHeaders['Authorization'] = `Bearer ${supabaseToken}`;
+
           const res = await fetch('http://127.0.0.1:4444/api/auth/issued_licenses', {
-            headers: { 'X-Ghost-Admin-Token': getGhostAdminToken() }
+            headers: adminHeaders
           });
           if (res.ok) {
             const data = await res.json();
@@ -8517,7 +8586,7 @@
         const isVideo = loadedFile.type.startsWith('video/') || loadedFile.name.match(/\.(mp4|mov)$/i);
         const cost = getEnginePrice(currentEngine, isVideo);
 
-        const isAdmin = isGhostAdminSession();
+        const isAdmin = isAdminUser();
 
         // Verificação preliminar de saldo (apenas para clientes externos)
         if (!isAdmin && userBalance < cost) {
