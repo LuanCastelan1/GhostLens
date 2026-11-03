@@ -20,6 +20,8 @@ const {
   sendLicenseEmail,
   planForAmountBRL,
   normalizeLicense,
+  findLicenseByKey,
+  supabaseRest,
   setCors
 } = require('../lib/ghostlens-backend');
 const {
@@ -28,6 +30,96 @@ const {
   normalizeBilling,
   daysForBilling
 } = require('../lib/ghostlens-license-plans');
+
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || '';
+const STRIPE_API = 'https://api.stripe.com/v1';
+
+async function stripeApi(path, options = {}) {
+  const res = await fetch(`${STRIPE_API}/${path}`, {
+    ...options,
+    headers: {
+      Authorization: `Bearer ${STRIPE_SECRET_KEY}`,
+      ...(options.body instanceof URLSearchParams
+        ? { 'Content-Type': 'application/x-www-form-urlencoded' }
+        : {}),
+      ...(options.headers || {})
+    }
+  });
+  const text = await res.text();
+  let data = null;
+  try { data = text ? JSON.parse(text) : null; } catch { data = null; }
+  if (!res.ok) {
+    const err = new Error(`stripe_${res.status}`);
+    err.status = res.status;
+    err.data = data;
+    throw err;
+  }
+  return data;
+}
+
+async function releaseBucket(bucket) {
+  try {
+    await supabaseRest(`ghost_rate_limits?bucket=eq.${encodeURIComponent(bucket)}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ count: 0, window_start: new Date().toISOString() })
+    });
+  } catch (err) {
+    console.error('[stripe] Falha ao liberar idempotência:', err.message);
+  }
+}
+
+async function renewLicense({ key, days, invoiceId }) {
+  const bucket = `license-renewal:${invoiceId}`;
+  let lock;
+  try {
+    lock = await supabaseRest('rpc/check_rate_limit', {
+      method: 'POST',
+      body: JSON.stringify({ p_bucket: bucket, p_limit: 1, p_window_seconds: 31536000 })
+    });
+  } catch (err) {
+    return { ok: false, error: 'idempotency_unavailable' };
+  }
+
+  if (!lock || lock.allowed !== true) {
+    return { ok: false, duplicate: true };
+  }
+
+  const license = await findLicenseByKey(key);
+  if (!license || license.status !== 'active') {
+    await releaseBucket(bucket);
+    return { ok: false, error: 'license_not_found' };
+  }
+
+  const now = Date.now();
+  const current = new Date(license.expires_at).getTime();
+  const base = Math.max(now, Number.isFinite(current) ? current : now);
+  const newExpiry = new Date(base + days * 86400000).toISOString();
+
+  try {
+    await supabaseRest(`ghost_licenses?key=eq.${encodeURIComponent(key)}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ expires_at: newExpiry })
+    });
+  } catch (err) {
+    await releaseBucket(bucket);
+    return { ok: false, error: 'renewal_failed' };
+  }
+
+  return { ok: true, expires_at: newExpiry };
+}
+
+async function setSubscriptionLicenseMetadata(subscriptionId, license, tier, billing, days) {
+  const id = typeof subscriptionId === 'string' ? subscriptionId : (subscriptionId && subscriptionId.id);
+  if (!id) return;
+  const body = new URLSearchParams();
+  body.set('metadata[license_key]', license.key);
+  body.set('metadata[type]', 'license');
+  body.set('metadata[plan]', tier.code);
+  body.set('metadata[billing]', billing);
+  body.set('metadata[days]', String(days));
+  body.set('metadata[auto_renew]', 'true');
+  await stripeApi(`subscriptions/${id}`, { method: 'POST', body });
+}
 
 module.exports = async (req, res) => {
   setCors(res, 'Content-Type, stripe-signature');
@@ -71,6 +163,44 @@ module.exports = async (req, res) => {
   console.log(`⚡ [stripe] Evento ${eventType} | ${event.id || 'sem_id'}`);
 
   try {
+    // Renovação automática de assinatura de licença: estende a chave existente.
+    if (eventType === 'invoice.payment_succeeded' && object.subscription) {
+      const subId = typeof object.subscription === 'string'
+        ? object.subscription
+        : object.subscription.id;
+
+      // A primeira fatura é coberta pelo checkout.session.completed.
+      if (object.billing_reason === 'subscription_create') {
+        return res.status(200).json({ received: true, ignored: 'first_subscription_invoice' });
+      }
+
+      let subscription = null;
+      try {
+        subscription = await stripeApi(`subscriptions/${subId}`);
+      } catch (stripeErr) {
+        console.error('[stripe] Falha ao buscar assinatura para renovação:', stripeErr.message);
+      }
+
+      const meta = (subscription && subscription.metadata) || {};
+      if (meta.type === 'license' && meta.license_key) {
+        const days = parseInt(meta.days, 10) || 30;
+        const renewal = await renewLicense({
+          key: meta.license_key,
+          days,
+          invoiceId: object.id
+        });
+        return res.status(200).json({
+          received: true,
+          renewed: renewal.ok,
+          duplicate: Boolean(renewal.duplicate),
+          expires_at: renewal.expires_at,
+          error: renewal.error
+        });
+      }
+
+      return res.status(200).json({ received: true, ignored: 'non_license_subscription' });
+    }
+
     let amountCents = 0;
     let customerEmail = '';
     let paymentId = '';
@@ -98,6 +228,7 @@ module.exports = async (req, res) => {
 
     let tier;
     let days = 30;
+    let billing = 'monthly';
 
     if (metadata.type === 'license') {
       const plan = PLANS[normalizePlan(metadata.plan)];
@@ -105,7 +236,7 @@ module.exports = async (req, res) => {
         console.error('[stripe] metadata de licença com plano inválido:', metadata.plan);
         return res.status(400).json({ error: 'invalid_license_plan' });
       }
-      const billing = normalizeBilling(metadata.billing);
+      billing = normalizeBilling(metadata.billing);
       tier = { code: plan.code, plan: plan.plan, maxDevices: plan.maxDevices };
       days = parseInt(metadata.days, 10) || daysForBilling(billing);
     } else {
@@ -124,6 +255,15 @@ module.exports = async (req, res) => {
 
     if (!license) {
       throw new Error('license_insert_returned_empty');
+    }
+
+    // Assinatura: guarda a chave na subscription para as renovações futuras.
+    if (metadata.type === 'license' && object.subscription) {
+      try {
+        await setSubscriptionLicenseMetadata(object.subscription, license, tier, billing, days);
+      } catch (subErr) {
+        console.error('[stripe] Falha ao gravar metadata da assinatura:', subErr.message, subErr.data || '');
+      }
     }
 
     const emailResult = await sendLicenseEmail(license);

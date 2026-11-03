@@ -593,6 +593,12 @@
         </span>
       </div>
 
+      <div id="autoRenewWrap" style="display: flex; align-items: center; justify-content: center; gap: 8px; margin: -28px auto 28px auto; color: #cbd5e1; font-size: 0.82rem;">
+        <input type="checkbox" id="chkAutoRenew" style="accent-color: var(--accent-lime); width: 16px; height: 16px; cursor: pointer;">
+        <label for="chkAutoRenew" style="cursor: pointer;">Renovar automaticamente todo mês no cartão</label>
+        <span style="color: #64748b; font-size: 0.72rem;">(Pix é por período)</span>
+      </div>
+
       <!-- Grid de Planos -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; text-align: left; max-width: 1100px; margin: 0 auto 80px auto;">
         
@@ -834,10 +840,12 @@
 
       try {
         const billing = currentBilling === 'anual' ? 'annual' : 'monthly';
+        const autoRenew = billing === 'monthly' &&
+          Boolean(document.getElementById('chkAutoRenew')?.checked);
         const res = await fetch('/api/create_license_checkout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ plan, billing })
+          body: JSON.stringify({ plan, billing, auto_renew: autoRenew })
         });
         const data = await res.json().catch(() => ({}));
         if (res.ok && data.url) {
@@ -882,6 +890,11 @@
       document.getElementById('price-enterprise').innerText = pricing[mode].enterprise.price;
       document.getElementById('period-enterprise').innerText = pricing[mode].enterprise.period;
       updatePlanButtons();
+
+      const autoWrap = document.getElementById('autoRenewWrap');
+      const autoChk = document.getElementById('chkAutoRenew');
+      if (autoWrap) autoWrap.style.display = mode === 'mensal' ? 'flex' : 'none';
+      if (mode !== 'mensal' && autoChk) autoChk.checked = false;
     }
 
     function toggleBilling() {

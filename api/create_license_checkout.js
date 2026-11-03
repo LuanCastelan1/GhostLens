@@ -55,23 +55,34 @@ async function getPriceId(lookup) {
   return price.id;
 }
 
-async function createCheckoutSession({ priceId, plan, billing, days, email }) {
+async function createCheckoutSession({ priceId, plan, billing, days, email, autoRenew }) {
   const params = {
-    mode: 'payment',
+    mode: autoRenew ? 'subscription' : 'payment',
     'line_items[0][price]': priceId,
     'line_items[0][quantity]': 1,
-    customer_creation: 'always',
     'metadata[type]': 'license',
     'metadata[plan]': plan.code,
     'metadata[billing]': billing,
     'metadata[days]': days,
-    'payment_intent_data[metadata][type]': 'license',
-    'payment_intent_data[metadata][plan]': plan.code,
-    'payment_intent_data[metadata][billing]': billing,
-    'payment_intent_data[metadata][days]': days,
+    'metadata[auto_renew]': autoRenew ? 'true' : 'false',
     success_url: `${SITE_URL}/obrigado?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${SITE_URL}/download.html`
   };
+
+  if (autoRenew) {
+    params['subscription_data[metadata][type]'] = 'license';
+    params['subscription_data[metadata][plan]'] = plan.code;
+    params['subscription_data[metadata][billing]'] = billing;
+    params['subscription_data[metadata][days]'] = days;
+    params['subscription_data[metadata][auto_renew]'] = 'true';
+    params['payment_method_types[0]'] = 'card';
+  } else {
+    params.customer_creation = 'always';
+    params['payment_intent_data[metadata][type]'] = 'license';
+    params['payment_intent_data[metadata][plan]'] = plan.code;
+    params['payment_intent_data[metadata][billing]'] = billing;
+    params['payment_intent_data[metadata][days]'] = days;
+  }
 
   if (email) params.customer_email = email;
 
@@ -112,6 +123,7 @@ module.exports = async (req, res) => {
     const billing = normalizeBilling(body.billing);
     const days = daysForBilling(billing);
     const email = typeof body.email === 'string' ? body.email.trim() : '';
+    const autoRenew = Boolean(body.auto_renew) && billing === 'monthly';
 
     if (!plan) {
       return res.status(400).json({ error: 'invalid_plan' });
@@ -128,14 +140,19 @@ module.exports = async (req, res) => {
       console.warn('[license_checkout] rate limit indisponível:', rateErr.message);
     }
 
-    const priceId = await getPriceId(lookupKey(planKey, billing));
-    const session = await createCheckoutSession({ priceId, plan, billing, days, email });
+    const priceLookup = autoRenew
+      ? `${lookupKey(planKey, 'monthly')}_recurring`
+      : lookupKey(planKey, billing);
+    const priceId = await getPriceId(priceLookup);
+    const session = await createCheckoutSession({ priceId, plan, billing, days, email, autoRenew });
 
-    console.log(`[license_checkout] ${plan.code} ${billing} | session ${session.id}`);
+    console.log(`[license_checkout] ${plan.code} ${billing} | autoRenew=${autoRenew} | session ${session.id}`);
     return res.status(200).json({
       success: true,
       url: session.url,
-      session_id: session.id
+      session_id: session.id,
+      auto_renew: autoRenew,
+      mode: session.mode
     });
   } catch (err) {
     console.error('[license_checkout] erro:', err.status || '', err.message, err.data || '');
