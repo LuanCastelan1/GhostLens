@@ -1528,6 +1528,11 @@
           <div class="nav-icon" style="color: #fde047;">👑</div>
           <span class="nav-text" style="color: #fde047; font-weight: 700;">Planos & Assinaturas</span>
         </li>
+        <li class="nav-item" onclick="openMyLicenseModal()"
+          style="border: 1px solid rgba(190, 242, 100, 0.25); background: rgba(190, 242, 100, 0.05); margin: 6px 0;">
+          <div class="nav-icon" style="color: var(--accent-lime);">🔑</div>
+          <span class="nav-text" style="color: var(--accent-lime); font-weight: 700;">Minha Licença</span>
+        </li>
         <li class="nav-item" onclick="window.open('/download', '_blank')"
           style="border: 1px solid rgba(190, 242, 100, 0.25); background: rgba(190, 242, 100, 0.05); margin: 6px 0;">
           <div class="nav-icon" style="color: var(--accent-lime);">⬇️</div>
@@ -3487,6 +3492,33 @@
     </div>
   </div>
 
+  <!-- 🔑 MINHA LICENÇA • PORTAL DO CLIENTE -->
+  <div id="myLicenseModal"
+    style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); backdrop-filter: blur(14px); z-index: 10060; justify-content: center; align-items: center; padding: 20px;">
+    <div
+      style="width: min(540px, 100%); max-height: 90vh; overflow-y: auto; background: linear-gradient(145deg, #11151f 0%, #0b0e14 100%); border: 1px solid rgba(190, 242, 100, 0.28); border-radius: 20px; padding: 24px; position: relative; box-shadow: 0 24px 80px rgba(0,0,0,0.65);">
+      <button type="button" onclick="closeMyLicenseModal()" title="Fechar"
+        style="position: absolute; top: 12px; right: 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-size: 1rem;">×</button>
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 18px; padding-right: 30px;">
+        <div
+          style="width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; background: rgba(190,242,100,0.12); border: 1px solid rgba(190,242,100,0.35); color: var(--accent-lime); font-size: 1.25rem;">
+          🔑</div>
+        <div>
+          <h2 style="font-size: 1.1rem; font-weight: 800; color: #fff; margin: 0 0 3px;">Minha Licença</h2>
+          <p style="font-size: 0.72rem; color: var(--text-muted); margin: 0;">Chave, plano e máquina vinculada</p>
+        </div>
+      </div>
+      <div id="myLicenseContent">
+        <div style="text-align: center; padding: 28px 10px; color: var(--text-muted); font-size: 0.78rem;">Carregando
+          sua licença…</div>
+      </div>
+      <div
+        style="margin-top: 16px; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(56,189,248,0.22); background: rgba(56,189,248,0.06); color: #bae6fd; font-size: 0.7rem; line-height: 1.5;">
+        🔒 A chave é vinculada à primeira máquina que ativar. Compartilhar o código não libera outra máquina.
+      </div>
+    </div>
+  </div>
+
   <script>
     let GHOSTLENS_CLUSTER_KEY = localStorage.getItem('ghostlens_wavespeed_key') || '';
 
@@ -4776,6 +4808,134 @@
       } catch (e) {
         return '';
       }
+    }
+
+    // ─── PORTAL MINHA LICENÇA (cliente vê a própria chave) ───
+    function licEscape(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function formatLicDate(value) {
+      if (!value) return '—';
+      try {
+        return new Date(value).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      } catch (e) {
+        return String(value);
+      }
+    }
+
+    async function openMyLicenseModal() {
+      if (!currentUser) {
+        openGhostAuthModal('login');
+        return;
+      }
+      const modal = document.getElementById('myLicenseModal');
+      const content = document.getElementById('myLicenseContent');
+      if (!modal || !content) return;
+      modal.style.display = 'flex';
+      content.innerHTML = '<div style="text-align:center;padding:28px 10px;color:var(--text-muted);font-size:0.78rem;">Consultando sua licença…</div>';
+
+      const token = await getSupabaseAccessToken();
+      if (!token) {
+        content.innerHTML = '<div style="text-align:center;padding:24px 10px;color:#fca5a5;font-size:0.78rem;">Sessão expirada. Entre novamente na sua conta GhostLens.</div>';
+        return;
+      }
+
+      try {
+        const res = await fetch('https://www.ghostlens.cloud/api/my_license', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: '{}'
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'Falha ao consultar a licença.');
+        const licenses = Array.isArray(data.licenses) ? data.licenses : [];
+
+        let localHwid = '';
+        try {
+          const statusRes = await fetch('http://127.0.0.1:4444/status');
+          if (statusRes.ok) {
+            const statusData = await statusRes.json();
+            localHwid = String(statusData.auth?.hwid || '').toUpperCase();
+          }
+        } catch (e) {}
+
+        if (!licenses.length) {
+          content.innerHTML = `
+            <div style="text-align:center; padding:20px 10px;">
+              <div style="font-size:1.6rem; margin-bottom:8px;">🔎</div>
+              <div style="font-size:0.88rem; font-weight:800; color:#fff; margin-bottom:6px;">Nenhuma licença encontrada</div>
+              <p style="font-size:0.74rem; color:var(--text-muted); line-height:1.5; margin:0 0 14px;">
+                Não encontramos licença para <strong style="color:#e2e8f0;">${licEscape(data.email || currentUser.email || '')}</strong>.
+                Se você comprou com outro e-mail, fale com o suporte.
+              </p>
+              <button type="button" onclick="closeMyLicenseModal(); openGhostPlansModal()" style="background:var(--accent-lime); color:#000; border:none; padding:9px 16px; border-radius:9px; font-weight:800; font-size:0.76rem; cursor:pointer;">Ver planos</button>
+            </div>`;
+          return;
+        }
+
+        content.innerHTML = licenses.map((lic, idx) => {
+          const key = String(lic.key || '').replace(/[^A-Z0-9-]/gi, '');
+          const plan = licEscape(lic.plan || lic.code || 'GhostLens');
+          const status = String(lic.status || '').toLowerCase();
+          const statusLabel = status === 'active' ? 'ATIVA' : (status === 'expired' ? 'EXPIRADA' : 'REVOGADA');
+          const statusColor = status === 'active' ? '#4ade80' : '#f87171';
+          const target = String(lic.target_hwid || '').toUpperCase();
+          const devices = Array.isArray(lic.devices) ? lic.devices : [];
+          const isThisMachine = target && localHwid && target === localHwid;
+          const isOtherMachine = target && localHwid && target !== localHwid;
+          const deviceRows = devices.length
+            ? devices.map((d) => `<div style="display:flex; justify-content:space-between; gap:10px; padding:6px 0; border-top:1px solid rgba(255,255,255,0.06); font-size:0.68rem;"><code style="color:#bae6fd; word-break:break-all;">${licEscape(d.hwid)}</code><span style="color:var(--text-muted); white-space:nowrap;">${licEscape(formatLicDate(d.last_seen_at))}</span></div>`).join('')
+            : '<div style="padding:7px 0; color:var(--text-muted); font-size:0.7rem;">Nenhuma máquina ativada ainda.</div>';
+
+          return `<div style="margin-bottom:14px; padding:14px; border-radius:14px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.025);">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px; margin-bottom:10px;">
+              <div>
+                <div style="font-size:0.86rem; font-weight:800; color:#fff;">${plan}</div>
+                <div style="font-size:0.66rem; color:var(--text-muted); margin-top:2px;">${licEscape(lic.code || '')} • ${Number(lic.max_devices) || 1} dispositivo(s)</div>
+              </div>
+              <span style="flex:0 0 auto; font-size:0.62rem; font-weight:800; letter-spacing:0.5px; color:${statusColor}; border:1px solid ${statusColor}55; background:${statusColor}12; padding:3px 7px; border-radius:5px;">${statusLabel}</span>
+            </div>
+            <div style="background:#080b10; border:1px solid rgba(190,242,100,0.3); border-radius:9px; padding:11px 12px; margin-bottom:10px;">
+              <div style="font-size:0.6rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.7px; margin-bottom:5px;">Sua chave de licença</div>
+              <code id="myLicKey_${idx}" style="display:block; font-family:'JetBrains Mono',monospace; font-size:0.84rem; font-weight:800; color:var(--accent-lime); letter-spacing:1px; word-break:break-all; user-select:all;">${key}</code>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+              <button type="button" onclick="copyMyLicenseKey('${key}')" style="flex:1; min-width:120px; background:rgba(190,242,100,0.14); border:1px solid rgba(190,242,100,0.4); color:var(--accent-lime); padding:8px; border-radius:8px; font-size:0.72rem; font-weight:800; cursor:pointer;">📋 Copiar chave</button>
+              <span style="flex:1; min-width:120px; text-align:center; padding:8px; border-radius:8px; border:1px solid rgba(255,255,255,0.1); color:var(--text-secondary); font-size:0.7rem;">Válida até ${licEscape(formatLicDate(lic.expires_at))}</span>
+            </div>
+            <div style="font-size:0.7rem; color:var(--text-muted); line-height:1.5; margin-bottom:4px;"><strong style="color:#e2e8f0;">Máquina vinculada:</strong> ${target ? `<code style="color:#bae6fd;">${licEscape(target)}</code>` : 'ainda não ativada'}</div>
+            ${isThisMachine ? '<div style="font-size:0.68rem; color:#4ade80; margin-bottom:4px;">✓ Este computador está autorizado.</div>' : ''}
+            ${isOtherMachine ? '<div style="font-size:0.68rem; color:#fbbf24; line-height:1.45; margin-bottom:4px;">⚠️ Esta licença está vinculada a outra máquina. Compartilhar a chave não libera este computador.</div>' : ''}
+            <div style="margin-top:8px;">
+              <div style="font-size:0.62rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.6px; margin-bottom:3px;">Dispositivos ativos</div>
+              ${deviceRows}
+            </div>
+          </div>`;
+        }).join('');
+      } catch (err) {
+        content.innerHTML = `<div style="text-align:center; padding:22px 10px; color:#fca5a5; font-size:0.76rem; line-height:1.5;">Não foi possível carregar sua licença agora.<br>${licEscape(err.message || '')}</div>`;
+      }
+    }
+
+    function closeMyLicenseModal() {
+      const modal = document.getElementById('myLicenseModal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    function copyMyLicenseKey(key) {
+      const clean = String(key || '').trim();
+      if (!clean) return;
+      navigator.clipboard.writeText(clean).then(() => {
+        showToast('✓ Chave copiada para a área de transferência.');
+      }).catch(() => {
+        alert(`Chave: ${clean}`);
+      });
     }
 
     async function validateGhostAdminToken(token) {

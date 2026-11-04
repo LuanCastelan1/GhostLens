@@ -149,6 +149,21 @@ begin
     values (v_lic.id, upper(v_lic.target_hwid));
   end if;
 
+  -- TRAVA DE MÁQUINA: depois da primeira ativação, a chave só funciona no
+  -- HWID vinculado (ou em devices já autorizados antes desta regra).
+  if v_lic.target_hwid is not null
+     and upper(trim(v_lic.target_hwid)) <> v_hwid
+     and not exists (
+       select 1 from public.ghost_license_devices
+       where license_id = v_lic.id and hwid = v_hwid
+     ) then
+    return jsonb_build_object(
+      'success', false,
+      'error', 'hwid_mismatch',
+      'bound_hwid', v_lic.target_hwid
+    );
+  end if;
+
   select * into v_device
   from public.ghost_license_devices
   where license_id = v_lic.id and hwid = v_hwid;

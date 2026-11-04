@@ -14,6 +14,7 @@ const {
   backendConfigured,
   sessionConfigured,
   supabaseRest,
+  findLicenseByKey,
   normalizeLicense,
   signSession,
   verifySession,
@@ -34,6 +35,7 @@ const ERROR_STATUS = {
 
 const ERROR_MESSAGES = {
   license_not_found: 'Licença não encontrada.',
+  hwid_mismatch: 'Esta licença já está vinculada a outra máquina.',
   license_expired: 'Licença expirada. Renove seu plano.',
   license_inactive: 'Licença revogada ou inativa.',
   device_limit_reached: 'Limite de dispositivos do plano atingido.',
@@ -109,6 +111,57 @@ module.exports = async (req, res) => {
     const keyLimit = await enforceRateLimit(`session-key:${key}`, 10, 600);
     if (!keyLimit.allowed) {
       return respond(res, 429, { success: false, error: 'rate_limited', reset_at: keyLimit.reset_at });
+    }
+
+    // Tranca de máquina: depois da primeira ativação, a chave só funciona
+    // naquele HWID (ou em devices já autorizados antes desta regra).
+    // Isso impede compartilhar uma licença Master/Agency em grupos.
+    const current = await findLicenseByKey(key);
+    if (!current) {
+      return respond(res, 404, {
+        success: false,
+        error: 'license_not_found',
+        message: ERROR_MESSAGES.license_not_found
+      });
+    }
+    if (current.status !== 'active') {
+      return respond(res, 403, {
+        success: false,
+        error: 'license_inactive',
+        message: ERROR_MESSAGES.license_inactive
+      });
+    }
+    if (new Date(current.expires_at).getTime() <= Date.now()) {
+      return respond(res, 410, {
+        success: false,
+        error: 'license_expired',
+        message: ERROR_MESSAGES.license_expired
+      });
+    }
+    if (current.target_hwid && String(current.target_hwid).toUpperCase() !== hwid) {
+      let deviceRows = [];
+      try {
+        deviceRows = await supabaseRest(
+          `ghost_license_devices?license_id=eq.${encodeURIComponent(current.id)}&hwid=eq.${encodeURIComponent(hwid)}&select=id,revoked_at&limit=1`
+        );
+      } catch (deviceErr) {
+        console.warn('[license_session] falha ao checar device existente:', deviceErr.message);
+      }
+      if (!Array.isArray(deviceRows) || deviceRows.length === 0) {
+        return respond(res, 403, {
+          success: false,
+          error: 'hwid_mismatch',
+          message: ERROR_MESSAGES.hwid_mismatch,
+          bound_hwid: current.target_hwid
+        });
+      }
+      if (deviceRows[0].revoked_at) {
+        return respond(res, 403, {
+          success: false,
+          error: 'device_revoked',
+          message: ERROR_MESSAGES.device_revoked
+        });
+      }
     }
 
     const result = await supabaseRest('rpc/bind_ghost_license_device', {
