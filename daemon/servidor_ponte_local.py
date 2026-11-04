@@ -127,6 +127,7 @@ SETUP_LOCK = threading.Lock()
 SETUP_PROC = None
 SETUP_LAST_ATTEMPT = 0.0
 LAST_BOOT_ERROR = None
+ANDROID_EMULATOR_LOG = os.path.expanduser("~/.ghostphone/logs/android_emulator.log")
 
 def get_bin_search_dirs():
     dirs = []
@@ -298,6 +299,36 @@ def find_emulator_bin():
 
     return shutil.which("emulator" + ext) or ("emulator" + ext)
 
+def read_log_tail(path, max_bytes=5000):
+    try:
+        with open(path, "rb") as f:
+            f.seek(0, os.SEEK_END)
+            size = f.tell()
+            f.seek(max(0, size - max_bytes))
+            return f.read().decode("utf-8", errors="ignore").strip()
+    except Exception:
+        return ""
+
+
+def check_virtualization_windows():
+    """Retorna True/False/None para virtualização habilitada na BIOS (Windows)."""
+    if not IS_WINDOWS:
+        return None
+    try:
+        res = subprocess.run(
+            ["powershell", "-NoProfile", "-Command", "(Get-CimInstance Win32_Processor).VirtualizationFirmwareEnabled"],
+            capture_output=True, text=True, timeout=8, creationflags=NO_WINDOW
+        )
+        out = (res.stdout or "").strip().lower()
+        if "true" in out:
+            return True
+        if "false" in out:
+            return False
+    except Exception:
+        pass
+    return None
+
+
 def boot_ghostphone_emulator(avd_name="ghostphone_musa"):
     """Garante um único boot por vez e evita várias janelas/cmd em loop."""
     if not BOOT_LOCK.acquire(blocking=False):
@@ -370,6 +401,16 @@ def _boot_ghostphone_emulator(avd_name="ghostphone_musa"):
                 print("⚠️ Setup do Android não encontrado nesta instalação.")
         return None
         
+    avd_config = os.path.expanduser(f"~/.android/avd/{avd_name}.avd/config.ini")
+    if not os.path.exists(avd_config):
+        LAST_BOOT_ERROR = (
+            "A instância Android (AVD) não está configurada. "
+            "Execute o atalho 'Configurar Motor Android' no Menu Iniciar, "
+            f"aguarde terminar e tente novamente. Caminho esperado: {avd_config}"
+        )
+        print(f"⚠️ AVD não encontrada: {avd_config}")
+        return None
+
     cmd = [
         emu_bin,
         "-avd", avd_name,
@@ -378,7 +419,7 @@ def _boot_ghostphone_emulator(avd_name="ghostphone_musa"):
         "-no-metrics",
         "-gpu", "host"
     ]
-    
+
     print(f"🚀 Iniciando GhostPhone™ Engine em segundo plano: {' '.join(cmd)}")
     creationflags = 0x08000000 if IS_WINDOWS else 0
     env = os.environ.copy()
@@ -403,32 +444,71 @@ def _boot_ghostphone_emulator(avd_name="ghostphone_musa"):
         env["PATH"] = f"/opt/homebrew/bin:/opt/homebrew/share/android-commandlinetools/emulator:{env.get('PATH', '')}"
 
     try:
-        subprocess.Popen(cmd, creationflags=creationflags, env=env)
+        os.makedirs(os.path.dirname(ANDROID_EMULATOR_LOG), exist_ok=True)
+        emu_log = open(ANDROID_EMULATOR_LOG, "ab", buffering=0)
+    except Exception:
+        emu_log = subprocess.DEVNULL
+    try:
+        proc = subprocess.Popen(
+            cmd,
+            creationflags=creationflags,
+            env=env,
+            stdout=emu_log,
+            stderr=subprocess.STDOUT
+        )
     except Exception as e:
         LAST_BOOT_ERROR = f"Falha ao iniciar o emulador Android: {e}"
         print(f"❌ Erro ao disparar subprocesso do emulador: {e}")
         return None
 
-    print("⏳ Aguardando boot do Android via ADB (até 45s)...")
-    for _ in range(45):
+    print("⏳ Aguardando Android no ADB (até 120s)...")
+    serial = None
+    boot_deadline = time.time() + 120
+    while time.time() < boot_deadline:
         time.sleep(1)
         serial = get_connected_device_serial()
         if serial:
             break
-            
+        if proc.poll() is not None:
+            tail = read_log_tail(ANDROID_EMULATOR_LOG)
+            virt = check_virtualization_windows()
+            hint = "A virtualização (VT-x/AMD-V) parece desativada na BIOS. " if virt is False else ""
+            LAST_BOOT_ERROR = (
+                f"{hint}O emulador Android fechou sozinho (código {proc.returncode}). "
+                f"Log: {ANDROID_EMULATOR_LOG}\n{tail[-1200:]}"
+            )
+            print(f"❌ Emulador Android encerrou. {LAST_BOOT_ERROR}")
+            return None
+
     if not serial:
-        LAST_BOOT_ERROR = "O Android não concluiu o boot em 45s. Ative a virtualização (VT-x/AMD-V) na BIOS, feche outros emuladores e tente novamente."
+        tail = read_log_tail(ANDROID_EMULATOR_LOG)
+        virt = check_virtualization_windows()
+        hint = "A virtualização (VT-x/AMD-V) parece desativada na BIOS. " if virt is False else ""
+        LAST_BOOT_ERROR = (
+            f"{hint}O Android não apareceu no ADB em 120s. "
+            f"Log: {ANDROID_EMULATOR_LOG}\n{tail[-1200:]}"
+        )
         print("⚠️ Timeout aguardando dispositivo Android no ADB.")
         return None
-        
+
     print(f"📱 Dispositivo conectado ({serial}). Aguardando boot completo...")
-    for _ in range(40):
+    booted = False
+    for _ in range(90):
         out = run_adb(['-s', serial, 'shell', 'getprop', 'sys.boot_completed'])
         if out.strip() == "1":
+            booted = True
             print("✅ ANDROID BOOT COMPLETO!")
             break
         time.sleep(1)
-        
+
+    if not booted:
+        LAST_BOOT_ERROR = (
+            "O Android conectou no ADB, mas não concluiu o boot em 90s. "
+            "Feche outros emuladores, aumente a RAM livre e tente novamente."
+        )
+        print("⚠️ Android conectado, mas boot incompleto.")
+        return None
+
     # Injeta a identidade anti-detect da Samsung Galaxy S24 Ultra
     print("⚙️ Injetando Fingerprint Samsung Galaxy S24 Ultra...")
     run_adb(['-s', serial, 'shell', 'setprop', 'ro.product.brand', 'samsung'])
@@ -666,6 +746,26 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                 "profiles_count": len(list_profiles()),
                 "auth": auth_guard.get_status()
             })
+
+        # DIAGNÓSTICO DO MOTOR ANDROID (uso local, sem exigir licença)
+        elif parsed.path == '/api/android_diag':
+            emu_bin = find_emulator_bin()
+            avd_config = os.path.expanduser("~/.android/avd/ghostphone_musa.avd/config.ini")
+            self.send_json({
+                "code": 0,
+                "platform": platform.system(),
+                "emulator_bin": emu_bin,
+                "emulator_exists": bool(emu_bin and os.path.exists(emu_bin)),
+                "avd_config": avd_config,
+                "avd_exists": os.path.exists(avd_config),
+                "adb_devices": run_adb(['devices']),
+                "virtualization_enabled": check_virtualization_windows(),
+                "emulator_log": ANDROID_EMULATOR_LOG,
+                "emulator_log_tail": read_log_tail(ANDROID_EMULATOR_LOG, 3500),
+                "last_boot_error": LAST_BOOT_ERROR,
+                "boot_in_progress": BOOT_LOCK.locked()
+            })
+            return
 
         # GUARDA DE SEGURANÇA ANTIPIRATARIA (GHOSTPHONE HWID LOCK)
         elif (
