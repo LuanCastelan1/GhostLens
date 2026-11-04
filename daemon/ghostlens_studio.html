@@ -6072,6 +6072,11 @@
       showToast(checked ? '🛡️ Trava Anti-Ban 4G/5G ATIVADA (Wi-Fi Bloqueado)!' : '⚠️ Trava 4G/5G DESATIVADA (Acesso liberado no Wi-Fi)');
     }
 
+    function showAndroidEngineError(data) {
+      const msg = (data && data.error) || 'O motor Android não está pronto.';
+      alert(`📱 Android não abriu\n\n${msg}\n\nNo Windows:\nMenu Iniciar → GhostLens → Configurar Motor Android\n\nAguarde a janela de instalação terminar e tente novamente.`);
+    }
+
     // 📱 ABRIR GHOSTPHONE (CELULAR ANDROID BLINDADO EM TELA SOLTA COM TRAVA 4G/5G)
     async function launchGhostPhonePlayer(profileId, forceBypassWifi = false) {
         currentPendingProfileId = profileId;
@@ -6109,6 +6114,8 @@
             showToast(`📱 GhostPhone da ${nome} aberto na Tela Suspensa!`);
             showFloatingPhoneDock(nome);
             return;
+          } else if (res.status === 404 && resData.action === 'run_android_setup') {
+            showAndroidEngineError(resData);
           } else {
             showToast(resData.error || `⚠️ Falha ao abrir celular: ${resData.status || 'verifique conexão USB/ADB'}`);
           }
@@ -6206,6 +6213,8 @@
             showToast(`📱 ${appLabel} aberto na Tela Suspensa (${nome})!`);
             showFloatingPhoneDock(nome);
             return;
+          } else if (res.status === 404 && resData.action === 'run_android_setup') {
+            showAndroidEngineError(resData);
           } else {
             showToast(resData.error || `⚠️ Falha ao abrir celular: ${resData.status || 'verifique conexão USB/ADB'}`);
           }

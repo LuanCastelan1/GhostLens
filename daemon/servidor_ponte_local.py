@@ -117,6 +117,16 @@ except ImportError:
 import platform
 
 IS_WINDOWS = platform.system() == 'Windows'
+# Evita janelas de console piscando a cada chamada de adb/ffmpeg no Windows.
+NO_WINDOW = 0x08000000 if IS_WINDOWS else 0
+CREATE_NEW_CONSOLE = 0x00000010 if IS_WINDOWS else 0
+
+# Controle de boot/setup do motor Android (evita várias janelas/cmd em loop).
+BOOT_LOCK = threading.Lock()
+SETUP_LOCK = threading.Lock()
+SETUP_PROC = None
+SETUP_LAST_ATTEMPT = 0.0
+LAST_BOOT_ERROR = None
 
 def get_bin_search_dirs():
     dirs = []
@@ -227,7 +237,7 @@ def get_scrcpy_bin():
 def is_scrcpy_running():
     try:
         if IS_WINDOWS:
-            out = subprocess.run(["tasklist", "/FI", "IMAGENAME eq scrcpy.exe", "/NH"], capture_output=True, text=True, timeout=3).stdout
+            out = subprocess.run(["tasklist", "/FI", "IMAGENAME eq scrcpy.exe", "/NH"], capture_output=True, text=True, timeout=3, creationflags=NO_WINDOW).stdout
             return "scrcpy.exe" in out.lower()
         else:
             pids = subprocess.run(['pgrep', '-f', 'scrcpy'], capture_output=True, timeout=3).stdout.decode().split()
@@ -238,7 +248,7 @@ def is_scrcpy_running():
 def get_connected_device_serial():
     """Detecta o primeiro dispositivo Android conectado (físico ou emulador) via ADB."""
     try:
-        out = subprocess.run([ADB_BIN, 'devices'], capture_output=True, text=True, timeout=4).stdout
+        out = subprocess.run([ADB_BIN, 'devices'], capture_output=True, text=True, timeout=4, creationflags=NO_WINDOW).stdout
         for line in out.splitlines()[1:]:
             parts = line.strip().split()
             if len(parts) >= 2 and parts[1] == 'device':
@@ -289,11 +299,24 @@ def find_emulator_bin():
     return shutil.which("emulator" + ext) or ("emulator" + ext)
 
 def boot_ghostphone_emulator(avd_name="ghostphone_musa"):
+    """Garante um único boot por vez e evita várias janelas/cmd em loop."""
+    if not BOOT_LOCK.acquire(blocking=False):
+        print("⏳ Boot do Android já está em andamento; aguardando dispositivo...")
+        return get_connected_device_serial()
+    try:
+        return _boot_ghostphone_emulator(avd_name)
+    finally:
+        BOOT_LOCK.release()
+
+
+def _boot_ghostphone_emulator(avd_name="ghostphone_musa"):
     """Dá o boot no GhostPhone AOSP em modo Headless (oculto em background) e aguarda ADB."""
+    global LAST_BOOT_ERROR, SETUP_PROC, SETUP_LAST_ATTEMPT
+    LAST_BOOT_ERROR = None
     serial = get_connected_device_serial()
     if serial:
         return serial
-        
+
     emu_bin = find_emulator_bin()
     if not emu_bin or not os.path.exists(emu_bin):
         print(f"⚠️ Binário do emulador não encontrado: {emu_bin}")
@@ -314,12 +337,37 @@ def boot_ghostphone_emulator(avd_name="ghostphone_musa"):
                     break
             
             py_bin = sys.executable or "python"
+            if py_bin.lower().endswith("pythonw.exe"):
+                py_console = os.path.join(os.path.dirname(py_bin), "python.exe")
+                if os.path.exists(py_console):
+                    py_bin = py_console
             if setup_script:
+                with SETUP_LOCK:
+                    now = time.time()
+                    if SETUP_PROC and SETUP_PROC.poll() is None:
+                        LAST_BOOT_ERROR = "A configuração do motor Android já está em execução. Aguarde a janela terminar."
+                        print("⏳ Setup do Android já está rodando; não abrindo outra janela.")
+                        return None
+                    if now - SETUP_LAST_ATTEMPT < 300:
+                        LAST_BOOT_ERROR = "A configuração do motor Android já foi iniciada há menos de 5 minutos. Aguarde terminar e tente novamente."
+                        print("⏳ Setup iniciado recentemente; aguardando.")
+                        return None
+                    SETUP_LAST_ATTEMPT = now
                 print(f"🚀 Iniciando provisionamento automático do motor Android em janela visível: {setup_script}")
                 try:
-                    subprocess.Popen(f'start "Configuração GhostPhone Android AVD" cmd /c "{py_bin}" "{setup_script}"', shell=True)
+                    # Uma única janela de console, mantida aberta para mostrar erro/sucesso.
+                    SETUP_PROC = subprocess.Popen(
+                        ['cmd', '/k', py_bin, setup_script],
+                        cwd=BASE_DIR,
+                        creationflags=CREATE_NEW_CONSOLE
+                    )
+                    LAST_BOOT_ERROR = "Configuração do motor Android iniciada. Aguarde a janela de instalação terminar e tente abrir o GhostPhone novamente."
                 except Exception as e:
+                    LAST_BOOT_ERROR = f"Não foi possível iniciar a configuração do motor Android: {e}"
                     print(f"Erro ao disparar setup: {e}")
+            else:
+                LAST_BOOT_ERROR = "Motor Android não instalado. Execute o atalho 'Configurar Motor Android' no Menu Iniciar."
+                print("⚠️ Setup do Android não encontrado nesta instalação.")
         return None
         
     cmd = [
@@ -357,9 +405,10 @@ def boot_ghostphone_emulator(avd_name="ghostphone_musa"):
     try:
         subprocess.Popen(cmd, creationflags=creationflags, env=env)
     except Exception as e:
+        LAST_BOOT_ERROR = f"Falha ao iniciar o emulador Android: {e}"
         print(f"❌ Erro ao disparar subprocesso do emulador: {e}")
         return None
-        
+
     print("⏳ Aguardando boot do Android via ADB (até 45s)...")
     for _ in range(45):
         time.sleep(1)
@@ -368,6 +417,7 @@ def boot_ghostphone_emulator(avd_name="ghostphone_musa"):
             break
             
     if not serial:
+        LAST_BOOT_ERROR = "O Android não concluiu o boot em 45s. Ative a virtualização (VT-x/AMD-V) na BIOS, feche outros emuladores e tente novamente."
         print("⚠️ Timeout aguardando dispositivo Android no ADB.")
         return None
         
@@ -413,7 +463,7 @@ def get_fast_screencap():
             return LATEST_FRAME
     # Sem frame recente: faz captura síncrona (máx. 1 a cada 15s por cache)
     try:
-        res = subprocess.run([ADB_BIN, 'exec-out', 'screencap', '-p'], capture_output=True, timeout=3)
+        res = subprocess.run([ADB_BIN, 'exec-out', 'screencap', '-p'], capture_output=True, timeout=3, creationflags=NO_WINDOW)
         if res.returncode == 0 and res.stdout:
             if HAS_PIL:
                 im = PIL.Image.open(io.BytesIO(res.stdout)).convert('RGB')
@@ -433,7 +483,7 @@ def get_fast_screencap():
 
 def run_adb(args):
     try:
-        res = subprocess.run([ADB_BIN] + args, capture_output=True, text=True, timeout=10)
+        res = subprocess.run([ADB_BIN] + args, capture_output=True, text=True, timeout=10, creationflags=NO_WINDOW)
         return res.stdout.strip()
     except Exception:
         return ""
@@ -722,7 +772,7 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                     "error": "launch_isolated_musa.sh não encontrado nesta instalação."
                 }, code=501)
                 return
-            subprocess.Popen(['bash', script_path, musa, proxy, device, ios, '', target_url])
+            subprocess.Popen(['bash', script_path, musa, proxy, device, ios, '', target_url], creationflags=NO_WINDOW)
 
             self.send_json({
                 "code": 0,
@@ -952,7 +1002,7 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                     "-movflags", "+faststart",
                     out_tmp
                 ]
-                res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=600)
+                res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=600, creationflags=NO_WINDOW)
                 if res.returncode == 0 and os.path.exists(out_tmp):
                     file_size = os.path.getsize(out_tmp)
                     self.send_response(200)
@@ -1028,7 +1078,7 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                 out_tmp
             ]
 
-            res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=NO_WINDOW)
             if res.returncode == 0 and os.path.exists(out_tmp):
                 file_size = os.path.getsize(out_tmp)
                 self.send_response(200)
@@ -1115,7 +1165,7 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                 out_tmp
             ]
 
-            res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=NO_WINDOW)
             if res.returncode == 0 and os.path.exists(out_tmp):
                 file_size = os.path.getsize(out_tmp)
                 self.send_response(200)
@@ -1203,7 +1253,7 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                 out_tmp
             ]
 
-            res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=NO_WINDOW)
             if res.returncode == 0 and os.path.exists(out_tmp):
                 file_size = os.path.getsize(out_tmp)
                 self.send_response(200)
@@ -1260,7 +1310,7 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                 "-metadata", "artist=GhostLens Editor",
                 out_tmp
             ]
-            res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=NO_WINDOW)
             if res.returncode == 0 and os.path.exists(out_tmp):
                 file_size = os.path.getsize(out_tmp)
                 self.send_response(200)
@@ -1330,7 +1380,7 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                 "-movflags", "+faststart",
                 out_tmp
             ])
-            res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=NO_WINDOW)
             if res.returncode == 0 and os.path.exists(out_tmp):
                 file_size = os.path.getsize(out_tmp)
                 self.send_response(200)
@@ -1399,7 +1449,7 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                     t_cmd = [ffmpeg_bin, "-y", "-ss", str(c_start)]
                     if c_end > c_start: t_cmd.extend(["-to", str(c_end)])
                     t_cmd.extend(["-i", c_path, "-c:v", "libx264", "-preset", "ultrafast", "-crf", "18", "-c:a", "aac", c_trimmed])
-                    subprocess.run(t_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                    subprocess.run(t_cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, creationflags=NO_WINDOW)
                     if os.path.exists(c_trimmed):
                         c_path = c_trimmed
 
@@ -1510,7 +1560,7 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                 out_render
             ]
 
-            res = subprocess.run(render_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            res = subprocess.run(render_cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=NO_WINDOW)
             if res.returncode == 0 and os.path.exists(out_render):
                 file_size = os.path.getsize(out_render)
                 self.send_response(200)
@@ -1587,7 +1637,7 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                     "error": "launch_isolated_musa.sh não encontrado nesta instalação."
                 }, code=501)
                 return
-            subprocess.Popen(['bash', script_path, musa, proxy, device, ios, '', target_url])
+            subprocess.Popen(['bash', script_path, musa, proxy, device, ios, '', target_url], creationflags=NO_WINDOW)
 
             self.send_json({
                 "code": 0,
@@ -1639,7 +1689,7 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                 return
 
             os.makedirs(p_dir, exist_ok=True)
-            subprocess.run([sys.executable, gen_script, p_dir, safe_name], check=False)
+            subprocess.run([sys.executable, gen_script, p_dir, safe_name], check=False, creationflags=NO_WINDOW)
 
             self.send_json({
                 "code": 0,
@@ -1731,9 +1781,11 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
 
             if not device_serial:
                 print("⚠️ Nenhum aparelho Android detectado via ADB após tentativa de boot.")
+                error_msg = LAST_BOOT_ERROR or "Não foi possível conectar ao GhostPhone. Aguarde o boot ou execute o instalador novamente."
                 self.send_json({
-                    "error": "Não foi possível conectar ao GhostPhone. Aguarde o boot ou execute o instalador novamente.",
-                    "code": 404
+                    "error": error_msg,
+                    "code": 404,
+                    "action": "run_android_setup"
                 }, code=404)
                 return
 
@@ -1761,7 +1813,7 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                 ]
                 print(f"🚀 Iniciando Scrcpy no GhostPhone [{device_serial}]: {' '.join(cmd)}")
                 try:
-                    proc = subprocess.Popen(cmd)
+                    proc = subprocess.Popen(cmd, creationflags=NO_WINDOW)
                 except FileNotFoundError as fnf:
                     print(f"❌ Scrcpy não encontrado: {fnf}")
                     self.send_json({"error": "Binário do Scrcpy não encontrado na máquina.", "detail": str(fnf)}, code=500)
