@@ -4777,6 +4777,7 @@
     }
 
     let currentUser = null;
+    let myLicenseLocalHwid = '';
     let supabaseAdminVerified = false;
     let userBalance = 0.00;
     let currentRechargeAmount = 10.00;
@@ -4864,6 +4865,7 @@
             localHwid = String(statusData.auth?.hwid || '').toUpperCase();
           }
         } catch (e) {}
+        myLicenseLocalHwid = localHwid;
 
         if (!licenses.length) {
           content.innerHTML = `
@@ -4909,6 +4911,9 @@
               <button type="button" onclick="copyMyLicenseKey('${key}')" style="flex:1; min-width:120px; background:rgba(190,242,100,0.14); border:1px solid rgba(190,242,100,0.4); color:var(--accent-lime); padding:8px; border-radius:8px; font-size:0.72rem; font-weight:800; cursor:pointer;">📋 Copiar chave</button>
               <span style="flex:1; min-width:120px; text-align:center; padding:8px; border-radius:8px; border:1px solid rgba(255,255,255,0.1); color:var(--text-secondary); font-size:0.7rem;">Válida até ${licEscape(formatLicDate(lic.expires_at))}</span>
             </div>
+            ${status === 'active' && (target || devices.length)
+              ? `<button type="button" onclick="transferMyLicense('${lic.id}')" style="width:100%; margin-bottom:10px; background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.38); color:#7dd3fc; padding:9px; border-radius:8px; font-size:0.72rem; font-weight:800; cursor:pointer;">🔄 Trocar de computador <span style="opacity:0.7; font-weight:600;">(1× a cada 30 dias)</span></button>`
+              : ''}
             <div style="font-size:0.7rem; color:var(--text-muted); line-height:1.5; margin-bottom:4px;"><strong style="color:#e2e8f0;">Máquina vinculada:</strong> ${target ? `<code style="color:#bae6fd;">${licEscape(target)}</code>` : 'ainda não ativada'}</div>
             ${isThisMachine ? '<div style="font-size:0.68rem; color:#4ade80; margin-bottom:4px;">✓ Este computador está autorizado.</div>' : ''}
             ${isOtherMachine ? '<div style="font-size:0.68rem; color:#fbbf24; line-height:1.45; margin-bottom:4px;">⚠️ Esta licença está vinculada a outra máquina. Compartilhar a chave não libera este computador.</div>' : ''}
@@ -4936,6 +4941,57 @@
       }).catch(() => {
         alert(`Chave: ${clean}`);
       });
+    }
+
+    async function transferMyLicense(licenseId) {
+      if (!currentUser) {
+        openGhostAuthModal('login');
+        return;
+      }
+      const suggested = String(myLicenseLocalHwid || '').toUpperCase();
+      const typed = prompt(
+        'Trocar de computador\n\nNo novo computador, abra http://127.0.0.1:4444/player e copie o HWID.\nCole o HWID do novo PC abaixo (recomendado). Se deixar em branco, a próxima máquina que ativar a chave ficará vinculada.\n\nHWID do novo computador:',
+        suggested
+      );
+      if (typed === null) return;
+      const newHwid = String(typed || '').trim().toUpperCase();
+      if (newHwid && !/^[A-Z0-9-]{4,100}$/.test(newHwid)) {
+        alert('HWID inválido. Copie exatamente o código exibido na tela de ativação do novo PC.');
+        return;
+      }
+
+      const warning = newHwid
+        ? `A licença será presa ao HWID:\n${newHwid}\n\nO computador antigo perderá o acesso. Confirmar a troca?`
+        : 'Sem informar o HWID, a próxima máquina que ativar a chave ficará vinculada.\n\nO computador antigo perderá o acesso. Confirmar?';
+      if (!confirm(`${warning}\n\nLimite: 1 troca a cada 30 dias.`)) return;
+
+      const token = await getSupabaseAccessToken();
+      if (!token) {
+        alert('Sessão expirada. Entre novamente na sua conta GhostLens.');
+        return;
+      }
+
+      showToast('🔄 Trocando computador…');
+      try {
+        const res = await fetch('https://www.ghostlens.cloud/api/license_transfer', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify({ license_id: licenseId, new_hwid: newHwid || null })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          if (data.next_allowed_at) {
+            showToast(`⏳ Troca bloqueada até ${formatLicDate(data.next_allowed_at)} (1 troca a cada 30 dias).`, 6000);
+          } else {
+            showToast(data.message || 'Não foi possível trocar o computador.', 5000);
+          }
+          return;
+        }
+        showToast('✓ Computador anterior desvinculado. Ative a mesma chave no novo PC em http://127.0.0.1:4444/player', 7000);
+        await openMyLicenseModal();
+      } catch (err) {
+        showToast('Erro ao trocar de computador. Tente novamente.', 5000);
+      }
     }
 
     async function validateGhostAdminToken(token) {

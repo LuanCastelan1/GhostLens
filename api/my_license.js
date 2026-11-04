@@ -86,6 +86,7 @@ module.exports = async (req, res) => {
         console.warn('[my_license] falha ao listar devices:', deviceErr.message);
       }
       output.push({
+        id: license.id,
         key: license.key,
         plan: license.plan,
         code: license.code,
