@@ -1523,6 +1523,11 @@
           <div class="nav-icon" style="color: #38bdf8; font-size: 1.15rem;">📱</div>
           <span class="nav-text" style="color: #38bdf8; font-weight: 800; letter-spacing: -0.3px;">GhostPhone™ • Personas</span>
         </li>
+        <li class="nav-item" onclick="openGhostPhonePlayerPage()"
+          style="border: 1px solid rgba(190, 242, 100, 0.25); background: rgba(190, 242, 100, 0.05); margin: 6px 0;">
+          <div class="nav-icon" style="color: var(--accent-lime);">📱</div>
+          <span class="nav-text" style="color: var(--accent-lime); font-weight: 700;">Player do GhostPhone</span>
+        </li>
         <li class="nav-item" onclick="openGhostPlansModal()"
           style="border: 1px solid rgba(253, 224, 71, 0.25); background: rgba(253, 224, 71, 0.05); margin: 6px 0;">
           <div class="nav-icon" style="color: #fde047;">👑</div>
@@ -4778,6 +4783,7 @@
 
     let currentUser = null;
     let myLicenseLocalHwid = '';
+    let myLicenseLocalAuthActive = false;
     let supabaseAdminVerified = false;
     let userBalance = 0.00;
     let currentRechargeAmount = 10.00;
@@ -4858,14 +4864,17 @@
         const licenses = Array.isArray(data.licenses) ? data.licenses : [];
 
         let localHwid = '';
+        let localAuthActive = false;
         try {
           const statusRes = await fetch('http://127.0.0.1:4444/status');
           if (statusRes.ok) {
             const statusData = await statusRes.json();
             localHwid = String(statusData.auth?.hwid || '').toUpperCase();
+            localAuthActive = Boolean(statusData.auth?.active);
           }
         } catch (e) {}
         myLicenseLocalHwid = localHwid;
+        myLicenseLocalAuthActive = localAuthActive;
 
         if (!licenses.length) {
           content.innerHTML = `
@@ -4911,6 +4920,20 @@
               <button type="button" onclick="copyMyLicenseKey('${key}')" style="flex:1; min-width:120px; background:rgba(190,242,100,0.14); border:1px solid rgba(190,242,100,0.4); color:var(--accent-lime); padding:8px; border-radius:8px; font-size:0.72rem; font-weight:800; cursor:pointer;">📋 Copiar chave</button>
               <span style="flex:1; min-width:120px; text-align:center; padding:8px; border-radius:8px; border:1px solid rgba(255,255,255,0.1); color:var(--text-secondary); font-size:0.7rem;">Válida até ${licEscape(formatLicDate(lic.expires_at))}</span>
             </div>
+            ${status === 'active' && isThisMachine
+              ? `<button type="button" onclick="openGhostPhonePlayerPage()" style="width:100%; margin-bottom:10px; background:linear-gradient(135deg,#0284c7,#38bdf8); border:none; color:#fff; padding:10px; border-radius:8px; font-size:0.76rem; font-weight:900; cursor:pointer; box-shadow:0 4px 16px rgba(56,189,248,0.25);">📱 Abrir Player do GhostPhone</button>`
+              : ''}
+            ${status === 'active' && !isThisMachine && !target
+              ? (localHwid
+                ? `<button type="button" onclick="activateLicenseOnThisComputer('${key}')" style="width:100%; margin-bottom:10px; background:var(--accent-lime); border:none; color:#000; padding:10px; border-radius:8px; font-size:0.76rem; font-weight:900; cursor:pointer;">⚡ Ativar este computador</button>`
+                : `<div style="font-size:0.7rem; color:#fbbf24; line-height:1.45; margin-bottom:10px;">Abra o GhostLens instalado em <strong>127.0.0.1:4444</strong> para ativar este computador.</div>`)
+              : ''}
+            ${status === 'active' && target && localHwid && !isThisMachine
+              ? `<div style="font-size:0.7rem; color:#fbbf24; line-height:1.45; margin-bottom:10px;">Esta licença está vinculada a outra máquina. Use o botão de troca abaixo para liberar este computador.</div>`
+              : ''}
+            ${status === 'active' && !localHwid
+              ? `<div style="font-size:0.7rem; color:#fbbf24; line-height:1.45; margin-bottom:10px;">Abra o GhostLens instalado em <strong>127.0.0.1:4444</strong> para ativar e abrir o Player neste computador. Se este for um PC novo, use o botão de troca abaixo.</div>`
+              : ''}
             ${status === 'active' && (target || devices.length)
               ? `<button type="button" onclick="transferMyLicense('${lic.id}')" style="width:100%; margin-bottom:10px; background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.38); color:#7dd3fc; padding:9px; border-radius:8px; font-size:0.72rem; font-weight:800; cursor:pointer;">🔄 Trocar de computador <span style="opacity:0.7; font-weight:600;">(1× a cada 30 dias)</span></button>`
               : ''}
@@ -4931,6 +4954,65 @@
     function closeMyLicenseModal() {
       const modal = document.getElementById('myLicenseModal');
       if (modal) modal.style.display = 'none';
+    }
+
+    async function openGhostPhonePlayerPage() {
+      const isLocal = ['127.0.0.1', 'localhost'].includes(window.location.hostname);
+      if (isLocal) {
+        try {
+          const statusRes = await fetch('/status');
+          if (statusRes.ok) {
+            const statusData = await statusRes.json();
+            if (!statusData.auth || !statusData.auth.active) {
+              showToast('🔒 Ative sua licença para abrir o Player do GhostPhone.', 5000);
+              if (currentUser) openMyLicenseModal(); else openGhostAuthModal('login');
+              return;
+            }
+          }
+        } catch (e) {}
+      }
+      const url = isLocal ? '/player' : 'http://127.0.0.1:4444/player';
+      window.open(url, '_blank', 'noopener');
+      if (!isLocal) showToast('Abrindo o Player do GhostLens instalado. Se não abrir, inicie o app GhostLens.', 5000);
+    }
+
+    async function activateLicenseOnThisComputer(key) {
+      const isLocal = ['127.0.0.1', 'localhost'].includes(window.location.hostname);
+      if (!isLocal) {
+        alert('Abra o GhostLens instalado em http://127.0.0.1:4444 para ativar este computador.');
+        return;
+      }
+      if (!currentUser || !currentUser.email) {
+        openGhostAuthModal('login');
+        return;
+      }
+      const cleanKey = String(key || '').trim().toUpperCase();
+      if (!cleanKey) return;
+      if (!confirm('Ativar a licença neste computador agora?\n\nA licença ficará vinculada a este PC.')) return;
+
+      showToast('⚡ Ativando licença neste computador…', 6000);
+      try {
+        const res = await fetch('/api/auth/activate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ key: cleanKey, email: currentUser.email })
+        });
+        const data = await res.json().catch(() => ({}));
+        const result = data.result || {};
+        if (data.code === 0 && result.success) {
+          showToast('✓ Licença ativada! Este computador está autorizado.', 6000);
+          await openMyLicenseModal();
+          return;
+        }
+        const err = result.error || data.error || '';
+        if (err === 'hwid_mismatch') {
+          alert('Esta licença já está vinculada a outra máquina.\n\nUse o botão "Trocar de computador" para liberar este PC.');
+        } else {
+          alert(`Não foi possível ativar: ${result.message || err || 'erro desconhecido'}`);
+        }
+      } catch (e) {
+        alert('Erro ao falar com o motor local. O GhostLens instalado está aberto?');
+      }
     }
 
     function copyMyLicenseKey(key) {
@@ -6114,6 +6196,9 @@
             showToast(`📱 GhostPhone da ${nome} aberto na Tela Suspensa!`);
             showFloatingPhoneDock(nome);
             return;
+          } else if (res.status === 403 || resData.status === 'unauthorized') {
+            showToast('🔒 Ative sua licença para usar o GhostPhone.', 5000);
+            if (currentUser) openMyLicenseModal(); else openGhostAuthModal('login');
           } else if (res.status === 404 && resData.action === 'run_android_setup') {
             showAndroidEngineError(resData);
           } else {
@@ -6213,6 +6298,9 @@
             showToast(`📱 ${appLabel} aberto na Tela Suspensa (${nome})!`);
             showFloatingPhoneDock(nome);
             return;
+          } else if (res.status === 403 || resData.status === 'unauthorized') {
+            showToast('🔒 Ative sua licença para usar o GhostPhone.', 5000);
+            if (currentUser) openMyLicenseModal(); else openGhostAuthModal('login');
           } else if (res.status === 404 && resData.action === 'run_android_setup') {
             showAndroidEngineError(resData);
           } else {
@@ -6244,11 +6332,16 @@
         }
 
         try {
-          await fetch(`${baseUrl}/api/phone/launch_native`, {
+          const res = await fetch(`${baseUrl}/api/phone/launch_native`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({ musa: 'Leninha', package: 'com.instagram.android' })
           });
+          if (res.status === 403) {
+            showToast('🔒 Ative sua licença para usar o GhostPhone.', 5000);
+            if (currentUser) openMyLicenseModal(); else openGhostAuthModal('login');
+            return;
+          }
           showToast('📱 GhostPhone™ focado na Tela Suspensa!');
           showFloatingPhoneDock('Leninha');
           return;
