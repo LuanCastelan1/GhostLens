@@ -5381,22 +5381,22 @@
 
         if (error) {
           console.warn("Carteira ainda não inicializada:", error.message);
-          userBalance = 500.00;
+          userBalance = 0.00;
           updateWalletDisplay();
           return;
         }
         if (data) {
-          userBalance = Math.max(parseFloat(data.balance || 0), 500.00);
+          userBalance = Math.max(0, parseFloat(data.balance || 0));
           updateWalletDisplay();
         } else {
-          // Cria carteira inicial com cortesia de R$ 500,00
-          await supabaseClient.from('ghost_wallets').insert([{ user_id: currentUser.id, balance: 500.00 }]);
-          userBalance = 500.00;
+          // O trigger de cadastro cria a carteira com saldo 0.
+          // Nunca criar/alterar saldo pelo navegador (RLS bloqueia).
+          userBalance = 0.00;
           updateWalletDisplay();
         }
       } catch (e) {
         console.error("Erro ao carregar saldo:", e);
-        userBalance = 500.00;
+        userBalance = 0.00;
         updateWalletDisplay();
       }
     }
