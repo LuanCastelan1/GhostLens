@@ -1631,6 +1631,11 @@
           <div class="nav-icon" style="color: #38bdf8; font-size: 1.15rem;">📱</div>
           <span class="nav-text" style="color: #38bdf8; font-weight: 800; letter-spacing: -0.3px;">GhostPhone™ • Personas</span>
         </li>
+        <li class="nav-item" onclick="openGhostStoreModal()"
+          style="border: 1px solid rgba(56, 189, 248, 0.3); background: rgba(56, 189, 248, 0.07); margin: 6px 0;">
+          <div class="nav-icon" style="color: #38bdf8;">🛍️</div>
+          <span class="nav-text" style="color: #38bdf8; font-weight: 700;">Store de Apps</span>
+        </li>
         <li class="nav-item" onclick="openGhostPhonePlayerPage()"
           style="border: 1px solid rgba(190, 242, 100, 0.25); background: rgba(190, 242, 100, 0.05); margin: 6px 0;">
           <div class="nav-icon" style="color: var(--accent-lime);">📱</div>
@@ -3641,6 +3646,41 @@
     </div>
   </div>
 
+  <!-- 🛍️ STORE DE APPS DO GHOSTPHONE -->
+  <div id="ghostStoreModal"
+    style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.88); backdrop-filter: blur(14px); z-index: 10055; justify-content: center; align-items: center; padding: 20px;">
+    <div
+      style="width: min(640px, 100%); max-height: 90vh; overflow-y: auto; background: linear-gradient(150deg, #11151f 0%, #0b0e14 100%); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px; padding: 24px; position: relative; box-shadow: 0 24px 80px rgba(0,0,0,0.65);">
+      <button type="button" onclick="closeGhostStoreModal()" title="Fechar"
+        style="position: absolute; top: 12px; right: 14px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-size: 1rem;">×</button>
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 6px; padding-right: 30px;">
+        <div
+          style="width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: rgba(56,189,248,0.12); border: 1px solid rgba(56,189,248,0.35); font-size: 1.3rem;">
+          🛍️</div>
+        <div>
+          <h2 style="font-size: 1.15rem; font-weight: 900; color: #fff; margin: 0 0 3px;">Store do GhostPhone</h2>
+          <p style="font-size: 0.72rem; color: var(--text-muted); margin: 0;">Instale apps dentro do Android do GhostPhone</p>
+        </div>
+      </div>
+      <div id="ghostStoreStatus"
+        style="margin: 12px 0; padding: 9px 11px; border-radius: 9px; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); color: var(--text-muted); font-size: 0.72rem; line-height: 1.45;">
+        Verificando o Android…
+      </div>
+      <div id="ghostStoreContent"></div>
+      <input type="file" id="ghostStoreApkInput" accept=".apk,application/vnd.android.package-archive" hidden
+        onchange="installGhostStoreApk(this.files[0])">
+      <button type="button" onclick="document.getElementById('ghostStoreApkInput').click()"
+        style="width: 100%; margin-top: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: #cbd5e1; padding: 10px; border-radius: 9px; font-size: 0.74rem; font-weight: 800; cursor: pointer;">
+        📦 Instalar APK do computador
+      </button>
+      <div
+        style="margin-top: 14px; padding: 10px 12px; border-radius: 9px; border: 1px solid rgba(251,191,36,0.22); background: rgba(251,191,36,0.06); color: #fde68a; font-size: 0.68rem; line-height: 1.5;">
+        A Aurora Store é open-source e baixa apps pela Play Store. Instagram e TikTok são marcas dos seus donos;
+        a loja apenas ajuda a instalá-los no Android. Use sua própria conta.
+      </div>
+    </div>
+  </div>
+
   <!-- 🎓 TUTORIAL INTERATIVO DE ATIVAÇÃO -->
   <div id="ghostTutorialOverlay">
     <div id="ghostTutorialSpotlight"></div>
@@ -5113,6 +5153,165 @@
       const url = isLocal ? '/player' : 'http://127.0.0.1:4444/player';
       window.open(url, '_blank', 'noopener');
       if (!isLocal) showToast('Abrindo o Player do GhostLens instalado. Se não abrir, inicie o app GhostLens.', 5000);
+    }
+
+    // ─── STORE DE APPS DO GHOSTPHONE ───
+    function ghostStoreBase() {
+      return (window.location.origin && window.location.origin.includes(':4444'))
+        ? window.location.origin
+        : 'http://127.0.0.1:4444';
+    }
+
+    function setGhostStoreStatus(message, color = 'var(--text-muted)') {
+      const el = document.getElementById('ghostStoreStatus');
+      if (!el) return;
+      el.innerText = message;
+      el.style.color = color;
+    }
+
+    function closeGhostStoreModal() {
+      const modal = document.getElementById('ghostStoreModal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    async function openGhostStoreModal() {
+      const modal = document.getElementById('ghostStoreModal');
+      if (modal) modal.style.display = 'flex';
+      setGhostStoreStatus('Verificando o Android…');
+      const content = document.getElementById('ghostStoreContent');
+      if (content) content.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:0.74rem;">Carregando apps…</div>';
+      await refreshGhostStore();
+    }
+
+    async function refreshGhostStore() {
+      const base = ghostStoreBase();
+      const content = document.getElementById('ghostStoreContent');
+      try {
+        const res = await fetch(`${base}/api/phone/apps`, { cache: 'no-store' });
+        if (!res.ok) {
+          if (res.status === 403) {
+            setGhostStoreStatus('🔒 Ative sua licença e abra o GhostPhone para usar a Store.', '#fbbf24');
+          } else {
+            setGhostStoreStatus('Abra o GhostLens instalado e o GhostPhone para usar a Store.', '#fbbf24');
+          }
+          if (content) content.innerHTML = '';
+          return;
+        }
+        const data = await res.json();
+        const apps = data.apps || {};
+        if (!data.device) {
+          setGhostStoreStatus('📱 Android não conectado. Abra o GhostPhone primeiro.', '#fbbf24');
+        } else {
+          setGhostStoreStatus(`✅ Android conectado: ${data.device}`, '#4ade80');
+        }
+        if (!content) return;
+
+        const card = (title, desc, installed, installLabel, openLabel, installCall, openCall) => `
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:13px; margin-bottom:9px; border-radius:12px; border:1px solid rgba(255,255,255,0.1); background:rgba(255,255,255,0.025);">
+            <div style="min-width:0;">
+              <div style="font-size:0.82rem; font-weight:800; color:#fff;">${title}</div>
+              <div style="font-size:0.68rem; color:var(--text-muted); line-height:1.45; margin-top:2px;">${desc}</div>
+            </div>
+            ${installed
+              ? `<button type="button" onclick="${openCall}" style="flex:0 0 auto; background:rgba(190,242,100,0.14); border:1px solid rgba(190,242,100,0.4); color:var(--accent-lime); padding:8px 11px; border-radius:8px; font-size:0.7rem; font-weight:800; cursor:pointer;">${openLabel}</button>`
+              : `<button type="button" onclick="${installCall}" style="flex:0 0 auto; background:rgba(56,189,248,0.12); border:1px solid rgba(56,189,248,0.4); color:#7dd3fc; padding:8px 11px; border-radius:8px; font-size:0.7rem; font-weight:800; cursor:pointer;">${installLabel}</button>`}
+          </div>`;
+
+        content.innerHTML =
+          card('🅰️ Aurora Store', 'Loja open-source para instalar apps dentro do Android.', apps.aurora, 'Instalar Aurora', 'Abrir Aurora', "installGhostAurora()", "openGhostStoreApp('com.aurora.store')") +
+          card('📸 Instagram', apps.instagram ? 'Instalado no Android.' : 'Instale pela Aurora Store e faça login com sua conta.', apps.instagram, 'Instalar via Aurora', 'Abrir Instagram', "openAuroraForStoreApp('instagram')", "openGhostStoreApp('com.instagram.android')") +
+          card('🎵 TikTok', apps.tiktok ? 'Instalado no Android.' : 'Instale pela Aurora Store e faça login com sua conta.', apps.tiktok, 'Instalar via Aurora', 'Abrir TikTok', "openAuroraForStoreApp('tiktok')", "openGhostStoreApp('com.zhiliaoapp.musically')");
+      } catch (e) {
+        setGhostStoreStatus('Não consegui falar com o motor local. Abra o GhostLens instalado.', '#fca5a5');
+        if (content) content.innerHTML = '';
+      }
+    }
+
+    async function installGhostAurora() {
+      if (!confirm('Baixar e instalar a Aurora Store dentro do Android agora? A licença precisa estar ativa e o GhostPhone aberto.')) return;
+      setGhostStoreStatus('⏳ Baixando e instalando a Aurora Store… (pode levar alguns minutos)', '#38bdf8');
+      try {
+        const res = await fetch(`${ghostStoreBase()}/api/phone/install_aurora`, { method: 'POST' });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || data.success !== true) {
+          setGhostStoreStatus(`❌ ${data.message || 'Falha ao instalar a Aurora Store.'}`, '#fca5a5');
+          alert(data.message || 'Falha ao instalar a Aurora Store.');
+          return;
+        }
+        setGhostStoreStatus('✅ Aurora Store instalada.', '#4ade80');
+        showToast('✓ Aurora Store instalada no Android.');
+        await refreshGhostStore();
+      } catch (e) {
+        setGhostStoreStatus('❌ Falha ao instalar Aurora Store. Abra o app instalado e tente de novo.', '#fca5a5');
+      }
+    }
+
+    async function openGhostStoreApp(packageName) {
+      try {
+        const res = await fetch(`${ghostStoreBase()}/api/phone/launch_app`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ package: packageName })
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || data.code !== 0) {
+          alert(data.error || 'Não foi possível abrir o app no Android.');
+          return;
+        }
+        showToast('📱 App aberto no GhostPhone.');
+      } catch (e) {
+        alert('Abra o GhostLens instalado e o GhostPhone primeiro.');
+      }
+    }
+
+    async function openAuroraForStoreApp(app) {
+      try {
+        const res = await fetch(`${ghostStoreBase()}/api/phone/apps`, { cache: 'no-store' });
+        if (!res.ok) {
+          alert('Abra o GhostLens instalado e o GhostPhone primeiro.');
+          return;
+        }
+        const data = await res.json();
+        if (!data.device) {
+          alert('Abra o GhostPhone primeiro para instalar apps.');
+          return;
+        }
+        if (!data.apps || !data.apps.aurora) {
+          if (!confirm('A Aurora Store ainda não está instalada. Instalar agora?')) return;
+          await installGhostAurora();
+        }
+        await openGhostStoreApp('com.aurora.store');
+        showToast('Pesquise "Instagram" ou "TikTok" dentro da Aurora Store para instalar.', 6000);
+      } catch (e) {
+        alert('Não foi possível abrir a Aurora Store.');
+      }
+    }
+
+    async function installGhostStoreApk(file) {
+      if (!file) return;
+      if (!confirm(`Instalar o APK '${file.name}' dentro do Android agora?`)) return;
+      setGhostStoreStatus(`⏳ Instalando ${file.name}…`, '#38bdf8');
+      try {
+        const res = await fetch(`${ghostStoreBase()}/api/phone/install_apk`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/vnd.android.package-archive' },
+          body: file
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || data.success !== true) {
+          setGhostStoreStatus(`❌ ${data.message || 'Falha ao instalar o APK.'}`, '#fca5a5');
+          alert(data.message || 'Falha ao instalar o APK.');
+          return;
+        }
+        setGhostStoreStatus('✅ APK instalado.', '#4ade80');
+        showToast('✓ APK instalado no Android.');
+        await refreshGhostStore();
+      } catch (e) {
+        setGhostStoreStatus('❌ Falha ao enviar o APK. Abra o app instalado e tente de novo.', '#fca5a5');
+      } finally {
+        const input = document.getElementById('ghostStoreApkInput');
+        if (input) input.value = '';
+      }
     }
 
     async function activateLicenseOnThisComputer(key) {

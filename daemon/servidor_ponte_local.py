@@ -129,6 +129,17 @@ SETUP_LAST_ATTEMPT = 0.0
 LAST_BOOT_ERROR = None
 ANDROID_EMULATOR_LOG = os.path.expanduser("~/.ghostphone/logs/android_emulator.log")
 
+# Store de apps dentro do Android (APK oficial do F-Droid).
+AURORA_STORE_URL = "https://f-droid.org/repo/com.aurora.store_76.apk"
+AURORA_STORE_SHA256 = "fd9c75d90d0f4a7c132b9b4a5a2cf1992a45e03b8d8ff988b7dcfbc0db2c4d11"
+AURORA_STORE_PACKAGE = "com.aurora.store"
+STORE_APP_PACKAGES = {
+    "aurora": "com.aurora.store",
+    "instagram": "com.instagram.android",
+    "tiktok": "com.zhiliaoapp.musically",
+}
+STORE_INSTALL_LOCK = threading.Lock()
+
 
 def local_interpolation_allowed():
     """60 FPS local incluído nos planos Pro, Agency e Master."""
@@ -532,7 +543,14 @@ def _boot_ghostphone_emulator(avd_name="ghostphone_musa"):
     run_adb(['-s', serial, 'shell', 'setprop', 'ro.product.model', 'SM-S928B'])
     run_adb(['-s', serial, 'shell', 'setprop', 'ro.product.device', 'e3q'])
     run_adb(['-s', serial, 'shell', 'setprop', 'ro.build.product', 'e3q'])
-    
+
+    # Deixa a Aurora Store pronta em segundo plano (Android recém-criado).
+    try:
+        threading.Thread(target=ensure_aurora_store_installed, args=(serial,), daemon=True).start()
+        print("🛍️ Verificando/instalando Aurora Store em segundo plano...")
+    except Exception as e:
+        print(f"⚠️ Não foi possível agendar instalação da Aurora Store: {e}")
+
     return serial
 
 LATEST_FRAME = None
@@ -583,6 +601,65 @@ def run_adb(args):
         return res.stdout.strip()
     except Exception:
         return ""
+
+
+def package_installed(package_name, serial=None):
+    serial = serial or get_connected_device_serial()
+    if not serial:
+        return False
+    out = run_adb(['-s', serial, 'shell', 'pm', 'list', 'packages', package_name])
+    return f"package:{package_name}" in (out or "")
+
+
+def install_apk_file(apk_path, serial=None):
+    serial = serial or get_connected_device_serial()
+    if not serial:
+        return {"success": False, "error": "no_device", "message": "Abra o GhostPhone primeiro para instalar apps."}
+    try:
+        res = subprocess.run(
+            [ADB_BIN, '-s', serial, 'install', '-r', apk_path],
+            capture_output=True, text=True, timeout=300, creationflags=NO_WINDOW
+        )
+        output = ((res.stdout or "") + "\n" + (res.stderr or "")).strip()
+        ok = res.returncode == 0 and "Success" in output
+        return {"success": ok, "error": None if ok else "install_failed", "message": output[-1200:] or "Falha ao instalar APK."}
+    except Exception as e:
+        return {"success": False, "error": "install_failed", "message": str(e)}
+
+
+def ensure_aurora_store_installed(serial=None):
+    """Baixa o APK oficial do Aurora Store no F-Droid e instala no Android."""
+    with STORE_INSTALL_LOCK:
+        serial = serial or get_connected_device_serial()
+        if not serial:
+            return False, "Abra o GhostPhone primeiro para instalar a Aurora Store."
+        if package_installed(AURORA_STORE_PACKAGE, serial):
+            return True, "Aurora Store já está instalada."
+        temp_apk = tmp_path(".apk")
+        try:
+            req = urllib.request.Request(
+                AURORA_STORE_URL,
+                headers={"User-Agent": "GhostLens-Store/1.0"}
+            )
+            with urllib.request.urlopen(req, timeout=120, context=SSL_CONTEXT) as response:
+                with open(temp_apk, "wb") as out:
+                    shutil.copyfileobj(response, out)
+            digest = hashlib.sha256()
+            with open(temp_apk, "rb") as f:
+                for chunk in iter(lambda: f.read(1024 * 1024), b""):
+                    digest.update(chunk)
+            if digest.hexdigest().lower() != AURORA_STORE_SHA256.lower():
+                return False, "Checksum do Aurora Store não confere. Tente novamente."
+            result = install_apk_file(temp_apk, serial)
+            return bool(result.get("success")), result.get("message") or "Aurora Store instalada."
+        except Exception as e:
+            return False, f"Falha ao baixar/instalar Aurora Store: {e}"
+        finally:
+            try:
+                if os.path.exists(temp_apk):
+                    os.remove(temp_apk)
+            except Exception:
+                pass
 
 
 def is_pid_running(pid):
@@ -795,6 +872,20 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                 "hwid": auth_guard.hwid,
                 "status": "unauthorized"
             }, code=403)
+            return
+
+        # STORE: STATUS DOS APPS INSTALADOS NO ANDROID
+        elif parsed.path == '/api/phone/apps':
+            serial = get_connected_device_serial()
+            apps = {}
+            for app_key, package_name in STORE_APP_PACKAGES.items():
+                apps[app_key] = bool(serial and package_installed(package_name, serial))
+            self.send_json({
+                "code": 0,
+                "device": serial,
+                "apps": apps,
+                "aurora_available": True
+            })
             return
 
         # GHOSTPHONE CLOUD ANDROID STREAM PLAYER
@@ -1718,6 +1809,60 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                 self.send_json({"error": f"Falha na renderização da timeline: {err_msg}"}, code=500)
                 return
 
+        # STORE: INSTALAR APK ENVIADO PELO CLIENTE
+        # Fica antes do parse_body porque APK é binário, não JSON.
+        if parsed.path == '/api/phone/install_apk':
+            if not auth_guard.is_active:
+                self.send_json({
+                    "code": 403,
+                    "error": "🔒 Ative sua licença para instalar APKs no GhostPhone."
+                }, code=403)
+                return
+            content_length = int(self.headers.get('Content-Length', 0))
+            if content_length <= 0:
+                self.send_json({"code": 1, "error": "empty_apk", "message": "Nenhum APK enviado."}, code=400)
+                return
+            if content_length > 300 * 1024 * 1024:
+                self.send_json({"code": 1, "error": "apk_too_large", "message": "APK maior que 300 MB."}, code=413)
+                return
+            serial = get_connected_device_serial()
+            if not serial:
+                self.send_json({
+                    "code": 1,
+                    "error": "no_device",
+                    "message": "Abra o GhostPhone primeiro para instalar o APK."
+                }, code=409)
+                return
+            temp_apk = tmp_path(".apk")
+            try:
+                with open(temp_apk, "wb") as f:
+                    remaining = content_length
+                    while remaining > 0:
+                        chunk = self.rfile.read(min(remaining, 1024 * 1024))
+                        if not chunk:
+                            break
+                        f.write(chunk)
+                        remaining -= len(chunk)
+                with open(temp_apk, "rb") as f:
+                    magic = f.read(2)
+                if magic != b"PK":
+                    self.send_json({"code": 1, "error": "invalid_apk", "message": "Arquivo não parece ser um APK válido."}, code=400)
+                    return
+                result = install_apk_file(temp_apk, serial)
+                self.send_json({
+                    "code": 0 if result.get("success") else 1,
+                    "success": bool(result.get("success")),
+                    "message": result.get("message") or "APK processado.",
+                    "error": result.get("error")
+                }, code=200 if result.get("success") else 500)
+                return
+            finally:
+                try:
+                    if os.path.exists(temp_apk):
+                        os.remove(temp_apk)
+                except Exception:
+                    pass
+
         body = self.parse_body()
 
         # AUTH GUARD ACTIVATE (/api/auth/activate)
@@ -1753,6 +1898,25 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                 "hwid": auth_guard.hwid,
                 "status": "unauthorized"
             }, code=403)
+            return
+
+        # STORE: INSTALAR AURORA STORE (APK OFICIAL DO F-DROID)
+        if parsed.path == '/api/phone/install_aurora':
+            serial = get_connected_device_serial()
+            if not serial:
+                self.send_json({
+                    "code": 1,
+                    "error": "no_device",
+                    "message": "Abra o GhostPhone primeiro para instalar a Aurora Store."
+                }, code=409)
+                return
+            ok, message = ensure_aurora_store_installed(serial)
+            self.send_json({
+                "code": 0 if ok else 1,
+                "success": ok,
+                "message": message,
+                "package": AURORA_STORE_PACKAGE
+            }, code=200 if ok else 500)
             return
 
         # 1. START PROFILE (/api/env/start ou /launch)
