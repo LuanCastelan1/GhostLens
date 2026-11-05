@@ -251,8 +251,9 @@ def setup_cmdline_tools():
 def setup_android_emulator_and_image(sdkmanager_bat, java_home):
     emulator_exe = os.path.join(SDK_DIR, "emulator", "emulator.exe")
     img_dir = os.path.join(SDK_DIR, "system-images", "android-30", "default", "x86_64")
-    
-    if os.path.exists(emulator_exe) and os.path.exists(img_dir):
+    platform_tools_dir = os.path.join(SDK_DIR, "platform-tools")
+
+    if os.path.exists(emulator_exe) and os.path.exists(img_dir) and os.path.isdir(platform_tools_dir):
         print("[4/5] GhostPhone™ Android 30 Engine: [JA INSTALADO]")
         return True
         
@@ -274,7 +275,7 @@ def setup_android_emulator_and_image(sdkmanager_bat, java_home):
         pass
 
     # Instala o emulador e a imagem AOSP Android 30 x86_64
-    cmd_str = f'"{sdkmanager_bat}" --sdk_root="{SDK_DIR}" emulator "system-images;android-30;default;x86_64"'
+    cmd_str = f'"{sdkmanager_bat}" --sdk_root="{SDK_DIR}" emulator platform-tools "system-images;android-30;default;x86_64"'
     
     print(f"    Executando instalacao do motor...")
     try:

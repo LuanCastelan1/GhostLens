@@ -356,6 +356,32 @@ def check_virtualization_windows():
     return None
 
 
+def ensure_platform_tools():
+    """Garante platform-tools no SDK; o emulador invalida o SDK sem essa pasta."""
+    for d in get_bin_search_dirs():
+        sdk = os.path.join(d, "android-sdk")
+        if not os.path.isdir(sdk):
+            continue
+        pt = os.path.join(sdk, "platform-tools")
+        try:
+            if os.path.isdir(pt) and any(os.scandir(pt)):
+                return True
+            os.makedirs(pt, exist_ok=True)
+            adb_dir = os.path.dirname(ADB_BIN) if ADB_BIN else ""
+            copied = False
+            for name in ("adb.exe", "adb", "AdbWinApi.dll", "AdbWinUsbApi.dll"):
+                src = os.path.join(adb_dir, name)
+                if os.path.exists(src):
+                    shutil.copy2(src, os.path.join(pt, name))
+                    copied = True
+            if copied:
+                print(f"🧩 platform-tools criado em {pt}")
+                return True
+        except Exception as e:
+            print(f"⚠️ Falha ao preparar platform-tools: {e}")
+    return False
+
+
 def ensure_avd_config(avd_name="ghostphone_musa"):
     """Repara config.ini de AVDs criadas pelo setup antigo (arch/image ausentes)."""
     config_path = os.path.expanduser(f"~/.android/avd/{avd_name}.avd/config.ini")
@@ -508,6 +534,7 @@ def _boot_ghostphone_emulator(avd_name="ghostphone_musa"):
         return None
         
     ensure_avd_config(avd_name)
+    ensure_platform_tools()
     if IS_WINDOWS and platform.machine().lower() in ("arm64", "aarch64"):
         LAST_BOOT_ERROR = (
             "Este Windows é ARM64. O motor Android atual usa imagem x86_64 e não roda nesse processador. "
@@ -951,10 +978,12 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                 pass
             image_x86 = False
             image_arm64 = False
+            platform_tools_exists = False
             for d in get_bin_search_dirs():
                 root = os.path.join(d, "android-sdk", "system-images", "android-30", "default")
                 image_x86 = image_x86 or os.path.isdir(os.path.join(root, "x86_64"))
                 image_arm64 = image_arm64 or os.path.isdir(os.path.join(root, "arm64-v8a"))
+                platform_tools_exists = platform_tools_exists or os.path.isdir(os.path.join(d, "android-sdk", "platform-tools"))
             self.send_json({
                 "code": 0,
                 "platform": platform.system(),
@@ -966,6 +995,7 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                 "avd_values": avd_values,
                 "image_x86_64_exists": image_x86,
                 "image_arm64_exists": image_arm64,
+                "platform_tools_exists": platform_tools_exists,
                 "adb_devices": run_adb(['devices']),
                 "virtualization_enabled": check_virtualization_windows(),
                 "emulator_log": ANDROID_EMULATOR_LOG,
