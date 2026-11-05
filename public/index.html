@@ -1484,6 +1484,114 @@
       color: var(--accent-lime);
       font-weight: 800;
     }
+
+    /* ─── TUTORIAL INTERATIVO DE ATIVAÇÃO ─── */
+    #ghostTutorialOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 10090;
+      pointer-events: none;
+      background: rgba(3, 5, 8, 0.58);
+      display: none;
+    }
+    #ghostTutorialSpotlight {
+      position: fixed;
+      z-index: 10091;
+      border: 2px solid var(--accent-lime);
+      border-radius: 14px;
+      box-shadow: 0 0 0 9999px rgba(3, 5, 8, 0.72), 0 0 0 5px rgba(190, 242, 100, 0.18), 0 0 30px rgba(190, 242, 100, 0.3);
+      pointer-events: none;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      display: none;
+    }
+    #ghostTutorialCard {
+      position: fixed;
+      z-index: 10092;
+      width: min(370px, calc(100vw - 28px));
+      background: linear-gradient(150deg, #141926 0%, #0b0e15 100%);
+      border: 1px solid rgba(190, 242, 100, 0.4);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.65);
+      pointer-events: auto;
+      color: var(--text-main);
+    }
+    #ghostTutorialCard .tut-step {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      color: var(--accent-lime);
+      background: rgba(190, 242, 100, 0.1);
+      border: 1px solid rgba(190, 242, 100, 0.25);
+      border-radius: 5px;
+      padding: 3px 7px;
+      margin-bottom: 9px;
+    }
+    #ghostTutorialCard h3 {
+      margin: 0 0 7px;
+      font-size: 1.02rem;
+      font-weight: 900;
+      color: #fff;
+      letter-spacing: -0.2px;
+    }
+    #ghostTutorialCard p {
+      margin: 0 0 13px;
+      font-size: 0.78rem;
+      line-height: 1.55;
+      color: #b9c3d3;
+    }
+    #ghostTutorialCard .tut-actions {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+    #ghostTutorialCard .tut-btn {
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.05);
+      color: #cbd5e1;
+      border-radius: 8px;
+      padding: 8px 11px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    #ghostTutorialCard .tut-btn:hover { color: #fff; border-color: rgba(255,255,255,0.3); }
+    #ghostTutorialCard .tut-btn.primary {
+      background: var(--accent-lime);
+      border-color: var(--accent-lime);
+      color: #000;
+      font-weight: 900;
+    }
+    #ghostTutorialCard .tut-btn.ghost { background: transparent; border-color: transparent; color: #94a3b8; }
+    #ghostTutorialCard .tut-never {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 11px;
+      color: #7f8b9f;
+      font-size: 0.65rem;
+      cursor: pointer;
+    }
+    #ghostTutorialCard .tut-video {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 12px;
+      color: #38bdf8;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+    #ghostTutorialCard .tut-video:hover { text-decoration: underline; }
+    @media (max-width: 620px) {
+      #ghostTutorialCard { width: calc(100vw - 20px); padding: 15px; }
+    }
   </style>
 </head>
 
@@ -1537,6 +1645,11 @@
           style="border: 1px solid rgba(190, 242, 100, 0.25); background: rgba(190, 242, 100, 0.05); margin: 6px 0;">
           <div class="nav-icon" style="color: var(--accent-lime);">🔑</div>
           <span class="nav-text" style="color: var(--accent-lime); font-weight: 700;">Minha Licença</span>
+        </li>
+        <li class="nav-item" onclick="startActivationTutorial(true)"
+          style="border: 1px solid rgba(167, 139, 250, 0.3); background: rgba(167, 139, 250, 0.06); margin: 6px 0;">
+          <div class="nav-icon" style="color: #c4b5fd;">🎓</div>
+          <span class="nav-text" style="color: #c4b5fd; font-weight: 700;">Tutorial de Ativação</span>
         </li>
         <li class="nav-item" onclick="window.open('/download', '_blank')"
           style="border: 1px solid rgba(190, 242, 100, 0.25); background: rgba(190, 242, 100, 0.05); margin: 6px 0;">
@@ -3521,6 +3634,28 @@
         style="margin-top: 16px; padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(56,189,248,0.22); background: rgba(56,189,248,0.06); color: #bae6fd; font-size: 0.7rem; line-height: 1.5;">
         🔒 A chave é vinculada à primeira máquina que ativar. Compartilhar o código não libera outra máquina.
       </div>
+      <button type="button" onclick="closeMyLicenseModal(); startActivationTutorial(true)"
+        style="width: 100%; margin-top: 10px; background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.35); color: #c4b5fd; padding: 9px; border-radius: 8px; font-size: 0.72rem; font-weight: 800; cursor: pointer;">
+        🎓 Ver tutorial de ativação
+      </button>
+    </div>
+  </div>
+
+  <!-- 🎓 TUTORIAL INTERATIVO DE ATIVAÇÃO -->
+  <div id="ghostTutorialOverlay">
+    <div id="ghostTutorialSpotlight"></div>
+    <div id="ghostTutorialCard">
+      <span id="ghostTutorialStep" class="tut-step">PASSO 1</span>
+      <h3 id="ghostTutorialTitle">Ative sua licença</h3>
+      <p id="ghostTutorialText"></p>
+      <div class="tut-actions">
+        <button type="button" id="ghostTutorialSkip" class="tut-btn ghost">Pular</button>
+        <button type="button" id="ghostTutorialAction" class="tut-btn" style="display: none;">Abrir</button>
+        <button type="button" id="ghostTutorialPrev" class="tut-btn">Anterior</button>
+        <button type="button" id="ghostTutorialNext" class="tut-btn primary">Próximo</button>
+      </div>
+      <label class="tut-never"><input type="checkbox" id="ghostTutorialNever"> Não mostrar novamente</label>
+      <a id="ghostTutorialVideo" class="tut-video" target="_blank" rel="noopener" style="display:none;">🎬 Assistir vídeo tutorial</a>
     </div>
   </div>
 
@@ -5021,6 +5156,313 @@
       }
     }
 
+    // ─── TUTORIAL INTERATIVO DE ATIVAÇÃO ───
+    const GHOSTLENS_TUTORIAL_VIDEO_URL = ''; // cole aqui o link do vídeo do YouTube quando estiver pronto
+    let tutorialSteps = [];
+    let tutorialIndex = 0;
+    let tutorialActive = false;
+    let tutorialPositionTimer = null;
+
+    function tutorialIsLocal() {
+      return ['127.0.0.1', 'localhost'].includes(window.location.hostname);
+    }
+
+    function findTutorialButton(text) {
+      return Array.from(document.querySelectorAll('button, a')).find((el) => {
+        if (el.offsetParent === null) return false;
+        return String(el.innerText || '').includes(text);
+      }) || null;
+    }
+
+    function buildActivationTutorialSteps() {
+      const steps = [];
+      if (!currentUser) {
+        steps.push({
+          id: 'login',
+          title: 'Entre na sua conta',
+          text: 'Clique em "Entrar / Criar Conta" e use o mesmo e-mail que você usou na compra. É essa conta que tem a sua licença.',
+          target: () => document.getElementById('btnLoginHeader'),
+          actionLabel: 'Abrir login',
+          action: () => openGhostAuthModal('login'),
+          canAdvance: () => Boolean(currentUser),
+          blockedText: 'Faça login para continuar o tutorial.'
+        });
+      }
+      steps.push({
+        id: 'license',
+        title: 'Abra Minha Licença',
+        text: 'No menu lateral, clique em "Minha Licença". É onde ficam sua chave, seu plano e o botão de ativação.',
+        target: () => document.querySelector('.nav-item[onclick="openMyLicenseModal()"]'),
+        actionLabel: 'Abrir Minha Licença',
+        action: () => openMyLicenseModal()
+      });
+      steps.push({
+        id: 'activate',
+        title: 'Ative este computador',
+        text: 'Clique em "Ativar este computador". A chave da sua conta será aplicada automaticamente, sem digitar nada.',
+        target: () => findTutorialButton('Ativar este computador') ||
+          findTutorialButton('Abrir Player do GhostPhone') ||
+          document.getElementById('myLicenseContent'),
+        actionLabel: 'Abrir Minha Licença',
+        action: () => openMyLicenseModal()
+      });
+      steps.push({
+        id: 'player',
+        title: 'Abra o Player do GhostPhone',
+        text: 'Tudo pronto. Clique em "Player do GhostPhone" no menu ou abra o GhostPhone pelas Personas.',
+        target: () => document.querySelector('.nav-item[onclick="openGhostPhonePlayerPage()"]'),
+        actionLabel: 'Abrir Player',
+        action: () => openGhostPhonePlayerPage()
+      });
+      return steps;
+    }
+
+    function startActivationTutorial(force = false) {
+      const never = localStorage.getItem('ghostlens_tutorial_never') === '1';
+      const done = localStorage.getItem('ghostlens_tutorial_done') === '1';
+      if (!force && (never || done)) return;
+      if (tutorialActive) return;
+
+      tutorialSteps = buildActivationTutorialSteps();
+      tutorialIndex = 0;
+      tutorialActive = true;
+      window.__tutorialActivateState = null;
+
+      const overlay = document.getElementById('ghostTutorialOverlay');
+      const video = document.getElementById('ghostTutorialVideo');
+      if (overlay) overlay.style.display = 'block';
+      if (video) {
+        if (GHOSTLENS_TUTORIAL_VIDEO_URL) {
+          video.href = GHOSTLENS_TUTORIAL_VIDEO_URL;
+          video.style.display = 'inline-flex';
+        } else {
+          video.style.display = 'none';
+        }
+      }
+      renderTutorialStep();
+      clearInterval(tutorialPositionTimer);
+      tutorialPositionTimer = setInterval(positionTutorial, 700);
+      window.addEventListener('resize', positionTutorial);
+    }
+
+    function closeActivationTutorial(markDone = true) {
+      tutorialActive = false;
+      window.__tutorialActivateState = null;
+      clearInterval(tutorialPositionTimer);
+      tutorialPositionTimer = null;
+      window.removeEventListener('resize', positionTutorial);
+      const overlay = document.getElementById('ghostTutorialOverlay');
+      if (overlay) overlay.style.display = 'none';
+      if (markDone) localStorage.setItem('ghostlens_tutorial_done', '1');
+    }
+
+    function renderTutorialStep() {
+      if (!tutorialActive) return;
+      const step = tutorialSteps[tutorialIndex];
+      if (!step) {
+        closeActivationTutorial(true);
+        return;
+      }
+
+      let title = step.title;
+      let text = step.text;
+      let target = null;
+      try { target = step.target ? step.target() : null; } catch (e) {}
+
+      if (step.id === 'activate') {
+        const activeBtn = findTutorialButton('Abrir Player do GhostPhone');
+        const transferBtn = findTutorialButton('Trocar de computador');
+        const activateBtn = findTutorialButton('Ativar este computador');
+        if (activeBtn) {
+          title = 'Licença já ativa neste PC';
+          text = 'Este computador já está autorizado. Clique em "Abrir Player do GhostPhone" ou avance para o próximo passo.';
+          target = activeBtn;
+          window.__tutorialActivateState = 'active';
+        } else if (transferBtn) {
+          title = 'Licença em outro computador';
+          text = 'Sua licença está vinculada a outro PC. Use "Trocar de computador" ou fale com o suporte para liberar este computador.';
+          target = transferBtn;
+          window.__tutorialActivateState = 'transfer';
+        } else if (activateBtn) {
+          title = 'Ative este computador';
+          text = 'Clique em "Ativar este computador". A chave da sua conta será aplicada automaticamente, sem digitar nada.';
+          target = activateBtn;
+          window.__tutorialActivateState = 'activate';
+        } else {
+          title = 'Ative sua licença';
+          text = 'Se o botão de ativação não aparecer, clique em "Ver planos" ou fale com o suporte. Se sua licença estiver em outro PC, use "Trocar de computador".';
+          target = document.getElementById('myLicenseContent');
+          window.__tutorialActivateState = 'none';
+        }
+      }
+
+      const stepEl = document.getElementById('ghostTutorialStep');
+      const titleEl = document.getElementById('ghostTutorialTitle');
+      const textEl = document.getElementById('ghostTutorialText');
+      const prevBtn = document.getElementById('ghostTutorialPrev');
+      const nextBtn = document.getElementById('ghostTutorialNext');
+      const actionBtn = document.getElementById('ghostTutorialAction');
+      if (stepEl) stepEl.innerText = `PASSO ${tutorialIndex + 1} DE ${tutorialSteps.length}`;
+      if (titleEl) titleEl.innerText = title;
+      if (textEl) textEl.innerText = text;
+      if (prevBtn) prevBtn.disabled = tutorialIndex === 0;
+      if (nextBtn) nextBtn.innerText = tutorialIndex === tutorialSteps.length - 1 ? 'Concluir' : 'Próximo';
+      if (actionBtn) {
+        if (step.actionLabel && step.action) {
+          actionBtn.innerText = step.actionLabel;
+          actionBtn.style.display = 'inline-flex';
+        } else {
+          actionBtn.style.display = 'none';
+        }
+      }
+
+      setTimeout(() => {
+        if (!tutorialActive) return;
+        if (target && target.scrollIntoView) {
+          try { target.scrollIntoView({ block: 'center', inline: 'center', behavior: 'smooth' }); } catch (e) {}
+        }
+        positionTutorial();
+      }, 120);
+      setTimeout(positionTutorial, 600);
+    }
+
+    function positionTutorial() {
+      if (!tutorialActive) return;
+      const step = tutorialSteps[tutorialIndex];
+      if (!step) return;
+
+      // Quando o modal de licença termina de carregar, o botão correto aparece.
+      // Atualiza o card automaticamente para "Ativar", "Já ativa" ou "Outro PC".
+      if (step.id === 'activate') {
+        const activeBtnNow = findTutorialButton('Abrir Player do GhostPhone');
+        const transferBtnNow = findTutorialButton('Trocar de computador');
+        const activateBtnNow = findTutorialButton('Ativar este computador');
+        const stateNow = activeBtnNow ? 'active' : transferBtnNow ? 'transfer' : activateBtnNow ? 'activate' : 'none';
+        if (stateNow !== 'none' && stateNow !== window.__tutorialActivateState) {
+          window.__tutorialActivateState = stateNow;
+          renderTutorialStep();
+          return;
+        }
+      }
+
+      let target = null;
+      try { target = step.target ? step.target() : null; } catch (e) {}
+      if (step.id === 'activate') {
+        target = findTutorialButton('Abrir Player do GhostPhone') ||
+          findTutorialButton('Trocar de computador') ||
+          findTutorialButton('Ativar este computador') ||
+          document.getElementById('myLicenseContent');
+      }
+
+      const overlay = document.getElementById('ghostTutorialOverlay');
+      const spot = document.getElementById('ghostTutorialSpotlight');
+      const card = document.getElementById('ghostTutorialCard');
+      if (!overlay || !spot || !card) return;
+
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const cardRect = card.getBoundingClientRect();
+      const cardW = cardRect.width || 370;
+      const cardH = cardRect.height || 220;
+
+      if (target && target.getBoundingClientRect) {
+        const r = target.getBoundingClientRect();
+        if (r.width > 0 && r.height > 0 && r.bottom > 0 && r.top < vh && r.right > 0 && r.left < vw) {
+          const pad = 8;
+          spot.style.display = 'block';
+          spot.style.left = `${Math.max(0, r.left - pad)}px`;
+          spot.style.top = `${Math.max(0, r.top - pad)}px`;
+          spot.style.width = `${Math.min(vw, r.width + pad * 2)}px`;
+          spot.style.height = `${Math.min(vh, r.height + pad * 2)}px`;
+          overlay.style.background = 'transparent';
+
+          let left = r.right + 16;
+          let top = r.top;
+          if (left + cardW > vw - 12) {
+            left = r.left - cardW - 16;
+          }
+          if (left < 12) {
+            left = Math.max(12, Math.min(vw - cardW - 12, r.left));
+            top = r.bottom + 14;
+          }
+          top = Math.max(12, Math.min(vh - cardH - 12, top));
+          card.style.left = `${left}px`;
+          card.style.top = `${top}px`;
+          card.style.transform = 'none';
+          return;
+        }
+      }
+
+      spot.style.display = 'none';
+      overlay.style.background = 'rgba(3, 5, 8, 0.72)';
+      card.style.left = `${Math.max(12, (vw - cardW) / 2)}px`;
+      card.style.top = `${Math.max(12, (vh - cardH) / 2)}px`;
+    }
+
+    function tutorialNext() {
+      if (!tutorialActive) return;
+      const step = tutorialSteps[tutorialIndex];
+      if (!step) return closeActivationTutorial(true);
+
+      if (step.id === 'login') {
+        if (step.canAdvance && !step.canAdvance()) {
+          showToast(step.blockedText || 'Faça login para continuar.');
+          if (step.action) step.action();
+          return;
+        }
+        tutorialSteps = buildActivationTutorialSteps();
+        tutorialIndex = 0;
+        window.__tutorialActivateState = null;
+        renderTutorialStep();
+        return;
+      }
+
+      if (tutorialIndex >= tutorialSteps.length - 1) {
+        closeActivationTutorial(true);
+        showToast('✓ Tutorial concluído. Sua licença está pronta para uso.');
+        return;
+      }
+      tutorialIndex += 1;
+      window.__tutorialActivateState = null;
+      renderTutorialStep();
+    }
+
+    function tutorialPrev() {
+      if (!tutorialActive || tutorialIndex <= 0) return;
+      tutorialIndex -= 1;
+      window.__tutorialActivateState = null;
+      renderTutorialStep();
+    }
+
+    async function maybeShowActivationTutorial() {
+      if (!tutorialIsLocal()) return;
+      if (localStorage.getItem('ghostlens_tutorial_never') === '1') return;
+      if (localStorage.getItem('ghostlens_tutorial_done') === '1') return;
+      if (tutorialActive) return;
+      try {
+        const res = await fetch('/status', { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.auth && data.auth.active) return;
+        }
+      } catch (e) {}
+      startActivationTutorial(false);
+    }
+
+    document.getElementById('ghostTutorialSkip')?.addEventListener('click', () => closeActivationTutorial(true));
+    document.getElementById('ghostTutorialPrev')?.addEventListener('click', tutorialPrev);
+    document.getElementById('ghostTutorialNext')?.addEventListener('click', tutorialNext);
+    document.getElementById('ghostTutorialAction')?.addEventListener('click', () => {
+      if (!tutorialActive) return;
+      const step = tutorialSteps[tutorialIndex];
+      if (step && step.action) step.action();
+      setTimeout(positionTutorial, 500);
+    });
+    document.getElementById('ghostTutorialNever')?.addEventListener('change', (e) => {
+      if (e.target.checked) localStorage.setItem('ghostlens_tutorial_never', '1');
+      else localStorage.removeItem('ghostlens_tutorial_never');
+    });
+
     function copyMyLicenseKey(key) {
       const clean = String(key || '').trim();
       if (!clean) return;
@@ -5242,6 +5684,7 @@
         updateAuthUI();
         await loadWalletBalance();
         subscribeWalletChanges();
+        setTimeout(() => { maybeShowActivationTutorial(); }, 800);
 
         if (currentAuthTab === 'register') {
           alert(`🎉 Conta criada com sucesso!\nBem-vindo ao GhostLens Studio, ${email.split('@')[0]}!`);
@@ -8987,6 +9430,7 @@
         initPromoBanner();
         initBrandAdminTrigger();
         setTimeout(() => { refreshInterpolationPriceUI(); }, 1200);
+        setTimeout(() => { maybeShowActivationTutorial(); }, 2600);
       }, 50);
 
       async function executeCurrentEngineAction() {
