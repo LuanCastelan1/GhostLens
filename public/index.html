@@ -3925,7 +3925,11 @@
       const lbl = document.getElementById('selectedModelLabel');
       const prc = document.getElementById('dockPriceLabel');
       if (lbl) lbl.innerText = label;
-      if (prc) prc.innerText = price;
+      if (prc) {
+        prc.innerText = (engineKey === 'ghost_60fps' && window.__localInterpIncluded === true)
+          ? 'Incluído'
+          : price;
+      }
 
       document.querySelectorAll('#modelPopup .dock-model-item').forEach(el => el.classList.remove('selected'));
       if (typeof event !== 'undefined' && event && event.currentTarget && event.currentTarget.classList) {
@@ -5001,6 +5005,8 @@
         const result = data.result || {};
         if (data.code === 0 && result.success) {
           showToast('✓ Licença ativada! Este computador está autorizado.', 6000);
+          localInterpIncludedCache = null;
+          refreshInterpolationPriceUI();
           await openMyLicenseModal();
           return;
         }
@@ -5580,6 +5586,49 @@
       }
       if (engineKey === 'video_blur') return 0.35;
       return isVideo ? 0.35 : 0.20;
+    }
+
+    let localInterpIncludedCache = null;
+    async function isLocalInterpolationIncluded() {
+      if (localInterpIncludedCache !== null) return localInterpIncludedCache;
+      localInterpIncludedCache = false;
+      try {
+        const base = (window.location.origin && window.location.origin.includes(':4444'))
+          ? window.location.origin
+          : 'http://127.0.0.1:4444';
+        const res = await fetch(`${base}/status`, { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          const auth = data.auth || {};
+          const code = String(auth.code || '').toUpperCase();
+          const plan = String(auth.plan || '').toUpperCase();
+          const maxDevices = Number(auth.max_devices || 0);
+          localInterpIncludedCache = Boolean(auth.active) && (
+            ['PRO', 'AGENCY', 'MASTER'].includes(code) ||
+            /PRO|AGENCY|MASTER|ILIMITADO/.test(plan) ||
+            maxDevices >= 3
+          );
+        }
+      } catch (e) {}
+      window.__localInterpIncluded = localInterpIncludedCache;
+      return localInterpIncludedCache;
+    }
+
+    async function refreshInterpolationPriceUI() {
+      const included = await isLocalInterpolationIncluded();
+      const item = document.getElementById('item_ghost_60fps');
+      if (item) {
+        const priceEl = item.querySelector('.dock-model-price');
+        if (priceEl) {
+          priceEl.innerHTML = included
+            ? 'INCLUÍDO<span>no seu plano</span>'
+            : 'R$ 2,50<span>Solo/nuvem</span>';
+        }
+      }
+      if (typeof currentEngine !== 'undefined' && currentEngine === 'ghost_60fps') {
+        const dockPrice = document.getElementById('dockPriceLabel');
+        if (dockPrice) dockPrice.innerText = included ? 'Incluído' : 'R$ 2,50';
+      }
     }
 
     // ─── GERENCIADOR DE PLANOS GHOSTPROFILE (STRIPE SUBSCRIPTIONS) ───
@@ -8937,6 +8986,7 @@
         switchSection('imagem');
         initPromoBanner();
         initBrandAdminTrigger();
+        setTimeout(() => { refreshInterpolationPriceUI(); }, 1200);
       }, 50);
 
       async function executeCurrentEngineAction() {
@@ -8953,7 +9003,12 @@
         }
 
         const isVideo = loadedFile.type.startsWith('video/') || loadedFile.name.match(/\.(mp4|mov)$/i);
-        const cost = getEnginePrice(currentEngine, isVideo);
+        let cost = getEnginePrice(currentEngine, isVideo);
+
+        // 60 FPS local é incluído nos planos Pro/Agency/Master.
+        if (currentEngine === 'ghost_60fps' && await isLocalInterpolationIncluded()) {
+          cost = 0;
+        }
 
         const isAdmin = isAdminUser();
 
@@ -9046,6 +9101,8 @@
         }
 
         // ─── 2. PROCESSAMENTO LOCAL / MOTORES IA: DÉBITO ATÔMICO NO BANCO (OU VISUAL ADMIN) ───
+        // cost = 0 para 60 FPS local incluído no plano; não debita.
+        if (cost > 0) {
         if (isAdmin) {
           userBalance = Math.max(0, userBalance - cost);
           updateWalletDisplay();
@@ -9074,6 +9131,7 @@
             openStudioPixModal(10);
             return;
           }
+        }
         }
 
         try {
@@ -9122,6 +9180,16 @@
                 } catch (localErr) {
                   console.warn("Ponte local indisponível, usando fallback em nuvem:", localErr);
                 }
+              }
+
+              // Plano Pro/Agency/Master: 60 FPS local incluído. Se o motor local
+              // falhar, não cai para a nuvem sem cobrança.
+              if (is60Fps && cost === 0) {
+                btn.style.opacity = '1';
+                btn.disabled = false;
+                document.getElementById('dockActionLabel').innerText = origText;
+                alert('⚠️ A interpolação local não abriu. Seu plano inclui o 60 FPS local; mantenha o GhostLens instalado aberto e tente novamente.');
+                return;
               }
 
               // 2. FALLBACK NUVEM WAVESPEED (proxy na Vercel; a chave fica no servidor)

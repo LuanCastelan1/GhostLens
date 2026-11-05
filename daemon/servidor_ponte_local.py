@@ -129,6 +129,22 @@ SETUP_LAST_ATTEMPT = 0.0
 LAST_BOOT_ERROR = None
 ANDROID_EMULATOR_LOG = os.path.expanduser("~/.ghostphone/logs/android_emulator.log")
 
+
+def local_interpolation_allowed():
+    """60 FPS local incluído nos planos Pro, Agency e Master."""
+    try:
+        data = auth_guard.license_data or {}
+        code = str(data.get("code") or "").upper()
+        plan = str(data.get("plan") or "").upper()
+        max_devices = int(data.get("max_devices") or 0)
+        if code in ("PRO", "AGENCY", "MASTER"):
+            return True
+        if any(tag in plan for tag in ("PRO", "AGENCY", "MASTER", "ILIMITADO")):
+            return True
+        return max_devices >= 3
+    except Exception:
+        return False
+
 def get_bin_search_dirs():
     dirs = []
     if BASE_DIR:
@@ -1066,6 +1082,16 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
             }, code=403)
             return
 
+        # 60 FPS LOCAL: incluído nos planos Pro/Agency/Master.
+        if parsed.path in ('/interpolate', '/api/video/interpolate') and not local_interpolation_allowed():
+            self.send_json({
+                "code": 403,
+                "status": "plan_required",
+                "required_plan": "PRO",
+                "error": "⚡ A interpolação 60 FPS local está incluída nos planos Pro, Agency e Master. Faça upgrade para liberar."
+            }, code=403)
+            return
+
         # 0.4 GHOST STUDIO PRO: CONVERTER WEBM/MOV DA EXPORTAÇÃO EM MP4
         if parsed.path in ('/transcode', '/api/editor/transcode'):
             content_length = int(self.headers.get('Content-Length', 0))
@@ -1525,6 +1551,15 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
             fps60 = options.get('fps60', False)
             upscale4k = options.get('upscale4k', False)
             musa_glow = options.get('musa_glow', False)
+
+            if fps60 and not local_interpolation_allowed():
+                self.send_json({
+                    "code": 403,
+                    "status": "plan_required",
+                    "required_plan": "PRO",
+                    "error": "⚡ A interpolação 60 FPS local está incluída nos planos Pro, Agency e Master. Faça upgrade para liberar."
+                }, code=403)
+                return
 
             target_w, target_h = (1080, 1920) if aspect_ratio == '9:16' else ((1920, 1080) if aspect_ratio == '16:9' else (1080, 1080))
             if upscale4k:
