@@ -544,6 +544,14 @@ def _boot_ghostphone_emulator(avd_name="ghostphone_musa"):
     run_adb(['-s', serial, 'shell', 'setprop', 'ro.product.device', 'e3q'])
     run_adb(['-s', serial, 'shell', 'setprop', 'ro.build.product', 'e3q'])
 
+    # Barra de navegação Android de 3 botões: Voltar, Início e Apps abertos.
+    try:
+        run_adb(['-s', serial, 'shell', 'settings', 'put', 'secure', 'navigation_mode', '0'])
+        run_adb(['-s', serial, 'shell', 'cmd', 'overlay', 'enable-exclusive', '--category', 'com.android.internal.systemui.navbar.threebutton'])
+        print("🧭 Navegação Android de 3 botões ativada (Voltar/Início/Recentes).")
+    except Exception as nav_err:
+        print(f"⚠️ Não foi possível ativar a barra de navegação de 3 botões: {nav_err}")
+
     # Deixa a Aurora Store pronta em segundo plano (Android recém-criado).
     try:
         threading.Thread(target=ensure_aurora_store_installed, args=(serial,), daemon=True).start()
