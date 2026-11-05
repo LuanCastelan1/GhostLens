@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07080c">
+  <title>Tutorial • Android Virtual do GhostPhone</title>
+  <link rel="icon" href="data:,">
+  <style>
+    :root {
+      --bg: #07080c;
+      --panel: #10141e;
+      --panel-2: #141926;
+      --border: rgba(255,255,255,.1);
+      --text: #f4f7fb;
+      --muted: #9aa6b8;
+      --lime: #bef264;
+      --blue: #38bdf8;
+      --amber: #fbbf24;
+      --red: #f87171;
+      --font: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background:
+        radial-gradient(900px 500px at 8% -10%, rgba(190,242,100,.08), transparent 60%),
+        radial-gradient(800px 500px at 95% 0%, rgba(56,189,248,.07), transparent 55%),
+        var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { max-width: 920px; margin: 0 auto; padding: 26px 18px 70px; }
+    header.hero {
+      padding: 34px 28px;
+      border: 1px solid rgba(190,242,100,.22);
+      border-radius: 20px;
+      background: linear-gradient(145deg, rgba(20,25,38,.96), rgba(10,13,20,.96));
+      box-shadow: 0 20px 60px rgba(0,0,0,.45);
+      margin-bottom: 18px;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--mono); font-size: 10px; font-weight: 800; letter-spacing: 1px;
+      color: var(--lime); background: rgba(190,242,100,.1);
+      border: 1px solid rgba(190,242,100,.28); border-radius: 6px; padding: 4px 8px;
+    }
+    h1 { margin: 12px 0 8px; font-size: clamp(1.6rem, 4vw, 2.25rem); line-height: 1.12; letter-spacing: -.6px; }
+    .hero p { margin: 0; color: var(--muted); font-size: .95rem; max-width: 680px; }
+    .hero-actions { display: flex; gap: 9px; flex-wrap: wrap; margin-top: 20px; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+      padding: 10px 14px; border-radius: 9px; border: 1px solid var(--border);
+      background: rgba(255,255,255,.04); color: var(--text); font-size: .8rem; font-weight: 800;
+      cursor: pointer; font-family: inherit;
+    }
+    .btn:hover { border-color: rgba(255,255,255,.25); text-decoration: none; }
+    .btn.primary { background: var(--lime); border-color: var(--lime); color: #080a0f; }
+    .btn.blue { background: rgba(56,189,248,.12); border-color: rgba(56,189,248,.4); color: #7dd3fc; }
+    .grid { display: grid; grid-template-columns: 1.55fr .9fr; gap: 16px; align-items: start; }
+    @media (max-width: 760px) { .grid { grid-template-columns: 1fr; } }
+    section.card {
+      background: rgba(16,20,30,.82); border: 1px solid var(--border);
+      border-radius: 16px; padding: 20px; margin-bottom: 14px;
+    }
+    section.card h2 { margin: 0 0 8px; font-size: 1.06rem; letter-spacing: -.2px; }
+    section.card h3 { margin: 18px 0 7px; font-size: .9rem; color: #dbe4f0; }
+    section.card p { color: var(--muted); font-size: .86rem; margin: 0 0 10px; }
+    ol.steps { list-style: none; counter-reset: step; padding: 0; margin: 10px 0 0; }
+    ol.steps li {
+      counter-increment: step; position: relative; padding: 0 0 14px 38px;
+      color: #cbd5e1; font-size: .86rem;
+    }
+    ol.steps li::before {
+      content: counter(step); position: absolute; left: 0; top: -2px;
+      width: 25px; height: 25px; border-radius: 50%;
+      display: grid; place-items: center; font-family: var(--mono); font-size: 11px; font-weight: 800;
+      color: #080a0f; background: var(--lime);
+    }
+    ol.steps li strong { color: #fff; }
+    .note {
+      border: 1px solid rgba(251,191,36,.28); background: rgba(251,191,36,.07);
+      color: #fde68a; border-radius: 10px; padding: 11px 13px; font-size: .8rem; line-height: 1.5;
+    }
+    .note.green { border-color: rgba(74,222,128,.28); background: rgba(74,222,128,.06); color: #bbf7d0; }
+    .note.red { border-color: rgba(248,113,113,.3); background: rgba(248,113,113,.07); color: #fecaca; }
+    code, kbd {
+      font-family: var(--mono); font-size: .92em; background: rgba(0,0,0,.35);
+      border: 1px solid var(--border); border-radius: 5px; padding: 1px 5px; color: #bae6fd;
+    }
+    .checklist { list-style: none; padding: 0; margin: 8px 0 0; display: flex; flex-direction: column; gap: 7px; }
+    .checklist li { display: flex; gap: 8px; align-items: flex-start; color: #cbd5e1; font-size: .84rem; }
+    .dot { width: 17px; height: 17px; flex: 0 0 auto; border-radius: 50%; display: grid; place-items: center; font-size: 10px; font-weight: 900; }
+    .dot.ok { color: #052e16; background: #4ade80; }
+    .dot.warn { color: #451a03; background: var(--amber); }
+    .dot.bad { color: #450a0a; background: var(--red); }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: .8rem; }
+    th, td { text-align: left; vertical-align: top; padding: 8px 9px; border-bottom: 1px solid var(--border); }
+    th { color: #dbe4f0; font-size: .72rem; text-transform: uppercase; letter-spacing: .5px; }
+    td { color: var(--muted); }
+    td strong { color: #e2e8f0; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 620px) { .two-col { grid-template-columns: 1fr; } }
+    .mini-card { border: 1px solid var(--border); border-radius: 11px; padding: 12px; background: rgba(255,255,255,.02); }
+    .mini-card strong { display: block; color: #fff; font-size: .84rem; margin-bottom: 3px; }
+    .mini-card span { color: var(--muted); font-size: .78rem; }
+    footer { margin-top: 22px; text-align: center; color: #64748b; font-size: .75rem; }
+    .support {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+      border: 1px solid rgba(37,211,102,.25); background: rgba(37,211,102,.06);
+      border-radius: 14px; padding: 15px 17px; margin-top: 16px;
+    }
+    .support p { margin: 0; color: #bbf7d0; font-size: .82rem; }
+    .support a { color: #25d366; font-weight: 800; }
+    @media print {
+      body { background: #fff; color: #111; }
+      .card, .hero { border-color: #ddd; background: #fff; box-shadow: none; }
+      .hero p, section.card p, td, .checklist li, ol.steps li { color: #333; }
+      .btn, .support { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <span class="badge">GHOSTPHONE • ANDROID VIRTUAL</span>
+      <h1>Como colocar o Android virtual do GhostPhone para rodar</h1>
+      <p>
+        Guia para instalar/atualizar o GhostLens, ativar a virtualização do PC e abrir o Android
+        que roda Instagram e TikTok. Versão atual: <strong>3.5.3</strong>.
+      </p>
+      <div class="hero-actions">
+        <a class="btn primary" href="https://www.ghostlens.cloud/download">⬇️ Baixar GhostLens 3.5.3</a>
+        <a class="btn blue" href="http://127.0.0.1:4444/api/android_diag" target="_blank" rel="noopener">🩺 Abrir diagnóstico</a>
+        <a class="btn" href="https://www.ghostlens.cloud/studio">🖥️ Abrir GhostLens Studio</a>
+      </div>
+    </header>
+
+    <div class="grid">
+      <div>
+        <section class="card">
+          <h2>O que o Anthony precisa fazer agora</h2>
+          <ol class="steps">
+            <li><strong>Feche o GhostLens e o daemon.</strong> Se necessário, use o Gerenciador de Tarefas e finalize <code>GhostLens.exe</code>, <code>pythonw.exe</code> e <code>python.exe</code>.</li>
+            <li><strong>Instale a 3.5.3 por cima.</strong> Não precisa desinstalar. A licença e os perfis continuam salvos.</li>
+            <li><strong>Confira a virtualização.</strong> Gerenciador de Tarefas → Desempenho → CPU → <strong>Virtualização</strong>. Se estiver desabilitada, siga o passo 4.</li>
+            <li><strong>Ative a virtualização na BIOS.</strong> Reinicie, entre na BIOS/UEFI e ative <code>Intel VT-x</code> ou <code>AMD-V/SVM Mode</code>. Salve e reinicie.</li>
+            <li><strong>Ative a Plataforma do Hipervisor do Windows.</strong> Menu Iniciar → “Ativar ou desativar recursos do Windows” → marque <strong>Plataforma do Hipervisor do Windows</strong> → reinicie.</li>
+            <li><strong>Rode “Configurar Motor Android”.</strong> Menu Iniciar → GhostLens → Configurar Motor Android. Deixe a janela terminar.</li>
+            <li><strong>Abra o GhostPhone.</strong> GhostLens → GhostPhone • Personas → Abrir GhostPhone. O primeiro boot pode levar até 120s.</li>
+            <li><strong>Se falhar, envie o diagnóstico.</strong> Abra <code>http://127.0.0.1:4444/api/android_diag</code> e mande o resultado para o suporte.</li>
+          </ol>
+        </section>
+
+        <section class="card">
+          <h2>Ativar a virtualização na BIOS</h2>
+          <div class="two-col">
+            <div class="mini-card">
+              <strong>Intel</strong>
+              <span>Procure por <code>Intel Virtualization Technology</code>, <code>VT-x</code> ou <code>Intel VMX</code> e deixe <strong>Enabled</strong>.</span>
+            </div>
+            <div class="mini-card">
+              <strong>AMD</strong>
+              <span>Procure por <code>SVM Mode</code>, <code>Secure Virtual Machine</code> ou <code>AMD-V</code> e deixe <strong>Enabled</strong>.</span>
+            </div>
+          </div>
+          <p style="margin-top:12px">As teclas para entrar na BIOS/UEFI variam por fabricante: <kbd>Del</kbd>, <kbd>F2</kbd>, <kbd>F10</kbd> ou <kbd>Esc</kbd>. Salve com <kbd>F10</kbd>.</p>
+          <div class="note">Sem virtualização, o Android x86_64 não roda em velocidade usável. Não existe instalação que ligue essa opção dentro do Windows: é uma configuração do firmware do PC.</div>
+        </section>
+
+        <section class="card">
+          <h2>O PC é compatível?</h2>
+          <ul class="checklist">
+            <li><span class="dot ok">✓</span><span><strong>Windows x64</strong> (Intel/AMD). Windows ARM64 não é compatível com a imagem x86_64.</span></li>
+            <li><span class="dot ok">✓</span><span><strong>Windows 10 ou 11 64-bit.</strong></span></li>
+            <li><span class="dot ok">✓</span><span><strong>Virtualização ativada</strong> na BIOS/UEFI.</span></li>
+            <li><span class="dot ok">✓</span><span><strong>Plataforma do Hipervisor do Windows</strong> ativada.</span></li>
+            <li><span class="dot warn">!</span><span><strong>8 GB de RAM</strong> ou mais e <strong>10 GB livres</strong> em disco.</span></li>
+            <li><span class="dot warn">!</span><span>Feche BlueStacks, LDPlayer, Android Studio ou outro emulador antes de abrir o GhostPhone.</span></li>
+          </ul>
+        </section>
+
+        <section class="card">
+          <h2>Diagnóstico: o que cada campo significa</h2>
+          <p>Abra <a href="http://127.0.0.1:4444/api/android_diag" target="_blank" rel="noopener">http://127.0.0.1:4444/api/android_diag</a> no PC do cliente. Os valores esperados são:</p>
+          <table>
+            <thead><tr><th>Campo</th><th>Esperado</th></tr></thead>
+            <tbody>
+              <tr><td><code>host_arch</code></td><td><strong>AMD64</strong></td></tr>
+              <tr><td><code>image_x86_64_exists</code></td><td><strong>true</strong></td></tr>
+              <tr><td><code>platform_tools_exists</code></td><td><strong>true</strong></td></tr>
+              <tr><td><code>avd_values.hw.cpu.arch</code></td><td><strong>x86_64</strong></td></tr>
+              <tr><td><code>avd_values.image.sysdir.1</code></td><td><strong>system-images/android-30/default/x86_64/</strong></td></tr>
+              <tr><td><code>virtualization_enabled</code></td><td><strong>true</strong></td></tr>
+              <tr><td><code>adb_devices</code></td><td><strong>emulator-5554</strong> depois do boot</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="card">
+          <h2>Erros comuns</h2>
+          <table>
+            <thead><tr><th>Erro</th><th>Causa</th><th>Solução</th></tr></thead>
+            <tbody>
+              <tr><td><code>CPU Architecture 'arm' is not supported</code></td><td>Config antiga da AVD sem x86_64</td><td>Instalar 3.5.2+; o daemon repara.</td></tr>
+              <tr><td><code>platform-tools subdirectory is missing</code></td><td>SDK sem platform-tools</td><td>Instalar 3.5.3+; o daemon cria.</td></tr>
+              <tr><td><code>Virtualização desativada</code></td><td>VT-x/AMD-V desligado</td><td>Ativar na BIOS e no Hipervisor do Windows.</td></tr>
+              <tr><td><code>Timeout aguardando Android</code></td><td>Boot lento ou virtualização desligada</td><td>Fechar outros emuladores, ativar virtualização, tentar de novo.</td></tr>
+              <tr><td><code>host_arch: ARM64</code></td><td>Windows em processador ARM</td><td>Não compatível com x86_64; usar PC x64.</td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="card">
+          <h2>Todos os PCs vão dar erro?</h2>
+          <p><strong>Não.</strong> Os erros de <code>arm</code> e <code>platform-tools</code> eram bugs de configuração nossos e foram corrigidos na 3.5.2/3.5.3.</p>
+          <ul class="checklist">
+            <li><span class="dot ok">✓</span><span>PC Windows x64 com virtualização ativada → deve funcionar.</span></li>
+            <li><span class="dot warn">!</span><span>PC com virtualização desligada → precisa ativar na BIOS.</span></li>
+            <li><span class="dot bad">×</span><span>Windows ARM64 → não compatível com a imagem x86_64.</span></li>
+            <li><span class="dot warn">!</span><span>Pouca RAM, disco cheio, antivírus agressivo ou outro emulador aberto → podem falhar.</span></li>
+          </ul>
+          <div class="note green">Para vender com menos suporte, faça uma verificação de compatibilidade antes: x64, virtualização ativa e 8 GB+ de RAM.</div>
+        </section>
+      </div>
+
+      <aside>
+        <section class="card">
+          <h2>Resumo rápido</h2>
+          <ol class="steps">
+            <li>Instalar 3.5.3 por cima.</li>
+            <li>Ativar virtualização na BIOS.</li>
+            <li>Ativar Hipervisor do Windows.</li>
+            <li>Rodar Configurar Motor Android.</li>
+            <li>Abrir o GhostPhone.</li>
+          </ol>
+        </section>
+        <section class="card">
+          <h2>Antes de abrir</h2>
+          <ul class="checklist">
+            <li><span class="dot ok">✓</span><span>GhostLens atualizado.</span></li>
+            <li><span class="dot ok">✓</span><span>Licença ativada.</span></li>
+            <li><span class="dot ok">✓</span><span>Virtualização ativa.</span></li>
+            <li><span class="dot ok">✓</span><span>Outros emuladores fechados.</span></li>
+          </ul>
+        </section>
+        <section class="card">
+          <h2>Links úteis</h2>
+          <p><a href="https://www.ghostlens.cloud/download">Baixar instaladores</a></p>
+          <p><a href="https://www.ghostlens.cloud/studio">GhostLens Studio</a></p>
+          <p><a href="http://127.0.0.1:4444/api/android_diag" target="_blank" rel="noopener">Diagnóstico local</a></p>
+        </section>
+        <div class="support">
+          <p>Ficou travado? Fale com o suporte no WhatsApp.</p>
+          <a href="https://wa.me/5517997082645" target="_blank" rel="noopener">Abrir WhatsApp →</a>
+        </div>
+      </aside>
+    </div>
+
+    <footer>
+      GhostLens • Tutorial do Android Virtual • Versão 3.5.3
+    </footer>
+  </div>
+</body>
+</html>
