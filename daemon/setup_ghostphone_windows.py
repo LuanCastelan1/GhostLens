@@ -293,12 +293,66 @@ def setup_android_emulator_and_image(sdkmanager_bat, java_home):
 # ==============================================================================
 # 5. CRIACAO DA INSTANCIA GHOSTPHONE™ (ghostphone_musa)
 # ==============================================================================
+def apply_avd_config(config_file):
+    """Preserva a config do avdmanager e corrige arquitetura/imagem/navegação."""
+    fields = {
+        "hw.lcd.width": "1080",
+        "hw.lcd.height": "2400",
+        "hw.lcd.density": "420",
+        "hw.ramSize": "2048M",
+        "hw.gpu.enabled": "yes",
+        "hw.gpu.mode": "host",
+        "vm.heapSize": "256M",
+        "tag.id": "default",
+        "tag.display": "Default",
+        "hw.device.name": "pixel_6",
+        "hw.cpu.ncore": "2",
+        "hw.cpu.arch": "x86_64",
+        "abi.type": "x86_64",
+        "image.sysdir.1": "system-images/android-30/default/x86_64/",
+        "hw.mainKeys": "no",
+        "qemu.hw.mainkeys": "0",
+        "fastboot.forceChosenSnapshotBoot": "no",
+        "fastboot.forceColdBoot": "no",
+        "fastboot.forceFastBoot": "yes",
+    }
+    lines = []
+    if os.path.exists(config_file):
+        with open(config_file, "r", encoding="utf-8", errors="ignore") as f:
+            lines = f.read().splitlines()
+    data = {}
+    for line in lines:
+        if "=" in line and not line.strip().startswith("#"):
+            k, v = line.split("=", 1)
+            data[k.strip()] = v.strip()
+    data.update(fields)
+
+    new_lines = []
+    seen = set()
+    for line in lines:
+        if "=" in line and not line.strip().startswith("#"):
+            k = line.split("=", 1)[0].strip()
+            if k in data:
+                new_lines.append(f"{k}={data[k]}")
+                seen.add(k)
+                continue
+        new_lines.append(line)
+    for k, v in fields.items():
+        if k not in seen:
+            new_lines.append(f"{k}={v}")
+
+    os.makedirs(os.path.dirname(config_file), exist_ok=True)
+    with open(config_file, "w", encoding="utf-8") as f:
+        f.write("\n".join(new_lines) + "\n")
+
+
 def setup_ghostphone_avd(java_home):
     avd_dir = os.path.expanduser("~/.android/avd/ghostphone_musa.avd")
     config_file = os.path.join(avd_dir, "config.ini")
-    
+
     if os.path.exists(config_file):
-        print("[5/5] Instancia GhostPhone™ (Leninha - Samsung S24 Ultra): [JA CONFIGURADA]")
+        apply_avd_config(config_file)
+        print("[5/5] Instancia GhostPhone™ (Leninha - Samsung S24 Ultra): [JA CONFIGURADA/REPARADA]")
         return True
         
     print("[5/5] Criando instancia GhostPhone™ proprietaria...")
@@ -316,29 +370,9 @@ def setup_ghostphone_avd(java_home):
         proc = subprocess.Popen(cmd_avd, stdin=subprocess.PIPE, env=env, shell=True)
         proc.communicate(input=b"no\n")
         
-        # Injeta as configuracoes personalizadas de tela e memoria (1080x2400, 2GB RAM, GPU Host)
+        # Preserva arch/imagem do avdmanager e injeta tela/memória/navegação.
         os.makedirs(avd_dir, exist_ok=True)
-        config_content = """avd.ini.encoding=UTF-8
-hw.lcd.width=1080
-hw.lcd.height=2400
-hw.lcd.density=420
-hw.ramSize=2048M
-hw.mainKeys=no
-qemu.hw.mainkeys=0
-hw.gpu.enabled=yes
-hw.gpu.mode=host
-vm.heapSize=256M
-tag.id=default
-tag.display=Default
-hw.device.name=pixel_6
-hw.cpu.ncore=2
-fastboot.chosenSnapshotFile=
-fastboot.forceChosenSnapshotBoot=no
-fastboot.forceColdBoot=no
-fastboot.forceFastBoot=yes
-"""
-        with open(config_file, "w", encoding="utf-8") as f:
-            f.write(config_content)
+        apply_avd_config(config_file)
             
         # Garante o arquivo descriptor .ini correspondente
         parent_avd = os.path.dirname(avd_dir)

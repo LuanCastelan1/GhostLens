@@ -356,6 +356,85 @@ def check_virtualization_windows():
     return None
 
 
+def ensure_avd_config(avd_name="ghostphone_musa"):
+    """Repara config.ini de AVDs criadas pelo setup antigo (arch/image ausentes)."""
+    config_path = os.path.expanduser(f"~/.android/avd/{avd_name}.avd/config.ini")
+    if not os.path.exists(config_path):
+        return False
+    try:
+        with open(config_path, "r", encoding="utf-8", errors="ignore") as f:
+            lines = f.read().splitlines()
+    except Exception:
+        return False
+
+    data = {}
+    for line in lines:
+        if "=" in line and not line.strip().startswith("#"):
+            k, v = line.split("=", 1)
+            data[k.strip()] = v.strip()
+
+    changed = False
+    def set_key(k, v):
+        nonlocal changed
+        if data.get(k) != v:
+            data[k] = v
+            changed = True
+
+    set_key("hw.mainKeys", "no")
+    set_key("qemu.hw.mainkeys", "0")
+
+    image_root = None
+    for d in get_bin_search_dirs():
+        cand = os.path.join(d, "android-sdk", "system-images", "android-30", "default")
+        if os.path.isdir(os.path.join(cand, "x86_64")) or os.path.isdir(os.path.join(cand, "arm64-v8a")):
+            image_root = cand
+            break
+
+    host_arch = platform.machine().lower()
+    has_x86 = bool(image_root and os.path.isdir(os.path.join(image_root, "x86_64")))
+    has_arm64 = bool(image_root and os.path.isdir(os.path.join(image_root, "arm64-v8a")))
+
+    if IS_WINDOWS:
+        # O setup do Windows instala system-images x86_64. Se o config antigo
+        # estiver com arm/ausente, força x86_64 para o QEMU2 conseguir bootar.
+        if host_arch not in ("arm64", "aarch64") and has_x86:
+            set_key("hw.cpu.arch", "x86_64")
+            set_key("abi.type", "x86_64")
+            set_key("image.sysdir.1", "system-images/android-30/default/x86_64/")
+    elif not data.get("hw.cpu.arch") and image_root:
+        if has_arm64:
+            set_key("hw.cpu.arch", "arm64")
+            set_key("abi.type", "arm64-v8a")
+            set_key("image.sysdir.1", "system-images/android-30/default/arm64-v8a/")
+        elif has_x86:
+            set_key("hw.cpu.arch", "x86_64")
+            set_key("abi.type", "x86_64")
+            set_key("image.sysdir.1", "system-images/android-30/default/x86_64/")
+
+    if changed:
+        new_lines = []
+        seen = set()
+        for line in lines:
+            if "=" in line and not line.strip().startswith("#"):
+                k = line.split("=", 1)[0].strip()
+                if k in data:
+                    new_lines.append(f"{k}={data[k]}")
+                    seen.add(k)
+                    continue
+            new_lines.append(line)
+        for k, v in data.items():
+            if k not in seen:
+                new_lines.append(f"{k}={v}")
+        try:
+            with open(config_path, "w", encoding="utf-8") as f:
+                f.write("\n".join(new_lines) + "\n")
+            print(f"🧩 AVD reparada: {config_path} (arch={data.get('hw.cpu.arch')}, image={data.get('image.sysdir.1')})")
+        except Exception as e:
+            print(f"⚠️ Falha ao reparar config da AVD: {e}")
+            return False
+    return True
+
+
 def boot_ghostphone_emulator(avd_name="ghostphone_musa"):
     """Garante um único boot por vez e evita várias janelas/cmd em loop."""
     if not BOOT_LOCK.acquire(blocking=False):
@@ -428,6 +507,14 @@ def _boot_ghostphone_emulator(avd_name="ghostphone_musa"):
                 print("⚠️ Setup do Android não encontrado nesta instalação.")
         return None
         
+    ensure_avd_config(avd_name)
+    if IS_WINDOWS and platform.machine().lower() in ("arm64", "aarch64"):
+        LAST_BOOT_ERROR = (
+            "Este Windows é ARM64. O motor Android atual usa imagem x86_64 e não roda nesse processador. "
+            "Use um PC Windows x64 (Intel/AMD) ou uma instalação Android ARM64 específica."
+        )
+        print("⚠️ Windows ARM64 detectado; emulador x86_64 não é suportado.")
+        return None
     avd_config = os.path.expanduser(f"~/.android/avd/{avd_name}.avd/config.ini")
     if not os.path.exists(avd_config):
         LAST_BOOT_ERROR = (
@@ -852,13 +939,33 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
         elif parsed.path == '/api/android_diag':
             emu_bin = find_emulator_bin()
             avd_config = os.path.expanduser("~/.android/avd/ghostphone_musa.avd/config.ini")
+            avd_values = {}
+            try:
+                with open(avd_config, "r", encoding="utf-8", errors="ignore") as f:
+                    for line in f:
+                        if "=" in line and not line.strip().startswith("#"):
+                            k, v = line.split("=", 1)
+                            if k.strip() in ("hw.cpu.arch", "abi.type", "image.sysdir.1", "hw.mainKeys", "hw.ramSize", "hw.gpu.mode"):
+                                avd_values[k.strip()] = v.strip()
+            except Exception:
+                pass
+            image_x86 = False
+            image_arm64 = False
+            for d in get_bin_search_dirs():
+                root = os.path.join(d, "android-sdk", "system-images", "android-30", "default")
+                image_x86 = image_x86 or os.path.isdir(os.path.join(root, "x86_64"))
+                image_arm64 = image_arm64 or os.path.isdir(os.path.join(root, "arm64-v8a"))
             self.send_json({
                 "code": 0,
                 "platform": platform.system(),
+                "host_arch": platform.machine(),
                 "emulator_bin": emu_bin,
                 "emulator_exists": bool(emu_bin and os.path.exists(emu_bin)),
                 "avd_config": avd_config,
                 "avd_exists": os.path.exists(avd_config),
+                "avd_values": avd_values,
+                "image_x86_64_exists": image_x86,
+                "image_arm64_exists": image_arm64,
                 "adb_devices": run_adb(['devices']),
                 "virtualization_enabled": check_virtualization_windows(),
                 "emulator_log": ANDROID_EMULATOR_LOG,
