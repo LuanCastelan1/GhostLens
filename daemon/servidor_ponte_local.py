@@ -337,6 +337,249 @@ def read_log_tail(path, max_bytes=5000):
         return ""
 
 
+def get_total_ram_gb():
+    try:
+        if IS_WINDOWS:
+            import ctypes
+            class MEMORYSTATUSEX(ctypes.Structure):
+                _fields_ = [
+                    ("dwLength", ctypes.c_ulong),
+                    ("dwMemoryLoad", ctypes.c_ulong),
+                    ("ullTotalPhys", ctypes.c_ulonglong),
+                    ("ullAvailPhys", ctypes.c_ulonglong),
+                    ("ullTotalPageFile", ctypes.c_ulonglong),
+                    ("ullAvailPageFile", ctypes.c_ulonglong),
+                    ("ullTotalVirtual", ctypes.c_ulonglong),
+                    ("ullAvailVirtual", ctypes.c_ulonglong),
+                    ("ullAvailExtendedVirtual", ctypes.c_ulonglong),
+                ]
+            stat = MEMORYSTATUSEX()
+            stat.dwLength = ctypes.sizeof(stat)
+            if ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(stat)):
+                return round(stat.ullTotalPhys / (1024 ** 3), 1)
+        else:
+            pages = os.sysconf("SC_PHYS_PAGES")
+            page_size = os.sysconf("SC_PAGE_SIZE")
+            return round(pages * page_size / (1024 ** 3), 1)
+    except Exception:
+        pass
+    return None
+
+
+def get_disk_free_gb():
+    try:
+        return round(shutil.disk_usage(os.path.expanduser("~")).free / (1024 ** 3), 1)
+    except Exception:
+        return None
+
+
+def get_hypervisor_present():
+    if not IS_WINDOWS:
+        return None
+    try:
+        res = subprocess.run(
+            ["powershell", "-NoProfile", "-Command", "(Get-CimInstance Win32_ComputerSystem).HypervisorPresent"],
+            capture_output=True, text=True, timeout=8, creationflags=NO_WINDOW
+        )
+        out = (res.stdout or "").strip().lower()
+        if "true" in out:
+            return True
+        if "false" in out:
+            return False
+    except Exception:
+        pass
+    return None
+
+
+def get_running_emulators():
+    if not IS_WINDOWS:
+        return []
+    try:
+        out = subprocess.run(
+            ["tasklist", "/FO", "CSV", "/NH"],
+            capture_output=True, text=True, timeout=6, creationflags=NO_WINDOW
+        ).stdout or ""
+        names = {
+            "HD-Player.exe": "BlueStacks",
+            "BlueStacks.exe": "BlueStacks",
+            "dnplayer.exe": "LDPlayer",
+            "LdVBoxHeadless.exe": "LDPlayer",
+            "MEmu.exe": "MEmu",
+            "Nox.exe": "NoxPlayer",
+            "NoxVMHandle.exe": "NoxPlayer",
+        }
+        found = []
+        lower = out.lower()
+        for exe, label in names.items():
+            if exe.lower() in lower and label not in found:
+                found.append(label)
+        return found
+    except Exception:
+        return []
+
+
+def build_compatibility_report():
+    machine = platform.machine().lower()
+    is_windows = platform.system() == "Windows"
+    is_mac = platform.system() == "Darwin"
+    host_arch = "x64" if machine in ("amd64", "x86_64") else ("arm64" if machine in ("arm64", "aarch64") else machine)
+
+    emu_bin = find_emulator_bin()
+    emu_exists = bool(emu_bin and os.path.exists(emu_bin))
+    avd_config = os.path.expanduser("~/.android/avd/ghostphone_musa.avd/config.ini")
+    avd_exists = os.path.exists(avd_config)
+    avd_values = {}
+    try:
+        with open(avd_config, "r", encoding="utf-8", errors="ignore") as f:
+            for line in f:
+                if "=" in line and not line.strip().startswith("#"):
+                    k, v = line.split("=", 1)
+                    if k.strip() in ("hw.cpu.arch", "abi.type", "image.sysdir.1", "hw.mainKeys", "hw.ramSize", "hw.gpu.mode"):
+                        avd_values[k.strip()] = v.strip()
+    except Exception:
+        pass
+
+    image_x86 = False
+    image_arm64 = False
+    platform_tools = False
+    for d in get_bin_search_dirs():
+        root = os.path.join(d, "android-sdk", "system-images", "android-30", "default")
+        image_x86 = image_x86 or os.path.isdir(os.path.join(root, "x86_64"))
+        image_arm64 = image_arm64 or os.path.isdir(os.path.join(root, "arm64-v8a"))
+        platform_tools = platform_tools or os.path.isdir(os.path.join(d, "android-sdk", "platform-tools"))
+
+    virtualization = check_virtualization_windows() if is_windows else None
+    hypervisor = get_hypervisor_present() if is_windows else None
+    ram = get_total_ram_gb()
+    disk = get_disk_free_gb()
+    running_emulators = get_running_emulators()
+    adb_devices = run_adb(["devices"])
+
+    arch_ok = (host_arch == "x64") if is_windows else True
+    os_ok = True
+    if is_windows:
+        os_ok = platform.release() in ("10", "11") or platform.version().startswith("10.")
+    elif is_mac:
+        os_ok = True
+    else:
+        os_ok = False
+
+    sdk_ok = emu_exists and avd_exists
+    if is_windows:
+        sdk_ok = sdk_ok and image_x86 and platform_tools
+    avd_arch_ok = not is_windows or str(avd_values.get("hw.cpu.arch", "")).lower() == "x86_64"
+    virt_ok = (virtualization is not False) if is_windows else True
+    hypervisor_ok = (hypervisor is not False) if is_windows else True
+    ram_ok = ram is None or ram >= 8
+    disk_ok = disk is None or disk >= 10
+
+    checks = [
+        {
+            "key": "arch",
+            "label": "Processador / arquitetura",
+            "status": "ok" if arch_ok else "fail",
+            "detail": f"{platform.machine()} ({host_arch})",
+            "action": "" if arch_ok else "Windows ARM64 não é compatível com o Android x86_64. Use um PC x64."
+        },
+        {
+            "key": "os",
+            "label": "Sistema operacional",
+            "status": "ok" if os_ok else "warn",
+            "detail": f"{platform.system()} {platform.release()} {platform.version()}".strip(),
+            "action": "" if os_ok else "Use Windows 10/11 64-bit."
+        },
+        {
+            "key": "virtualization",
+            "label": "Virtualização (VT-x/AMD-V)",
+            "status": ("ok" if virtualization is True else ("fail" if virtualization is False else "warn")) if is_windows else "ok",
+            "detail": "Habilitada" if virtualization is True else ("Desativada na BIOS" if virtualization is False else ("Não foi possível verificar" if is_windows else "Mac usa Hypervisor.framework")),
+            "action": "" if virt_ok else "Reinicie, entre na BIOS/UEFI e ative Intel VT-x ou AMD-V/SVM Mode."
+        },
+        {
+            "key": "hypervisor",
+            "label": "Hipervisor do Windows",
+            "status": ("ok" if hypervisor is True else ("warn" if hypervisor is False else "warn")) if is_windows else "ok",
+            "detail": "Ativo" if hypervisor is True else ("Não detectado" if hypervisor is False else ("Não foi possível verificar" if is_windows else "N/A no Mac")),
+            "action": "" if hypervisor_ok else "Ative 'Plataforma do Hipervisor do Windows' em Recursos do Windows e reinicie."
+        },
+        {
+            "key": "sdk",
+            "label": "Motor Android (SDK/AVD)",
+            "status": "ok" if sdk_ok else "fail",
+            "detail": f"emulador={'ok' if emu_exists else 'falta'}, imagem={'ok' if (image_x86 or (is_mac and image_arm64)) else 'falta'}, platform-tools={'ok' if (platform_tools or not is_windows) else 'falta'}, AVD={'ok' if avd_exists else 'falta'}",
+            "action": "" if sdk_ok else "Instale a 3.5.3+ e rode 'Configurar Motor Android'."
+        },
+        {
+            "key": "avd_arch",
+            "label": "Arquitetura da AVD",
+            "status": "ok" if avd_arch_ok else "fail",
+            "detail": str(avd_values.get("hw.cpu.arch") or "desconhecida"),
+            "action": "" if avd_arch_ok else "Instale a 3.5.3+; o daemon repara a AVD para x86_64."
+        },
+        {
+            "key": "ram",
+            "label": "Memória RAM",
+            "status": "ok" if ram_ok else ("warn" if ram and ram >= 4 else "fail"),
+            "detail": f"{ram} GB" if ram is not None else "não detectada",
+            "action": "" if ram_ok else "Recomendado 8 GB ou mais. Feche outros programas pesados."
+        },
+        {
+            "key": "disk",
+            "label": "Espaço em disco",
+            "status": "ok" if disk_ok else ("warn" if disk and disk >= 5 else "fail"),
+            "detail": f"{disk} GB livres" if disk is not None else "não detectado",
+            "action": "" if disk_ok else "Libere pelo menos 10 GB."
+        },
+        {
+            "key": "emulators",
+            "label": "Outros emuladores abertos",
+            "status": "ok" if not running_emulators else "warn",
+            "detail": ", ".join(running_emulators) if running_emulators else "nenhum",
+            "action": "" if not running_emulators else "Feche BlueStacks/LDPlayer/MEmu/Nox antes de abrir o GhostPhone."
+        }
+    ]
+
+    recommendation = "ready"
+    if not arch_ok:
+        recommendation = "windows_arm"
+    elif virtualization is False:
+        recommendation = "enable_virtualization"
+    elif hypervisor is False:
+        recommendation = "enable_hypervisor"
+    elif not sdk_ok or not avd_arch_ok:
+        recommendation = "run_setup"
+    elif not ram_ok or not disk_ok:
+        recommendation = "low_resources"
+    elif running_emulators:
+        recommendation = "close_emulators"
+
+    ready = recommendation == "ready"
+    return {
+        "code": 0,
+        "platform": platform.system(),
+        "host_arch": host_arch,
+        "machine": platform.machine(),
+        "os": f"{platform.system()} {platform.release()}",
+        "emulator_exists": emu_exists,
+        "avd_exists": avd_exists,
+        "avd_values": avd_values,
+        "image_x86_64_exists": image_x86,
+        "image_arm64_exists": image_arm64,
+        "platform_tools_exists": platform_tools,
+        "virtualization_enabled": virtualization,
+        "hypervisor_present": hypervisor,
+        "ram_gb": ram,
+        "disk_free_gb": disk,
+        "running_emulators": running_emulators,
+        "adb_devices": adb_devices,
+        "checks": checks,
+        "ready": ready,
+        "recommendation": recommendation,
+        "tutorial_url": "https://www.ghostlens.cloud/tutorial-android",
+        "download_url": "https://www.ghostlens.cloud/download"
+    }
+
+
 def check_virtualization_windows():
     """Retorna True/False/None para virtualização habilitada na BIOS (Windows)."""
     if not IS_WINDOWS:
@@ -1005,6 +1248,11 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
             })
             return
 
+        # VERIFICADOR DE COMPATIBILIDADE DO PC (uso local, sem licença)
+        elif parsed.path == '/api/compatibility':
+            self.send_json(build_compatibility_report())
+            return
+
         # GUARDA DE SEGURANÇA ANTIPIRATARIA (GHOSTPHONE HWID LOCK)
         elif (
             parsed.path.startswith('/api/phone/')
@@ -1268,6 +1516,22 @@ class GhostBridgeHandler(BaseHTTPRequestHandler):
                 self.wfile.write(data)
                 return
             self.send_json({"error": "Editor não encontrado nesta instalação"}, code=404)
+            return
+
+        # 8.2 VERIFICADOR DE COMPATIBILIDADE SERVIDO PELO DAEMON LOCAL
+        elif parsed.path in ('/compatibility', '/compatibilidade', '/compatibility/'):
+            compat_path = os.path.join(BASE_DIR, 'compatibility.html')
+            if os.path.isfile(compat_path):
+                with open(compat_path, 'rb') as f:
+                    data = f.read()
+                self.send_response(200)
+                self.send_header('Content-Type', 'text/html; charset=utf-8')
+                self.send_header('Content-Length', str(len(data)))
+                self.send_cors_headers()
+                self.end_headers()
+                self.wfile.write(data)
+                return
+            self.send_json({"error": "Verificador não encontrado nesta instalação"}, code=404)
             return
 
         # 9. STATIC FILES (piexif.min.js, CSS, PNG, etc.)

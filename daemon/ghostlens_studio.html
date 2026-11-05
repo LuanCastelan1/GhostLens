@@ -1656,6 +1656,11 @@
           <div class="nav-icon" style="color: #c4b5fd;">🎓</div>
           <span class="nav-text" style="color: #c4b5fd; font-weight: 700;">Tutorial de Ativação</span>
         </li>
+        <li class="nav-item" onclick="openCompatibilityPage()"
+          style="border: 1px solid rgba(190, 242, 100, 0.25); background: rgba(190, 242, 100, 0.05); margin: 6px 0;">
+          <div class="nav-icon" style="color: var(--accent-lime);">🩺</div>
+          <span class="nav-text" style="color: var(--accent-lime); font-weight: 700;">Compatibilidade do PC</span>
+        </li>
         <li class="nav-item" onclick="window.open('/download', '_blank')"
           style="border: 1px solid rgba(190, 242, 100, 0.25); background: rgba(190, 242, 100, 0.05); margin: 6px 0;">
           <div class="nav-icon" style="color: var(--accent-lime);">⬇️</div>
@@ -5133,6 +5138,13 @@
     function closeMyLicenseModal() {
       const modal = document.getElementById('myLicenseModal');
       if (modal) modal.style.display = 'none';
+    }
+
+    function openCompatibilityPage() {
+      const isLocal = ['127.0.0.1', 'localhost'].includes(window.location.hostname);
+      const url = isLocal ? '/compatibility' : 'http://127.0.0.1:4444/compatibility';
+      window.open(url, '_blank', 'noopener');
+      if (!isLocal) showToast('Abrindo o verificador do GhostLens instalado…', 4000);
     }
 
     async function openGhostPhonePlayerPage() {

@@ -133,10 +133,11 @@
       <h1>Como colocar o Android virtual do GhostPhone para rodar</h1>
       <p>
         Guia para instalar/atualizar o GhostLens, ativar a virtualização do PC e abrir o Android
-        que roda Instagram e TikTok. Versão atual: <strong>3.5.3</strong>.
+        que roda Instagram e TikTok. Versão atual: <strong>3.5.4</strong>.
       </p>
       <div class="hero-actions">
-        <a class="btn primary" href="https://www.ghostlens.cloud/download">⬇️ Baixar GhostLens 3.5.3</a>
+        <a class="btn primary" href="https://www.ghostlens.cloud/download">⬇️ Baixar GhostLens 3.5.4</a>
+        <a class="btn blue" href="http://127.0.0.1:4444/compatibility" target="_blank" rel="noopener">✅ Verificar meu PC</a>
         <a class="btn blue" href="http://127.0.0.1:4444/api/android_diag" target="_blank" rel="noopener">🩺 Abrir diagnóstico</a>
         <a class="btn" href="https://www.ghostlens.cloud/studio">🖥️ Abrir GhostLens Studio</a>
       </div>
@@ -148,7 +149,7 @@
           <h2>O que o Anthony precisa fazer agora</h2>
           <ol class="steps">
             <li><strong>Feche o GhostLens e o daemon.</strong> Se necessário, use o Gerenciador de Tarefas e finalize <code>GhostLens.exe</code>, <code>pythonw.exe</code> e <code>python.exe</code>.</li>
-            <li><strong>Instale a 3.5.3 por cima.</strong> Não precisa desinstalar. A licença e os perfis continuam salvos.</li>
+            <li><strong>Instale a 3.5.4 por cima.</strong> Não precisa desinstalar. A licença e os perfis continuam salvos.</li>
             <li><strong>Confira a virtualização.</strong> Gerenciador de Tarefas → Desempenho → CPU → <strong>Virtualização</strong>. Se estiver desabilitada, siga o passo 4.</li>
             <li><strong>Ative a virtualização na BIOS.</strong> Reinicie, entre na BIOS/UEFI e ative <code>Intel VT-x</code> ou <code>AMD-V/SVM Mode</code>. Salve e reinicie.</li>
             <li><strong>Ative a Plataforma do Hipervisor do Windows.</strong> Menu Iniciar → “Ativar ou desativar recursos do Windows” → marque <strong>Plataforma do Hipervisor do Windows</strong> → reinicie.</li>
@@ -171,6 +172,24 @@
             </div>
           </div>
           <p style="margin-top:12px">As teclas para entrar na BIOS/UEFI variam por fabricante: <kbd>Del</kbd>, <kbd>F2</kbd>, <kbd>F10</kbd> ou <kbd>Esc</kbd>. Salve com <kbd>F10</kbd>.</p>
+
+          <h3>AMD: procure por “SVM Mode”</h3>
+          <p>Na AMD, a opção pode aparecer como <strong>SVM Mode</strong>, <strong>Secure Virtual Machine</strong>, <strong>AMD-V</strong> ou <strong>AMD Virtualization</strong>. Ela não fica com o nome “Virtualization” na maioria das placas.</p>
+          <table>
+            <thead><tr><th>Fabricante</th><th>Caminho comum</th></tr></thead>
+            <tbody>
+              <tr><td><strong>ASUS</strong></td><td><kbd>F7</kbd> (Advanced Mode) → Advanced → CPU Configuration → <strong>SVM Mode</strong></td></tr>
+              <tr><td><strong>MSI</strong></td><td>Advanced → OC → Advanced CPU Configuration → <strong>SVM Mode</strong></td></tr>
+              <tr><td><strong>Gigabyte</strong></td><td>Tweaker → Advanced CPU Settings → <strong>SVM Mode</strong></td></tr>
+              <tr><td><strong>ASRock</strong></td><td>Advanced → CPU Configuration → <strong>SVM</strong></td></tr>
+              <tr><td><strong>Dell</strong></td><td><kbd>F2</kbd> → Virtualization Support → <strong>Virtualization</strong> (AMD-V/SVM)</td></tr>
+              <tr><td><strong>HP</strong></td><td><kbd>F10</kbd> → System Configuration → <strong>Virtualization Technology (AMD-V)</strong></td></tr>
+              <tr><td><strong>Lenovo</strong></td><td><kbd>F1</kbd> → Security → Virtualization → <strong>AMD-V</strong> / Configuration → SVM</td></tr>
+              <tr><td><strong>Acer</strong></td><td><kbd>F2</kbd> → Advanced → <strong>SVM Mode</strong></td></tr>
+            </tbody>
+          </table>
+          <p>Se a BIOS tiver busca, procure por <code>SVM</code>. Em algumas placas AMD ele fica em <strong>Advanced → AMD CBS → CPU Common Options → SVM</strong> ou em <strong>Overclocking → Advanced CPU Configuration</strong>.</p>
+          <div class="note">Se não encontrar SVM em nenhum lugar: atualize a BIOS ou mande o modelo da placa-mãe/PC para o suporte. Em PCs muito antigos ou CPUs AMD sem SVM, a virtualização não existe.</div>
           <div class="note">Sem virtualização, o Android x86_64 não roda em velocidade usável. Não existe instalação que ligue essa opção dentro do Windows: é uma configuração do firmware do PC.</div>
         </section>
 
@@ -209,7 +228,7 @@
             <thead><tr><th>Erro</th><th>Causa</th><th>Solução</th></tr></thead>
             <tbody>
               <tr><td><code>CPU Architecture 'arm' is not supported</code></td><td>Config antiga da AVD sem x86_64</td><td>Instalar 3.5.2+; o daemon repara.</td></tr>
-              <tr><td><code>platform-tools subdirectory is missing</code></td><td>SDK sem platform-tools</td><td>Instalar 3.5.3+; o daemon cria.</td></tr>
+              <tr><td><code>platform-tools subdirectory is missing</code></td><td>SDK sem platform-tools</td><td>Instalar 3.5.4+; o daemon cria.</td></tr>
               <tr><td><code>Virtualização desativada</code></td><td>VT-x/AMD-V desligado</td><td>Ativar na BIOS e no Hipervisor do Windows.</td></tr>
               <tr><td><code>Timeout aguardando Android</code></td><td>Boot lento ou virtualização desligada</td><td>Fechar outros emuladores, ativar virtualização, tentar de novo.</td></tr>
               <tr><td><code>host_arch: ARM64</code></td><td>Windows em processador ARM</td><td>Não compatível com x86_64; usar PC x64.</td></tr>
@@ -219,7 +238,7 @@
 
         <section class="card">
           <h2>Todos os PCs vão dar erro?</h2>
-          <p><strong>Não.</strong> Os erros de <code>arm</code> e <code>platform-tools</code> eram bugs de configuração nossos e foram corrigidos na 3.5.2/3.5.3.</p>
+          <p><strong>Não.</strong> Os erros de <code>arm</code> e <code>platform-tools</code> eram bugs de configuração nossos e foram corrigidos na 3.5.2/3.5.4.</p>
           <ul class="checklist">
             <li><span class="dot ok">✓</span><span>PC Windows x64 com virtualização ativada → deve funcionar.</span></li>
             <li><span class="dot warn">!</span><span>PC com virtualização desligada → precisa ativar na BIOS.</span></li>
@@ -234,7 +253,7 @@
         <section class="card">
           <h2>Resumo rápido</h2>
           <ol class="steps">
-            <li>Instalar 3.5.3 por cima.</li>
+            <li>Instalar 3.5.4 por cima.</li>
             <li>Ativar virtualização na BIOS.</li>
             <li>Ativar Hipervisor do Windows.</li>
             <li>Rodar Configurar Motor Android.</li>
@@ -264,7 +283,7 @@
     </div>
 
     <footer>
-      GhostLens • Tutorial do Android Virtual • Versão 3.5.3
+      GhostLens • Tutorial do Android Virtual • Versão 3.5.4
     </footer>
   </div>
 </body>

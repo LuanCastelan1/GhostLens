@@ -11,7 +11,7 @@ O GhostPhone usa uma imagem Android x86_64. Para ela rodar em velocidade usável
    - Feche a janela do app e a janela do daemon/servidor.
    - Se necessário, abra o Gerenciador de Tarefas e finalize `GhostLens.exe`, `pythonw.exe` e `python.exe`.
 
-2. **Instalar a versão 3.5.3 por cima**
+2. **Instalar a versão 3.5.4 por cima**
    - Baixe em: https://www.ghostlens.cloud/download
    - Não precisa desinstalar. A licença e os perfis continuam salvos.
 
@@ -47,8 +47,25 @@ O GhostPhone usa uma imagem Android x86_64. Para ela rodar em velocidade usável
 2. Entre na BIOS/UEFI (teclas comuns: **Del**, **F2**, **F10** ou **Esc**).
 3. Procure a opção de virtualização:
    - **Intel:** `Intel Virtualization Technology`, `VT-x` ou `Intel VMX`.
-   - **AMD:** `SVM Mode`, `Secure Virtual Machine` ou `AMD-V`.
+   - **AMD:** `SVM Mode`, `Secure Virtual Machine`, `AMD-V` ou `AMD Virtualization`.
 4. Ative a opção, salve (**F10**) e reinicie.
+
+### Onde fica em cada fabricante (AMD)
+
+| Fabricante | Caminho comum |
+|---|---|
+| ASUS | `F7` (Advanced Mode) → Advanced → CPU Configuration → **SVM Mode** |
+| MSI | Advanced → OC → Advanced CPU Configuration → **SVM Mode** |
+| Gigabyte | Tweaker → Advanced CPU Settings → **SVM Mode** |
+| ASRock | Advanced → CPU Configuration → **SVM** |
+| Dell | `F2` → Virtualization Support → **Virtualization** (AMD-V/SVM) |
+| HP | `F10` → System Configuration → **Virtualization Technology (AMD-V)** |
+| Lenovo | `F1` → Security → Virtualization → **AMD-V** / Configuration → SVM |
+| Acer | `F2` → Advanced → **SVM Mode** |
+
+Se a BIOS tiver busca, procure por `SVM`. Em algumas placas AMD ele fica em **Advanced → AMD CBS → CPU Common Options → SVM** ou em **Overclocking → Advanced CPU Configuration**.
+
+Se não encontrar SVM: atualize a BIOS ou envie o modelo da placa-mãe/PC para o suporte. PCs muito antigos ou CPUs AMD sem SVM não têm essa opção.
 
 > Sem isso, o Android x86_64 não roda em velocidade usável. Não existe instalação que ligue a virtualização dentro do Windows: é uma configuração do firmware do PC.
 
@@ -89,7 +106,7 @@ Abra `http://127.0.0.1:4444/api/android_diag` e confira:
 | Erro | Causa | Solução |
 |---|---|---|
 | `CPU Architecture 'arm' is not supported` | Config antiga da AVD sem x86_64 | Instalar 3.5.2 ou superior; o daemon repara a AVD. |
-| `platform-tools subdirectory is missing` / `Broken AVD system path` | SDK sem `platform-tools` | Instalar 3.5.3; o daemon cria automaticamente. |
+| `platform-tools subdirectory is missing` / `Broken AVD system path` | SDK sem `platform-tools` | Instalar 3.5.4; o daemon cria automaticamente. |
 | `Virtualização desativada` / `x86_64 emulation requires hardware acceleration` | VT-x/AMD-V desligado | Ativar na BIOS e a Plataforma do Hipervisor do Windows. |
 | `Timeout aguardando Android` | Boot lento, RAM baixa ou virtualização desligada | Fechar outros emuladores, ativar virtualização, tentar novamente. |
 | `host_arch: ARM64` | Windows em processador ARM | Não é compatível com a imagem x86_64; usar PC x64. |
@@ -99,7 +116,7 @@ Abra `http://127.0.0.1:4444/api/android_diag` e confira:
 
 ## Todos os PCs vão dar erro?
 
-**Não.** Os erros recentes de `arm` e `platform-tools` eram bugs nossos de configuração e foram corrigidos nas versões 3.5.2/3.5.3.
+**Não.** Os erros recentes de `arm` e `platform-tools` eram bugs nossos de configuração e foram corrigidos nas versões 3.5.2/3.5.4.
 
 Depois disso:
 

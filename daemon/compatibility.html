@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07080c">
+  <title>Verificador de Compatibilidade • GhostPhone</title>
+  <link rel="icon" href="data:,">
+  <style>
+    :root {
+      --bg: #07080c;
+      --panel: #10141e;
+      --border: rgba(255,255,255,.1);
+      --text: #f4f7fb;
+      --muted: #9aa6b8;
+      --lime: #bef264;
+      --blue: #38bdf8;
+      --amber: #fbbf24;
+      --red: #f87171;
+      --font: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(900px 520px at 8% -10%, rgba(190,242,100,.08), transparent 60%),
+        radial-gradient(800px 500px at 95% 0%, rgba(56,189,248,.07), transparent 55%),
+        var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 26px 18px 60px; }
+    header.hero {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 18px;
+      padding: 26px 26px 22px; border: 1px solid rgba(56,189,248,.22); border-radius: 20px;
+      background: linear-gradient(145deg, rgba(20,25,38,.97), rgba(10,13,20,.97));
+      box-shadow: 0 20px 60px rgba(0,0,0,.45); margin-bottom: 16px;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono);
+      font-size: 10px; font-weight: 800; letter-spacing: 1px; color: var(--blue);
+      background: rgba(56,189,248,.1); border: 1px solid rgba(56,189,248,.28);
+      border-radius: 6px; padding: 4px 8px;
+    }
+    h1 { margin: 10px 0 6px; font-size: clamp(1.45rem, 4vw, 2rem); line-height: 1.12; letter-spacing: -.5px; }
+    .hero p { margin: 0; color: var(--muted); font-size: .86rem; max-width: 560px; }
+    .hero-icon {
+      width: 54px; height: 54px; flex: 0 0 auto; border-radius: 16px; display: grid; place-items: center;
+      font-size: 1.5rem; background: rgba(56,189,248,.12); border: 1px solid rgba(56,189,248,.35);
+    }
+    .status {
+      display: flex; align-items: flex-start; gap: 12px; padding: 15px 16px; border-radius: 14px;
+      border: 1px solid var(--border); background: rgba(16,20,30,.9); margin-bottom: 14px;
+    }
+    .status .icon { width: 30px; height: 30px; flex: 0 0 auto; border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 14px; }
+    .status h2 { margin: 0 0 3px; font-size: .98rem; }
+    .status p { margin: 0; color: var(--muted); font-size: .8rem; line-height: 1.45; }
+    .status.ok { border-color: rgba(74,222,128,.35); background: rgba(74,222,128,.06); }
+    .status.ok .icon { background: #4ade80; color: #052e16; }
+    .status.warn { border-color: rgba(251,191,36,.35); background: rgba(251,191,36,.06); }
+    .status.warn .icon { background: var(--amber); color: #451a03; }
+    .status.fail { border-color: rgba(248,113,113,.38); background: rgba(248,113,113,.07); }
+    .status.fail .icon { background: var(--red); color: #450a0a; }
+    .card { background: rgba(16,20,30,.85); border: 1px solid var(--border); border-radius: 16px; padding: 18px; margin-bottom: 14px; }
+    .card h2 { margin: 0 0 10px; font-size: .98rem; }
+    .checks { display: flex; flex-direction: column; gap: 8px; }
+    .check {
+      display: flex; gap: 10px; align-items: flex-start; padding: 10px 11px; border-radius: 10px;
+      border: 1px solid var(--border); background: rgba(255,255,255,.02);
+    }
+    .dot { width: 21px; height: 21px; flex: 0 0 auto; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 900; }
+    .dot.ok { background: #4ade80; color: #052e16; }
+    .dot.warn { background: var(--amber); color: #451a03; }
+    .dot.fail { background: var(--red); color: #450a0a; }
+    .dot.unknown { background: #64748b; color: #fff; }
+    .check-copy { min-width: 0; }
+    .check-copy strong { display: block; color: #fff; font-size: .82rem; }
+    .check-copy span { display: block; color: var(--muted); font-size: .74rem; margin-top: 2px; }
+    .check-copy .action { color: #fde68a; font-size: .74rem; margin-top: 4px; }
+    .next { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+    @media (max-width: 620px) { .next { grid-template-columns: 1fr; } .hero { padding: 20px; } .hero-icon { display: none; } }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 7px; text-align: center;
+      padding: 10px 13px; border-radius: 9px; border: 1px solid var(--border);
+      background: rgba(255,255,255,.04); color: var(--text); font-size: .78rem; font-weight: 800;
+      text-decoration: none; cursor: pointer; font-family: inherit;
+    }
+    .btn:hover { border-color: rgba(255,255,255,.25); text-decoration: none; }
+    .btn.primary { background: var(--lime); border-color: var(--lime); color: #080a0f; }
+    .btn.blue { background: rgba(56,189,248,.12); border-color: rgba(56,189,248,.4); color: #7dd3fc; }
+    .btn.ghost { background: transparent; }
+    .raw {
+      margin-top: 12px; padding: 10px 12px; border-radius: 9px; border: 1px solid var(--border);
+      background: rgba(0,0,0,.24); color: var(--muted); font-size: .7rem; line-height: 1.45;
+    }
+    code { font-family: var(--mono); font-size: .92em; color: #bae6fd; background: rgba(0,0,0,.3); border: 1px solid var(--border); border-radius: 5px; padding: 1px 5px; }
+    .loading { text-align: center; padding: 40px 10px; color: var(--muted); font-size: .85rem; }
+    footer { margin-top: 20px; text-align: center; color: #64748b; font-size: .72rem; }
+    .support { border: 1px solid rgba(37,211,102,.25); background: rgba(37,211,102,.06); border-radius: 12px; padding: 12px 14px; margin-top: 10px; color: #bbf7d0; font-size: .78rem; }
+    .support a { color: #25d366; font-weight: 800; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <div>
+        <span class="badge">GHOSTPHONE • VERIFICADOR</span>
+        <h1>Seu PC está pronto para o Android virtual?</h1>
+        <p>Esta verificação é local, não instala nada e não altera o seu PC. Ela mostra o que está ok e o que precisa ser feito antes de abrir o GhostPhone.</p>
+      </div>
+      <div class="hero-icon">🩺</div>
+    </header>
+
+    <div id="statusBox" class="status warn">
+      <div class="icon">…</div>
+      <div><h2>Verificando o PC…</h2><p>Isso pode levar alguns segundos.</p></div>
+    </div>
+
+    <div class="card" id="checksCard">
+      <h2>Checklist</h2>
+      <div id="checks" class="checks"><div class="loading">Lendo processador, virtualização, SDK e AVD…</div></div>
+    </div>
+
+    <div class="card">
+      <h2>Próximos passos</h2>
+      <div class="next" id="nextActions"></div>
+      <div class="raw" id="rawDiag"></div>
+    </div>
+
+    <div class="card">
+      <h2>Tutorial completo</h2>
+      <p style="color:var(--muted);font-size:.8rem;margin:0 0 12px">Passo a passo com BIOS, Hipervisor do Windows, configuração do motor Android e solução de erros.</p>
+      <div class="next">
+        <a class="btn primary" href="https://www.ghostlens.cloud/tutorial-android" target="_blank" rel="noopener">📘 Abrir tutorial</a>
+        <a class="btn blue" href="https://www.ghostlens.cloud/download" target="_blank" rel="noopener">⬇️ Baixar GhostLens 3.5.4</a>
+        <button class="btn" onclick="checkCompatibility()">🔄 Verificar novamente</button>
+        <a class="btn ghost" href="/">🖥️ Abrir GhostLens</a>
+      </div>
+      <div class="support">Ficou travado? <a href="https://wa.me/5517997082645" target="_blank" rel="noopener">Fale com o suporte no WhatsApp →</a></div>
+    </div>
+
+    <footer>GhostPhone • Verificador de Compatibilidade</footer>
+  </div>
+
+  <script>
+    const RECOMMENDATIONS = {
+      ready: {
+        status: 'ok', icon: '✓', title: 'PC compatível',
+        text: 'Tudo pronto. Abra o GhostPhone e aguarde o primeiro boot (até 120 segundos).'
+      },
+      enable_virtualization: {
+        status: 'warn', icon: '!', title: 'Falta ativar a virtualização',
+        text: 'Entre na BIOS/UEFI e ative Intel VT-x ou AMD-V/SVM Mode. Depois ative a Plataforma do Hipervisor do Windows e reinicie.'
+      },
+      enable_hypervisor: {
+        status: 'warn', icon: '!', title: 'Falta o Hipervisor do Windows',
+        text: 'Ative “Plataforma do Hipervisor do Windows” em Recursos do Windows e reinicie o PC.'
+      },
+      run_setup: {
+        status: 'warn', icon: '!', title: 'Motor Android incompleto',
+        text: 'Instale a versão 3.5.4 ou superior e rode “Configurar Motor Android” no Menu Iniciar. Deixe a janela terminar.'
+      },
+      windows_arm: {
+        status: 'fail', icon: '×', title: 'Windows ARM64 não é compatível',
+        text: 'Este PC usa processador ARM. O Android virtual do GhostPhone usa imagem x86_64 e precisa de um PC Windows x64 (Intel/AMD).'
+      },
+      low_resources: {
+        status: 'warn', icon: '!', title: 'Recursos abaixo do recomendado',
+        text: 'Feche programas pesados e libere disco. O recomendado é 8 GB de RAM e 10 GB livres.'
+      },
+      close_emulators: {
+        status: 'warn', icon: '!', title: 'Feche outros emuladores',
+        text: 'BlueStacks, LDPlayer, MEmu ou Nox podem conflitar com o Android do GhostPhone. Feche todos e tente novamente.'
+      },
+      unknown: {
+        status: 'warn', icon: '?', title: 'Não foi possível verificar tudo',
+        text: 'Abra o GhostLens instalado e tente novamente. Se continuar, envie o diagnóstico para o suporte.'
+      }
+    };
+
+    function statusClass(value) {
+      if (value === 'ok') return 'ok';
+      if (value === 'fail') return 'fail';
+      if (value === 'warn') return 'warn';
+      return 'unknown';
+    }
+
+    function iconFor(value) {
+      if (value === 'ok') return '✓';
+      if (value === 'fail') return '×';
+      if (value === 'warn') return '!';
+      return '?';
+    }
+
+    async function checkCompatibility() {
+      const statusBox = document.getElementById('statusBox');
+      const checks = document.getElementById('checks');
+      statusBox.className = 'status warn';
+      statusBox.innerHTML = '<div class="icon">…</div><div><h2>Verificando o PC…</h2><p>Isso pode levar alguns segundos.</p></div>';
+      checks.innerHTML = '<div class="loading">Lendo processador, virtualização, SDK e AVD…</div>';
+      try {
+        const res = await fetch('/api/compatibility', { cache: 'no-store' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        render(data);
+      } catch (err) {
+        statusBox.className = 'status fail';
+        statusBox.innerHTML = '<div class="icon">×</div><div><h2>Não consegui falar com o motor local</h2><p>Abra o GhostLens instalado em <code>127.0.0.1:4444</code> e acesse <code>/compatibility</code> novamente. Se você está no site, o navegador bloqueia o acesso ao daemon local.</p></div>';
+        checks.innerHTML = '';
+      }
+    }
+
+    function render(data) {
+      const rec = RECOMMENDATIONS[data.recommendation] || RECOMMENDATIONS.unknown;
+      const statusBox = document.getElementById('statusBox');
+      statusBox.className = 'status ' + rec.status;
+      statusBox.innerHTML = `<div class="icon">${rec.icon}</div><div><h2>${rec.title}</h2><p>${rec.text}</p></div>`;
+
+      const checks = (data.checks || []).map((check) => {
+        const cls = statusClass(check.status);
+        return `<div class="check">
+          <div class="dot ${cls}">${iconFor(check.status)}</div>
+          <div class="check-copy">
+            <strong>${check.label}</strong>
+            <span>${check.detail || ''}</span>
+            ${check.action ? `<div class="action">→ ${check.action}</div>` : ''}
+          </div>
+        </div>`;
+      }).join('');
+      document.getElementById('checks').innerHTML = checks || '<div class="loading">Sem dados.</div>';
+
+      const actions = document.getElementById('nextActions');
+      const tutorial = data.tutorial_url || 'https://www.ghostlens.cloud/tutorial-android';
+      if (data.ready) {
+        actions.innerHTML = `
+          <a class="btn primary" href="/">🖥️ Abrir GhostLens</a>
+          <a class="btn blue" href="${tutorial}" target="_blank" rel="noopener">📘 Tutorial</a>`;
+      } else {
+        actions.innerHTML = `
+          <a class="btn primary" href="${tutorial}" target="_blank" rel="noopener">📘 Abrir tutorial</a>
+          <a class="btn blue" href="${data.download_url || 'https://www.ghostlens.cloud/download'}" target="_blank" rel="noopener">⬇️ Baixar 3.5.4</a>
+          <button class="btn" onclick="checkCompatibility()">🔄 Verificar novamente</button>
+          <a class="btn ghost" href="https://wa.me/5517997082645" target="_blank" rel="noopener">💬 WhatsApp</a>`;
+      }
+
+      document.getElementById('rawDiag').innerHTML =
+        `Diagnóstico técnico: <a href="/api/compatibility" target="_blank" rel="noopener">/api/compatibility</a> • ` +
+        `host: <code>${data.machine || '?'}</code> • arch: <code>${data.host_arch || '?'}</code> • ` +
+        `virtualização: <code>${String(data.virtualization_enabled)}</code> • ` +
+        `platform-tools: <code>${String(data.platform_tools_exists)}</code>`;
+    }
+
+    checkCompatibility();
+  </script>
+</body>
+</html>
