@@ -105,3 +105,4 @@ if __name__ == '__main__':
     print(f"🚀 GhostTunnel Core escutando na porta {TUNNEL_PORT}...")
     with socketserver.TCPServer(("", TUNNEL_PORT), GhostTunnelHandler) as httpd:
         httpd.serve_forever()
+
