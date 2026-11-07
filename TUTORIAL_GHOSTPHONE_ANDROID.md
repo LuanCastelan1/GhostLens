@@ -11,7 +11,7 @@ O GhostPhone usa uma imagem Android x86_64. Para ela rodar em velocidade usável
    - Feche a janela do app e a janela do daemon/servidor.
    - Se necessário, abra o Gerenciador de Tarefas e finalize `GhostLens.exe`, `pythonw.exe` e `python.exe`.
 
-2. **Instalar a versão 3.5.4 por cima**
+2. **Instalar a versão 3.5.5 por cima**
    - Baixe em: https://www.ghostlens.cloud/download
    - Não precisa desinstalar. A licença e os perfis continuam salvos.
 
@@ -106,7 +106,7 @@ Abra `http://127.0.0.1:4444/api/android_diag` e confira:
 | Erro | Causa | Solução |
 |---|---|---|
 | `CPU Architecture 'arm' is not supported` | Config antiga da AVD sem x86_64 | Instalar 3.5.2 ou superior; o daemon repara a AVD. |
-| `platform-tools subdirectory is missing` / `Broken AVD system path` | SDK sem `platform-tools` | Instalar 3.5.4; o daemon cria automaticamente. |
+| `platform-tools subdirectory is missing` / `Broken AVD system path` | SDK sem `platform-tools` | Instalar 3.5.5; o daemon cria automaticamente. |
 | `Virtualização desativada` / `x86_64 emulation requires hardware acceleration` | VT-x/AMD-V desligado | Ativar na BIOS e a Plataforma do Hipervisor do Windows. |
 | `Timeout aguardando Android` | Boot lento, RAM baixa ou virtualização desligada | Fechar outros emuladores, ativar virtualização, tentar novamente. |
 | `host_arch: ARM64` | Windows em processador ARM | Não é compatível com a imagem x86_64; usar PC x64. |

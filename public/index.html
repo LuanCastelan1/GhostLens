@@ -1714,7 +1714,7 @@
         <!-- Status Infraestrutura -->
         <div style="background: #13141b; border: 1px solid rgba(255,255,255,0.06); padding: 6px 12px; border-radius: 7px; font-size: 0.72rem; color: #94a3b8; display: flex; align-items: center; gap: 6px; font-family: monospace;">
           <span style="width: 6px; height: 6px; border-radius: 50%; background: #4ade80;"></span>
-          <span>Hetzner ARM64 • Online</span>
+          <span>Servidor ARM64 • Online</span>
         </div>
 
         <!-- Botão Primário + Nova Persona -->
@@ -1743,7 +1743,7 @@
               <span>Saldo: <strong id="userWalletBalance">R$ 0,00</strong></span>
             </div>
 
-            <button type="button" onclick="openStudioPixModal(10)"
+            <button type="button" id="btnRechargeHeader" onclick="openStudioPixModal(10)"
               style="background: #20222b; border: 1px solid rgba(255,255,255,0.1); color: #fff; font-weight: 700; font-size: 0.74rem; padding: 6px 12px; border-radius: 7px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: 0.15s;">
               + Recarregar
             </button>
@@ -3917,6 +3917,7 @@
 
     function renderGridForSection(section) {
       currentSection = section;
+      updateHeaderWalletVisibility(section);
       const grid = document.getElementById('mediaGrid');
       if (!grid) return;
 
@@ -5983,6 +5984,15 @@
       }
     }
 
+    // Saldo e recarga só aparecem no Dashboard, Imagens e Vídeos.
+    function updateHeaderWalletVisibility(section = currentSection) {
+      const show = ['inicio', 'imagem', 'video'].includes(section);
+      const wallet = document.getElementById('walletDisplay');
+      const recharge = document.getElementById('btnRechargeHeader');
+      if (wallet) wallet.style.display = show ? 'flex' : 'none';
+      if (recharge) recharge.style.display = show ? 'flex' : 'none';
+    }
+
     function updateAuthUI() {
       const btnLogin = document.getElementById('btnLoginHeader');
       const loggedGroup = document.getElementById('loggedInHeaderGroup');
@@ -6010,6 +6020,8 @@
         const balEl = document.getElementById('userWalletBalance');
         if (balEl) balEl.innerText = 'R$ 0,00';
       }
+
+      updateHeaderWalletVisibility();
     }
 
     async function initGhostAuth() {
@@ -7558,10 +7570,10 @@
               </div>
             </div>
 
-            <!-- CARD 4: SERVIDOR HETZNER -->
+            <!-- CARD 4: SERVIDOR CLOUD -->
             <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; min-height: 125px;">
               <div style="display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 0.76rem; font-weight: 600;">
-                <span style="display: flex; align-items: center; gap: 6px;">🖥️ Hetzner ARM64</span>
+                <span style="display: flex; align-items: center; gap: 6px;">🖥️ Servidor ARM64</span>
                 <span style="cursor: pointer; opacity: 0.6;">•••</span>
               </div>
               <div style="display: flex; justify-content: space-between; align-items: flex-end; margin: 8px 0;">
@@ -7882,7 +7894,7 @@
                   <p style="font-size: 0.76rem; color: var(--text-muted); margin: 0;">Defina o nicho e os hábitos autônomos que o agente executará no smartphone da Musa.</p>
                 </div>
                 <span style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; font-size: 0.72rem; font-weight: 800; padding: 4px 12px; border-radius: 8px;">
-                  Hetzner ARM64 Engine Active
+                  Cloud ARM64 Engine Active
                 </span>
               </div>
 
@@ -9581,9 +9593,17 @@
         return null;
       }
 
+      // Banner promocional (SFR 2026) desativado por enquanto.
+      const GHOST_PROMO_BANNER_ENABLED = false;
+
       function initPromoBanner() {
         const bannerWrap = document.getElementById('ghostPromoBannerWrap');
         if (!bannerWrap) return;
+
+        if (!GHOST_PROMO_BANNER_ENABLED) {
+          bannerWrap.style.display = 'none';
+          return;
+        }
 
         const isHidden = sessionStorage.getItem('ghostlens_banner_dismissed') === 'true';
         const customConfig = getCustomBannerConfig();

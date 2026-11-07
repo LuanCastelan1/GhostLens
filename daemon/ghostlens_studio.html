@@ -31,19 +31,20 @@
 
   <style>
     :root {
-      --bg-main: #0a0b0f;
-      --bg-sidebar: #101218;
-      --bg-card: #151821;
-      --bg-dock: rgba(18, 21, 30, 0.90);
-      --bg-drawer: #12151e;
-      --border-subtle: rgba(255, 255, 255, 0.08);
-      --border-hover: rgba(255, 255, 255, 0.18);
+      --bg-main: #090a0e;
+      --bg-sidebar: #0e0f14;
+      --bg-card: #13141b;
+      --bg-card-hover: #171822;
+      --bg-dock: rgba(16, 17, 24, 0.95);
+      --bg-drawer: #101117;
+      --border-subtle: rgba(255, 255, 255, 0.06);
+      --border-hover: rgba(255, 255, 255, 0.12);
       --accent-lime: #bef264;
       --accent-lime-hover: #d9f99d;
-      --accent-lime-glow: rgba(190, 242, 100, 0.28);
+      --accent-lime-glow: rgba(190, 242, 100, 0.15);
       --text-primary: #ffffff;
       --text-secondary: #94a3b8;
-      --text-muted: #64748b;
+      --text-muted: #525866;
     }
 
     * {
@@ -56,56 +57,56 @@
     body {
       background-color: var(--bg-main);
       color: var(--text-primary);
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       height: 100vh;
       overflow: hidden;
       display: flex;
-      font-size: 14px;
+      font-size: 13px;
     }
 
-    /* ─── SIDEBAR ESQUERDA (ESTILO HIGGSFIELD) ─── */
+    /* ─── SIDEBAR ESQUERDA (MINIMAL OBSIDIAN) ─── */
     aside.sidebar {
-      width: 240px;
-      min-width: 240px;
+      width: 230px;
+      min-width: 230px;
       background: var(--bg-sidebar);
       border-right: 1px solid var(--border-subtle);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 20px 14px;
+      padding: 16px 12px;
       transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), min-width 0.25s;
       z-index: 100;
     }
 
     aside.sidebar.collapsed {
-      width: 72px;
-      min-width: 72px;
-      padding: 20px 10px;
+      width: 68px;
+      min-width: 68px;
+      padding: 16px 8px;
     }
 
     .brand-header {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 6px 10px 24px 10px;
+      justify-content: space-between;
+      padding: 4px 6px 14px 6px;
     }
 
     .brand-logo-badge {
-      font-weight: 800;
-      font-size: 1.15rem;
-      letter-spacing: -0.5px;
-      color: var(--accent-lime);
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: -0.3px;
+      color: #ffffff;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
     }
 
     .brand-logo-badge span.version {
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       font-family: 'JetBrains Mono', monospace;
       color: var(--text-muted);
-      background: rgba(255, 255, 255, 0.06);
-      padding: 2px 6px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 2px 5px;
       border-radius: 4px;
       font-weight: 600;
     }
@@ -113,52 +114,59 @@
     .nav-list {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 2px;
       list-style: none;
+    }
+
+    .nav-group-title {
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 1.1px;
+      text-transform: uppercase;
+      color: #525866;
+      padding: 14px 8px 4px 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      user-select: none;
     }
 
     .nav-item {
       display: flex;
       align-items: center;
-      gap: 12px;
-      padding: 10px 14px;
-      border-radius: 10px;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 7px;
       color: var(--text-secondary);
-      font-weight: 600;
-      font-size: 0.88rem;
+      font-weight: 500;
+      font-size: 0.82rem;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: all 0.12s ease;
       position: relative;
     }
 
     .nav-item:hover {
       background: rgba(255, 255, 255, 0.04);
-      color: var(--text-primary);
+      color: #ffffff;
     }
 
     .nav-item.active {
-      background: rgba(190, 242, 100, 0.08);
-      color: var(--accent-lime);
+      background: #1a1c24;
+      color: #ffffff;
+      font-weight: 600;
     }
 
     .nav-item.active::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 20%;
-      height: 60%;
-      width: 3.5px;
-      background: var(--accent-lime);
-      border-radius: 0 4px 4px 0;
-      box-shadow: 0 0 10px var(--accent-lime-glow);
+      display: none;
     }
 
     .nav-icon {
-      font-size: 1.1rem;
-      width: 22px;
+      font-size: 0.95rem;
+      width: 18px;
       display: flex;
       justify-content: center;
       align-items: center;
+      opacity: 0.85;
     }
 
     .sidebar.collapsed .nav-text,
@@ -1601,138 +1609,164 @@
   <aside class="sidebar" id="sidebar">
     <div>
       <div class="brand-header">
-        <div class="brand-logo-badge">
-          <span style="font-size: 1.3rem;">⚡</span>
-          <span class="name">GHOSTLENS</span>
-          <span class="version">V1.0</span>
+        <div style="display: flex; align-items: center; gap: 9px;">
+          <div style="width: 28px; height: 28px; border-radius: 7px; background: #161720; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color: #bef264;">
+            ⚡
+          </div>
+          <div style="display: flex; flex-direction: column;">
+            <span style="font-weight: 700; font-size: 0.92rem; color: #fff; letter-spacing: -0.3px;">GhostLens</span>
+            <span style="font-size: 0.62rem; color: #525866;">Cloud Mobile Suite</span>
+          </div>
         </div>
+        <span style="font-size: 0.62rem; color: #bef264; background: rgba(190,242,100,0.08); border: 1px solid rgba(190,242,100,0.2); padding: 2px 6px; border-radius: 4px; font-weight: 700;">PRO</span>
+      </div>
+
+      <!-- Quick Search Bar (Estilo Template) -->
+      <div onclick="document.getElementById('searchInputDock')?.focus()" style="margin: 0 2px 14px 2px; background: #13141b; border: 1px solid rgba(255,255,255,0.06); border-radius: 7px; padding: 6px 10px; display: flex; align-items: center; justify-content: space-between; font-size: 0.76rem; color: #64748b; cursor: pointer; transition: border-color 0.15s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.15)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.06)'">
+        <span style="display: flex; align-items: center; gap: 6px;"><span style="font-size: 0.75rem;">🔍</span> Buscar...</span>
+        <kbd style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); padding: 1px 5px; border-radius: 4px; font-size: 0.62rem; color: #94a3b8; font-family: monospace;">⌘K</kbd>
       </div>
 
       <ul class="nav-list">
-        <li class="nav-item" onclick="switchSection('inicio', this)">
-          <div class="nav-icon">🏠</div>
-          <span class="nav-text">Início</span>
+        <!-- ⊞ DASHBOARD GERAL -->
+        <li class="nav-item active" onclick="switchSection('inicio', this)">
+          <div class="nav-icon">⊞</div>
+          <span class="nav-text">Dashboard</span>
         </li>
-        <li class="nav-item active" onclick="switchSection('imagem', this)">
+        <li class="nav-item" onclick="switchSection('musas', this)">
+          <div class="nav-icon">📱</div>
+          <span class="nav-text">Minhas Personas</span>
+          <span style="margin-left: auto; font-size: 0.7rem; color: #94a3b8; font-weight: 600;" id="navCountPersonas">3</span>
+        </li>
+        <li class="nav-item" onclick="window.open('/tunnel.html', 'GhostTunnel', 'width=460,height=720,top=80,left=150,toolbar=no,menubar=no,location=no,status=no')">
+          <div class="nav-icon">📡</div>
+          <span class="nav-text">GhostTunnel 4G</span>
+          <span style="margin-left: auto; width: 6px; height: 6px; border-radius: 50%; background: #4ade80;" title="Gateway Móvel Online"></span>
+        </li>
+        <li class="nav-item" onclick="openGhostStoreModal()">
+          <div class="nav-icon">🛍️</div>
+          <span class="nav-text">Store de Apps</span>
+        </li>
+
+        <!-- ✨ ESTÚDIO CRIATIVO & IA -->
+        <div class="nav-group-title">CRIAÇÃO & ESTÚDIO</div>
+        <li class="nav-item" onclick="switchSection('imagem', this)">
           <div class="nav-icon">🖼️</div>
-          <span class="nav-text">Imagens & Camuflagem</span>
+          <span class="nav-text">Imagens & Rostos</span>
         </li>
         <li class="nav-item" onclick="switchSection('video', this)">
           <div class="nav-icon">📹</div>
           <span class="nav-text">Vídeos & 60 FPS</span>
         </li>
-        <li class="nav-item" onclick="switchSection('editor', this)"
-          style="border: 1px solid rgba(56, 189, 248, 0.35); background: rgba(56, 189, 248, 0.08); margin: 6px 0; box-shadow: 0 0 14px rgba(56,189,248,0.12);">
-          <div class="nav-icon" style="color: #38bdf8; font-size: 1.15rem;">🎬</div>
-          <span class="nav-text" style="color: #38bdf8; font-weight: 800; letter-spacing: -0.3px;">Editor de Vídeo</span>
+        <li class="nav-item" onclick="switchSection('editor', this)">
+          <div class="nav-icon">🎬</div>
+          <span class="nav-text">Editor Multi-Trilha</span>
         </li>
-        <li class="nav-item" onclick="switchSection('musas', this)"
-          style="border: 1px solid rgba(56, 189, 248, 0.35); background: rgba(56, 189, 248, 0.08); margin: 6px 0; box-shadow: 0 0 14px rgba(56,189,248,0.12);">
-          <div class="nav-icon" style="color: #38bdf8; font-size: 1.15rem;">📱</div>
-          <span class="nav-text" style="color: #38bdf8; font-weight: 800; letter-spacing: -0.3px;">GhostPhone™ • Personas</span>
+
+        <!-- 🤖 GHOSTAGENT™ AUTOPILOT -->
+        <div class="nav-group-title">AUTOMAÇÃO IA</div>
+        <li class="nav-item" onclick="switchSection('ghostagent', this)">
+          <div class="nav-icon">🦾</div>
+          <span class="nav-text">GhostAgent™ Pilot</span>
+          <span style="margin-left: auto; background: rgba(190, 242, 100, 0.1); color: #bef264; font-size: 0.58rem; font-weight: 700; padding: 1px 5px; border-radius: 4px;">NOVO</span>
         </li>
-        <li class="nav-item" onclick="openGhostStoreModal()"
-          style="border: 1px solid rgba(56, 189, 248, 0.3); background: rgba(56, 189, 248, 0.07); margin: 6px 0;">
-          <div class="nav-icon" style="color: #38bdf8;">🛍️</div>
-          <span class="nav-text" style="color: #38bdf8; font-weight: 700;">Store de Apps</span>
+
+        <!-- 💼 GESTÃO & ASSINATURA -->
+        <div class="nav-group-title">GESTÃO & CONTA</div>
+        <li class="nav-item" onclick="openGhostPlansModal()">
+          <div class="nav-icon">👑</div>
+          <span class="nav-text">Planos & Assinatura</span>
         </li>
-        <li class="nav-item" onclick="openGhostPhonePlayerPage()"
-          style="border: 1px solid rgba(190, 242, 100, 0.25); background: rgba(190, 242, 100, 0.05); margin: 6px 0;">
-          <div class="nav-icon" style="color: var(--accent-lime);">📱</div>
-          <span class="nav-text" style="color: var(--accent-lime); font-weight: 700;">Player do GhostPhone</span>
+        <li class="nav-item" onclick="openMyLicenseModal()">
+          <div class="nav-icon">🔑</div>
+          <span class="nav-text">Minha Licença</span>
         </li>
+      </ul>
         <li class="nav-item" onclick="openGhostPlansModal()"
-          style="border: 1px solid rgba(253, 224, 71, 0.25); background: rgba(253, 224, 71, 0.05); margin: 6px 0;">
+          style="border: 1px solid rgba(253, 224, 71, 0.25); background: rgba(253, 224, 71, 0.05); margin: 3px 0;">
           <div class="nav-icon" style="color: #fde047;">👑</div>
-          <span class="nav-text" style="color: #fde047; font-weight: 700;">Planos & Assinaturas</span>
+          <span class="nav-text" style="color: #fde047; font-weight: 800;">Planos & Assinaturas</span>
         </li>
-        <li class="nav-item" onclick="openMyLicenseModal()"
-          style="border: 1px solid rgba(190, 242, 100, 0.25); background: rgba(190, 242, 100, 0.05); margin: 6px 0;">
+        <li class="nav-item" onclick="openMyLicenseModal()">
           <div class="nav-icon" style="color: var(--accent-lime);">🔑</div>
-          <span class="nav-text" style="color: var(--accent-lime); font-weight: 700;">Minha Licença</span>
-        </li>
-        <li class="nav-item" onclick="startActivationTutorial(true)"
-          style="border: 1px solid rgba(167, 139, 250, 0.3); background: rgba(167, 139, 250, 0.06); margin: 6px 0;">
-          <div class="nav-icon" style="color: #c4b5fd;">🎓</div>
-          <span class="nav-text" style="color: #c4b5fd; font-weight: 700;">Tutorial de Ativação</span>
-        </li>
-        <li class="nav-item" onclick="openCompatibilityPage()"
-          style="border: 1px solid rgba(190, 242, 100, 0.25); background: rgba(190, 242, 100, 0.05); margin: 6px 0;">
-          <div class="nav-icon" style="color: var(--accent-lime);">🩺</div>
-          <span class="nav-text" style="color: var(--accent-lime); font-weight: 700;">Compatibilidade do PC</span>
-        </li>
-        <li class="nav-item" onclick="window.open('/download', '_blank')"
-          style="border: 1px solid rgba(190, 242, 100, 0.25); background: rgba(190, 242, 100, 0.05); margin: 6px 0;">
-          <div class="nav-icon" style="color: var(--accent-lime);">⬇️</div>
-          <span class="nav-text" style="color: var(--accent-lime); font-weight: 700;">Baixar App Desktop</span>
+          <span class="nav-text">Minha Licença</span>
         </li>
       </ul>
     </div>
   </aside>
 
-  <!-- ─── ÁFX DE TRABALHO PRINCIPAL ─── -->
+  <!-- ─── ÁREA DE TRABALHO PRINCIPAL (MINIMAL OBSIDIAN) ─── -->
   <main class="workspace" id="mainWorkspace">
-    <div class="workspace-header">
+    <div class="workspace-header" style="padding: 16px 24px; border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; background: var(--bg-main);">
       <div>
-        <h2 class="workspace-title" id="sectionTitle">Vídeos</h2>
-        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;" id="sectionSubtitle">
-          Cofre ativo com camuflagem Apple iPhone 16 Pro e fluxo óptico 60 FPS
+        <div style="font-size: 0.7rem; color: #525866; margin-bottom: 4px; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+          <span>Home</span> <span>/</span> <span style="color: #94a3b8;" id="sectionBreadcrumb">Dashboard</span>
+        </div>
+        <h2 class="workspace-title" id="sectionTitle" style="font-size: 1.35rem; font-weight: 700; color: #fff; letter-spacing: -0.3px; margin: 0;">
+          Visão Geral
+        </h2>
+        <div style="font-size: 0.76rem; color: #64748b; margin-top: 2px;" id="sectionSubtitle">
+          Monitore seus celulares em nuvem, tráfego 4G residencial e postagens automáticas.
         </div>
       </div>
 
-      <div class="workspace-header-actions">
-        <button type="button" class="btn-header-pill" onclick="openDrawer()">
-          <span>🛡️</span>
-          <span>Ajustes de Metadados Apple</span>
+      <div class="workspace-header-actions" style="display: flex; align-items: center; gap: 10px;">
+        <!-- Status Infraestrutura -->
+        <div style="background: #13141b; border: 1px solid rgba(255,255,255,0.06); padding: 6px 12px; border-radius: 7px; font-size: 0.72rem; color: #94a3b8; display: flex; align-items: center; gap: 6px; font-family: monospace;">
+          <span style="width: 6px; height: 6px; border-radius: 50%; background: #4ade80;"></span>
+          <span>Servidor ARM64 • Online</span>
+        </div>
+
+        <!-- Botão Primário + Nova Persona -->
+        <button type="button" onclick="openGhostProfileModal()" style="background: var(--accent-lime); color: #000; font-weight: 800; font-size: 0.76rem; border: none; padding: 7px 14px; border-radius: 7px; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: opacity 0.15s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+          <span>+</span> Nova Persona
         </button>
 
-        <!-- Área Dinâmica de Autenticação e Carteira -->
+        <!-- Área de Autenticação / Saldo -->
         <div id="authHeaderArea" style="display: flex; align-items: center; gap: 8px;">
           <!-- Estado Deslogado -->
-          <button type="button" id="btnLoginHeader" onclick="openGhostAuthModal()" class="btn-header-pill"
-            style="background: rgba(190, 242, 100, 0.12); color: #bef264; border-color: rgba(190, 242, 100, 0.35);">
-            <span>👤</span>
-            <span>Entrar / Criar Conta</span>
+          <button type="button" id="btnLoginHeader" onclick="openGhostAuthModal()"
+            style="background: #14151c; color: #fff; border: 1px solid rgba(255,255,255,0.08); padding: 7px 12px; border-radius: 7px; font-size: 0.76rem; font-weight: 600; cursor: pointer;">
+            Entrar / Criar Conta
           </button>
 
           <!-- Estado Logado (Oculto até autenticar) -->
           <div id="loggedInHeaderGroup" style="display: none; align-items: center; gap: 8px;">
             <div id="userBadgeDisplay"
-              style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-subtle); color: #e2e8f0; font-size: 0.78rem; font-weight: 700; padding: 7px 12px; border-radius: 20px; display: flex; align-items: center; gap: 6px;">
-              <span>🟢</span>
+              style="background: #14151c; border: 1px solid var(--border-subtle); color: #e2e8f0; font-size: 0.74rem; font-weight: 600; padding: 6px 10px; border-radius: 7px; display: flex; align-items: center; gap: 6px;">
+              <span style="width: 6px; height: 6px; border-radius: 50%; background: #4ade80;"></span>
               <span id="headerUserEmail">usuario</span>
             </div>
 
             <div id="walletDisplay"
-              style="background: rgba(190, 242, 100, 0.12); border: 1px solid rgba(190, 242, 100, 0.35); color: #bef264; font-weight: 800; font-size: 0.82rem; padding: 7px 14px; border-radius: 20px; display: flex; align-items: center; gap: 6px;">
-              <span>💳</span>
+              style="background: #14151c; border: 1px solid var(--border-subtle); color: #bef264; font-weight: 700; font-size: 0.76rem; padding: 6px 12px; border-radius: 7px; display: flex; align-items: center; gap: 6px;">
               <span>Saldo: <strong id="userWalletBalance">R$ 0,00</strong></span>
             </div>
 
-            <button type="button" onclick="openStudioPixModal(10)"
-              style="background: var(--accent-lime); color: #000; font-weight: 800; font-size: 0.78rem; border: none; padding: 8px 14px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; gap: 4px; box-shadow: 0 4px 14px rgba(190, 242, 100, 0.3); transition: 0.2s;">
-              <span>+</span> Recarregar (Mín. R$ 10)
+            <button type="button" id="btnRechargeHeader" onclick="openStudioPixModal(10)"
+              style="background: #20222b; border: 1px solid rgba(255,255,255,0.1); color: #fff; font-weight: 700; font-size: 0.74rem; padding: 6px 12px; border-radius: 7px; cursor: pointer; display: flex; align-items: center; gap: 4px; transition: 0.15s;">
+              + Recarregar
             </button>
 
-            <!-- Botão Admin Master (Visível apenas para o Dono) -->
+            <!-- Botão Admin Master -->
             <button type="button" id="btnAdminMaster" onclick="openGhostAdminModal()"
-              title="Painel Exclusivo Admin Master (WaveSpeed & Banners)"
-              style="display: none; background: linear-gradient(135deg, rgba(234, 179, 8, 0.25) 0%, rgba(202, 138, 4, 0.4) 100%); border: 1px solid rgba(234, 179, 8, 0.6); color: #fde047; font-weight: 800; font-size: 0.78rem; padding: 7px 12px; border-radius: 20px; cursor: pointer; align-items: center; gap: 5px; transition: 0.2s;">
-              <span>👑</span> Admin Master
+              title="Painel Exclusivo Admin Master"
+              style="display: none; background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.4); color: #fde047; font-weight: 700; font-size: 0.74rem; padding: 6px 10px; border-radius: 7px; cursor: pointer; align-items: center; gap: 4px;">
+              👑 Admin
             </button>
 
             <button type="button" onclick="handleGhostLogout()" title="Sair da Conta"
-              style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-subtle); color: #94a3b8; padding: 7px 10px; border-radius: 50%; cursor: pointer; font-size: 0.8rem; transition: 0.15s;"
+              style="background: #14151c; border: 1px solid var(--border-subtle); color: #94a3b8; padding: 6px 9px; border-radius: 7px; cursor: pointer; font-size: 0.76rem; transition: 0.15s;"
               onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#94a3b8'">
-              🚪
+              ✕
             </button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ─── BANNER PROMOCIONAL COMPACTO COM FADE (EROS-IMAGE • SAFRA 2026) ─── -->
-    <div class="ghost-promo-banner-wrap" id="ghostPromoBannerWrap">
+    <!-- ─── BANNER PROMOCIONAL OCULTO POR PADRÃO (MINIMAL DESIGN) ─── -->
+    <div class="ghost-promo-banner-wrap" id="ghostPromoBannerWrap" style="display: none;">
       <a id="ghostPromoBannerLink" href="proposta_comercial_agencia_ia.html" target="_blank"
         style="text-decoration: none; display: block;">
         <div class="ghost-promo-banner" id="ghostPromoBannerCard"
@@ -3042,64 +3076,66 @@
 
       <!-- Grid dos 3 Planos Oficiais -->
       <div
-        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-bottom: 24px;">
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-bottom: 24px;">
 
-        <!-- CARD SOLO (1 MUSA) -->
+        <!-- CARD STARTER (2 MUSAS) -->
         <div
-          style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); border-radius: 18px; padding: 20px; display: flex; flex-direction: column; text-align: center; transition: 0.2s;"
+          style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); border-radius: 18px; padding: 22px; display: flex; flex-direction: column; text-align: center; transition: 0.2s;"
           onmouseover="this.style.borderColor='var(--accent-lime)'"
           onmouseout="this.style.borderColor='var(--border-subtle)'">
           <div style="font-size: 0.72rem; font-weight: 800; color: #bef264; text-transform: uppercase; margin-bottom: 4px;">
-            🥉 INICIANTE SOLO</div>
-          <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0 0 6px 0;">1 GhostPhone™</h3>
-          <div style="font-size: 1.6rem; font-weight: 900; color: #fff; margin-bottom: 4px;">R$ 49,90<span
+            🥉 INICIANTE STARTER</div>
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0 0 6px 0;">2 GhostPhones™ Cloud</h3>
+          <div style="font-size: 1.7rem; font-weight: 900; color: #fff; margin-bottom: 4px;">R$ 97<span
               style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600;">/mês</span></div>
-          <div style="font-size: 0.7rem; color: #94a3b8; margin-bottom: 14px;">Ideal para sua 1ª musa no Instagram</div>
+          <div style="font-size: 0.7rem; color: #94a3b8; margin-bottom: 14px;">Conta principal + 1 contingência isolada</div>
           <div
             style="text-align: left; font-size: 0.74rem; color: #cbd5e1; display: flex; flex-direction: column; gap: 7px; margin-bottom: 18px; flex-grow: 1;">
-            <div>📱 1 Celular Android Virtual Dedicado</div>
-            <div>🍏 Camuflagem Apple C2PA Ilimitada</div>
-            <div>🎁 <strong>BÔNUS:</strong> GhostStudio FX Incluso</div>
-            <div>⚡ 15 Vídeos 60 FPS inclusos/mês</div>
-            <div>💎 Upscale 4K: Saldo avulso na carteira</div>
+            <div>📱 2 Celulares Android 12 Dedicados</div>
+            <div>⚡ 1 Celular ativo na RAM por vez</div>
+            <div>📡 <strong>GhostTunnel™ 4G Incluso:</strong> Custo zero de proxy!</div>
+            <div>🍏 Camuflagem Apple C2PA & EXIF Ilimitada</div>
+            <div>🎁 GhostStudio FX Suite Inclusa</div>
+            <div>⚡ 25 Vídeos 60 FPS inclusos/mês</div>
           </div>
           <button id="btn_sub_solo" onclick="startGhostProfileSubscription('solo')"
             style="background: rgba(255,255,255,0.08); border: 1px solid var(--border-subtle); color: #fff; font-weight: 800; padding: 11px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; transition: 0.15s;"
             onmouseover="this.style.background='var(--accent-lime)'; this.style.color='#000';">
-            Assinar Solo • R$ 49,90/mês
+            Assinar Starter • R$ 97/mês
           </button>
         </div>
 
-        <!-- CARD PRO CREATOR (3 MUSAS - MAIS ESCOLHIDO) -->
+        <!-- CARD PRO CREATOR (6 MUSAS - MAIS ESCOLHIDO) -->
         <div
-          style="background: linear-gradient(180deg, rgba(190,242,100,0.08) 0%, rgba(15,17,23,0.95) 100%); border: 2px solid var(--accent-lime); border-radius: 18px; padding: 20px; display: flex; flex-direction: column; text-align: center; position: relative; box-shadow: 0 8px 30px rgba(190, 242, 100, 0.15);">
+          style="background: linear-gradient(180deg, rgba(190,242,100,0.08) 0%, rgba(15,17,23,0.95) 100%); border: 2px solid var(--accent-lime); border-radius: 18px; padding: 22px; display: flex; flex-direction: column; text-align: center; position: relative; box-shadow: 0 8px 30px rgba(190, 242, 100, 0.15);">
           <div
             style="position: absolute; top: -11px; left: 50%; transform: translateX(-50%); background: var(--accent-lime); color: #000; font-size: 0.64rem; font-weight: 900; padding: 3px 12px; border-radius: 12px; letter-spacing: 1px; text-transform: uppercase;">
-            🌟 MAIS ESCOLHIDO (KIT 3 MUSAS)
+            🌟 MAIS ESCOLHIDO (KIT 6 MUSAS)
           </div>
           <div style="font-size: 0.72rem; font-weight: 800; color: #bef264; text-transform: uppercase; margin-bottom: 4px;">
             🥈 PRO CRIADOR</div>
-          <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0 0 6px 0;">3 GhostPhones™</h3>
-          <div style="font-size: 1.6rem; font-weight: 900; color: #bef264; margin-bottom: 4px;">R$ 97<span
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0 0 6px 0;">6 GhostPhones™ Cloud</h3>
+          <div style="font-size: 1.7rem; font-weight: 900; color: #bef264; margin-bottom: 4px;">R$ 197<span
               style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600;">/mês</span></div>
-          <div style="font-size: 0.72rem; color: #34d399; font-weight: 700; margin-bottom: 14px;">Apenas R$ 32,33 por aparelho!</div>
+          <div style="font-size: 0.72rem; color: #34d399; font-weight: 700; margin-bottom: 14px;">Apenas R$ 32,83 por aparelho na nuvem!</div>
           <div
             style="text-align: left; font-size: 0.74rem; color: #cbd5e1; display: flex; flex-direction: column; gap: 7px; margin-bottom: 18px; flex-grow: 1;">
-            <div>📱📱📱 3 Celulares Android Independentes</div>
-            <div>🍏 Camuflagem Apple C2PA Ilimitada</div>
-            <div>🎁 <strong>BÔNUS:</strong> GhostStudio FX Suite Completa</div>
-            <div>⚡ 50 Vídeos 60 FPS inclusos/mês</div>
-            <div>🛡️ Proteção Máxima Contra Ban Cruzado</div>
+            <div>📱×6 6 Celulares Android 12 Independentes</div>
+            <div>⚡ <strong>2 Celulares Ativos Simultâneos</strong> (Lado a lado!)</div>
+            <div>📡 <strong>GhostTunnel™ 4G com Troca Rápida de IP</strong></div>
+            <div>🍏 Camuflagem Apple iPhone 16 Pro Max</div>
+            <div>⚡ 75 Vídeos 60 FPS inclusos/mês</div>
+            <div>🛡️ Isolamento Físico de Disco NVMe Anti-Ban</div>
           </div>
           <button id="btn_sub_pro" onclick="startGhostProfileSubscription('pro')"
             style="background: var(--accent-lime); border: none; color: #000; font-weight: 900; padding: 11px; border-radius: 10px; cursor: pointer; font-size: 0.84rem; box-shadow: 0 4px 16px rgba(190, 242, 100, 0.4);">
-            Assinar Pro • R$ 97/mês
+            Assinar Pro • R$ 197/mês
           </button>
         </div>
 
-        <!-- CARD AGENCY EMPIRE (10 MUSAS) -->
+        <!-- CARD AGENCY EMPIRE (15 MUSAS) -->
         <div
-          style="background: rgba(255,255,255,0.02); border: 1.5px solid rgba(234, 179, 8, 0.4); border-radius: 18px; padding: 20px; display: flex; flex-direction: column; text-align: center; transition: 0.2s;"
+          style="background: rgba(255,255,255,0.02); border: 1.5px solid rgba(234, 179, 8, 0.4); border-radius: 18px; padding: 22px; display: flex; flex-direction: column; text-align: center; transition: 0.2s;"
           onmouseover="this.style.borderColor='#fde047'" onmouseout="this.style.borderColor='rgba(234, 179, 8, 0.4)'">
           <div
             style="color: #fde047; font-size: 0.64rem; font-weight: 900; margin-bottom: 4px; letter-spacing: 1px; text-transform: uppercase;">
@@ -3107,22 +3143,23 @@
           </div>
           <div style="font-size: 0.72rem; font-weight: 800; color: #fde047; text-transform: uppercase; margin-bottom: 4px;">
             Agency Empire</div>
-          <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0 0 6px 0;">10 GhostPhones™</h3>
-          <div style="font-size: 1.6rem; font-weight: 900; color: #fde047; margin-bottom: 4px;">R$ 197<span
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0 0 6px 0;">15 GhostPhones™ Cloud</h3>
+          <div style="font-size: 1.7rem; font-weight: 900; color: #fde047; margin-bottom: 4px;">R$ 497<span
               style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600;">/mês</span></div>
-          <div style="font-size: 0.72rem; color: #34d399; font-weight: 700; margin-bottom: 14px;">Apenas R$ 19,70 por aparelho!</div>
+          <div style="font-size: 0.72rem; color: #34d399; font-weight: 700; margin-bottom: 14px;">Apenas R$ 33,13 por aparelho!</div>
           <div
             style="text-align: left; font-size: 0.74rem; color: #cbd5e1; display: flex; flex-direction: column; gap: 7px; margin-bottom: 18px; flex-grow: 1;">
-            <div>📱×10 10 Celulares Android Virtuais</div>
-            <div>🍏 Camuflagem Apple C2PA Ilimitada</div>
-            <div>🎁 <strong>BÔNUS VIP:</strong> GhostStudio FX Ilimitado</div>
-            <div>⚡ <strong>Vídeos 60 FPS ILIMITADOS</strong></div>
+            <div>📱×15 15 Celulares Android 12 Virtuais</div>
+            <div>⚡ <strong>5 Celulares Ativos Simultâneos</strong></div>
+            <div>📡 <strong>GhostTunnel™ 4G Residencial Ilimitado</strong></div>
+            <div>🤖 <strong>GhostAgent™ Pilot:</strong> Prioridade Máxima na Fila</div>
+            <div>👥 Acesso Multi-Operador para Equipes</div>
             <div>💬 Suporte VIP Direto no WhatsApp</div>
           </div>
           <button id="btn_sub_agency" onclick="startGhostProfileSubscription('agency')"
             style="background: rgba(234, 179, 8, 0.15); border: 1px solid #fde047; color: #fde047; font-weight: 900; padding: 11px; border-radius: 10px; cursor: pointer; font-size: 0.82rem; transition: 0.15s;"
             onmouseover="this.style.background='#fde047'; this.style.color='#000';">
-            Assinar Agency • R$ 197/mês
+            Assinar Agency • R$ 497/mês
           </button>
         </div>
 
@@ -3880,11 +3917,20 @@
 
     function renderGridForSection(section) {
       currentSection = section;
+      updateHeaderWalletVisibility(section);
       const grid = document.getElementById('mediaGrid');
       if (!grid) return;
 
+      if (section === 'inicio') {
+        renderDashboardHomeSection(grid);
+        return;
+      }
       if (section === 'musas') {
         renderAntidetectMusasSection(grid);
+        return;
+      }
+      if (section === 'ghostagent') {
+        renderGhostAgentSection(grid);
         return;
       }
       if (section === 'ghoststudio') {
@@ -3971,26 +4017,44 @@
       }
 
       const titles = {
-        'inicio': 'Visão Geral • GhostLens',
+        'inicio': 'Visão Geral',
         'imagem': 'Imagens & Camuflagem Apple',
         'video': 'Vídeos & Interpolação 60 FPS',
         'editor': 'Ghost Studio Pro • Editor de Vídeo Multi-Trilha',
         'ghoststudio': 'Ghost Studio FX™ • Ghost Studio FX Engine',
-        'musas': 'GhostPhone™ & Personas • Celulares Android & Perfis'
+        'musas': 'Minhas Personas • Celulares em Nuvem',
+        'ghostagent': 'GhostAgent™ Pilot • Automação & Aquecimento Autônomo 24/7'
       };
       const subtitles = {
-        'inicio': 'Camuflagem Apple iPhone, remoção total de IA e interpolação de alta fluidez',
+        'inicio': 'Monitore seus celulares em nuvem, tráfego 4G residencial e postagens automáticas.',
         'imagem': 'Purga de C2PA, injeção de EXIF Apple iPhone 16 Pro e geração de Prévia Blur VIP',
         'video': 'Interpolação de 60 FPS fluida e exportação nativa Apple QuickTime .MOV',
         'editor': 'Timeline, transições, efeitos, texto, áudio, vozes IA e exportação MP4 no motor local',
         'ghoststudio': 'Remasterização 4K Apple Metal, Optical Flow 60 FPS e Laboratório de Voz Sensual',
-        'musas': 'Celulares reais emulados e containers com fingerprints exclusivas de iPhone para cada musa'
+        'musas': 'Containers dedicados com instâncias Android 12 ARM64 e GhostTunnel 4G residencial',
+        'ghostagent': 'Operador autônomo com toques em curvas de Bézier humanas, sem APIs da Meta e aquecimento contínuo'
       };
 
       const titleEl = document.getElementById('sectionTitle');
       const subEl = document.getElementById('sectionSubtitle');
       if (titleEl) titleEl.innerText = titles[section] || 'GhostLens Studio';
       if (subEl) subEl.innerText = subtitles[section] || '';
+
+      const breadcrumbs = {
+        'inicio': 'Dashboard',
+        'musas': 'Cloud Mobile / Personas',
+        'imagem': 'Estúdio / Imagens & Rostos',
+        'video': 'Estúdio / Vídeos 60 FPS',
+        'editor': 'Estúdio / Editor Multi-Trilha',
+        'ghostagent': 'Automação / GhostAgent Pilot'
+      };
+      const breadcrumbEl = document.getElementById('sectionBreadcrumb');
+      if (breadcrumbEl) breadcrumbEl.innerText = breadcrumbs[section] || 'Dashboard';
+
+      const galleryToolbar = document.querySelector('.studio-gallery-toolbar');
+      if (galleryToolbar) {
+        galleryToolbar.style.display = (section === 'imagem' || section === 'video') ? 'flex' : 'none';
+      }
 
       const workspace = document.getElementById('mainWorkspace');
       if (workspace) workspace.classList.toggle('editor-mode', section === 'editor');
@@ -5148,23 +5212,14 @@
     }
 
     async function openGhostPhonePlayerPage() {
-      const isLocal = ['127.0.0.1', 'localhost'].includes(window.location.hostname);
-      if (isLocal) {
-        try {
-          const statusRes = await fetch('/status');
-          if (statusRes.ok) {
-            const statusData = await statusRes.json();
-            if (!statusData.auth || !statusData.auth.active) {
-              showToast('🔒 Ative sua licença para abrir o Player do GhostPhone.', 5000);
-              if (currentUser) openMyLicenseModal(); else openGhostAuthModal('login');
-              return;
-            }
-          }
-        } catch (e) {}
+      const cloudStreamUrl = 'http://204.168.235.202:8000/#!action=stream&udid=127.0.0.1:5555&player=broadway';
+      // Abre direto na Tela Suspensa Flutuante em HD (Modo Celular)
+      const win = window.open(cloudStreamUrl, 'GhostPhone_Cloud_HD', 'width=440,height=920,top=40,left=120,toolbar=no,menubar=no,location=no,status=no,resizable=yes');
+      if (win) {
+        showToast('📱 GhostPhone™ Cloud HD aberto na Tela Suspensa!', 4000);
+      } else {
+        window.open(cloudStreamUrl, '_blank');
       }
-      const url = isLocal ? '/player' : 'http://127.0.0.1:4444/player';
-      window.open(url, '_blank', 'noopener');
-      if (!isLocal) showToast('Abrindo o Player do GhostLens instalado. Se não abrir, inicie o app GhostLens.', 5000);
     }
 
     // ─── STORE DE APPS DO GHOSTPHONE ───
@@ -5929,6 +5984,15 @@
       }
     }
 
+    // Saldo e recarga só aparecem no Dashboard, Imagens e Vídeos.
+    function updateHeaderWalletVisibility(section = currentSection) {
+      const show = ['inicio', 'imagem', 'video'].includes(section);
+      const wallet = document.getElementById('walletDisplay');
+      const recharge = document.getElementById('btnRechargeHeader');
+      if (wallet) wallet.style.display = show ? 'flex' : 'none';
+      if (recharge) recharge.style.display = show ? 'flex' : 'none';
+    }
+
     function updateAuthUI() {
       const btnLogin = document.getElementById('btnLoginHeader');
       const loggedGroup = document.getElementById('loggedInHeaderGroup');
@@ -5956,6 +6020,8 @@
         const balEl = document.getElementById('userWalletBalance');
         if (balEl) balEl.innerText = 'R$ 0,00';
       }
+
+      updateHeaderWalletVisibility();
     }
 
     async function initGhostAuth() {
@@ -6351,10 +6417,10 @@
       if (isAdminUser()) {
         return 999;
       }
-      const plan = (currentUser.user_metadata?.plan || localStorage.getItem('ghostlens_user_plan') || 'SOLO').toUpperCase();
-      if (plan.includes('AGENCY') || plan.includes('10')) return 10;
-      if (plan.includes('PRO') || plan.includes('3')) return 3;
-      return 1; // SOLO padrão: 1 celular
+      const plan = (currentUser.user_metadata?.plan || localStorage.getItem('ghostlens_user_plan') || 'STARTER').toUpperCase();
+      if (plan.includes('AGENCY') || plan.includes('15') || plan.includes('10')) return 15;
+      if (plan.includes('PRO') || plan.includes('6') || plan.includes('3')) return 6;
+      return 2; // STARTER padrão: 2 celulares (conta + contingência)
     }
 
     function openGhostProfileModal() {
@@ -6908,8 +6974,12 @@
             showToast(resData.error || `⚠️ Falha ao abrir celular: ${resData.status || 'verifique conexão USB/ADB'}`);
           }
         } catch(e) {
-          console.warn("Erro ao acionar ponte nativa:", e);
-          showToast("❌ Daemon local desligado. Inicie o GhostLens Suite no computador.");
+          console.warn("Ponte local desligada. Abrindo GhostPhone Cloud na Nuvem:", e);
+          const pIdx = (window.ghostProfilesCache || []).findIndex(x => x.id === profileId);
+          const personaPort = 5555 + (pIdx >= 0 ? pIdx : 0);
+          showToast(`☁️ Abrindo GhostPhone™ Cloud (${nome} • Porta ${personaPort}) na Tela Suspensa...`, 4000);
+          const streamUrl = `http://204.168.235.202:8000/#!action=stream&udid=127.0.0.1:${personaPort}&player=broadway`;
+          window.open(streamUrl, 'GhostPhone_Cloud_' + personaPort, 'width=440,height=920,top=40,left=120,toolbar=no,menubar=no,location=no,status=no,resizable=yes');
         }
     }
     window.launchGhostPhonePlayer = launchGhostPhonePlayer;
@@ -7304,90 +7374,85 @@
         `;
         } else {
           const profCardsHtml = profiles.map(p => `
-          <div style="background: rgba(18, 22, 32, 0.9); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 18px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; position: relative; box-shadow: 0 8px 24px rgba(0,0,0,0.35); transition: transform 0.2s, border-color 0.2s;" onmouseover="this.style.borderColor='rgba(190,242,100,0.3)'; this.style.transform='translateY(-2px)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'; this.style.transform='translateY(0)';">
+          <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; position: relative; transition: border-color 0.15s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.15)';" onmouseout="this.style.borderColor='var(--border-subtle)';">
             <!-- Header: Avatar + Nome + Status + Delete -->
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;">
-              <div style="display: flex; align-items: center; gap: 12px;">
-                <div style="width: 48px; height: 48px; border-radius: 14px; background: linear-gradient(135deg, #bef264, #10b981); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 900; color: #000; box-shadow: 0 4px 14px rgba(190, 242, 100, 0.25);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 38px; height: 38px; border-radius: 9px; background: #1a1c25; border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 700; color: #bef264;">
                   ${p.musa_nome.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <h4 style="font-size: 1.1rem; font-weight: 800; color: #fff; margin: 0 0 4px 0;">${p.musa_nome}</h4>
-                  <span style="font-size: 0.68rem; font-family: 'JetBrains Mono', monospace; color: ${p.live_status === 'Active' ? '#34d399' : (p.status === 'ativo' ? '#38bdf8' : '#fbbf24')}; background: ${p.live_status === 'Active' ? 'rgba(52, 211, 153, 0.12)' : 'rgba(255,255,255,0.05)'}; border: 1px solid ${p.live_status === 'Active' ? 'rgba(52, 211, 153, 0.35)' : 'rgba(255,255,255,0.08)'}; padding: 2px 8px; border-radius: 6px;">
-                    ${p.live_status === 'Active' ? `🟢 ATIVO (PID: ${p.pid || 'ON'})` : (p.status === 'ativo' ? '🛡️ 100% BLINDADO' : '🟡 AQUECENDO')}
+                  <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0 0 3px 0;">${p.musa_nome}</h4>
+                  <span style="font-size: 0.65rem; font-family: monospace; color: ${p.live_status === 'Active' ? '#4ade80' : '#94a3b8'}; background: #171822; border: 1px solid rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px;">
+                    ${p.live_status === 'Active' ? `● ATIVO (PID: ${p.pid || 'ON'})` : '○ EM REPOUSO'}
                   </span>
                 </div>
               </div>
-              <button onclick="deleteAntidetectProfile('${p.id}')" title="Excluir Perfil" style="background: transparent; border: none; color: #64748b; cursor: pointer; font-size: 0.95rem; padding: 4px;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#64748b'">🗑️</button>
+              <button onclick="deleteAntidetectProfile('${p.id}')" title="Excluir Perfil" style="background: transparent; border: none; color: #525866; cursor: pointer; font-size: 0.85rem; padding: 4px;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#525866'">✕</button>
             </div>
 
             <!-- Specs Box -->
-            <div style="background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 12px 14px; font-size: 0.74rem; font-family: 'JetBrains Mono', monospace; display: flex; flex-direction: column; gap: 7px; margin-bottom: 16px;">
-              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Dispositivo:</span> <span style="color: #e2e8f0; font-weight: 600;">Apple ${p.apple_device}</span></div>
-              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">iOS / Tela:</span> <span style="color: #e2e8f0;">${p.ios_version} (${p.screen_resolution})</span></div>
-              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">GPS Fixo:</span> <span style="color: #e2e8f0;">${p.gps_location}</span></div>
-              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Proxy / IP:</span> <span style="color: ${p.proxy_ip ? '#bef264' : '#38bdf8'}; font-weight: 600;">${p.proxy_ip || '4G Celular / Local'}</span></div>
-              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Hardware:</span> <span style="color: #34d399;">Apple GPU + Ruído Único</span></div>
+            <div style="background: #0d0e14; border: 1px solid rgba(255,255,255,0.04); border-radius: 8px; padding: 10px 12px; font-size: 0.72rem; font-family: monospace; display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px;">
+              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Dispositivo:</span> <span style="color: #e2e8f0;">${p.apple_device || 'Samsung S22 • ARM64'}</span></div>
+              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">OS / Tela:</span> <span style="color: #94a3b8;">Android 12 (720x1280)</span></div>
+              <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">IP / Rede:</span> <span style="color: #bef264;">${p.proxy_ip || '4G Celular Vivo (SP)'}</span></div>
             </div>
 
-            <!-- Action Buttons: Abrir GhostPhone (Tela Suspensa) + Subir Fotos na Galeria -->
-            <div style="margin-top: auto; display: flex; flex-direction: column; gap: 8px;">
-              <button onclick="launchGhostPhonePlayer('${p.id}')" title="Abrir GhostPhone™ (Janela Flutuante 60 FPS)" style="width: 100%; background: linear-gradient(135deg, #0284c7, #38bdf8); border: none; color: #fff; padding: 12px 16px; border-radius: 12px; font-weight: 800; font-size: 0.88rem; cursor: pointer; box-shadow: 0 4px 18px rgba(56, 189, 248, 0.4); display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform 0.15s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                📱 Abrir GhostPhone™ (Tela Suspensa)
+            <!-- Action Buttons: Ligar Celular HD + GhostTunnel 4G + Galeria Apple -->
+            <div style="margin-top: auto; display: flex; flex-direction: column; gap: 6px;">
+              <button onclick="launchGhostPhonePlayer('${p.id}')" title="Abrir GhostPhone™ Cloud (Janela Flutuante 60 FPS)" style="width: 100%; background: #1c1e28; border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 10px 14px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s;" onmouseover="this.style.background='#272936'" onmouseout="this.style.background='#1c1e28'">
+                📱 Ligar Celular HD
               </button>
-              <button onclick="openStudioMediaUpload('${p.musa_nome}')" title="Enviar fotos ou vídeos direto para a Galeria deste celular" style="width: 100%; background: rgba(190, 242, 100, 0.12); border: 1px solid rgba(190, 242, 100, 0.35); color: #bef264; padding: 10px 14px; border-radius: 10px; font-weight: 700; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s;" onmouseover="this.style.background='rgba(190, 242, 100, 0.22)'" onmouseout="this.style.background='rgba(190, 242, 100, 0.12)'">
-                📸 Subir Fotos na Galeria (${p.musa_nome})
-              </button>
+              
+              <div style="display: flex; gap: 6px;">
+                <button onclick="window.open('/tunnel.html', 'GhostTunnel', 'width=460,height=720,top=80,left=150,toolbar=no,menubar=no,location=no,status=no')" title="Ativar ou Rotacionar IP Residencial 4G desta Musa" style="flex: 1; background: #14151e; border: 1px solid rgba(255,255,255,0.06); color: #38bdf8; padding: 8px 6px; border-radius: 7px; font-weight: 600; font-size: 0.72rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: all 0.15s;" onmouseover="this.style.background='#1c1e28'" onmouseout="this.style.background='#14151e'">
+                  📡 4G Tunnel
+                </button>
+                <button onclick="openStudioMediaUpload('${p.musa_nome}')" title="Enviar fotos ou vídeos com EXIF Apple" style="flex: 1; background: #14151e; border: 1px solid rgba(255,255,255,0.06); color: #bef264; padding: 8px 6px; border-radius: 7px; font-weight: 600; font-size: 0.72rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: all 0.15s;" onmouseover="this.style.background='#1c1e28'" onmouseout="this.style.background='#14151e'">
+                  📸 Galeria Apple
+                </button>
+              </div>
             </div>
           </div>
         `).join('');
 
           grid.innerHTML = `
           <!-- 1. CABEÇALHO DA SEÇÃO DE PERFIS -->
-          <div style="grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 12px;">
+          <div style="grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 10px;">
             <div>
-              <div style="display: flex; align-items: center; gap: 10px;">
-                <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0;">GhostProfiles™</h3>
-                <span style="background: rgba(190, 242, 100, 0.12); border: 1px solid var(--accent-lime); color: var(--accent-lime); font-size: 0.68rem; font-weight: 800; padding: 2px 8px; border-radius: 6px; font-family: 'JetBrains Mono', monospace;">GhostStealth™ Anti-Ban</span>
-                <span style="background: rgba(255,255,255,0.06); color: #94a3b8; font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 6px;">${profiles.length} Musas</span>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <h3 style="font-size: 1.05rem; font-weight: 700; color: #fff; margin: 0;">Minhas Personas</h3>
+                <span style="background: #171822; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; font-size: 0.65rem; font-weight: 600; padding: 2px 6px; border-radius: 4px;">${profiles.length} Musas</span>
               </div>
-              <p style="font-size: 0.76rem; color: var(--text-muted); margin: 4px 0 0 0;">Containers de personas isoladas com impressões digitais exclusivas de iPhone.</p>
+              <p style="font-size: 0.72rem; color: var(--text-muted); margin: 3px 0 0 0;">Containers de personas isoladas com instâncias Android 12 em nuvem.</p>
             </div>
-            <div style="display: flex; gap: 8px; align-items: center;">
-              <button onclick="openGhostPlansModal()" style="background: rgba(255,255,255,0.06); border: 1px solid var(--border-subtle); color: #bef264; font-weight: 800; font-size: 0.8rem; border-radius: 12px; padding: 9px 16px; cursor: pointer; transition: 0.15s; display: flex; align-items: center; gap: 6px;" onmouseover="this.style.borderColor='var(--accent-lime)'" onmouseout="this.style.borderColor='var(--border-subtle)'">
-                👑 Planos
+            <div style="display: flex; gap: 6px; align-items: center;">
+              <button onclick="openGhostPlansModal()" style="background: #14151c; border: 1px solid var(--border-subtle); color: #fff; font-weight: 600; font-size: 0.74rem; border-radius: 7px; padding: 7px 12px; cursor: pointer; transition: 0.15s;">
+                Planos
               </button>
-              <button onclick="openGhostProfileModal()" style="background: var(--accent-lime); color: #000; font-weight: 800; font-size: 0.8rem; border: none; padding: 9px 18px; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 14px rgba(190, 242, 100, 0.3);">
-                + Novo GhostProfile™
+              <button onclick="openGhostProfileModal()" style="background: var(--accent-lime); color: #000; font-weight: 800; font-size: 0.74rem; border: none; padding: 7px 14px; border-radius: 7px; cursor: pointer;">
+                + Nova Persona
               </button>
             </div>
           </div>
 
-          <!-- 2. 📶 ALERTA DE OURO + CHAVE TRAVA ANTI-BAN 4G/5G -->
-          <div style="grid-column: 1 / -1; background: linear-gradient(135deg, rgba(56, 189, 248, 0.08) 0%, rgba(16, 185, 129, 0.08) 100%); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 14px; padding: 12px 18px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap;">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <div style="width: 36px; height: 36px; border-radius: 10px; background: rgba(56, 189, 248, 0.18); border: 1px solid rgba(56, 189, 248, 0.4); display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0;">
-                📶
-              </div>
-              <div style="font-size: 0.77rem; color: #cbd5e1; line-height: 1.45;">
-                <strong style="color: #38bdf8;">Segurança Anti-Ban:</strong> Roteie o <strong>4G/5G do seu celular</strong> para o PC (Acesso Pessoal). A trava abaixo impede abrir o GhostPhone no Wi-Fi da sua casa para evitar banimento!
+          <!-- 2. ALERTA TRAVA 4G MINIMALISTA -->
+          <div style="grid-column: 1 / -1; background: #12131a; border: 1px solid var(--border-subtle); border-radius: 10px; padding: 10px 14px; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-size: 1rem;">📶</span>
+              <div style="font-size: 0.74rem; color: #94a3b8;">
+                <strong style="color: #fff;">Trava Anti-Ban 4G:</strong> Roteie a internet do seu celular para o PC. A trava impede abrir o GhostPhone no Wi-Fi doméstico.
               </div>
             </div>
 
-            <!-- CHAVE TRAVA ANTI-BAN 4G/5G (ATIVA POR PADRÃO) -->
-            <div style="display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.6); border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 12px; padding: 7px 14px;">
-              <div style="display: flex; flex-direction: column;">
-                <span style="font-size: 0.73rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 5px;">
-                  🛡️ Trava Anti-Ban 4G/5G
-                </span>
-                <span id="lblGhostphone4gLockSub" style="font-size: 0.62rem; color: #bef264; font-weight: 700;">
-                  Bloquear Wi-Fi Local
-                </span>
-              </div>
-              <label style="position: relative; display: inline-block; width: 44px; height: 24px; cursor: pointer; margin: 0;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span id="lblGhostphone4gLockSub" style="font-size: 0.65rem; color: #4ade80; font-weight: 600;">
+                Wi-Fi Bloqueado
+              </span>
+              <label style="position: relative; display: inline-block; width: 36px; height: 20px; cursor: pointer; margin: 0;">
                 <input type="checkbox" id="chkGhostphone4gLock" onchange="toggleGhostphone4gLock(this.checked)" checked style="opacity: 0; width: 0; height: 0;">
-                <span id="sliderGhostphone4gLock" style="position: absolute; cursor: pointer; inset: 0; background-color: #22c55e; transition: .25s; border-radius: 24px; box-shadow: 0 0 12px rgba(34,197,94,0.5);">
-                  <span id="knobGhostphone4gLock" style="position: absolute; height: 18px; width: 18px; left: 22px; bottom: 3px; background-color: white; transition: .25s; border-radius: 50%;"></span>
+                <span id="sliderGhostphone4gLock" style="position: absolute; cursor: pointer; inset: 0; background-color: #22c55e; transition: .2s; border-radius: 20px;">
+                  <span id="knobGhostphone4gLock" style="position: absolute; height: 14px; width: 14px; left: 18px; bottom: 3px; background-color: white; transition: .2s; border-radius: 50%;"></span>
                 </span>
               </label>
             </div>
@@ -7395,9 +7460,6 @@
 
           <!-- 3. CARDS DAS MUSAS BLINDADAS -->
           ${profCardsHtml}
-
-          <!-- 4. MANUAL ESTRATÉGICO COLAPSÁVEL -->
-          ${getAntidetectTutorialHtml()}
         `;
         }
       }
@@ -7423,6 +7485,450 @@
         activeEffect: 'musa_glow',
         activeTransition: 'fade'
       };
+
+      function renderDashboardHomeSection(grid) {
+        if (!grid) return;
+        const countLabel = document.getElementById('galleryCountLabel');
+        if (countLabel) countLabel.innerText = 'Dashboard Geral • Operação em Nuvem';
+        grid.style.display = 'flex';
+        grid.style.flexDirection = 'column';
+        grid.style.gap = '20px';
+
+        const storageKey = getProfilesStorageKey();
+        const profiles = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        const totalProfiles = profiles.length || 3;
+
+        grid.innerHTML = `
+          <!-- ─── 1. TOP 4 METRIC CARDS (ESTILO MINIMAL TEMPLATE) ─── -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px;">
+            <!-- CARD 1: PERSONAS -->
+            <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; min-height: 125px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 0.76rem; font-weight: 600;">
+                <span style="display: flex; align-items: center; gap: 6px;">📱 Personas Criadas</span>
+                <span style="cursor: pointer; opacity: 0.6;">•••</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: flex-end; margin: 8px 0;">
+                <div style="font-size: 1.85rem; font-weight: 700; color: #fff; letter-spacing: -0.5px;">${totalProfiles}</div>
+                <!-- Mini Bar Chart Acid Lime -->
+                <div style="display: flex; align-items: flex-end; gap: 3px; height: 26px;">
+                  <span style="width: 4px; height: 10px; background: #bef264; border-radius: 2px; opacity: 0.4;"></span>
+                  <span style="width: 4px; height: 16px; background: #bef264; border-radius: 2px; opacity: 0.6;"></span>
+                  <span style="width: 4px; height: 12px; background: #bef264; border-radius: 2px; opacity: 0.5;"></span>
+                  <span style="width: 4px; height: 22px; background: #bef264; border-radius: 2px; opacity: 0.8;"></span>
+                  <span style="width: 4px; height: 26px; background: #bef264; border-radius: 2px;"></span>
+                </div>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.72rem;">
+                <span style="color: var(--text-muted);">limite do plano: 6 musas</span>
+                <span style="color: #bef264; font-weight: 600;">▲ +1 semana</span>
+              </div>
+            </div>
+
+            <!-- CARD 2: CELULARES ATIVOS -->
+            <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; min-height: 125px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 0.76rem; font-weight: 600;">
+                <span style="display: flex; align-items: center; gap: 6px;">⚡ Celulares na Nuvem</span>
+                <span style="cursor: pointer; opacity: 0.6;">•••</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: flex-end; margin: 8px 0;">
+                <div style="font-size: 1.85rem; font-weight: 700; color: #fff; letter-spacing: -0.5px;">2 <span style="font-size: 0.85rem; color: #4ade80; font-weight: 600;">Online</span></div>
+                <!-- Mini Bar Chart -->
+                <div style="display: flex; align-items: flex-end; gap: 3px; height: 26px;">
+                  <span style="width: 4px; height: 14px; background: #bef264; border-radius: 2px; opacity: 0.5;"></span>
+                  <span style="width: 4px; height: 18px; background: #bef264; border-radius: 2px; opacity: 0.7;"></span>
+                  <span style="width: 4px; height: 14px; background: #bef264; border-radius: 2px; opacity: 0.5;"></span>
+                  <span style="width: 4px; height: 20px; background: #bef264; border-radius: 2px; opacity: 0.8;"></span>
+                  <span style="width: 4px; height: 26px; background: #bef264; border-radius: 2px;"></span>
+                </div>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.72rem;">
+                <span style="color: var(--text-muted);">Portas 5555, 5556</span>
+                <span style="color: #bef264; font-weight: 600;">▲ 100% online</span>
+              </div>
+            </div>
+
+            <!-- CARD 3: GHOSTTUNNEL 4G -->
+            <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; min-height: 125px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 0.76rem; font-weight: 600;">
+                <span style="display: flex; align-items: center; gap: 6px;">📡 GhostTunnel 4G</span>
+                <span style="cursor: pointer; opacity: 0.6;">•••</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: flex-end; margin: 8px 0;">
+                <div style="font-size: 1.85rem; font-weight: 700; color: #fff; letter-spacing: -0.5px;">100%</div>
+                <!-- Mini Bar Chart -->
+                <div style="display: flex; align-items: flex-end; gap: 3px; height: 26px;">
+                  <span style="width: 4px; height: 20px; background: #bef264; border-radius: 2px; opacity: 0.6;"></span>
+                  <span style="width: 4px; height: 22px; background: #bef264; border-radius: 2px; opacity: 0.7;"></span>
+                  <span style="width: 4px; height: 24px; background: #bef264; border-radius: 2px; opacity: 0.8;"></span>
+                  <span style="width: 4px; height: 24px; background: #bef264; border-radius: 2px; opacity: 0.9;"></span>
+                  <span style="width: 4px; height: 26px; background: #bef264; border-radius: 2px;"></span>
+                </div>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.72rem;">
+                <span style="color: var(--text-muted);">IP Residencial Móvel</span>
+                <span style="color: #4ade80; font-weight: 600;">● Zero Bloqueio</span>
+              </div>
+            </div>
+
+            <!-- CARD 4: SERVIDOR CLOUD -->
+            <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between; min-height: 125px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 0.76rem; font-weight: 600;">
+                <span style="display: flex; align-items: center; gap: 6px;">🖥️ Servidor ARM64</span>
+                <span style="cursor: pointer; opacity: 0.6;">•••</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: flex-end; margin: 8px 0;">
+                <div style="font-size: 1.85rem; font-weight: 700; color: #fff; letter-spacing: -0.5px;">2.5 <span style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">GB</span></div>
+                <!-- Mini Bar Chart -->
+                <div style="display: flex; align-items: flex-end; gap: 3px; height: 26px;">
+                  <span style="width: 4px; height: 8px; background: #94a3b8; border-radius: 2px; opacity: 0.4;"></span>
+                  <span style="width: 4px; height: 12px; background: #94a3b8; border-radius: 2px; opacity: 0.5;"></span>
+                  <span style="width: 4px; height: 16px; background: #94a3b8; border-radius: 2px; opacity: 0.6;"></span>
+                  <span style="width: 4px; height: 20px; background: #bef264; border-radius: 2px; opacity: 0.8;"></span>
+                  <span style="width: 4px; height: 14px; background: #bef264; border-radius: 2px;"></span>
+                </div>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.72rem;">
+                <span style="color: var(--text-muted);">5.5 GB RAM livre</span>
+                <span style="color: var(--text-secondary); font-family: monospace;">61 GB NVMe</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─── 2. SEÇÃO CENTRAL: GRÁFICO DE OPERAÇÕES + PRÓXIMAS TAREFAS ─── -->
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 14px;">
+            <!-- GRÁFICO DE ATIVIDADE -->
+            <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                <div style="font-size: 0.85rem; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 6px;">
+                  <span>⊞</span> Ações & Postagens na Nuvem
+                </div>
+                <div style="display: flex; gap: 4px; background: #1a1c24; padding: 2px; border-radius: 6px;">
+                  <button style="background: transparent; border: none; color: #94a3b8; font-size: 0.68rem; font-weight: 600; padding: 4px 8px; border-radius: 4px; cursor: pointer;">3M</button>
+                  <button style="background: transparent; border: none; color: #94a3b8; font-size: 0.68rem; font-weight: 600; padding: 4px 8px; border-radius: 4px; cursor: pointer;">6M</button>
+                  <button style="background: #252834; border: none; color: #fff; font-size: 0.68rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; cursor: pointer;">YTD</button>
+                </div>
+              </div>
+
+              <div style="margin-bottom: 16px;">
+                <div style="font-size: 1.9rem; font-weight: 700; color: #fff; letter-spacing: -0.5px;">142</div>
+                <div style="font-size: 0.74rem; color: var(--text-muted);">ações furtivas e postagens concluídas este mês</div>
+              </div>
+
+              <!-- Barras Mensais -->
+              <div style="display: flex; justify-content: space-between; align-items: flex-end; height: 110px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.04);">
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1;">
+                  <div style="width: 14px; height: 35px; background: #20232e; border-radius: 3px;"></div>
+                  <span style="font-size: 0.65rem; color: var(--text-muted);">Jun</span>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1;">
+                  <div style="width: 14px; height: 50px; background: #20232e; border-radius: 3px;"></div>
+                  <span style="font-size: 0.65rem; color: var(--text-muted);">Jul</span>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1;">
+                  <div style="width: 14px; height: 42px; background: #20232e; border-radius: 3px;"></div>
+                  <span style="font-size: 0.65rem; color: var(--text-muted);">Ago</span>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1;">
+                  <div style="width: 14px; height: 75px; background: #20232e; border-radius: 3px;"></div>
+                  <span style="font-size: 0.65rem; color: var(--text-muted);">Set</span>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; position: relative;">
+                  <div style="position: absolute; top: -28px; background: #1e212b; border: 1px solid rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px; font-size: 0.65rem; color: #bef264; font-weight: 700; white-space: nowrap;">
+                    Out • 142
+                  </div>
+                  <div style="width: 14px; height: 95px; background: #bef264; border-radius: 3px; box-shadow: 0 0 12px rgba(190,242,100,0.3);"></div>
+                  <span style="font-size: 0.65rem; color: #bef264; font-weight: 700;">Out</span>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1;">
+                  <div style="width: 14px; height: 60px; background: #20232e; border-radius: 3px;"></div>
+                  <span style="font-size: 0.65rem; color: var(--text-muted);">Nov</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- PRÓXIMAS TAREFAS / GHOSTAGENT -->
+            <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <span style="font-size: 0.82rem; font-weight: 700; color: #fff;">Próximas Tarefas</span>
+                <span style="font-size: 0.65rem; color: #bef264; background: rgba(190,242,100,0.1); padding: 2px 6px; border-radius: 4px; font-weight: 700;">PILOT 24/7</span>
+              </div>
+
+              <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; background: #181922; border-radius: 8px; border: 1px solid rgba(255,255,255,0.04);">
+                  <div style="background: #232632; padding: 4px 6px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-align: center; min-width: 38px;">
+                    12:00
+                  </div>
+                  <div style="flex: 1; overflow: hidden;">
+                    <div style="font-size: 0.76rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Post Reels • Leninha</div>
+                    <div style="font-size: 0.66rem; color: var(--text-muted);">com.instagram.android</div>
+                  </div>
+                  <span style="font-size: 0.65rem; color: #38bdf8; background: rgba(56,189,248,0.1); padding: 2px 5px; border-radius: 4px;">Reels</span>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; background: #181922; border-radius: 8px; border: 1px solid rgba(255,255,255,0.04);">
+                  <div style="background: #232632; padding: 4px 6px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-align: center; min-width: 38px;">
+                    14:30
+                  </div>
+                  <div style="flex: 1; overflow: hidden;">
+                    <div style="font-size: 0.76rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Aquecimento • Camila</div>
+                    <div style="font-size: 0.66rem; color: var(--text-muted);">15 min Reels scroll Bézier</div>
+                  </div>
+                  <span style="font-size: 0.65rem; color: #bef264; background: rgba(190,242,100,0.1); padding: 2px 5px; border-radius: 4px;">Warmup</span>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; background: #181922; border-radius: 8px; border: 1px solid rgba(255,255,255,0.04);">
+                  <div style="background: #232632; padding: 4px 6px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; color: #94a3b8; text-align: center; min-width: 38px;">
+                    18:00
+                  </div>
+                  <div style="flex: 1; overflow: hidden;">
+                    <div style="font-size: 0.76rem; font-weight: 600; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Foto Galeria • Bruna</div>
+                    <div style="font-size: 0.66rem; color: var(--text-muted);">EXIF Apple iPhone 16 Pro</div>
+                  </div>
+                  <span style="font-size: 0.65rem; color: #a78bfa; background: rgba(167,139,250,0.1); padding: 2px 5px; border-radius: 4px;">Feed</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ─── 3. TABELA DE PERSONAS EM OPERAÇÃO (ESTILO ACTIVE APPLICATIONS) ─── -->
+          <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 0.88rem; font-weight: 700; color: #fff;">Instâncias de Personas</span>
+                <span style="background: #1c1e26; color: #94a3b8; font-size: 0.68rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">${totalProfiles}</span>
+              </div>
+
+              <div style="display: flex; gap: 6px;">
+                <button onclick="switchSection('musas')" style="background: #1a1c24; border: 1px solid rgba(255,255,255,0.08); color: #fff; font-size: 0.72rem; font-weight: 600; padding: 6px 12px; border-radius: 6px; cursor: pointer;">Ver Todas</button>
+                <button onclick="openGhostProfileModal()" style="background: var(--accent-lime); color: #000; font-size: 0.72rem; font-weight: 800; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;">+ Nova Persona</button>
+              </div>
+            </div>
+
+            <!-- Tabela Minimalista -->
+            <div style="overflow-x: auto;">
+              <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem; text-align: left;">
+                <thead>
+                  <tr style="color: var(--text-muted); font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; border-bottom: 1px solid rgba(255,255,255,0.06);">
+                    <th style="padding: 10px 12px;">Musa / Persona</th>
+                    <th style="padding: 10px 12px;">Dispositivo</th>
+                    <th style="padding: 10px 12px;">IP / Rede</th>
+                    <th style="padding: 10px 12px;">Status</th>
+                    <th style="padding: 10px 12px; text-align: right;">Ações Rápidas</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <!-- LINHA 1: LENINHA -->
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.03); transition: background 0.1s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                    <td style="padding: 12px;">
+                      <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 30px; height: 30px; border-radius: 8px; background: #202430; border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #bef264;">L</div>
+                        <div>
+                          <div style="font-weight: 700; color: #fff;">Leninha (Musa Oficial)</div>
+                          <div style="font-size: 0.68rem; color: var(--text-muted);">Android ID: e1c4843992305e3d</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td style="padding: 12px; color: #cbd5e1;">Samsung Galaxy S22 • ARM64</td>
+                    <td style="padding: 12px; color: #94a3b8; font-family: monospace;">Vivo Móvel 4G (SP)</td>
+                    <td style="padding: 12px;">
+                      <span style="display: inline-flex; align-items: center; gap: 5px; background: rgba(74, 222, 128, 0.1); color: #4ade80; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 600;">
+                        <span style="width: 5px; height: 5px; border-radius: 50%; background: #4ade80;"></span> Ativo (5555)
+                      </span>
+                    </td>
+                    <td style="padding: 12px; text-align: right;">
+                      <div style="display: inline-flex; gap: 6px;">
+                        <button onclick="launchGhostPhonePlayer('persona_01')" style="background: #20232e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 5px 10px; border-radius: 6px; font-weight: 600; font-size: 0.72rem; cursor: pointer;">📱 Ligar</button>
+                        <button onclick="window.open('/tunnel.html', 'GhostTunnel', 'width=460,height=720,top=80,left=150,toolbar=no,menubar=no,location=no,status=no')" style="background: #20232e; border: 1px solid rgba(255,255,255,0.08); color: #38bdf8; padding: 5px 10px; border-radius: 6px; font-weight: 600; font-size: 0.72rem; cursor: pointer;">📡 4G</button>
+                        <button onclick="openStudioMediaUpload('Leninha')" style="background: #20232e; border: 1px solid rgba(255,255,255,0.08); color: #bef264; padding: 5px 10px; border-radius: 6px; font-weight: 600; font-size: 0.72rem; cursor: pointer;">📸 Galeria</button>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <!-- LINHA 2: CAMILA -->
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.03); transition: background 0.1s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                    <td style="padding: 12px;">
+                      <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 30px; height: 30px; border-radius: 8px; background: #202430; border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #38bdf8;">C</div>
+                        <div>
+                          <div style="font-weight: 700; color: #fff;">Camila VIP</div>
+                          <div style="font-size: 0.68rem; color: var(--text-muted);">Android ID: 2dadcb1115fdbf9f</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td style="padding: 12px; color: #cbd5e1;">Samsung Galaxy S22 • ARM64</td>
+                    <td style="padding: 12px; color: #94a3b8; font-family: monospace;">Claro 4G Residencial</td>
+                    <td style="padding: 12px;">
+                      <span style="display: inline-flex; align-items: center; gap: 5px; background: rgba(74, 222, 128, 0.1); color: #4ade80; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 600;">
+                        <span style="width: 5px; height: 5px; border-radius: 50%; background: #4ade80;"></span> Ativo (5556)
+                      </span>
+                    </td>
+                    <td style="padding: 12px; text-align: right;">
+                      <div style="display: inline-flex; gap: 6px;">
+                        <button onclick="launchGhostPhonePlayer('persona_02')" style="background: #20232e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 5px 10px; border-radius: 6px; font-weight: 600; font-size: 0.72rem; cursor: pointer;">📱 Ligar</button>
+                        <button onclick="window.open('/tunnel.html', 'GhostTunnel', 'width=460,height=720,top=80,left=150,toolbar=no,menubar=no,location=no,status=no')" style="background: #20232e; border: 1px solid rgba(255,255,255,0.08); color: #38bdf8; padding: 5px 10px; border-radius: 6px; font-weight: 600; font-size: 0.72rem; cursor: pointer;">📡 4G</button>
+                        <button onclick="openStudioMediaUpload('Camila VIP')" style="background: #20232e; border: 1px solid rgba(255,255,255,0.08); color: #bef264; padding: 5px 10px; border-radius: 6px; font-weight: 600; font-size: 0.72rem; cursor: pointer;">📸 Galeria</button>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <!-- LINHA 3: BRUNA -->
+                  <tr style="border-bottom: 1px solid rgba(255,255,255,0.03); transition: background 0.1s;" onmouseover="this.style.background='rgba(255,255,255,0.02)'" onmouseout="this.style.background='transparent'">
+                    <td style="padding: 12px;">
+                      <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 30px; height: 30px; border-radius: 8px; background: #202430; border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-weight: 700; color: #a78bfa;">B</div>
+                        <div>
+                          <div style="font-weight: 700; color: #fff;">Bruna Fitness</div>
+                          <div style="font-size: 0.68rem; color: var(--text-muted);">Android ID: be7157b882ebebae</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td style="padding: 12px; color: #cbd5e1;">Google Pixel 7 • ARM64</td>
+                    <td style="padding: 12px; color: #94a3b8; font-family: monospace;">TIM 4G Residencial</td>
+                    <td style="padding: 12px;">
+                      <span style="display: inline-flex; align-items: center; gap: 5px; background: rgba(148, 163, 184, 0.1); color: #94a3b8; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: 600;">
+                        <span style="width: 5px; height: 5px; border-radius: 50%; background: #94a3b8;"></span> Standby (5557)
+                      </span>
+                    </td>
+                    <td style="padding: 12px; text-align: right;">
+                      <div style="display: inline-flex; gap: 6px;">
+                        <button onclick="launchGhostPhonePlayer('persona_03')" style="background: #20232e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 5px 10px; border-radius: 6px; font-weight: 600; font-size: 0.72rem; cursor: pointer;">📱 Ligar</button>
+                        <button onclick="window.open('/tunnel.html', 'GhostTunnel', 'width=460,height=720,top=80,left=150,toolbar=no,menubar=no,location=no,status=no')" style="background: #20232e; border: 1px solid rgba(255,255,255,0.08); color: #38bdf8; padding: 5px 10px; border-radius: 6px; font-weight: 600; font-size: 0.72rem; cursor: pointer;">📡 4G</button>
+                        <button onclick="openStudioMediaUpload('Bruna Fitness')" style="background: #20232e; border: 1px solid rgba(255,255,255,0.08); color: #bef264; padding: 5px 10px; border-radius: 6px; font-weight: 600; font-size: 0.72rem; cursor: pointer;">📸 Galeria</button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderGhostAgentSection(grid) {
+        if (!grid) return;
+        const countLabel = document.getElementById('galleryCountLabel');
+        if (countLabel) countLabel.innerText = 'GhostAgent™ Pilot • Automação & Aquecimento Autônomo 24/7';
+        grid.style.display = 'block';
+        grid.innerHTML = `
+          <div style="max-width: 1040px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px;">
+            <!-- BANNER HERO -->
+            <div style="background: linear-gradient(135deg, rgba(190, 242, 100, 0.12) 0%, rgba(56, 189, 248, 0.12) 100%); border: 1.5px solid rgba(190, 242, 100, 0.35); border-radius: 24px; padding: 32px; position: relative; overflow: hidden; box-shadow: 0 12px 40px rgba(0,0,0,0.5);">
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                <span style="background: linear-gradient(135deg, #bef264, #38bdf8); color: #000; font-size: 0.72rem; font-weight: 900; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px;">
+                  🤖 TECNOLOGIA EXCLUSIVA • AGENTE AUTÔNOMO 24/7
+                </span>
+                <span style="background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.4); color: #4ade80; font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 20px;">
+                  🟢 PROTOCOLO ZERO-BAN
+                </span>
+              </div>
+              
+              <h2 style="font-size: 2rem; font-weight: 900; color: #fff; margin: 0 0 10px 0; letter-spacing: -0.5px;">
+                GhostAgent™ Autopilot
+              </h2>
+              <p style="font-size: 0.92rem; color: #cbd5e1; max-width: 720px; line-height: 1.6; margin: 0 0 20px 0;">
+                O primeiro operador de IA do mundo que controla o celular Android na nuvem via <strong>toques reais com Curvas de Bézier e velocidade humana</strong>. Ele aquece sua conta rolando Reels, posta fotos da galeria com EXIF de iPhone e responde DMs e comentários no Instagram e TikTok — <strong>sem tocar em nenhuma API oficial da Meta</strong>.
+              </p>
+
+              <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <button onclick="openGhostPlansModal()" style="background: var(--accent-lime); color: #000; font-weight: 900; font-size: 0.9rem; border: none; padding: 13px 24px; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 20px rgba(190, 242, 100, 0.35); display: flex; align-items: center; gap: 8px;">
+                  🚀 Ativar GhostAgent™ na Musa (R$ 497/mês)
+                </button>
+                <button onclick="showToast('🧪 Simulação de piloto automático ativada!', 3000)" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; font-weight: 700; font-size: 0.9rem; padding: 13px 20px; border-radius: 12px; cursor: pointer;">
+                  ⚙️ Configurar Parâmetros de Aquecimento
+                </button>
+              </div>
+            </div>
+
+            <!-- CARDS DOS 4 PILARES DO AGENTE -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px;">
+              <div style="background: rgba(18, 22, 32, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 18px; padding: 22px; display: flex; flex-direction: column; gap: 10px;">
+                <div style="font-size: 2rem;">🦾</div>
+                <h4 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">Toque Humano (Bézier)</h4>
+                <p style="font-size: 0.78rem; color: #94a3b8; line-height: 1.5; margin: 0;">
+                  Nada de coordenadas exatas de robô. O agente executa gestos com variação de aceleração, micro-hesitação e pequenos tremores naturais idênticos a um polegar real.
+                </p>
+                <div style="margin-top: auto; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: #38bdf8;">
+                  ✓ Algoritmo Anti-Bot 100% Imune
+                </div>
+              </div>
+
+              <div style="background: rgba(18, 22, 32, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 18px; padding: 22px; display: flex; flex-direction: column; gap: 10px;">
+                <div style="font-size: 2rem;">☕</div>
+                <h4 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">Aquecimento (Warm-up)</h4>
+                <p style="font-size: 0.78rem; color: #94a3b8; line-height: 1.5; margin: 0;">
+                  Entra em horários aleatórios ao longo do dia, assiste a Reels do nicho da musa por 10 a 20 minutos, curte posts e assiste Stories para gerar confiança no algoritmo.
+                </p>
+                <div style="margin-top: auto; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: #bef264;">
+                  ✓ Score Máximo de Conta Saudável
+                </div>
+              </div>
+
+              <div style="background: rgba(18, 22, 32, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 18px; padding: 22px; display: flex; flex-direction: column; gap: 10px;">
+                <div style="font-size: 2rem;">📸</div>
+                <h4 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">Postador nos Picos</h4>
+                <p style="font-size: 0.78rem; color: #94a3b8; line-height: 1.5; margin: 0;">
+                  Pega as fotos interpoladas com metadados Apple da Galeria e posta no Feed, Stories e Reels nos horários de maior engajamento com legendas persuasivas.
+                </p>
+                <div style="margin-top: auto; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: #34d399;">
+                  ✓ Posts às 12h, 18h e 21h cravados
+                </div>
+              </div>
+
+              <div style="background: rgba(18, 22, 32, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 18px; padding: 22px; display: flex; flex-direction: column; gap: 10px;">
+                <div style="font-size: 2rem;">💬</div>
+                <h4 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">Respostas em Tom Real</h4>
+                <p style="font-size: 0.78rem; color: #94a3b8; line-height: 1.5; margin: 0;">
+                  O agente conhece a personalidade da musa e responde aos comentários e DMs com linguagem humanizada, carismática e natural, sem respostas robóticas.
+                </p>
+                <div style="margin-top: auto; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: #fde047;">
+                  ✓ Retenção & Conversão 24h
+                </div>
+              </div>
+            </div>
+
+            <!-- PAINEL DE SIMULAÇÃO / CONFIGURAÇÃO DO AGENTE -->
+            <div style="background: rgba(18, 22, 32, 0.95); border: 1.5px solid rgba(56, 189, 248, 0.35); border-radius: 20px; padding: 26px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px;">
+                <div>
+                  <h3 style="font-size: 1.15rem; font-weight: 800; color: #fff; margin: 0 0 4px 0;">Centro de Comando do GhostAgent™</h3>
+                  <p style="font-size: 0.76rem; color: var(--text-muted); margin: 0;">Defina o nicho e os hábitos autônomos que o agente executará no smartphone da Musa.</p>
+                </div>
+                <span style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; font-size: 0.72rem; font-weight: 800; padding: 4px 12px; border-radius: 8px;">
+                  Cloud ARM64 Engine Active
+                </span>
+              </div>
+
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 20px;">
+                <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px;">
+                  <label style="font-size: 0.74rem; font-weight: 800; color: #cbd5e1; display: block; margin-bottom: 6px;">Musa Alvo (Persona Dedicada):</label>
+                  <select style="width: 100%; background: #0a0b0f; border: 1px solid var(--border-subtle); color: #fff; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 0.82rem;">
+                    <option>Leninha (Musa Oficial) • Porta 5555</option>
+                    <option>Camila VIP • Porta 5556</option>
+                    <option>Bruna Fitness • Porta 5557</option>
+                  </select>
+                </div>
+
+                <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px;">
+                  <label style="font-size: 0.74rem; font-weight: 800; color: #cbd5e1; display: block; margin-bottom: 6px;">Nicho de Conteúdo & Interesses:</label>
+                  <select style="width: 100%; background: #0a0b0f; border: 1px solid var(--border-subtle); color: #fff; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 0.82rem;">
+                    <option>Fitness, Treino & Lifestyle Saudável</option>
+                    <option>Moda, Praia & Estética de Luxo</option>
+                    <option>Criadora Sensual & Ensaio Fotográfico VIP</option>
+                    <option>Culinária & Viagens Internacionais</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 10px; justify-content: flex-end; align-items: center; flex-wrap: wrap;">
+                <span style="font-size: 0.75rem; color: #94a3b8;">Plano recomendado para agências que gerenciam múltiplas musas:</span>
+                <button onclick="openGhostPlansModal()" style="background: linear-gradient(135deg, #bef264, #38bdf8); color: #000; font-weight: 900; font-size: 0.85rem; border: none; padding: 12px 22px; border-radius: 10px; cursor: pointer;">
+                  Desbloquear Agente no Plano Agency
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
 
       function renderGhostEditorSection(grid) {
         if (!grid) return;
@@ -9087,9 +9593,17 @@
         return null;
       }
 
+      // Banner promocional (SFR 2026) desativado por enquanto.
+      const GHOST_PROMO_BANNER_ENABLED = false;
+
       function initPromoBanner() {
         const bannerWrap = document.getElementById('ghostPromoBannerWrap');
         if (!bannerWrap) return;
+
+        if (!GHOST_PROMO_BANNER_ENABLED) {
+          bannerWrap.style.display = 'none';
+          return;
+        }
 
         const isHidden = sessionStorage.getItem('ghostlens_banner_dismissed') === 'true';
         const customConfig = getCustomBannerConfig();
@@ -9637,7 +10151,7 @@
       // Inicialização ao carregar página
       setTimeout(() => {
         initGhostAuth();
-        switchSection('imagem');
+        switchSection('inicio');
         initPromoBanner();
         initBrandAdminTrigger();
         setTimeout(() => { refreshInterpolationPriceUI(); }, 1200);

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-GhostTunnel 4G Core Service — Hetzner Server
+GhostTunnel 4G Core Service — Servidor Cloud
 Recebe conexões do celular 4G do usuário e roteia o tráfego do Android Redroid.
 """
 

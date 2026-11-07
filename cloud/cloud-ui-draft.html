@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07080c">
+  <title>GhostLens Cloud • Celulares na nuvem</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="cloud/cloud.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">G</div>
+        <div>
+          <div class="brand-name">GHOSTLENS <span>CLOUD</span></div>
+          <div class="brand-sub">Celulares na nuvem</div>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-item active" data-page="dashboard">
+          <span class="nav-icon">◫</span> Visão geral
+        </button>
+        <button class="nav-item" data-page="devices">
+          <span class="nav-icon">▣</span> Celulares
+          <span class="nav-count" id="deviceCount">3</span>
+        </button>
+        <button class="nav-item" data-page="agents">
+          <span class="nav-icon">✦</span> GhostAgent
+          <span class="soon">EM BREVE</span>
+        </button>
+        <button class="nav-item" data-page="library">
+          <span class="nav-icon">▤</span> Biblioteca
+        </button>
+        <button class="nav-item" data-page="billing">
+          <span class="nav-icon">◈</span> Faturamento
+        </button>
+        <button class="nav-item" data-page="settings">
+          <span class="nav-icon">⚙</span> Configurações
+        </button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="plan-card">
+          <div class="plan-row"><span class="plan-badge">PRO</span><span class="plan-label">Plano atual</span></div>
+          <div class="plan-title">5 celulares cloud</div>
+          <div class="plan-bar"><span style="width: 40%"></span></div>
+          <div class="plan-meta"><span>2 de 5 em uso</span><span>Servidor Cloud</span></div>
+          <button class="ghost-btn small" data-page="billing">Gerenciar plano</button>
+        </div>
+        <div class="user-card">
+          <div class="avatar">L</div>
+          <div class="user-copy"><strong>Luan</strong><span>luan@ghostlens.ai</span></div>
+          <span class="user-dot"></span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="topbar-title">
+          <span class="crumb">GhostLens Cloud</span>
+          <span class="crumb-sep">/</span>
+          <span id="pageTitle">Visão geral</span>
+        </div>
+        <div class="topbar-actions">
+          <div class="server-pill" id="serverPill"><span class="dot online"></span><span id="serverLabel">Motor online</span><span class="server-region">BR</span></div>
+          <button class="icon-btn" title="Atualizar" id="btnRefresh">↻</button>
+          <button class="primary-btn" id="btnNewDevice"><span>+</span> Novo celular</button>
+        </div>
+      </header>
+
+      <div class="content">
+        <!-- DASHBOARD -->
+        <section class="page active" id="page-dashboard">
+          <div class="page-head">
+            <div>
+              <h1>Seus celulares na nuvem</h1>
+              <p>Android ARM64 nativo, IP próprio e controle pelo navegador. Sem BIOS, sem emulador pesado.</p>
+            </div>
+            <div class="head-actions">
+              <button class="ghost-btn" id="btnOpenPlayerHero">▶ Abrir player</button>
+            </div>
+          </div>
+
+          <div class="metrics">
+            <div class="metric">
+              <div class="metric-icon blue">▣</div>
+              <div><span class="metric-label">Celulares online</span><strong id="metricOnline">2</strong><span class="metric-sub">de 3 no total</span></div>
+            </div>
+            <div class="metric">
+              <div class="metric-icon lime">◉</div>
+              <div><span class="metric-label">Sessões ativas</span><strong id="metricActive">1</strong><span class="metric-sub">agora mesmo</span></div>
+            </div>
+            <div class="metric">
+              <div class="metric-icon violet">▤</div>
+              <div><span class="metric-label">RAM em uso</span><strong id="metricRam">0,7 GB</strong><span class="metric-sub">de 8 GB no host</span></div>
+            </div>
+            <div class="metric">
+              <div class="metric-icon amber">◈</div>
+              <div><span class="metric-label">Custo hoje</span><strong id="metricCost">R$ 0,00</strong><span class="metric-sub">por minuto só quando abre</span></div>
+            </div>
+          </div>
+
+          <div class="section-head">
+            <div><h2>Celulares</h2><p>Clique em um celular para abrir o player.</p></div>
+            <button class="link-btn" data-page="devices">Ver todos →</button>
+          </div>
+          <div class="device-grid" id="dashboardDevices"></div>
+
+          <div class="bottom-grid">
+            <div class="panel activity-panel">
+              <div class="panel-head"><h2>Atividade recente</h2><span class="live"><span class="dot online"></span> ao vivo</span></div>
+              <div class="activity-list">
+                <div class="activity"><span class="activity-dot lime"></span><div><strong>GhostDroid 01</strong> abriu o Instagram<span>há 2 min</span></div></div>
+                <div class="activity"><span class="activity-dot blue"></span><div>Player conectado em <strong>GhostDroid 01</strong><span>há 3 min</span></div></div>
+                <div class="activity"><span class="activity-dot violet"></span><div><strong>GhostDroid 02</strong> iniciou o Android 12 ARM64<span>há 18 min</span></div></div>
+                <div class="activity"><span class="activity-dot amber"></span><div>Proxy residencial renovado<span>há 1 h</span></div></div>
+              </div>
+            </div>
+
+            <div class="panel agent-panel">
+              <div class="agent-top"><span class="agent-icon">✦</span><span class="agent-badge">EM BREVE</span></div>
+              <h2>GhostAgent</h2>
+              <p>Um agente que abre o Instagram, posta stories, responde DMs e aquece contas por você — com aprovação humana antes de cada ação.</p>
+              <div class="agent-tags"><span>Visão + ADB</span><span>Agendamento</span><span>Guardrails</span></div>
+              <button class="ghost-btn" data-page="agents">Entrar na lista de espera</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- DEVICES -->
+        <section class="page" id="page-devices">
+          <div class="page-head">
+            <div><h1>Celulares</h1><p>Instâncias Redroid ARM64 no servidor cloud. Ligue, desligue e abra o player.</p></div>
+            <button class="primary-btn" id="btnNewDevice2"><span>+</span> Novo celular</button>
+          </div>
+          <div class="device-grid" id="allDevices"></div>
+        </section>
+
+        <!-- AGENTS -->
+        <section class="page" id="page-agents">
+          <div class="page-head">
+            <div><h1>GhostAgent</h1><p>Automação com visão e ADB. Em desenvolvimento — primeiro valide o motor e o anti-ban.</p></div>
+          </div>
+          <div class="panel agent-big">
+            <div class="agent-big-icon">✦</div>
+            <h2>O próximo salto do GhostLens</h2>
+            <p>O agente vai enxergar a tela do Android, decidir o próximo passo e executar via ADB. Tudo com fila, logs, limites e aprovação humana.</p>
+            <div class="agent-steps">
+              <div><span>01</span><strong>Enxergar</strong><p>Screenshot + OCR/visão para localizar botões e campos.</p></div>
+              <div><span>02</span><strong>Agir</strong><p>Toque, swipe, texto e teclas via ADB/scrcpy.</p></div>
+              <div><span>03</span><strong>Proteger</strong><p>Limites, pausas, aprovação e detecção de bloqueio.</p></div>
+            </div>
+            <button class="primary-btn" id="btnAgentWait">Quero testar o GhostAgent</button>
+          </div>
+        </section>
+
+        <!-- LIBRARY / BILLING / SETTINGS (visual placeholders) -->
+        <section class="page" id="page-library">
+          <div class="page-head"><div><h1>Biblioteca</h1><p>Mídias enviadas para os celulares, fontes e modelos de post.</p></div></div>
+          <div class="panel empty-panel"><div class="empty-icon">▤</div><h2>Biblioteca vazia</h2><p>Envie fotos e vídeos para usar nos celulares.</p><button class="ghost-btn">Importar mídia</button></div>
+        </section>
+        <section class="page" id="page-billing">
+          <div class="page-head"><div><h1>Faturamento</h1><p>Plano, uso por minuto e proxies.</p></div></div>
+          <div class="panel empty-panel"><div class="empty-icon">◈</div><h2>Plano PRO</h2><p>5 celulares cloud • 2 em uso • Servidor Cloud.</p><button class="ghost-btn" id="btnBilling">Ver detalhes</button></div>
+        </section>
+        <section class="page" id="page-settings">
+          <div class="page-head"><div><h1>Configurações</h1><p>Servidor, proxy, segurança e equipe.</p></div></div>
+          <div class="panel empty-panel"><div class="empty-icon">⚙</div><h2>Configurações</h2><p>Em breve: credenciais do host, proxy padrão, limite de sessões e membros da equipe.</p></div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <!-- PLAYER MODAL -->
+  <div class="player-backdrop" id="playerModal" hidden>
+    <div class="player-shell">
+      <header class="player-top">
+        <div class="player-device"><span class="dot online" id="playerDot"></span><strong id="playerName">GhostDroid 01</strong><span class="player-meta" id="playerMeta">Android 12 • ARM64 • 720×1280</span></div>
+        <div class="player-top-actions">
+          <span class="stream-pill"><span class="dot online"></span> 60 FPS</span>
+          <button class="icon-btn" id="btnClosePlayer" title="Fechar">✕</button>
+        </div>
+      </header>
+      <div class="player-body">
+        <div class="phone-stage">
+          <div class="phone">
+            <div class="phone-notch"></div>
+            <div class="phone-screen" id="phoneScreen">
+              <div class="screen-status"><span id="screenClock">12:31</span><span>▮▮▮ ⏻</span></div>
+              <div class="screen-wall">
+                <div class="wall-glow"></div>
+                <div class="screen-date">quinta, 7 de novembro</div>
+                <div class="screen-apps">
+                  <button class="screen-app" data-app="Instagram"><span class="app-icon insta">◎</span><span>Instagram</span></button>
+                  <button class="screen-app" data-app="TikTok"><span class="app-icon tiktok">♪</span><span>TikTok</span></button>
+                  <button class="screen-app" data-app="Aurora"><span class="app-icon aurora">A</span><span>Aurora</span></button>
+                  <button class="screen-app" data-app="Config"><span class="app-icon config">⚙</span><span>Config.</span></button>
+                </div>
+                <div class="screen-dock">
+                  <span class="dock-app insta">◎</span><span class="dock-app tiktok">♪</span><span class="dock-app aurora">A</span><span class="dock-app config">⚙</span>
+                </div>
+              </div>
+              <div class="android-nav">
+                <button data-key="back" title="Voltar">◀</button>
+                <button data-key="home" title="Início">●</button>
+                <button data-key="recents" title="Apps abertos">■</button>
+              </div>
+            </div>
+          </div>
+          <div class="stream-state" id="streamState"><span class="dot online"></span> Stream conectado • scrcpy ARM64</div>
+        </div>
+        <aside class="player-tools">
+          <div class="tool-group"><span class="tool-label">Controles</span>
+            <button class="tool-btn" data-tool="rotate">⟳ Girar</button>
+            <button class="tool-btn" data-tool="volume">◖ Volume</button>
+            <button class="tool-btn" data-tool="screenshot">▣ Print</button>
+          </div>
+          <div class="tool-group"><span class="tool-label">Celular</span>
+            <button class="tool-btn" data-tool="apk">+ Instalar APK</button>
+            <button class="tool-btn" data-tool="clipboard">▤ Área de transferência</button>
+            <button class="tool-btn" data-tool="fullscreen">⛶ Tela cheia</button>
+          </div>
+          <div class="tool-group"><span class="tool-label">Sessão</span>
+            <div class="session-box"><span>RAM</span><strong id="toolRam">0,7 GB</strong></div>
+            <div class="session-box"><span>IP</span><strong id="toolIp">127.0.0.1</strong></div>
+            <div class="session-box"><span>Proxy</span><strong>Residencial</strong></div>
+          </div>
+          <button class="danger-btn" id="btnStopDevice">■ Parar celular</button>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+  <script src="cloud/cloud.js"></script>
+</body>
+</html>
