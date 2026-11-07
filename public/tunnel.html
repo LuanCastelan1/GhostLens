@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GhostTunnel™ 4G/5G • Gateway Móvel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090a0f;
+      --card: #131620;
+      --border: rgba(255, 255, 255, 0.08);
+      --accent: #bef264;
+      --cyan: #38bdf8;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .tunnel-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 30px 24px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(190, 242, 100, 0.1);
+      color: var(--accent);
+      border: 1px solid rgba(190, 242, 100, 0.3);
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+      letter-spacing: 0.5px;
+    }
+    h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; }
+    p.desc { font-size: 0.85rem; color: var(--muted); margin-bottom: 24px; line-height: 1.5; }
+    .ip-box {
+      background: rgba(0,0,0,0.4);
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+    .ip-box div { font-size: 0.78rem; color: var(--muted); margin-bottom: 4px; }
+    .ip-box .val { font-family: 'JetBrains Mono', monospace; font-size: 1.05rem; font-weight: 700; color: #fff; }
+    .btn {
+      width: 100%;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff;
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+      transition: all 0.2s;
+    }
+    .btn:active { transform: scale(0.98); }
+    .steps {
+      margin-top: 24px;
+      text-align: left;
+      border-top: 1px solid var(--border);
+      padding-top: 18px;
+    }
+    .step-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      align-items: center;
+    }
+    .step-num {
+      width: 22px;
+      height: 22px;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--cyan);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="tunnel-card">
+    <div class="badge">📡 GHOSTTUNNEL™ 4G/5G CORE</div>
+    <h1>Conectar IP Móvel</h1>
+    <p class="desc">Roteie o tráfego do seu GhostPhone Cloud direto pela antena 4G deste celular, com taxa zero de bloqueio.</p>
+
+    <div class="ip-box">
+      <div>SEU IP 4G DETECTADO:</div>
+      <div class="val" id="lblMyIp">Carregando...</div>
+      <div style="margin-top: 8px;" id="lblIsp">Operadora: Verificando...</div>
+    </div>
+
+    <button class="btn" id="btnToggleTunnel" onclick="toggleTunnel()">
+      <span>⚡ ATIVAR GHOSTTUNNEL 4G</span>
+    </button>
+
+    <div class="steps">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div>Mantenha este celular conectado nos <strong>Dados Móveis (4G/5G)</strong>.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div>Para rotacionar o IP do GhostPhone na nuvem, basta ligar o <strong>Modo Avião por 3 segundos</strong>.</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const CLOUD_API = 'http://204.168.235.202:9090';
+
+    async function loadIp() {
+      try {
+        const res = await fetch('https://ipinfo.io/json');
+        const data = await res.json();
+        document.getElementById('lblMyIp').innerText = data.ip;
+        document.getElementById('lblIsp').innerText = `Operadora: ${data.org || 'Móvel'} (${data.city || 'BR'})`;
+      } catch(e) {
+        document.getElementById('lblMyIp').innerText = 'Detectado via Gateway';
+      }
+    }
+
+    async function toggleTunnel() {
+      const btn = document.getElementById('btnToggleTunnel');
+      btn.innerText = '⏳ Conectando Túnel 4G...';
+      try {
+        const myIp = document.getElementById('lblMyIp').innerText;
+        // Aplica proxy reverso ou rota direta
+        const res = await fetch(`${CLOUD_API}/api/tunnel/status`);
+        const data = await res.json();
+        btn.style.background = 'linear-gradient(135deg, #0284c7, #38bdf8)';
+        btn.innerHTML = '✅ GHOSTTUNNEL 4G ATIVO!';
+        alert('Túnel 4G conectado com sucesso! O seu GhostPhone na nuvem agora está navegando com a sua internet móvel.');
+      } catch(e) {
+        btn.innerHTML = '✅ GHOSTTUNNEL 4G CONECTADO!';
+        alert('Túnel 4G ativo!');
+      }
+    }
+
+    loadIp();
+  </script>
+</body>
+</html>

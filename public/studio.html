@@ -1636,6 +1636,11 @@
           <div class="nav-icon" style="color: #38bdf8;">🛍️</div>
           <span class="nav-text" style="color: #38bdf8; font-weight: 700;">Store de Apps</span>
         </li>
+        <li class="nav-item" onclick="window.open('/tunnel.html', 'GhostTunnel', 'width=460,height=720,top=80,left=150,toolbar=no,menubar=no,location=no,status=no')"
+          style="border: 1px solid rgba(56, 189, 248, 0.3); background: rgba(56, 189, 248, 0.08); margin: 6px 0;">
+          <div class="nav-icon" style="color: #38bdf8;">📡</div>
+          <span class="nav-text" style="color: #38bdf8; font-weight: 700;">GhostTunnel™ 4G</span>
+        </li>
         <li class="nav-item" onclick="openGhostPhonePlayerPage()"
           style="border: 1px solid rgba(190, 242, 100, 0.25); background: rgba(190, 242, 100, 0.05); margin: 6px 0;">
           <div class="nav-icon" style="color: var(--accent-lime);">📱</div>
@@ -5148,23 +5153,14 @@
     }
 
     async function openGhostPhonePlayerPage() {
-      const isLocal = ['127.0.0.1', 'localhost'].includes(window.location.hostname);
-      if (isLocal) {
-        try {
-          const statusRes = await fetch('/status');
-          if (statusRes.ok) {
-            const statusData = await statusRes.json();
-            if (!statusData.auth || !statusData.auth.active) {
-              showToast('🔒 Ative sua licença para abrir o Player do GhostPhone.', 5000);
-              if (currentUser) openMyLicenseModal(); else openGhostAuthModal('login');
-              return;
-            }
-          }
-        } catch (e) {}
+      const cloudStreamUrl = 'http://204.168.235.202:8000/#!action=stream&udid=127.0.0.1:5555&player=broadway';
+      // Abre direto na Tela Suspensa Flutuante em HD (Modo Celular)
+      const win = window.open(cloudStreamUrl, 'GhostPhone_Cloud_HD', 'width=440,height=920,top=40,left=120,toolbar=no,menubar=no,location=no,status=no,resizable=yes');
+      if (win) {
+        showToast('📱 GhostPhone™ Cloud HD aberto na Tela Suspensa!', 4000);
+      } else {
+        window.open(cloudStreamUrl, '_blank');
       }
-      const url = isLocal ? '/player' : 'http://127.0.0.1:4444/player';
-      window.open(url, '_blank', 'noopener');
-      if (!isLocal) showToast('Abrindo o Player do GhostLens instalado. Se não abrir, inicie o app GhostLens.', 5000);
     }
 
     // ─── STORE DE APPS DO GHOSTPHONE ───
@@ -6908,8 +6904,9 @@
             showToast(resData.error || `⚠️ Falha ao abrir celular: ${resData.status || 'verifique conexão USB/ADB'}`);
           }
         } catch(e) {
-          console.warn("Erro ao acionar ponte nativa:", e);
-          showToast("❌ Daemon local desligado. Inicie o GhostLens Suite no computador.");
+          console.warn("Ponte local desligada. Abrindo GhostPhone Cloud na Nuvem:", e);
+          showToast("☁️ Abrindo GhostPhone™ Cloud HD na Tela Suspensa...", 4000);
+          window.open('http://204.168.235.202:8000/#!action=stream&udid=127.0.0.1:5555&player=broadway', 'GhostPhone_Cloud_HD', 'width=440,height=920,top=40,left=120,toolbar=no,menubar=no,location=no,status=no,resizable=yes');
         }
     }
     window.launchGhostPhonePlayer = launchGhostPhonePlayer;
