@@ -117,6 +117,19 @@
       list-style: none;
     }
 
+    .nav-group-title {
+      font-size: 0.62rem;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #64748b;
+      padding: 14px 10px 4px 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      user-select: none;
+    }
+
     .nav-item {
       display: flex;
       align-items: center;
@@ -1609,10 +1622,29 @@
       </div>
 
       <ul class="nav-list">
-        <li class="nav-item" onclick="switchSection('inicio', this)">
-          <div class="nav-icon">🏠</div>
-          <span class="nav-text">Início</span>
+        <!-- 📱 CLOUD PHONE & ANTIDETECT -->
+        <div class="nav-group-title">
+          <span>📱</span> CLOUD PHONE & ANTIDETECT
+        </div>
+        <li class="nav-item" onclick="switchSection('musas', this)"
+          style="border: 1px solid rgba(56, 189, 248, 0.35); background: rgba(56, 189, 248, 0.09); margin: 3px 0; box-shadow: 0 0 14px rgba(56,189,248,0.12);">
+          <div class="nav-icon" style="color: #38bdf8; font-size: 1.1rem;">📱</div>
+          <span class="nav-text" style="color: #38bdf8; font-weight: 800; letter-spacing: -0.3px;">Minhas Personas</span>
+          <span style="margin-left: auto; background: #0284c7; color: #fff; font-size: 0.6rem; font-weight: 900; padding: 2px 6px; border-radius: 4px;">CORE</span>
         </li>
+        <li class="nav-item" onclick="window.open('/tunnel.html', 'GhostTunnel', 'width=460,height=720,top=80,left=150,toolbar=no,menubar=no,location=no,status=no')">
+          <div class="nav-icon" style="color: #38bdf8;">📡</div>
+          <span class="nav-text">GhostTunnel™ 4G</span>
+        </li>
+        <li class="nav-item" onclick="openGhostStoreModal()">
+          <div class="nav-icon">🛍️</div>
+          <span class="nav-text">Store de Apps</span>
+        </li>
+
+        <!-- ✨ ESTÚDIO CRIATIVO & IA -->
+        <div class="nav-group-title">
+          <span>✨</span> CRIAÇÃO & ESTÚDIO IA
+        </div>
         <li class="nav-item active" onclick="switchSection('imagem', this)">
           <div class="nav-icon">🖼️</div>
           <span class="nav-text">Imagens & Camuflagem</span>
@@ -1621,55 +1653,34 @@
           <div class="nav-icon">📹</div>
           <span class="nav-text">Vídeos & 60 FPS</span>
         </li>
-        <li class="nav-item" onclick="switchSection('editor', this)"
-          style="border: 1px solid rgba(56, 189, 248, 0.35); background: rgba(56, 189, 248, 0.08); margin: 6px 0; box-shadow: 0 0 14px rgba(56,189,248,0.12);">
-          <div class="nav-icon" style="color: #38bdf8; font-size: 1.15rem;">🎬</div>
-          <span class="nav-text" style="color: #38bdf8; font-weight: 800; letter-spacing: -0.3px;">Editor de Vídeo</span>
+        <li class="nav-item" onclick="switchSection('editor', this)">
+          <div class="nav-icon">🎬</div>
+          <span class="nav-text">Editor de Vídeo Multi-Trilha</span>
         </li>
-        <li class="nav-item" onclick="switchSection('musas', this)"
-          style="border: 1px solid rgba(56, 189, 248, 0.35); background: rgba(56, 189, 248, 0.08); margin: 6px 0; box-shadow: 0 0 14px rgba(56,189,248,0.12);">
-          <div class="nav-icon" style="color: #38bdf8; font-size: 1.15rem;">📱</div>
-          <span class="nav-text" style="color: #38bdf8; font-weight: 800; letter-spacing: -0.3px;">GhostPhone™ • Personas</span>
+
+        <!-- 🤖 GHOSTAGENT™ AUTOPILOT -->
+        <div class="nav-group-title">
+          <span>🤖</span> AUTÔNOMO 24/7
+        </div>
+        <li class="nav-item" onclick="switchSection('ghostagent', this)"
+          style="border: 1px solid rgba(190, 242, 100, 0.35); background: linear-gradient(135deg, rgba(190, 242, 100, 0.08), rgba(56, 189, 248, 0.08)); margin: 3px 0;">
+          <div class="nav-icon" style="color: var(--accent-lime); font-size: 1.1rem;">🦾</div>
+          <span class="nav-text" style="color: #fff; font-weight: 800;">GhostAgent™ Pilot</span>
+          <span style="margin-left: auto; background: linear-gradient(135deg, #bef264, #38bdf8); color: #000; font-size: 0.6rem; font-weight: 900; padding: 2px 6px; border-radius: 4px;">NOVO</span>
         </li>
-        <li class="nav-item" onclick="openGhostStoreModal()"
-          style="border: 1px solid rgba(56, 189, 248, 0.3); background: rgba(56, 189, 248, 0.07); margin: 6px 0;">
-          <div class="nav-icon" style="color: #38bdf8;">🛍️</div>
-          <span class="nav-text" style="color: #38bdf8; font-weight: 700;">Store de Apps</span>
-        </li>
-        <li class="nav-item" onclick="window.open('/tunnel.html', 'GhostTunnel', 'width=460,height=720,top=80,left=150,toolbar=no,menubar=no,location=no,status=no')"
-          style="border: 1px solid rgba(56, 189, 248, 0.3); background: rgba(56, 189, 248, 0.08); margin: 6px 0;">
-          <div class="nav-icon" style="color: #38bdf8;">📡</div>
-          <span class="nav-text" style="color: #38bdf8; font-weight: 700;">GhostTunnel™ 4G</span>
-        </li>
-        <li class="nav-item" onclick="openGhostPhonePlayerPage()"
-          style="border: 1px solid rgba(190, 242, 100, 0.25); background: rgba(190, 242, 100, 0.05); margin: 6px 0;">
-          <div class="nav-icon" style="color: var(--accent-lime);">📱</div>
-          <span class="nav-text" style="color: var(--accent-lime); font-weight: 700;">Player do GhostPhone</span>
-        </li>
+
+        <!-- 💼 GESTÃO & ASSINATURA -->
+        <div class="nav-group-title">
+          <span>💼</span> GESTÃO & CONTA
+        </div>
         <li class="nav-item" onclick="openGhostPlansModal()"
-          style="border: 1px solid rgba(253, 224, 71, 0.25); background: rgba(253, 224, 71, 0.05); margin: 6px 0;">
+          style="border: 1px solid rgba(253, 224, 71, 0.25); background: rgba(253, 224, 71, 0.05); margin: 3px 0;">
           <div class="nav-icon" style="color: #fde047;">👑</div>
-          <span class="nav-text" style="color: #fde047; font-weight: 700;">Planos & Assinaturas</span>
+          <span class="nav-text" style="color: #fde047; font-weight: 800;">Planos & Assinaturas</span>
         </li>
-        <li class="nav-item" onclick="openMyLicenseModal()"
-          style="border: 1px solid rgba(190, 242, 100, 0.25); background: rgba(190, 242, 100, 0.05); margin: 6px 0;">
+        <li class="nav-item" onclick="openMyLicenseModal()">
           <div class="nav-icon" style="color: var(--accent-lime);">🔑</div>
-          <span class="nav-text" style="color: var(--accent-lime); font-weight: 700;">Minha Licença</span>
-        </li>
-        <li class="nav-item" onclick="startActivationTutorial(true)"
-          style="border: 1px solid rgba(167, 139, 250, 0.3); background: rgba(167, 139, 250, 0.06); margin: 6px 0;">
-          <div class="nav-icon" style="color: #c4b5fd;">🎓</div>
-          <span class="nav-text" style="color: #c4b5fd; font-weight: 700;">Tutorial de Ativação</span>
-        </li>
-        <li class="nav-item" onclick="openCompatibilityPage()"
-          style="border: 1px solid rgba(190, 242, 100, 0.25); background: rgba(190, 242, 100, 0.05); margin: 6px 0;">
-          <div class="nav-icon" style="color: var(--accent-lime);">🩺</div>
-          <span class="nav-text" style="color: var(--accent-lime); font-weight: 700;">Compatibilidade do PC</span>
-        </li>
-        <li class="nav-item" onclick="window.open('/download', '_blank')"
-          style="border: 1px solid rgba(190, 242, 100, 0.25); background: rgba(190, 242, 100, 0.05); margin: 6px 0;">
-          <div class="nav-icon" style="color: var(--accent-lime);">⬇️</div>
-          <span class="nav-text" style="color: var(--accent-lime); font-weight: 700;">Baixar App Desktop</span>
+          <span class="nav-text">Minha Licença</span>
         </li>
       </ul>
     </div>
@@ -3047,64 +3058,66 @@
 
       <!-- Grid dos 3 Planos Oficiais -->
       <div
-        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; margin-bottom: 24px;">
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; margin-bottom: 24px;">
 
-        <!-- CARD SOLO (1 MUSA) -->
+        <!-- CARD STARTER (2 MUSAS) -->
         <div
-          style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); border-radius: 18px; padding: 20px; display: flex; flex-direction: column; text-align: center; transition: 0.2s;"
+          style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-subtle); border-radius: 18px; padding: 22px; display: flex; flex-direction: column; text-align: center; transition: 0.2s;"
           onmouseover="this.style.borderColor='var(--accent-lime)'"
           onmouseout="this.style.borderColor='var(--border-subtle)'">
           <div style="font-size: 0.72rem; font-weight: 800; color: #bef264; text-transform: uppercase; margin-bottom: 4px;">
-            🥉 INICIANTE SOLO</div>
-          <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0 0 6px 0;">1 GhostPhone™</h3>
-          <div style="font-size: 1.6rem; font-weight: 900; color: #fff; margin-bottom: 4px;">R$ 49,90<span
+            🥉 INICIANTE STARTER</div>
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0 0 6px 0;">2 GhostPhones™ Cloud</h3>
+          <div style="font-size: 1.7rem; font-weight: 900; color: #fff; margin-bottom: 4px;">R$ 97<span
               style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600;">/mês</span></div>
-          <div style="font-size: 0.7rem; color: #94a3b8; margin-bottom: 14px;">Ideal para sua 1ª musa no Instagram</div>
+          <div style="font-size: 0.7rem; color: #94a3b8; margin-bottom: 14px;">Conta principal + 1 contingência isolada</div>
           <div
             style="text-align: left; font-size: 0.74rem; color: #cbd5e1; display: flex; flex-direction: column; gap: 7px; margin-bottom: 18px; flex-grow: 1;">
-            <div>📱 1 Celular Android Virtual Dedicado</div>
-            <div>🍏 Camuflagem Apple C2PA Ilimitada</div>
-            <div>🎁 <strong>BÔNUS:</strong> GhostStudio FX Incluso</div>
-            <div>⚡ 15 Vídeos 60 FPS inclusos/mês</div>
-            <div>💎 Upscale 4K: Saldo avulso na carteira</div>
+            <div>📱 2 Celulares Android 12 Dedicados</div>
+            <div>⚡ 1 Celular ativo na RAM por vez</div>
+            <div>📡 <strong>GhostTunnel™ 4G Incluso:</strong> Custo zero de proxy!</div>
+            <div>🍏 Camuflagem Apple C2PA & EXIF Ilimitada</div>
+            <div>🎁 GhostStudio FX Suite Inclusa</div>
+            <div>⚡ 25 Vídeos 60 FPS inclusos/mês</div>
           </div>
           <button id="btn_sub_solo" onclick="startGhostProfileSubscription('solo')"
             style="background: rgba(255,255,255,0.08); border: 1px solid var(--border-subtle); color: #fff; font-weight: 800; padding: 11px; border-radius: 10px; cursor: pointer; font-size: 0.8rem; transition: 0.15s;"
             onmouseover="this.style.background='var(--accent-lime)'; this.style.color='#000';">
-            Assinar Solo • R$ 49,90/mês
+            Assinar Starter • R$ 97/mês
           </button>
         </div>
 
-        <!-- CARD PRO CREATOR (3 MUSAS - MAIS ESCOLHIDO) -->
+        <!-- CARD PRO CREATOR (6 MUSAS - MAIS ESCOLHIDO) -->
         <div
-          style="background: linear-gradient(180deg, rgba(190,242,100,0.08) 0%, rgba(15,17,23,0.95) 100%); border: 2px solid var(--accent-lime); border-radius: 18px; padding: 20px; display: flex; flex-direction: column; text-align: center; position: relative; box-shadow: 0 8px 30px rgba(190, 242, 100, 0.15);">
+          style="background: linear-gradient(180deg, rgba(190,242,100,0.08) 0%, rgba(15,17,23,0.95) 100%); border: 2px solid var(--accent-lime); border-radius: 18px; padding: 22px; display: flex; flex-direction: column; text-align: center; position: relative; box-shadow: 0 8px 30px rgba(190, 242, 100, 0.15);">
           <div
             style="position: absolute; top: -11px; left: 50%; transform: translateX(-50%); background: var(--accent-lime); color: #000; font-size: 0.64rem; font-weight: 900; padding: 3px 12px; border-radius: 12px; letter-spacing: 1px; text-transform: uppercase;">
-            🌟 MAIS ESCOLHIDO (KIT 3 MUSAS)
+            🌟 MAIS ESCOLHIDO (KIT 6 MUSAS)
           </div>
           <div style="font-size: 0.72rem; font-weight: 800; color: #bef264; text-transform: uppercase; margin-bottom: 4px;">
             🥈 PRO CRIADOR</div>
-          <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0 0 6px 0;">3 GhostPhones™</h3>
-          <div style="font-size: 1.6rem; font-weight: 900; color: #bef264; margin-bottom: 4px;">R$ 97<span
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0 0 6px 0;">6 GhostPhones™ Cloud</h3>
+          <div style="font-size: 1.7rem; font-weight: 900; color: #bef264; margin-bottom: 4px;">R$ 197<span
               style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600;">/mês</span></div>
-          <div style="font-size: 0.72rem; color: #34d399; font-weight: 700; margin-bottom: 14px;">Apenas R$ 32,33 por aparelho!</div>
+          <div style="font-size: 0.72rem; color: #34d399; font-weight: 700; margin-bottom: 14px;">Apenas R$ 32,83 por aparelho na nuvem!</div>
           <div
             style="text-align: left; font-size: 0.74rem; color: #cbd5e1; display: flex; flex-direction: column; gap: 7px; margin-bottom: 18px; flex-grow: 1;">
-            <div>📱📱📱 3 Celulares Android Independentes</div>
-            <div>🍏 Camuflagem Apple C2PA Ilimitada</div>
-            <div>🎁 <strong>BÔNUS:</strong> GhostStudio FX Suite Completa</div>
-            <div>⚡ 50 Vídeos 60 FPS inclusos/mês</div>
-            <div>🛡️ Proteção Máxima Contra Ban Cruzado</div>
+            <div>📱×6 6 Celulares Android 12 Independentes</div>
+            <div>⚡ <strong>2 Celulares Ativos Simultâneos</strong> (Lado a lado!)</div>
+            <div>📡 <strong>GhostTunnel™ 4G com Troca Rápida de IP</strong></div>
+            <div>🍏 Camuflagem Apple iPhone 16 Pro Max</div>
+            <div>⚡ 75 Vídeos 60 FPS inclusos/mês</div>
+            <div>🛡️ Isolamento Físico de Disco NVMe Anti-Ban</div>
           </div>
           <button id="btn_sub_pro" onclick="startGhostProfileSubscription('pro')"
             style="background: var(--accent-lime); border: none; color: #000; font-weight: 900; padding: 11px; border-radius: 10px; cursor: pointer; font-size: 0.84rem; box-shadow: 0 4px 16px rgba(190, 242, 100, 0.4);">
-            Assinar Pro • R$ 97/mês
+            Assinar Pro • R$ 197/mês
           </button>
         </div>
 
-        <!-- CARD AGENCY EMPIRE (10 MUSAS) -->
+        <!-- CARD AGENCY EMPIRE (15 MUSAS) -->
         <div
-          style="background: rgba(255,255,255,0.02); border: 1.5px solid rgba(234, 179, 8, 0.4); border-radius: 18px; padding: 20px; display: flex; flex-direction: column; text-align: center; transition: 0.2s;"
+          style="background: rgba(255,255,255,0.02); border: 1.5px solid rgba(234, 179, 8, 0.4); border-radius: 18px; padding: 22px; display: flex; flex-direction: column; text-align: center; transition: 0.2s;"
           onmouseover="this.style.borderColor='#fde047'" onmouseout="this.style.borderColor='rgba(234, 179, 8, 0.4)'">
           <div
             style="color: #fde047; font-size: 0.64rem; font-weight: 900; margin-bottom: 4px; letter-spacing: 1px; text-transform: uppercase;">
@@ -3112,22 +3125,23 @@
           </div>
           <div style="font-size: 0.72rem; font-weight: 800; color: #fde047; text-transform: uppercase; margin-bottom: 4px;">
             Agency Empire</div>
-          <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0 0 6px 0;">10 GhostPhones™</h3>
-          <div style="font-size: 1.6rem; font-weight: 900; color: #fde047; margin-bottom: 4px;">R$ 197<span
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff; margin: 0 0 6px 0;">15 GhostPhones™ Cloud</h3>
+          <div style="font-size: 1.7rem; font-weight: 900; color: #fde047; margin-bottom: 4px;">R$ 497<span
               style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600;">/mês</span></div>
-          <div style="font-size: 0.72rem; color: #34d399; font-weight: 700; margin-bottom: 14px;">Apenas R$ 19,70 por aparelho!</div>
+          <div style="font-size: 0.72rem; color: #34d399; font-weight: 700; margin-bottom: 14px;">Apenas R$ 33,13 por aparelho!</div>
           <div
             style="text-align: left; font-size: 0.74rem; color: #cbd5e1; display: flex; flex-direction: column; gap: 7px; margin-bottom: 18px; flex-grow: 1;">
-            <div>📱×10 10 Celulares Android Virtuais</div>
-            <div>🍏 Camuflagem Apple C2PA Ilimitada</div>
-            <div>🎁 <strong>BÔNUS VIP:</strong> GhostStudio FX Ilimitado</div>
-            <div>⚡ <strong>Vídeos 60 FPS ILIMITADOS</strong></div>
+            <div>📱×15 15 Celulares Android 12 Virtuais</div>
+            <div>⚡ <strong>5 Celulares Ativos Simultâneos</strong></div>
+            <div>📡 <strong>GhostTunnel™ 4G Residencial Ilimitado</strong></div>
+            <div>🤖 <strong>GhostAgent™ Pilot:</strong> Prioridade Máxima na Fila</div>
+            <div>👥 Acesso Multi-Operador para Equipes</div>
             <div>💬 Suporte VIP Direto no WhatsApp</div>
           </div>
           <button id="btn_sub_agency" onclick="startGhostProfileSubscription('agency')"
             style="background: rgba(234, 179, 8, 0.15); border: 1px solid #fde047; color: #fde047; font-weight: 900; padding: 11px; border-radius: 10px; cursor: pointer; font-size: 0.82rem; transition: 0.15s;"
             onmouseover="this.style.background='#fde047'; this.style.color='#000';">
-            Assinar Agency • R$ 197/mês
+            Assinar Agency • R$ 497/mês
           </button>
         </div>
 
@@ -3892,6 +3906,10 @@
         renderAntidetectMusasSection(grid);
         return;
       }
+      if (section === 'ghostagent') {
+        renderGhostAgentSection(grid);
+        return;
+      }
       if (section === 'ghoststudio') {
         renderGhostStudioSection(grid);
         return;
@@ -3981,7 +3999,8 @@
         'video': 'Vídeos & Interpolação 60 FPS',
         'editor': 'Ghost Studio Pro • Editor de Vídeo Multi-Trilha',
         'ghoststudio': 'Ghost Studio FX™ • Ghost Studio FX Engine',
-        'musas': 'GhostPhone™ & Personas • Celulares Android & Perfis'
+        'musas': 'GhostPhone™ & Personas • Celulares Android & Perfis',
+        'ghostagent': 'GhostAgent™ Pilot • Automação & Aquecimento Autônomo 24/7'
       };
       const subtitles = {
         'inicio': 'Camuflagem Apple iPhone, remoção total de IA e interpolação de alta fluidez',
@@ -3989,7 +4008,8 @@
         'video': 'Interpolação de 60 FPS fluida e exportação nativa Apple QuickTime .MOV',
         'editor': 'Timeline, transições, efeitos, texto, áudio, vozes IA e exportação MP4 no motor local',
         'ghoststudio': 'Remasterização 4K Apple Metal, Optical Flow 60 FPS e Laboratório de Voz Sensual',
-        'musas': 'Celulares reais emulados e containers com fingerprints exclusivas de iPhone para cada musa'
+        'musas': 'Celulares reais emulados e containers com fingerprints exclusivas de iPhone para cada musa',
+        'ghostagent': 'Operador autônomo com toques em curvas de Bézier humanas, sem APIs da Meta e aquecimento contínuo'
       };
 
       const titleEl = document.getElementById('sectionTitle');
@@ -5154,6 +5174,7 @@
 
     async function openGhostPhonePlayerPage() {
       const cloudStreamUrl = 'http://204.168.235.202:8000/#!action=stream&udid=127.0.0.1:5555&player=broadway';
+      // Abre direto na Tela Suspensa Flutuante em HD (Modo Celular)
       const win = window.open(cloudStreamUrl, 'GhostPhone_Cloud_HD', 'width=440,height=920,top=40,left=120,toolbar=no,menubar=no,location=no,status=no,resizable=yes');
       if (win) {
         showToast('📱 GhostPhone™ Cloud HD aberto na Tela Suspensa!', 4000);
@@ -6346,10 +6367,10 @@
       if (isAdminUser()) {
         return 999;
       }
-      const plan = (currentUser.user_metadata?.plan || localStorage.getItem('ghostlens_user_plan') || 'SOLO').toUpperCase();
-      if (plan.includes('AGENCY') || plan.includes('10')) return 10;
-      if (plan.includes('PRO') || plan.includes('3')) return 3;
-      return 1; // SOLO padrão: 1 celular
+      const plan = (currentUser.user_metadata?.plan || localStorage.getItem('ghostlens_user_plan') || 'STARTER').toUpperCase();
+      if (plan.includes('AGENCY') || plan.includes('15') || plan.includes('10')) return 15;
+      if (plan.includes('PRO') || plan.includes('6') || plan.includes('3')) return 6;
+      return 2; // STARTER padrão: 2 celulares (conta + contingência)
     }
 
     function openGhostProfileModal() {
@@ -6904,8 +6925,11 @@
           }
         } catch(e) {
           console.warn("Ponte local desligada. Abrindo GhostPhone Cloud na Nuvem:", e);
-          showToast("☁️ Abrindo GhostPhone™ Cloud HD na Tela Suspensa...", 4000);
-          window.open('http://204.168.235.202:8000/#!action=stream&udid=127.0.0.1:5555&player=broadway', 'GhostPhone_Cloud_HD', 'width=440,height=920,top=40,left=120,toolbar=no,menubar=no,location=no,status=no,resizable=yes');
+          const pIdx = (window.ghostProfilesCache || []).findIndex(x => x.id === profileId);
+          const personaPort = 5555 + (pIdx >= 0 ? pIdx : 0);
+          showToast(`☁️ Abrindo GhostPhone™ Cloud (${nome} • Porta ${personaPort}) na Tela Suspensa...`, 4000);
+          const streamUrl = `http://204.168.235.202:8000/#!action=stream&udid=127.0.0.1:${personaPort}&player=broadway`;
+          window.open(streamUrl, 'GhostPhone_Cloud_' + personaPort, 'width=440,height=920,top=40,left=120,toolbar=no,menubar=no,location=no,status=no,resizable=yes');
         }
     }
     window.launchGhostPhonePlayer = launchGhostPhonePlayer;
@@ -7326,14 +7350,20 @@
               <div style="display: flex; justify-content: space-between;"><span style="color: var(--text-muted);">Hardware:</span> <span style="color: #34d399;">Apple GPU + Ruído Único</span></div>
             </div>
 
-            <!-- Action Buttons: Abrir GhostPhone (Tela Suspensa) + Subir Fotos na Galeria -->
+            <!-- Action Buttons: Ligar Celular HD + GhostTunnel 4G + Galeria Apple -->
             <div style="margin-top: auto; display: flex; flex-direction: column; gap: 8px;">
-              <button onclick="launchGhostPhonePlayer('${p.id}')" title="Abrir GhostPhone™ (Janela Flutuante 60 FPS)" style="width: 100%; background: linear-gradient(135deg, #0284c7, #38bdf8); border: none; color: #fff; padding: 12px 16px; border-radius: 12px; font-weight: 800; font-size: 0.88rem; cursor: pointer; box-shadow: 0 4px 18px rgba(56, 189, 248, 0.4); display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform 0.15s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                📱 Abrir GhostPhone™ (Tela Suspensa)
+              <button onclick="launchGhostPhonePlayer('${p.id}')" title="Abrir GhostPhone™ Cloud (Janela Flutuante 60 FPS)" style="width: 100%; background: linear-gradient(135deg, #0284c7, #38bdf8); border: none; color: #fff; padding: 12px 16px; border-radius: 12px; font-weight: 800; font-size: 0.88rem; cursor: pointer; box-shadow: 0 4px 18px rgba(56, 189, 248, 0.4); display: flex; align-items: center; justify-content: center; gap: 8px; transition: transform 0.15s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                📱 Ligar Celular HD (Tela Suspensa)
               </button>
-              <button onclick="openStudioMediaUpload('${p.musa_nome}')" title="Enviar fotos ou vídeos direto para a Galeria deste celular" style="width: 100%; background: rgba(190, 242, 100, 0.12); border: 1px solid rgba(190, 242, 100, 0.35); color: #bef264; padding: 10px 14px; border-radius: 10px; font-weight: 700; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s;" onmouseover="this.style.background='rgba(190, 242, 100, 0.22)'" onmouseout="this.style.background='rgba(190, 242, 100, 0.12)'">
-                📸 Subir Fotos na Galeria (${p.musa_nome})
-              </button>
+              
+              <div style="display: flex; gap: 8px;">
+                <button onclick="window.open('/tunnel.html', 'GhostTunnel', 'width=460,height=720,top=80,left=150,toolbar=no,menubar=no,location=no,status=no')" title="Ativar ou Rotacionar IP Residencial 4G desta Musa" style="flex: 1; background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; padding: 10px 8px; border-radius: 10px; font-weight: 800; font-size: 0.76rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; transition: all 0.15s;" onmouseover="this.style.background='rgba(56, 189, 248, 0.22)'" onmouseout="this.style.background='rgba(56, 189, 248, 0.12)'">
+                  📡 GhostTunnel 4G
+                </button>
+                <button onclick="openStudioMediaUpload('${p.musa_nome}')" title="Enviar fotos ou vídeos direto para a Galeria deste celular com EXIF Apple" style="flex: 1; background: rgba(190, 242, 100, 0.12); border: 1px solid rgba(190, 242, 100, 0.35); color: #bef264; padding: 10px 8px; border-radius: 10px; font-weight: 800; font-size: 0.76rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; transition: all 0.15s;" onmouseover="this.style.background='rgba(190, 242, 100, 0.22)'" onmouseout="this.style.background='rgba(190, 242, 100, 0.12)'">
+                  📸 Galeria Apple
+                </button>
+              </div>
             </div>
           </div>
         `).join('');
@@ -7419,6 +7449,132 @@
         activeEffect: 'musa_glow',
         activeTransition: 'fade'
       };
+
+      function renderGhostAgentSection(grid) {
+        if (!grid) return;
+        const countLabel = document.getElementById('galleryCountLabel');
+        if (countLabel) countLabel.innerText = 'GhostAgent™ Pilot • Automação & Aquecimento Autônomo 24/7';
+        grid.style.display = 'block';
+        grid.innerHTML = `
+          <div style="max-width: 1040px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px;">
+            <!-- BANNER HERO -->
+            <div style="background: linear-gradient(135deg, rgba(190, 242, 100, 0.12) 0%, rgba(56, 189, 248, 0.12) 100%); border: 1.5px solid rgba(190, 242, 100, 0.35); border-radius: 24px; padding: 32px; position: relative; overflow: hidden; box-shadow: 0 12px 40px rgba(0,0,0,0.5);">
+              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                <span style="background: linear-gradient(135deg, #bef264, #38bdf8); color: #000; font-size: 0.72rem; font-weight: 900; padding: 4px 12px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px;">
+                  🤖 TECNOLOGIA EXCLUSIVA • AGENTE AUTÔNOMO 24/7
+                </span>
+                <span style="background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.4); color: #4ade80; font-size: 0.72rem; font-weight: 800; padding: 3px 10px; border-radius: 20px;">
+                  🟢 PROTOCOLO ZERO-BAN
+                </span>
+              </div>
+              
+              <h2 style="font-size: 2rem; font-weight: 900; color: #fff; margin: 0 0 10px 0; letter-spacing: -0.5px;">
+                GhostAgent™ Autopilot
+              </h2>
+              <p style="font-size: 0.92rem; color: #cbd5e1; max-width: 720px; line-height: 1.6; margin: 0 0 20px 0;">
+                O primeiro operador de IA do mundo que controla o celular Android na nuvem via <strong>toques reais com Curvas de Bézier e velocidade humana</strong>. Ele aquece sua conta rolando Reels, posta fotos da galeria com EXIF de iPhone e responde DMs e comentários no Instagram e TikTok — <strong>sem tocar em nenhuma API oficial da Meta</strong>.
+              </p>
+
+              <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <button onclick="openGhostPlansModal()" style="background: var(--accent-lime); color: #000; font-weight: 900; font-size: 0.9rem; border: none; padding: 13px 24px; border-radius: 12px; cursor: pointer; box-shadow: 0 6px 20px rgba(190, 242, 100, 0.35); display: flex; align-items: center; gap: 8px;">
+                  🚀 Ativar GhostAgent™ na Musa (R$ 497/mês)
+                </button>
+                <button onclick="showToast('🧪 Simulação de piloto automático ativada!', 3000)" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: #fff; font-weight: 700; font-size: 0.9rem; padding: 13px 20px; border-radius: 12px; cursor: pointer;">
+                  ⚙️ Configurar Parâmetros de Aquecimento
+                </button>
+              </div>
+            </div>
+
+            <!-- CARDS DOS 4 PILARES DO AGENTE -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px;">
+              <div style="background: rgba(18, 22, 32, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 18px; padding: 22px; display: flex; flex-direction: column; gap: 10px;">
+                <div style="font-size: 2rem;">🦾</div>
+                <h4 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">Toque Humano (Bézier)</h4>
+                <p style="font-size: 0.78rem; color: #94a3b8; line-height: 1.5; margin: 0;">
+                  Nada de coordenadas exatas de robô. O agente executa gestos com variação de aceleração, micro-hesitação e pequenos tremores naturais idênticos a um polegar real.
+                </p>
+                <div style="margin-top: auto; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: #38bdf8;">
+                  ✓ Algoritmo Anti-Bot 100% Imune
+                </div>
+              </div>
+
+              <div style="background: rgba(18, 22, 32, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 18px; padding: 22px; display: flex; flex-direction: column; gap: 10px;">
+                <div style="font-size: 2rem;">☕</div>
+                <h4 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">Aquecimento (Warm-up)</h4>
+                <p style="font-size: 0.78rem; color: #94a3b8; line-height: 1.5; margin: 0;">
+                  Entra em horários aleatórios ao longo do dia, assiste a Reels do nicho da musa por 10 a 20 minutos, curte posts e assiste Stories para gerar confiança no algoritmo.
+                </p>
+                <div style="margin-top: auto; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: #bef264;">
+                  ✓ Score Máximo de Conta Saudável
+                </div>
+              </div>
+
+              <div style="background: rgba(18, 22, 32, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 18px; padding: 22px; display: flex; flex-direction: column; gap: 10px;">
+                <div style="font-size: 2rem;">📸</div>
+                <h4 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">Postador nos Picos</h4>
+                <p style="font-size: 0.78rem; color: #94a3b8; line-height: 1.5; margin: 0;">
+                  Pega as fotos interpoladas com metadados Apple da Galeria e posta no Feed, Stories e Reels nos horários de maior engajamento com legendas persuasivas.
+                </p>
+                <div style="margin-top: auto; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: #34d399;">
+                  ✓ Posts às 12h, 18h e 21h cravados
+                </div>
+              </div>
+
+              <div style="background: rgba(18, 22, 32, 0.85); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 18px; padding: 22px; display: flex; flex-direction: column; gap: 10px;">
+                <div style="font-size: 2rem;">💬</div>
+                <h4 style="font-size: 1.05rem; font-weight: 800; color: #fff; margin: 0;">Respostas em Tom Real</h4>
+                <p style="font-size: 0.78rem; color: #94a3b8; line-height: 1.5; margin: 0;">
+                  O agente conhece a personalidade da musa e responde aos comentários e DMs com linguagem humanizada, carismática e natural, sem respostas robóticas.
+                </p>
+                <div style="margin-top: auto; font-size: 0.7rem; font-family: 'JetBrains Mono', monospace; color: #fde047;">
+                  ✓ Retenção & Conversão 24h
+                </div>
+              </div>
+            </div>
+
+            <!-- PAINEL DE SIMULAÇÃO / CONFIGURAÇÃO DO AGENTE -->
+            <div style="background: rgba(18, 22, 32, 0.95); border: 1.5px solid rgba(56, 189, 248, 0.35); border-radius: 20px; padding: 26px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px;">
+                <div>
+                  <h3 style="font-size: 1.15rem; font-weight: 800; color: #fff; margin: 0 0 4px 0;">Centro de Comando do GhostAgent™</h3>
+                  <p style="font-size: 0.76rem; color: var(--text-muted); margin: 0;">Defina o nicho e os hábitos autônomos que o agente executará no smartphone da Musa.</p>
+                </div>
+                <span style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.4); color: #38bdf8; font-size: 0.72rem; font-weight: 800; padding: 4px 12px; border-radius: 8px;">
+                  Hetzner ARM64 Engine Active
+                </span>
+              </div>
+
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 20px;">
+                <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px;">
+                  <label style="font-size: 0.74rem; font-weight: 800; color: #cbd5e1; display: block; margin-bottom: 6px;">Musa Alvo (Persona Dedicada):</label>
+                  <select style="width: 100%; background: #0a0b0f; border: 1px solid var(--border-subtle); color: #fff; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 0.82rem;">
+                    <option>Leninha (Musa Oficial) • Porta 5555</option>
+                    <option>Camila VIP • Porta 5556</option>
+                    <option>Bruna Fitness • Porta 5557</option>
+                  </select>
+                </div>
+
+                <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px;">
+                  <label style="font-size: 0.74rem; font-weight: 800; color: #cbd5e1; display: block; margin-bottom: 6px;">Nicho de Conteúdo & Interesses:</label>
+                  <select style="width: 100%; background: #0a0b0f; border: 1px solid var(--border-subtle); color: #fff; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 0.82rem;">
+                    <option>Fitness, Treino & Lifestyle Saudável</option>
+                    <option>Moda, Praia & Estética de Luxo</option>
+                    <option>Criadora Sensual & Ensaio Fotográfico VIP</option>
+                    <option>Culinária & Viagens Internacionais</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 10px; justify-content: flex-end; align-items: center; flex-wrap: wrap;">
+                <span style="font-size: 0.75rem; color: #94a3b8;">Plano recomendado para agências que gerenciam múltiplas musas:</span>
+                <button onclick="openGhostPlansModal()" style="background: linear-gradient(135deg, #bef264, #38bdf8); color: #000; font-weight: 900; font-size: 0.85rem; border: none; padding: 12px 22px; border-radius: 10px; cursor: pointer;">
+                  Desbloquear Agente no Plano Agency
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
 
       function renderGhostEditorSection(grid) {
         if (!grid) return;
