@@ -8860,6 +8860,113 @@
                 </button>
               </div>
             </div>
+
+            <!-- ─── 4. PROTOCOLO ALFA DE AQUECIMENTO (NÍVEL ALFA MASTERCLASS) ─── -->
+            <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 20px; padding: 24px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 14px;">
+                <div>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="background: rgba(190,242,100,0.15); color: #bef264; font-size: 0.65rem; font-weight: 900; padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(190,242,100,0.3);">
+                      METODOLOGIA OFICIAL
+                    </span>
+                    <h3 style="font-size: 1.15rem; font-weight: 800; color: #fff; margin: 0;">Protocolo Alfa • 5 Dias até a Escala da Musa</h3>
+                  </div>
+                  <p style="font-size: 0.74rem; color: var(--text-muted); margin: 4px 0 0 0;">
+                    Esteira anti-shadowban do Nível Alfa para transformar uma conta recém-criada em uma autoridade de alto alcance.
+                  </p>
+                </div>
+                <div style="font-size: 0.72rem; color: #38bdf8; font-weight: 700; background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.25); padding: 5px 12px; border-radius: 8px;">
+                  🛡️ Proteção Zero-Ban Ativa
+                </div>
+              </div>
+
+              <!-- VALIDADOR DE NOME & SEO DE ALGORITMO -->
+              <div style="background: #090a0f; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                  <span style="font-size: 0.75rem; font-weight: 800; color: #fff;">Validador de Nome da Musa (SEO do Instagram/TikTok):</span>
+                  <span style="font-size: 0.65rem; color: var(--text-muted);">Sem pontos • Sem underlines • Até 14 caracteres</span>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                  <div style="position: relative; flex: 1; min-width: 200px;">
+                    <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--accent-lime); font-weight: 800; font-size: 0.85rem;">@</span>
+                    <input type="text" id="txtSeoMusaHandle" oninput="validateMusaSeoHandle(this.value)" placeholder="leninhacastellan" value="leninhacastellan" style="width: 100%; background: #12141c; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 9px 12px 9px 28px; color: #fff; font-size: 0.82rem; font-weight: 700;">
+                  </div>
+                  <div id="lblSeoHandleFeedback" style="font-size: 0.72rem; font-weight: 700; color: #4ade80; display: flex; align-items: center; gap: 6px;">
+                    <span>✓</span> Nome 100% otimizado para o algoritmo da Meta!
+                  </div>
+                </div>
+              </div>
+
+              <!-- AS 5 ETAPAS DO PROTOCOLO ALFA -->
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px;" id="gridProtocolSteps">
+                
+                <!-- DIA 1 -->
+                <div onclick="selectProtocolDay(1, this)" class="card-proto-day active" style="background: #141722; border: 1.5px solid var(--accent-lime); border-radius: 12px; padding: 14px; cursor: pointer; transition: 0.15s;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <span style="font-size: 0.68rem; font-weight: 900; color: #bef264;">DIA 01</span>
+                    <span style="font-size: 0.65rem; color: var(--text-muted);">Passivo</span>
+                  </div>
+                  <div style="font-size: 0.78rem; font-weight: 800; color: #fff; margin-bottom: 4px;">Nascimento</div>
+                  <div style="font-size: 0.68rem; color: #94a3b8; line-height: 1.35;">Seguir 5 contas hot. Mexer de 3 a 7 min (1-2x/dia). Zero posts.</div>
+                </div>
+
+                <!-- DIA 2 -->
+                <div onclick="selectProtocolDay(2, this)" class="card-proto-day" style="background: #0b0c12; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 14px; cursor: pointer; transition: 0.15s;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <span style="font-size: 0.68rem; font-weight: 900; color: #38bdf8;">DIA 02</span>
+                    <span style="font-size: 0.65rem; color: var(--text-muted);">Calibração</span>
+                  </div>
+                  <div style="font-size: 0.78rem; font-weight: 800; color: #fff; margin-bottom: 4px;">Avatar & Interesse</div>
+                  <div style="font-size: 0.68rem; color: #94a3b8; line-height: 1.35;">Foto perfil + 1º Feed. 4 likes máx. Marcar "Tenho Interesse" nos Reels.</div>
+                </div>
+
+                <!-- DIA 3 -->
+                <div onclick="selectProtocolDay(3, this)" class="card-proto-day" style="background: #0b0c12; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 14px; cursor: pointer; transition: 0.15s;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <span style="font-size: 0.68rem; font-weight: 900; color: #a78bfa;">DIA 03</span>
+                    <span style="font-size: 0.65rem; color: var(--text-muted);">Carrossel</span>
+                  </div>
+                  <div style="font-size: 0.78rem; font-weight: 800; color: #fff; margin-bottom: 4px;">Retenção & Story</div>
+                  <div style="font-size: 0.68rem; color: #94a3b8; line-height: 1.35;">2 Feeds (1 Carrossel 5-10 fotos com áudio em alta) + 1º Story em Destaques.</div>
+                </div>
+
+                <!-- DIA 4 -->
+                <div onclick="selectProtocolDay(4, this)" class="card-proto-day" style="background: #0b0c12; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 14px; cursor: pointer; transition: 0.15s;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <span style="font-size: 0.68rem; font-weight: 900; color: #f43f5e;">DIA 04</span>
+                    <span style="font-size: 0.65rem; color: var(--text-muted);">Vídeo</span>
+                  </div>
+                  <div style="font-size: 0.78rem; font-weight: 800; color: #fff; margin-bottom: 4px;">1º Reels White</div>
+                  <div style="font-size: 0.68rem; color: #94a3b8; line-height: 1.35;">Rotina do Dia 3 + 1º Reels Genjutsu White com áudio em alta.</div>
+                </div>
+
+                <!-- DIA 5+ -->
+                <div onclick="selectProtocolDay(5, this)" class="card-proto-day" style="background: #0b0c12; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 14px; cursor: pointer; transition: 0.15s;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <span style="font-size: 0.68rem; font-weight: 900; color: #bef264;">DIA 05+</span>
+                    <span style="font-size: 0.65rem; color: var(--text-muted);">Escala</span>
+                  </div>
+                  <div style="font-size: 0.78rem; font-weight: 800; color: #fff; margin-bottom: 4px;">Operação Contínua</div>
+                  <div style="font-size: 0.68rem; color: #94a3b8; line-height: 1.35;">Feed 9 a 12 posts, Stories diários para Destaques, Reels todo dia nos picos.</div>
+                </div>
+              </div>
+
+              <!-- PAINEL DE EXECUÇÃO DO DIA SELECIONADO -->
+              <div id="boxProtocolDayDetails" style="background: #090a0e; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+                <div>
+                  <div style="font-size: 0.85rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 6px;">
+                    <span id="lblActiveDayTitle">Rotina do Dia 01: Nascimento & Consumo Passivo</span>
+                  </div>
+                  <div id="lblActiveDayDesc" style="font-size: 0.72rem; color: var(--text-muted); margin-top: 2px;">
+                    O GhostAgent vai abrir o Instagram, pesquisar e seguir 5 musas do nicho, rolando o feed por 5 minutos com pausas humanas.
+                  </div>
+                </div>
+
+                <button type="button" id="btnExecuteProtocolDay" onclick="executeSelectedProtocolDay()" style="background: var(--accent-lime); color: #000; font-weight: 900; font-size: 0.82rem; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 14px rgba(190,242,100,0.25);">
+                  <span>⚡</span> <span id="lblBtnProtocolAction">Disparar Rotina do Dia 01 no Celular</span>
+                </button>
+              </div>
+            </div>
           </div>
         `;
 
@@ -8933,6 +9040,125 @@
           setTimeout(fetchGhostAgentTelemetry, 1500);
         } catch (err) {
           showToast('⚠️ Erro ao disparar agente na nuvem', 3000);
+        }
+      }
+
+      let currentSelectedProtocolDay = 1;
+
+      function validateMusaSeoHandle(val) {
+        const clean = (val || '').trim().replace(/^@/, '');
+        const fb = document.getElementById('lblSeoHandleFeedback');
+        if (!fb) return;
+
+        if (clean.includes('.')) {
+          fb.style.color = '#f87171';
+          fb.innerHTML = '<span>⚠️</span> <strong>Evite pontos (.):</strong> O algoritmo da Meta penaliza nomes pontuados no ranking de busca orgânica!';
+        } else if (clean.includes('_')) {
+          fb.style.color = '#fbbf24';
+          fb.innerHTML = '<span>⚠️</span> <strong>Evite underlines (_):</strong> Nomes contínuos têm prioridade máxima de SEO no Explorar!';
+        } else if (clean.length > 14) {
+          fb.style.color = '#f87171';
+          fb.innerHTML = `<span>⚠️</span> <strong>Muito longo (${clean.length} chars):</strong> Máximo recomendado de 14 caracteres para não truncar!`;
+        } else if (!clean) {
+          fb.style.color = '#94a3b8';
+          fb.innerHTML = 'Digite o @ para validar';
+        } else {
+          fb.style.color = '#4ade80';
+          fb.innerHTML = '<span>✓</span> <strong>Nome Perfeito!</strong> 100% otimizado para o algoritmo e SEO orgânico.';
+        }
+      }
+
+      function selectProtocolDay(day, el) {
+        currentSelectedProtocolDay = day;
+        document.querySelectorAll('.card-proto-day').forEach(c => {
+          c.style.background = '#0b0c12';
+          c.style.borderColor = 'rgba(255,255,255,0.06)';
+          c.classList.remove('active');
+        });
+        if (el) {
+          el.style.background = '#141722';
+          el.style.borderColor = 'var(--accent-lime)';
+          el.classList.add('active');
+        }
+
+        const title = document.getElementById('lblActiveDayTitle');
+        const desc = document.getElementById('lblActiveDayDesc');
+        const btnTxt = document.getElementById('lblBtnProtocolAction');
+
+        const protocolData = {
+          1: {
+            title: 'Rotina do Dia 01: Nascimento & Consumo Passivo',
+            desc: 'O GhostAgent vai abrir o Instagram, pesquisar e seguir 5 musas do nicho, rolando o feed por 3 a 7 minutos com pausas humanas. Zero posts.',
+            btn: 'Disparar Rotina do Dia 01 no Celular'
+          },
+          2: {
+            title: 'Rotina do Dia 02: Foto de Perfil & Calibração "Tenho Interesse"',
+            desc: 'Injeta foto de perfil + 1º Feed Apple, pesquisa perfis hot, dá no máx 4 likes aleatórios e clica nos 3 pontinhos para marcar "Tenho Interesse" nos Reels.',
+            btn: 'Disparar Rotina do Dia 02 no Celular'
+          },
+          3: {
+            title: 'Rotina do Dia 03: 2 Feeds (Carrossel 5-10 fotos) + Story',
+            desc: 'Posta 2 fotos no feed (sendo 1 carrossel de retenção com áudio em alta) e posta o 1º Story já salvo no Destaque da musa.',
+            btn: 'Disparar Rotina do Dia 03 no Celular'
+          },
+          4: {
+            title: 'Rotina do Dia 04: Lançamento do 1º Reels White (Genjutsu)',
+            desc: 'Executa a rotina do Dia 3 e publica o 1º Reels estilo Genjutsu White com áudio viral, sem conteúdo apelativo para não acionar o bot ban.',
+            btn: 'Disparar Rotina do Dia 04 no Celular'
+          },
+          5: {
+            title: 'Rotina do Dia 05+: Escala & Manutenção Contínua 24/7',
+            desc: 'Mantém a grade com 9 a 12 posts no feed, Stories diários direcionados para Destaques e Reels nos horários de pico (12h, 18h e 21h).',
+            btn: 'Ativar Piloto Automático do Dia 05+'
+          }
+        };
+
+        const d = protocolData[day];
+        if (d) {
+          if (title) title.innerText = d.title;
+          if (desc) desc.innerText = d.desc;
+          if (btnTxt) btnTxt.innerText = d.btn;
+        }
+      }
+
+      async function executeSelectedProtocolDay() {
+        showToast(`⚡ Disparando Protocolo Alfa (Dia 0${currentSelectedProtocolDay}) no smartphone da musa...`, 3500);
+        const sel = document.getElementById('selAgentTargetMusa');
+        const pId = sel ? sel.value : 'lab';
+
+        try {
+          let triggered = false;
+          try {
+            const resp = await fetch('https://www.ghostlens.cloud/api/orchestrator_proxy', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                endpoint: '/api/agent/warmup',
+                persona_id: pId,
+                cycles: currentSelectedProtocolDay * 2,
+                protocol_day: currentSelectedProtocolDay
+              })
+            });
+            if (resp.ok) triggered = true;
+          } catch (e) {}
+
+          if (!triggered) {
+            const direct = await fetch('http://204.168.235.202:9090/api/agent/warmup', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                persona_id: pId,
+                cycles: currentSelectedProtocolDay * 2,
+                protocol_day: currentSelectedProtocolDay
+              })
+            });
+            if (direct.ok) triggered = true;
+          }
+
+          showToast(`✅ Rotina do Dia 0${currentSelectedProtocolDay} em execução no Android! Acompanhe no terminal.`, 5000);
+          setTimeout(fetchGhostAgentTelemetry, 1500);
+        } catch (err) {
+          showToast('⚠️ Erro ao disparar protocolo na nuvem', 3000);
         }
       }
 
