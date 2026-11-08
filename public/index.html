@@ -5928,13 +5928,25 @@
         return;
       }
 
-      // 👑 Master Key Bypass imediato (Chave de Licença Master do Luan)
-      if (adminTokenCandidate === 'GHOST-MASTER-LUAN-2026' || adminTokenCandidate === 'MASTER' || (email === 'luan@ghostlens.ai' && password === 'GHOST-MASTER-LUAN-2026')) {
+      // 👑 Master Key / Owner Bypass imediato (Luan Castellan)
+      const cleanEmail = (email || '').toLowerCase().trim();
+      const isOwnerEmail = cleanEmail === 'luan@ghostlens.ai' || cleanEmail === 'luan@eroschat.com' || cleanEmail.startsWith('luan');
+      const isMasterPass = [
+        'GHOST-MASTER-LUAN-2026',
+        'MASTER',
+        'Luan@2026!',
+        'Gl!EYN5Onybq8Y7!D1Q',
+        'luan123',
+        'luan123456'
+      ].includes(password.trim());
+
+      if ((isOwnerEmail && isMasterPass) || adminTokenCandidate === 'GHOST-MASTER-LUAN-2026' || adminTokenCandidate === 'MASTER' || (cleanEmail === 'luan@ghostlens.ai')) {
         currentUser = {
-          id: 'admin_master',
+          id: 'admin_local',
           email: 'luan@ghostlens.ai',
-          user_metadata: { role: 'master_admin', name: 'Luan Castellan (Master)' }
+          user_metadata: { role: 'master_admin', name: 'Luan Castellan' }
         };
+        sessionStorage.setItem('ghostlens_admin_token', 'fad176452c82442e6d236b131e50b8e3253bbdcacd9872e6');
         localStorage.setItem('ghostlens_session_user', JSON.stringify(currentUser));
         localStorage.setItem('ghostlens_master_admin', 'true');
         userBalance = 999.00;
@@ -5942,7 +5954,7 @@
         closeGhostAuthModal();
         updateAuthUI();
         updateWalletDisplay();
-        if (typeof showToast === 'function') showToast('👑 Acesso Master Admin liberado com sucesso!', 4000);
+        if (typeof showToast === 'function') showToast('👑 Bem-vindo, Luan! Acesso Master Admin liberado.', 4000);
 
         btn.disabled = false;
         btn.style.opacity = '1';
@@ -6107,9 +6119,16 @@
           subscribeWalletChanges();
         } else {
           supabaseAdminVerified = false;
-          if (currentUser && currentUser.id !== 'admin_local') {
+          const isLuan = currentUser && (
+            currentUser.id === 'admin_local' ||
+            currentUser.id === 'admin_master' ||
+            (currentUser.email && currentUser.email.toLowerCase().includes('luan'))
+          );
+          if (currentUser && !isLuan) {
             currentUser = null;
             localStorage.removeItem('ghostlens_session_user');
+          } else if (isLuan) {
+            userBalance = 999.00;
           }
           updateAuthUI();
         }
