@@ -3,6 +3,11 @@
   "rewrites": [
     { "source": "/studio", "destination": "/index.html" }
   ],
+  "functions": {
+    "api/wavespeed_proxy.js": {
+      "maxDuration": 60
+    }
+  },
   "headers": [
     {
       "source": "/(.*)",

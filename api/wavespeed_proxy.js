@@ -18,6 +18,7 @@ const {
   enforceRateLimit,
   supabaseRest
 } = require('../lib/ghostlens-backend');
+const { generateCreatorImage, creatorConfigured } = require('../lib/creator');
 
 const WAVESPEED_API_KEY = process.env.WAVESPEED_API_KEY || '';
 const WAVESPEED_API = (process.env.WAVESPEED_API_BASE || 'https://api.wavespeed.ai/api/v3').replace(/\/+$/, '');
@@ -126,8 +127,9 @@ module.exports = async (req, res) => {
   if (req.method === 'GET') {
     return res.status(200).json({
       status: 'online',
-      service: 'GhostLens WaveSpeed Proxy 1.0',
-      wavespeed: WAVESPEED_API_KEY ? 'configured' : 'not_configured'
+      service: 'GhostLens Media Proxy 1.1',
+      wavespeed: WAVESPEED_API_KEY ? 'configured' : 'not_configured',
+      creator: creatorConfigured ? 'configured' : 'not_configured'
     });
   }
 
@@ -135,8 +137,8 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'method_not_allowed' });
   }
 
-  if (!WAVESPEED_API_KEY || !SUPABASE_SERVICE_ROLE_KEY) {
-    console.error('[wavespeed_proxy] WaveSpeed/Supabase não configurados');
+  if (!SUPABASE_SERVICE_ROLE_KEY) {
+    console.error('[wavespeed_proxy] Supabase não configurado');
     return res.status(503).json({ error: 'proxy_not_configured' });
   }
 
@@ -166,6 +168,18 @@ module.exports = async (req, res) => {
 
     const body = req.body || {};
     const action = String(body.action || '').trim();
+
+    if (action === 'creator_generate') {
+      const result = await generateCreatorImage(body, user);
+      return res.status(result.status).json(result.payload);
+    }
+
+    if (!WAVESPEED_API_KEY) {
+      return res.status(503).json({
+        error: 'provider_not_configured',
+        message: 'WAVESPEED_API_KEY não configurada no servidor.'
+      });
+    }
 
     if (action === 'upload_ticket') {
       const filename = String(body.filename || 'ghostlens_video.mp4').slice(0, 180);

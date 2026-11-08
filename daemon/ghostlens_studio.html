@@ -2530,7 +2530,7 @@
   <div id="ghostProfileModal"
     style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(10px);">
     <div
-      style="background: #11131a; border: 1px solid rgba(190, 242, 100, 0.4); border-radius: 24px; padding: 28px; max-width: 480px; width: 92%; box-shadow: 0 25px 80px rgba(0,0,0,0.9); position: relative;">
+      style="background: #11131a; border: 1px solid rgba(190, 242, 100, 0.4); border-radius: 24px; padding: 28px; max-width: 580px; width: 94%; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 80px rgba(0,0,0,0.9); position: relative;">
       <button onclick="closeGhostProfileModal()"
         style="position: absolute; top: 16px; right: 16px; background: rgba(255,255,255,0.06); border: none; color: #94a3b8; width: 30px; height: 30px; border-radius: 8px; cursor: pointer;">✕</button>
 
@@ -2548,6 +2548,52 @@
             da Musa / Persona</label>
           <input type="text" id="profMusaName" required placeholder="Ex: Luana Martins"
             style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle); border-radius: 8px; padding: 9px 12px; color: #fff; font-size: 0.85rem; outline: none;">
+        </div>
+
+        <!-- GHOSTCREATOR: REFERÊNCIAS + DNA DA MUSA -->
+        <div style="background: #0d0e14; border: 1px solid rgba(190, 242, 100, 0.18); border-radius: 12px; padding: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 10px;">
+            <div>
+              <div style="font-size: 0.78rem; font-weight: 800; color: #fff;">Referências da Musa</div>
+              <div style="font-size: 0.68rem; color: #94a3b8; line-height: 1.35;">Fotos que o GhostCreator usa para manter rosto e corpo consistentes.</div>
+            </div>
+            <span id="profRefCount" style="font-size: 0.62rem; color: #bef264; background: rgba(190,242,100,0.08); border: 1px solid rgba(190,242,100,0.2); padding: 2px 7px; border-radius: 20px; white-space: nowrap;">0/3</span>
+          </div>
+          <input type="file" id="profRefInput" accept="image/*" multiple style="display: none;" onchange="handlePersonaRefFiles(this.files)">
+          <div id="profRefPreview" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;"></div>
+          <div style="font-size: 0.63rem; color: #64748b; margin-top: 8px;">JPG ou PNG • até 3 fotos • a primeira é a referência principal.</div>
+        </div>
+
+        <div style="background: #0d0e14; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 14px;">
+          <div style="font-size: 0.78rem; font-weight: 800; color: #fff; margin-bottom: 10px;">DNA da Musa</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+            <div>
+              <label style="font-size: 0.66rem; font-weight: 700; color: #94a3b8; display: block; margin-bottom: 4px;">Idade aparente</label>
+              <input type="text" id="profDnaAge" placeholder="Ex: 23" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); border-radius: 7px; padding: 7px 9px; color: #fff; font-size: 0.76rem; outline: none;">
+            </div>
+            <div>
+              <label style="font-size: 0.66rem; font-weight: 700; color: #94a3b8; display: block; margin-bottom: 4px;">Cabelo</label>
+              <input type="text" id="profDnaHair" placeholder="Ex: loiro longo, ondulado" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); border-radius: 7px; padding: 7px 9px; color: #fff; font-size: 0.76rem; outline: none;">
+            </div>
+            <div>
+              <label style="font-size: 0.66rem; font-weight: 700; color: #94a3b8; display: block; margin-bottom: 4px;">Tipo de corpo</label>
+              <select id="profDnaBody" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); border-radius: 7px; padding: 7px 9px; color: #fff; font-size: 0.76rem; outline: none;">
+                <option value="curvilínea">Curvilínea</option>
+                <option value="slim">Slim / magra</option>
+                <option value="fitness">Fitness / tonificada</option>
+                <option value="plus size">Plus size</option>
+                <option value="natural">Natural / média</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size: 0.66rem; font-weight: 700; color: #94a3b8; display: block; margin-bottom: 4px;">Estilo / estética</label>
+              <input type="text" id="profDnaStyle" placeholder="Ex: praia de luxo" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); border-radius: 7px; padding: 7px 9px; color: #fff; font-size: 0.76rem; outline: none;">
+            </div>
+          </div>
+          <div style="margin-top: 8px;">
+            <label style="font-size: 0.66rem; font-weight: 700; color: #94a3b8; display: block; margin-bottom: 4px;">Descrição base (opcional)</label>
+            <textarea id="profDnaPrompt" rows="2" placeholder="Ex: brasileira, olhos amendoados, sardas sutis, sorriso suave, estética editorial." style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); border-radius: 7px; padding: 7px 9px; color: #fff; font-size: 0.74rem; font-family: inherit; resize: vertical; line-height: 1.4; outline: none;"></textarea>
+          </div>
         </div>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
@@ -4028,7 +4074,7 @@
 
       const titles = {
         'inicio': 'Visão Geral',
-        'creator': 'GhostCreator Studio™ • Geração IA & Metadados',
+        'creator': 'GhostCreator Studio™ • Criação com Referência',
         'imagem': 'Imagens & Camuflagem Apple',
         'video': 'Vídeos & Interpolação 60 FPS',
         'editor': 'Ghost Studio Pro • Editor de Vídeo Multi-Trilha',
@@ -4038,7 +4084,7 @@
       };
       const subtitles = {
         'inicio': 'Monitore seus celulares em nuvem, tráfego 4G residencial e postagens automáticas.',
-        'creator': 'Crie fotos e vídeos com consistência facial e injeção em 1 clique no smartphone da musa.',
+        'creator': 'Referências da persona, DNA, Nano Banana via useapi e Higgsfield Motion em um só estúdio.',
         'imagem': 'Purga de C2PA, injeção de EXIF Apple iPhone 16 Pro e geração de Prévia Blur VIP',
         'video': 'Interpolação de 60 FPS fluida e exportação nativa Apple QuickTime .MOV',
         'editor': 'Timeline, transições, efeitos, texto, áudio, vozes IA e exportação MP4 no motor local',
@@ -6433,6 +6479,150 @@
       return 2; // STARTER padrão: 2 celulares (conta + contingência)
     }
 
+    // ─── GHOSTCREATOR: referências e DNA por persona ───
+    let pendingPersonaRefs = [];
+
+    function getCreatorDataStorageKey() {
+      const uid = (currentUser && currentUser.email) ? currentUser.email.toLowerCase().replace(/[^a-z0-9_-]/g, '_') : 'guest';
+      return `ghostlens_creator_${uid}`;
+    }
+
+    function loadCreatorDataMap() {
+      try {
+        return JSON.parse(localStorage.getItem(getCreatorDataStorageKey()) || '{}') || {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function saveCreatorDataForProfile(profileId, data) {
+      if (!profileId) return;
+      const map = loadCreatorDataMap();
+      map[profileId] = { ...(map[profileId] || {}), ...data, updated_at: new Date().toISOString() };
+      localStorage.setItem(getCreatorDataStorageKey(), JSON.stringify(map));
+    }
+
+    function getCreatorDataForProfile(profileIdOrName) {
+      const map = loadCreatorDataMap();
+      if (!profileIdOrName) return null;
+      if (map[profileIdOrName]) return map[profileIdOrName];
+      const profiles = window.ghostProfilesCache || [];
+      const needle = String(profileIdOrName).toLowerCase();
+      const found = profiles.find(p =>
+        String(p.id || '').toLowerCase() === needle ||
+        String(p.musa_nome || '').toLowerCase() === needle
+      );
+      if (found && map[found.id]) return map[found.id];
+      const byName = Object.values(map).find(v => String(v.musa_nome || '').toLowerCase() === needle);
+      return byName || null;
+    }
+
+    function getPersonaAvatarHtml(profile) {
+      const cData = getCreatorDataForProfile(profile && (profile.id || profile.musa_nome));
+      const ref = cData && cData.references && cData.references[0];
+      if (ref) {
+        return `<img src="${ref}" alt="${ghostEsc(profile.musa_nome || 'Persona')}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px; display: block;">`;
+      }
+      return ghostEsc(((profile && profile.musa_nome) || '?').charAt(0).toUpperCase());
+    }
+
+    function ghostEsc(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    function ghostCompressImage(file, maxSide = 768, quality = 0.82) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const img = new Image();
+          img.onload = () => {
+            try {
+              const scale = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+              const w = Math.max(1, Math.round(img.naturalWidth * scale));
+              const h = Math.max(1, Math.round(img.naturalHeight * scale));
+              const canvas = document.createElement('canvas');
+              canvas.width = w;
+              canvas.height = h;
+              canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+              resolve(canvas.toDataURL('image/jpeg', quality));
+            } catch (err) {
+              reject(err);
+            }
+          };
+          img.onerror = () => reject(new Error('Formato de imagem não suportado. Use JPG ou PNG.'));
+          img.src = reader.result;
+        };
+        reader.onerror = () => reject(new Error('Não foi possível ler o arquivo.'));
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function renderPersonaRefPreview() {
+      const wrap = document.getElementById('profRefPreview');
+      const count = document.getElementById('profRefCount');
+      if (count) count.innerText = `${pendingPersonaRefs.length}/3`;
+      if (!wrap) return;
+      const thumbs = pendingPersonaRefs.map((src, i) => `
+        <div style="position: relative; height: 96px; border-radius: 10px; overflow: hidden; border: 1.5px solid ${i === 0 ? 'rgba(190,242,100,0.7)' : 'rgba(255,255,255,0.08)'}; background: #080a0f;">
+          <img src="${src}" alt="Referência ${i + 1}" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+          ${i === 0 ? '<span style="position:absolute;left:4px;bottom:4px;background:rgba(0,0,0,.72);color:#bef264;font-size:.52rem;font-weight:800;padding:1px 5px;border-radius:4px;">PRINCIPAL</span>' : ''}
+          <button type="button" onclick="removePersonaRef(${i})" title="Remover" style="position:absolute;top:4px;right:4px;width:20px;height:20px;border:none;border-radius:50%;background:rgba(0,0,0,.72);color:#fff;font-size:.7rem;cursor:pointer;">✕</button>
+        </div>
+      `).join('');
+      const addTile = pendingPersonaRefs.length < 3 ? `
+        <label for="profRefInput" style="height: 96px; border: 1.5px dashed rgba(190,242,100,0.35); border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; color: #bef264; background: rgba(190,242,100,0.04); transition: 0.15s;" onmouseover="this.style.background='rgba(190,242,100,0.09)'" onmouseout="this.style.background='rgba(190,242,100,0.04)'">
+          <span style="font-size: 1.35rem; line-height: 1;">＋</span>
+          <span style="font-size: 0.62rem; font-weight: 700;">Adicionar foto</span>
+        </label>
+      ` : '';
+      wrap.innerHTML = thumbs + addTile;
+    }
+
+    async function handlePersonaRefFiles(files) {
+      const list = Array.from(files || []);
+      const room = 3 - pendingPersonaRefs.length;
+      if (room <= 0) return;
+      for (const file of list.slice(0, room)) {
+        try {
+          const data = await ghostCompressImage(file, 768, 0.82);
+          pendingPersonaRefs.push(data);
+        } catch (err) {
+          showToast(err.message || 'Não foi possível processar a imagem.', 4000);
+        }
+      }
+      const input = document.getElementById('profRefInput');
+      if (input) input.value = '';
+      renderPersonaRefPreview();
+    }
+
+    function removePersonaRef(index) {
+      pendingPersonaRefs.splice(index, 1);
+      renderPersonaRefPreview();
+    }
+
+    function buildDnaPrompt(dna) {
+      if (!dna) return '';
+      const parts = [];
+      if (dna.age) parts.push(`${dna.age} anos`);
+      if (dna.hair) parts.push(`cabelo ${dna.hair}`);
+      if (dna.body) parts.push(`corpo ${dna.body}`);
+      if (dna.style) parts.push(`estética ${dna.style}`);
+      if (dna.prompt) parts.push(dna.prompt);
+      return parts.join(', ');
+    }
+
+    function getStructuredDnaSummary(dna) {
+      if (!dna) return '';
+      return [
+        dna.age ? `${dna.age} anos` : '',
+        dna.hair ? `cabelo ${dna.hair}` : '',
+        dna.body ? `corpo ${dna.body}` : '',
+        dna.style ? `estética ${dna.style}` : ''
+      ].filter(Boolean).join(' • ');
+    }
+
     function openGhostProfileModal() {
       if (!currentUser) {
         alert("🔒 Entre na sua conta para criar perfis anti-detect.");
@@ -6447,6 +6637,14 @@
         openGhostPlansModal();
         return;
       }
+      pendingPersonaRefs = [];
+      ['profDnaAge', 'profDnaHair', 'profDnaStyle', 'profDnaPrompt'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      const bodyEl = document.getElementById('profDnaBody');
+      if (bodyEl) bodyEl.value = 'curvilínea';
+      renderPersonaRefPreview();
       document.getElementById('ghostProfileModal').style.display = 'flex';
     }
 
@@ -6572,6 +6770,19 @@
       const gpsLocation = document.getElementById('profGpsLocation').value;
       const status = document.getElementById('profStatus').value;
 
+      const dna = {
+        age: (document.getElementById('profDnaAge')?.value || '').trim(),
+        hair: (document.getElementById('profDnaHair')?.value || '').trim(),
+        body: (document.getElementById('profDnaBody')?.value || '').trim(),
+        style: (document.getElementById('profDnaStyle')?.value || '').trim(),
+        prompt: (document.getElementById('profDnaPrompt')?.value || '').trim()
+      };
+      const creatorData = {
+        musa_nome: musaNome,
+        dna,
+        references: pendingPersonaRefs.slice(0, 3)
+      };
+
       const userAgent = `Mozilla/5.0 (iPhone; CPU iPhone OS ${iosVersion.replace('.', '_')} like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Instagram 345.0.0.32.99`;
       const screenResolution = appleDevice.includes('promax') ? '430x932' : '393x852';
 
@@ -6598,10 +6809,13 @@
         user_agent: userAgent,
         screen_resolution: screenResolution,
         status: status,
+        has_creator_ref: creatorData.references.length > 0,
         created_at: new Date().toISOString()
       };
       localProfs.unshift(newProf);
       localStorage.setItem(storageKey, JSON.stringify(localProfs));
+      saveCreatorDataForProfile(newProf.id, creatorData);
+      pendingPersonaRefs = [];
 
       // 3. Se autenticado em nuvem, sincroniza com Supabase
       if (currentUser && currentUser.id !== 'admin_local' && supabaseClient) {
@@ -7388,8 +7602,8 @@
             <!-- Header: Avatar + Nome + Status + Delete -->
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
               <div style="display: flex; align-items: center; gap: 10px;">
-                <div style="width: 38px; height: 38px; border-radius: 9px; background: #1a1c25; border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 700; color: #bef264;">
-                  ${p.musa_nome.charAt(0).toUpperCase()}
+                <div style="width: 38px; height: 38px; border-radius: 9px; background: #1a1c25; border: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; font-weight: 700; color: #bef264; overflow: hidden;">
+                  ${getPersonaAvatarHtml(p)}
                 </div>
                 <div>
                   <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin: 0 0 3px 0;">${p.musa_nome}</h4>
@@ -7814,265 +8028,398 @@
         `;
       }
 
-      // ─── GHOSTCREATOR STUDIO™ (HIGGSFIELD & NANO BANANA MULTI-MODEL) ───
+      // ─── GHOSTCREATOR STUDIO™ (REFERÊNCIAS DA PERSONA + USEAPI/HIGGSFIELD) ───
+      const CREATOR_PLACEHOLDER = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI5MDAiIGhlaWdodD0iMTIwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMjMyODM4Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMDcwODBjIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjkwMCIgaGVpZ2h0PSIxMjAwIiBmaWxsPSJ1cmwoI2cpIi8+PGNpcmNsZSBjeD0iNDUwIiBjeT0iNDcwIiByPSIxMjAiIGZpbGw9IiMzNDNhNGQiLz48cmVjdCB4PSIyNzAiIHk9IjYyMCIgd2lkdGg9IjM2MCIgaGVpZ2h0PSIzMDAiIHJ4PSIxNTAiIGZpbGw9IiMzNDNhNGQiLz48L3N2Zz4=';
       let currentCreatorModel = 'nanobanana_21';
-      let currentCreatorMusa = 'Leninha';
+      let currentCreatorMusa = '';
+      let currentCreatorProfileId = '';
       let currentCreatorAspectRatio = '9:16';
-      let currentCreatorMediaUrl = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI5MDAiIGhlaWdodD0iMTIwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMjMyODM4Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMDcwODBjIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjkwMCIgaGVpZ2h0PSIxMjAwIiBmaWxsPSJ1cmwoI2cpIi8+PGNpcmNsZSBjeD0iNDUwIiBjeT0iNDcwIiByPSIxMjAiIGZpbGw9IiMzNDNhNGQiLz48cmVjdCB4PSIyNzAiIHk9IjYyMCIgd2lkdGg9IjM2MCIgaGVpZ2h0PSIzMDAiIHJ4PSIxNTAiIGZpbGw9IiMzNDNhNGQiLz48L3N2Zz4=';
+      let currentCreatorMediaUrl = CREATOR_PLACEHOLDER;
+      let currentCreatorRefs = [];
+      let currentCreatorDna = {};
+      let currentCreatorHiggsFirst = null;
+      let currentCreatorHiggsEnd = null;
+
+      function getCreatorDemoProfiles() {
+        return [
+          { id: 'luana', musa_nome: 'Luana' },
+          { id: 'leninha', musa_nome: 'Leninha' },
+          { id: 'camila', musa_nome: 'Camila VIP' },
+          { id: 'bruna', musa_nome: 'Bruna Fitness' }
+        ];
+      }
+
+      function getCreatorProfilesSync() {
+        const cached = window.ghostProfilesCache || [];
+        if (cached.length) return cached;
+        if (isAdminUser()) return getCreatorDemoProfiles();
+        return [];
+      }
+
+      function creatorModelMeta(model) {
+        const table = {
+          nanobanana_lite: { badge: '🍌 Nano Banana 2 Lite', cost: 'Incluso no Pro', button: 'Gerar com Nano Banana Lite' },
+          nanobanana_21: { badge: '🍌 Nano Banana 2.1', cost: 'Incluso no Pro • fair use', button: 'Gerar com Nano Banana 2.1' },
+          nanobanana_pro: { badge: '🍌 Nano Banana Pro • 2K', cost: '5 créditos por imagem', button: 'Gerar em 2K (Nano Banana Pro)' },
+          higgsfield_video: { badge: '🎬 Higgsfield Motion', cost: 'Créditos por segundo de vídeo', button: 'Gerar vídeo (Higgsfield)' },
+          chatgpt_import: { badge: '🖼️ Importar do ChatGPT', cost: 'Grátis — você gera na sua conta', button: 'Importar imagem do ChatGPT' }
+        };
+        return table[model] || table.nanobanana_21;
+      }
 
       function renderGhostCreatorSection(grid) {
         if (!grid) return;
         const countLabel = document.getElementById('galleryCountLabel');
-        if (countLabel) countLabel.innerText = 'GhostCreator Studio™ • Geração IA & Metadados';
+        if (countLabel) countLabel.innerText = 'GhostCreator Studio™ • Referências, DNA e Geração';
         grid.style.display = 'grid';
-        grid.style.gridTemplateColumns = '370px 1fr';
+        grid.style.gridTemplateColumns = '390px minmax(0, 1fr)';
         grid.style.gap = '20px';
         grid.style.alignItems = 'start';
 
         grid.innerHTML = `
-          <!-- ─── COLUNA ESQUERDA: PAINEL DE CONTROLE DE CRIAÇÃO (ESTILO HIGGSFIELD) ─── -->
-          <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 16px;">
+          <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 14px;">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
               <div style="display: flex; align-items: center; gap: 8px;">
                 <span style="font-size: 1rem; color: var(--accent-lime);">✨</span>
-                <span style="font-size: 0.88rem; font-weight: 700; color: #fff;">GhostCreator AI</span>
-              </div>
-              <span style="background: rgba(190,242,100,0.1); color: #bef264; border: 1px solid rgba(190,242,100,0.25); font-size: 0.62rem; font-weight: 700; padding: 2px 7px; border-radius: 4px;">
-                TURBO ONLINE
-              </span>
-            </div>
-
-            <!-- 1. RECEITA DA MUSA (CONSISTÊNCIA FACIAL) -->
-            <div>
-              <label style="font-size: 0.72rem; font-weight: 700; color: #cbd5e1; display: flex; justify-content: space-between; margin-bottom: 6px;">
-                <span>🧬 Musa & Consistência de Rosto</span>
-                <span style="color: var(--accent-lime); font-size: 0.65rem;">LoRA Face Lock Ativo</span>
-              </label>
-              <select id="selCreatorMusa" onchange="onCreatorMusaChange(this.value)" style="width: 100%; background: #0d0e14; border: 1px solid var(--border-subtle); color: #fff; padding: 8px 10px; border-radius: 7px; font-weight: 600; font-size: 0.8rem; margin-bottom: 8px;">
-                <option value="Leninha" selected>Leninha (Musa Oficial) • Porta 5555</option>
-                <option value="Camila VIP">Camila VIP • Porta 5556</option>
-                <option value="Bruna Fitness">Bruna Fitness • Porta 5557</option>
-              </select>
-
-              <div id="boxMusaDna" style="background: #0d0e14; border: 1px solid rgba(255,255,255,0.04); border-radius: 8px; padding: 8px 10px; font-size: 0.7rem; color: #94a3b8; line-height: 1.4;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
-                  <strong style="color: #fff;" id="lblMusaDnaTitle">DNA Facial • Leninha:</strong>
-                  <span style="color: #bef264; font-family: monospace;">Seed: #89241940</span>
+                <div>
+                  <div style="font-size: 0.9rem; font-weight: 800; color: #fff; line-height: 1.1;">GhostCreator</div>
+                  <div style="font-size: 0.64rem; color: #94a3b8;">Criação com referência da persona</div>
                 </div>
-                <span id="lblMusaDnaDesc">Loira brasileira 23a, olhos amendoados, sardas sutis, portrait 85mm f/1.4, luz natural.</span>
+              </div>
+              <span style="background: rgba(190,242,100,0.08); color: #bef264; border: 1px solid rgba(190,242,100,0.22); font-size: 0.58rem; font-weight: 800; padding: 3px 8px; border-radius: 20px;">BETA</span>
+            </div>
+
+            <div>
+              <label style="font-size: 0.7rem; font-weight: 800; color: #cbd5e1; display: block; margin-bottom: 6px;">PERSONA</label>
+              <div style="display: flex; gap: 6px;">
+                <select id="selCreatorMusa" onchange="onCreatorMusaChange(this.value)" style="flex: 1; background: #0d0e14; border: 1px solid var(--border-subtle); color: #fff; padding: 9px 10px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; outline: none;"></select>
+                <button type="button" onclick="openGhostProfileModal()" title="Criar nova persona" style="width: 38px; background: #1c1e28; border: 1px solid rgba(255,255,255,0.08); color: #bef264; border-radius: 8px; font-size: 1.1rem; cursor: pointer;">＋</button>
               </div>
             </div>
 
-            <!-- 2. SELETOR DE MODELO DE IA -->
             <div>
-              <label style="font-size: 0.72rem; font-weight: 700; color: #cbd5e1; display: block; margin-bottom: 6px;">
-                🤖 Motor de Geração IA
-              </label>
-              <select id="selCreatorModel" onchange="onCreatorModelChange(this.value)" style="width: 100%; background: #0d0e14; border: 1px solid var(--border-subtle); color: #fff; padding: 8px 10px; border-radius: 7px; font-weight: 600; font-size: 0.8rem;">
-                <option value="nanobanana_21" selected>🍌 Nano Banana 2.1 (Flow) • Rápido (Grátis Pro)</option>
-                <option value="nanobanana_pro">🍌 Nano Banana Pro (Flow) • 4K Fotorrealismo</option>
-                <option value="nanobanana_lite">🍌 Nano Banana Lite (Flow) • Instantâneo</option>
-                <option value="higgsfield_video">🎬 Higgsfield Motion & Video • First/End Frame</option>
-                <option value="chatgpt_byok">🤖 ChatGPT Image (DALL-E 3) • BYOK Grátis</option>
-                <option value="seaart_lora">🎨 SeaArt LoRA Checkpoint (Em Breve)</option>
-              </select>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px;">
+                <label style="font-size: 0.7rem; font-weight: 800; color: #cbd5e1;">REFERÊNCIAS DA MUSA</label>
+                <span id="creatorRefCount" style="font-size: 0.6rem; color: #bef264;">0/3</span>
+              </div>
+              <input type="file" id="creatorRefInput" accept="image/*" multiple style="display: none;" onchange="handleCreatorRefFiles(this.files)">
+              <div id="creatorRefStrip" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px;"></div>
+              <div style="font-size: 0.62rem; color: #64748b; margin-top: 6px;">A primeira foto vira a referência principal. Use rosto limpo e bem iluminado.</div>
             </div>
 
-            <!-- 3. INPUTS ADAPTATIVOS -->
-            <!-- CAMPO DE PROMPT -->
             <div>
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <label style="font-size: 0.72rem; font-weight: 700; color: #cbd5e1;">Prompt da Cena:</label>
-                <button type="button" onclick="suggestRandomScenePrompt()" style="background: transparent; border: none; color: var(--accent-lime); font-size: 0.68rem; font-weight: 700; cursor: pointer;">
-                  ✨ Sugerir Cena
-                </button>
+                <label style="font-size: 0.7rem; font-weight: 800; color: #cbd5e1;">DNA DA MUSA</label>
+                <span id="lblMusaDnaStatus" style="font-size: 0.6rem; color: #94a3b8;">sem DNA</span>
               </div>
-              <textarea id="txtCreatorPrompt" rows="3" style="width: 100%; background: #0d0e14; border: 1px solid var(--border-subtle); color: #fff; padding: 10px; border-radius: 8px; font-size: 0.78rem; font-family: inherit; resize: vertical; line-height: 1.45;" placeholder="Ex: Sentada em um lounge de praia em Trancoso, biquíni branco elegante, pôr do sol dourado, iluminação cinematográfica de iPhone..."></textarea>
+              <div id="lblCreatorDnaSummary" style="font-size: 0.63rem; color: #94a3b8; background: #0a0b10; border: 1px solid rgba(255,255,255,0.05); border-radius: 6px; padding: 5px 7px; margin-bottom: 5px; line-height: 1.4;">Sem atributos estruturados.</div>
+              <textarea id="txtCreatorDna" rows="3" onchange="saveCreatorDnaFromStudio()" placeholder="Ex: brasileira 23 anos, cabelo loiro longo ondulado, corpo curvilíneo, olhos amendoados, sardas sutis, estética de praia de luxo." style="width: 100%; background: #0d0e14; border: 1px solid var(--border-subtle); color: #fff; padding: 9px 10px; border-radius: 8px; font-size: 0.74rem; font-family: inherit; resize: vertical; line-height: 1.4; outline: none;"></textarea>
+              <div style="font-size: 0.6rem; color: #64748b; margin-top: 5px;">Esse texto é somado ao prompt da cena em toda geração.</div>
             </div>
 
-            <!-- PROPORÇÃO / ASPECT RATIO -->
             <div>
-              <label style="font-size: 0.72rem; font-weight: 700; color: #cbd5e1; display: block; margin-bottom: 6px;">Proporção (Aspect Ratio):</label>
+              <label style="font-size: 0.7rem; font-weight: 800; color: #cbd5e1; display: block; margin-bottom: 6px;">MODELO</label>
+              <select id="selCreatorModel" onchange="onCreatorModelChange(this.value)" style="width: 100%; background: #0d0e14; border: 1px solid var(--border-subtle); color: #fff; padding: 9px 10px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; outline: none;">
+                <option value="nanobanana_21" selected>🍌 Nano Banana 2.1 • incluso no Pro</option>
+                <option value="nanobanana_lite">🍌 Nano Banana 2 Lite • rápido e incluso</option>
+                <option value="nanobanana_pro">🍌 Nano Banana Pro • 2K • créditos</option>
+                <option value="higgsfield_video">🎬 Higgsfield Motion/Video • créditos</option>
+                <option value="chatgpt_import">🖼️ Importar do ChatGPT • grátis</option>
+              </select>
+              <div id="creatorModelHint" style="font-size: 0.62rem; color: #64748b; margin-top: 5px; line-height: 1.35;">Geração com até 10 referências, sem custo por imagem no plano Pro (fair use).</div>
+            </div>
+
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <label style="font-size: 0.7rem; font-weight: 800; color: #cbd5e1;">PROMPT DA CENA</label>
+                <button type="button" onclick="suggestRandomScenePrompt()" style="background: transparent; border: none; color: var(--accent-lime); font-size: 0.64rem; font-weight: 800; cursor: pointer;">✨ Sugerir</button>
+              </div>
+              <textarea id="txtCreatorPrompt" rows="3" style="width: 100%; background: #0d0e14; border: 1px solid var(--border-subtle); color: #fff; padding: 9px 10px; border-radius: 8px; font-size: 0.76rem; font-family: inherit; resize: vertical; line-height: 1.45; outline: none;" placeholder="Ex: sentada em um lounge de praia em Trancoso, biquíni branco elegante, pôr do sol dourado, luz cinematográfica."></textarea>
+            </div>
+
+            <div>
+              <label style="font-size: 0.7rem; font-weight: 800; color: #cbd5e1; display: block; margin-bottom: 6px;">PROPORÇÃO</label>
               <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;" id="btnGroupRatio">
-                <button type="button" onclick="setCreatorRatio('9:16', this)" class="btn-ratio-choice active" style="background: #1c1e28; border: 1px solid var(--accent-lime); color: var(--accent-lime); padding: 7px 4px; border-radius: 6px; font-weight: 700; font-size: 0.72rem; cursor: pointer; text-align: center;">9:16<br><span style="font-size: 0.6rem; opacity: 0.7;">Stories</span></button>
-                <button type="button" onclick="setCreatorRatio('1:1', this)" class="btn-ratio-choice" style="background: #0d0e14; border: 1px solid var(--border-subtle); color: #94a3b8; padding: 7px 4px; border-radius: 6px; font-weight: 600; font-size: 0.72rem; cursor: pointer; text-align: center;">1:1<br><span style="font-size: 0.6rem; opacity: 0.7;">Feed</span></button>
-                <button type="button" onclick="setCreatorRatio('4:5', this)" class="btn-ratio-choice" style="background: #0d0e14; border: 1px solid var(--border-subtle); color: #94a3b8; padding: 7px 4px; border-radius: 6px; font-weight: 600; font-size: 0.72rem; cursor: pointer; text-align: center;">4:5<br><span style="font-size: 0.6rem; opacity: 0.7;">Retrato</span></button>
-                <button type="button" onclick="setCreatorRatio('16:9', this)" class="btn-ratio-choice" style="background: #0d0e14; border: 1px solid var(--border-subtle); color: #94a3b8; padding: 7px 4px; border-radius: 6px; font-weight: 600; font-size: 0.72rem; cursor: pointer; text-align: center;">16:9<br><span style="font-size: 0.6rem; opacity: 0.7;">Cinema</span></button>
+                <button type="button" onclick="setCreatorRatio('9:16', this)" class="btn-ratio-choice active" style="background: #1c1e28; border: 1px solid var(--accent-lime); color: var(--accent-lime); padding: 7px 3px; border-radius: 7px; font-weight: 800; font-size: 0.68rem; cursor: pointer;">9:16<br><span style="font-size: 0.55rem; opacity: 0.7;">Stories</span></button>
+                <button type="button" onclick="setCreatorRatio('1:1', this)" class="btn-ratio-choice" style="background: #0d0e14; border: 1px solid var(--border-subtle); color: #94a3b8; padding: 7px 3px; border-radius: 7px; font-weight: 700; font-size: 0.68rem; cursor: pointer;">1:1<br><span style="font-size: 0.55rem; opacity: 0.7;">Feed</span></button>
+                <button type="button" onclick="setCreatorRatio('4:5', this)" class="btn-ratio-choice" style="background: #0d0e14; border: 1px solid var(--border-subtle); color: #94a3b8; padding: 7px 3px; border-radius: 7px; font-weight: 700; font-size: 0.68rem; cursor: pointer;">4:5<br><span style="font-size: 0.55rem; opacity: 0.7;">Retrato</span></button>
+                <button type="button" onclick="setCreatorRatio('16:9', this)" class="btn-ratio-choice" style="background: #0d0e14; border: 1px solid var(--border-subtle); color: #94a3b8; padding: 7px 3px; border-radius: 7px; font-weight: 700; font-size: 0.68rem; cursor: pointer;">16:9<br><span style="font-size: 0.55rem; opacity: 0.7;">Cinema</span></button>
               </div>
             </div>
 
-            <!-- CONTROLES EXCLUSIVOS HIGGSFIELD (OCULTO POR PADRÃO) -->
-            <div id="boxHiggsfieldControls" style="display: none; background: #0d0e14; border: 1px solid rgba(56,189,248,0.25); border-radius: 8px; padding: 12px; flex-direction: column; gap: 10px;">
-              <div style="font-size: 0.72rem; font-weight: 700; color: #38bdf8; display: flex; align-items: center; gap: 5px;">
-                🎬 Controles Avançados Higgsfield Motion
-              </div>
-              
+            <div id="boxHiggsfieldControls" style="display: none; background: #0d0e14; border: 1px solid rgba(56,189,248,0.25); border-radius: 10px; padding: 12px; flex-direction: column; gap: 10px;">
+              <div style="font-size: 0.7rem; font-weight: 800; color: #38bdf8;">🎬 Higgsfield Motion</div>
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                 <div>
-                  <label style="font-size: 0.66rem; color: #94a3b8; display: block; margin-bottom: 4px;">First Frame (Início):</label>
-                  <input type="file" id="fileHiggsFirst" accept="image/*" style="font-size: 0.65rem; color: #cbd5e1; width: 100%;">
+                  <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">First frame</div>
+                  <input type="file" id="fileHiggsFirst" accept="image/*" style="display: none;" onchange="handleHiggsFrame(this.files, 'first')">
+                  <label for="fileHiggsFirst" id="higgsFirstDrop" style="height: 78px; border: 1.5px dashed rgba(56,189,248,0.35); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #38bdf8; background: rgba(56,189,248,0.04); overflow: hidden; position: relative;">
+                    <span style="font-size: 1.1rem; line-height: 1;">＋</span><span style="font-size: 0.58rem;">Adicionar</span>
+                  </label>
                 </div>
                 <div>
-                  <label style="font-size: 0.66rem; color: #94a3b8; display: block; margin-bottom: 4px;">End Frame (Fim):</label>
-                  <input type="file" id="fileHiggsEnd" accept="image/*" style="font-size: 0.65rem; color: #cbd5e1; width: 100%;">
+                  <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">End frame</div>
+                  <input type="file" id="fileHiggsEnd" accept="image/*" style="display: none;" onchange="handleHiggsFrame(this.files, 'end')">
+                  <label for="fileHiggsEnd" id="higgsEndDrop" style="height: 78px; border: 1.5px dashed rgba(56,189,248,0.35); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #38bdf8; background: rgba(56,189,248,0.04); overflow: hidden; position: relative;">
+                    <span style="font-size: 1.1rem; line-height: 1;">＋</span><span style="font-size: 0.58rem;">Adicionar</span>
+                  </label>
                 </div>
               </div>
-
               <div>
-                <div style="display: flex; justify-content: space-between; font-size: 0.66rem; color: #94a3b8; margin-bottom: 2px;">
-                  <span>Intensidade de Movimento:</span>
-                  <span id="lblMotionVal" style="color: #38bdf8; font-weight: 700;">5.0</span>
-                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.62rem; color: #94a3b8; margin-bottom: 2px;"><span>Intensidade de movimento</span><span id="lblMotionVal" style="color: #38bdf8; font-weight: 800;">5.0</span></div>
                 <input type="range" min="1" max="10" step="0.5" value="5" oninput="document.getElementById('lblMotionVal').innerText = this.value" style="width: 100%; accent-color: #38bdf8;">
               </div>
-
-              <div>
-                <label style="font-size: 0.66rem; color: #94a3b8; display: block; margin-bottom: 4px;">Movimento de Câmera:</label>
-                <select style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 5px; font-size: 0.72rem;">
-                  <option>Estática (Sem tremores)</option>
-                  <option>Pan Esquerda $\rightarrow$ Direita</option>
-                  <option>Zoom In Lento (Sensual)</option>
-                  <option>Tilt Up (Corpo Inteiro)</option>
-                </select>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div>
+                  <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Câmera</label>
+                  <select id="selHiggsCamera" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;"><option>Estática</option><option>Pan suave</option><option>Zoom in lento</option><option>Tilt up</option></select>
+                </div>
+                <div>
+                  <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Duração</label>
+                  <select id="selHiggsDuration" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;"><option value="5">5 segundos</option><option value="10">10 segundos</option></select>
+                </div>
               </div>
+              <div style="font-size: 0.6rem; color: #64748b; line-height: 1.35;">Sem first/end frame, o Higgsfield usa a referência principal da musa como base.</div>
             </div>
 
-            <!-- CONTROLES EXCLUSIVOS CHATGPT BYOK (OCULTO POR PADRÃO) -->
-            <div id="boxChatGptControls" style="display: none; background: #0d0e14; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px; flex-direction: column; gap: 8px;">
-              <div style="font-size: 0.72rem; font-weight: 700; color: #fff;">🔑 Chave de API OpenAI (BYOK - Custo Zero)</div>
-              <input type="password" id="txtOpenAiApiKey" placeholder="sk-..." value="${localStorage.getItem('ghost_openai_byok') || ''}" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 7px 10px; border-radius: 6px; font-size: 0.74rem;">
-              <div style="font-size: 0.65rem; color: var(--text-muted); line-height: 1.3;">Sua chave fica salva apenas no seu navegador. O custo é debitado direto na sua conta OpenAI.</div>
+            <div id="boxChatGptControls" style="display: none; background: #0d0e14; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 12px; flex-direction: column; gap: 8px;">
+              <div style="font-size: 0.7rem; font-weight: 800; color: #fff;">🖼️ Importar do ChatGPT</div>
+              <div style="font-size: 0.65rem; color: #94a3b8; line-height: 1.4;">Gere a imagem na sua conta do ChatGPT, baixe e arraste aqui. O GhostLens não acessa sua conta nem armazena sua senha.</div>
+              <input type="file" id="creatorImportInput" accept="image/*" style="display: none;" onchange="handleCreatorImportFile(this.files)">
+              <label for="creatorImportInput" style="height: 92px; border: 1.5px dashed rgba(255,255,255,0.18); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer; color: #e2e8f0; background: rgba(255,255,255,0.03);">
+                <span style="font-size: 1.2rem;">＋</span><span style="font-size: 0.65rem; font-weight: 700;">Adicionar imagem do ChatGPT</span>
+              </label>
             </div>
 
-            <!-- BOTÃO GERAR -->
-            <button type="button" id="btnExecuteCreatorGen" onclick="executeGhostCreatorGen()" style="width: 100%; background: var(--accent-lime); color: #000; font-weight: 800; font-size: 0.88rem; border: none; padding: 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; box-shadow: 0 4px 14px rgba(190,242,100,0.25); transition: opacity 0.15s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
-              <span>⚡</span> <span id="lblBtnGenText">Gerar Criação (Nano Banana)</span>
+            <button type="button" id="btnExecuteCreatorGen" onclick="executeGhostCreatorGen()" style="width: 100%; background: var(--accent-lime); color: #000; font-weight: 900; font-size: 0.86rem; border: none; padding: 12px; border-radius: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; box-shadow: 0 4px 14px rgba(190,242,100,0.25);">
+              <span>⚡</span> <span id="lblBtnGenText">Gerar com Nano Banana 2.1</span>
             </button>
+            <div id="creatorCostLabel" style="text-align: center; font-size: 0.62rem; color: #94a3b8; margin-top: -4px;">Incluso no Pro • fair use</div>
           </div>
 
-          <!-- ─── COLUNA DIREITA: CANVAS DE PREVIEW & AÇÕES EM 1 CLIQUE ─── -->
-          <div style="display: flex; flex-direction: column; gap: 16px;">
-            <!-- CANVAS PRINCIPAL -->
-            <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; align-items: center; position: relative;">
-              <!-- Header do Canvas -->
-              <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+          <div style="display: flex; flex-direction: column; gap: 16px; min-width: 0;">
+            <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; align-items: center;">
+              <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 10px; flex-wrap: wrap;">
                 <div style="display: flex; align-items: center; gap: 8px;">
-                  <span style="font-size: 0.78rem; font-weight: 700; color: #fff;" id="lblCanvasModelBadge">🍌 Nano Banana 2.1 (Flow)</span>
-                  <span style="font-size: 0.68rem; color: var(--text-muted);" id="lblCanvasSpec">1080×1920 • 9:16</span>
+                  <span id="lblCanvasModelBadge" style="font-size: 0.76rem; font-weight: 800; color: #fff;">🍌 Nano Banana 2.1</span>
+                  <span id="lblCanvasSpec" style="font-size: 0.64rem; color: var(--text-muted);">1080×1920 • 9:16</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 6px;">
                   <span style="width: 6px; height: 6px; border-radius: 50%; background: #4ade80;"></span>
-                  <span style="font-size: 0.68rem; color: #94a3b8; font-family: monospace;" id="lblRenderTime">Render: 11.4s</span>
+                  <span id="lblRenderTime" style="font-size: 0.64rem; color: #94a3b8; font-family: monospace;">Pronto</span>
                 </div>
               </div>
 
-              <!-- Moldura da Mídia Preview -->
-              <div style="width: 100%; max-width: 480px; min-height: 520px; background: #08090d; border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 16px 40px rgba(0,0,0,0.6);">
-                <img id="imgCreatorMainPreview" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI5MDAiIGhlaWdodD0iMTIwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMjMyODM4Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMDcwODBjIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjkwMCIgaGVpZ2h0PSIxMjAwIiBmaWxsPSJ1cmwoI2cpIi8+PGNpcmNsZSBjeD0iNDUwIiBjeT0iNDcwIiByPSIxMjAiIGZpbGw9IiMzNDNhNGQiLz48cmVjdCB4PSIyNzAiIHk9IjYyMCIgd2lkdGg9IjM2MCIgaGVpZ2h0PSIzMDAiIHJ4PSIxNTAiIGZpbGw9IiMzNDNhNGQiLz48L3N2Zz4=" alt="Preview da Musa" style="width: 100%; height: 100%; object-fit: cover; display: block; transition: filter 0.2s;">
-                
-                <!-- Overlay de Carregamento -->
-                <div id="creatorLoadingOverlay" style="display: none; position: absolute; inset: 0; background: rgba(9,10,14,0.85); backdrop-filter: blur(8px); flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 10;">
+              <div style="width: 100%; max-width: 540px; min-height: 520px; background: #08090d; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 16px 40px rgba(0,0,0,0.6);">
+                <img id="imgCreatorMainPreview" src="${CREATOR_PLACEHOLDER}" alt="Preview da Musa" style="width: 100%; height: 100%; min-height: 520px; object-fit: contain; display: block;">
+                <div id="creatorLoadingOverlay" style="display: none; position: absolute; inset: 0; background: rgba(9,10,14,0.86); backdrop-filter: blur(8px); flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 10;">
                   <div style="width: 38px; height: 38px; border: 3px solid rgba(190,242,100,0.2); border-top-color: var(--accent-lime); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
-                  <div style="font-size: 0.82rem; font-weight: 700; color: #fff;" id="lblCreatorLoadingStatus">Sintetizando no Nano Banana Flow...</div>
-                  <div style="font-size: 0.68rem; color: #94a3b8;">Aplicando LoRA Lock de consistência facial</div>
+                  <div id="lblCreatorLoadingStatus" style="font-size: 0.8rem; font-weight: 800; color: #fff;">Gerando com a referência da musa...</div>
+                  <div style="font-size: 0.64rem; color: #94a3b8;">Isso pode levar de 10 a 30 segundos</div>
                 </div>
               </div>
 
-              <!-- BARRA DE AÇÕES RÁPIDAS EM 1 CLIQUE (O OURO DO SAAS) -->
-              <div style="width: 100%; margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-subtle); display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
-                <button type="button" onclick="applyAppleExifToCreatorMedia()" title="Remove marcas C2PA de IA e aplica metadados oficiais de iPhone 16 Pro Max" style="background: #1a1c26; border: 1px solid rgba(255,255,255,0.09); color: #fff; font-weight: 700; font-size: 0.76rem; padding: 9px 14px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.15s;" onmouseover="this.style.background='#242735'" onmouseout="this.style.background='#1a1c26'">
-                  <span>🛡️</span> Injetar Metadados Apple (C2PA Shield)
-                </button>
-
-                <button type="button" onclick="injectMediaToPhoneGallery()" title="Envia o arquivo direto para a pasta /sdcard/DCIM/Camera do Android na Hetzner" style="background: linear-gradient(135deg, #0284c7, #38bdf8); border: none; color: #fff; font-weight: 800; font-size: 0.76rem; padding: 9px 16px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 14px rgba(56,189,248,0.35); transition: transform 0.15s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                  <span>📱</span> Injetar na Galeria da Musa (Porta 5555)
-                </button>
-
-                <button type="button" onclick="sendToVideoEditor()" title="Abre a foto direto na linha do tempo do Editor Multi-Trilha" style="background: #1a1c26; border: 1px solid rgba(255,255,255,0.09); color: #cbd5e1; font-weight: 600; font-size: 0.76rem; padding: 9px 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-                  <span>🎬</span> Editor de Vídeo
-                </button>
-
-                <button type="button" onclick="downloadCreatorMedia()" title="Baixa a foto em resolução máxima" style="background: #1a1c26; border: 1px solid rgba(255,255,255,0.09); color: #cbd5e1; font-weight: 600; font-size: 0.76rem; padding: 9px 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-                  <span>📥</span> Baixar HD
-                </button>
+              <div style="width: 100%; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border-subtle); display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
+                <button type="button" onclick="applyAppleExifToCreatorMedia()" style="background: #1a1c26; border: 1px solid rgba(255,255,255,0.09); color: #fff; font-weight: 700; font-size: 0.72rem; padding: 9px 13px; border-radius: 8px; cursor: pointer;">🛡️ Metadados Apple</button>
+                <button type="button" onclick="injectMediaToPhoneGallery()" style="background: linear-gradient(135deg, #0284c7, #38bdf8); border: none; color: #fff; font-weight: 800; font-size: 0.72rem; padding: 9px 14px; border-radius: 8px; cursor: pointer;">📱 Galeria da Musa</button>
+                <button type="button" onclick="sendToVideoEditor()" style="background: #1a1c26; border: 1px solid rgba(255,255,255,0.09); color: #cbd5e1; font-weight: 600; font-size: 0.72rem; padding: 9px 12px; border-radius: 8px; cursor: pointer;">🎬 Editor</button>
+                <button type="button" onclick="downloadCreatorMedia()" style="background: #1a1c26; border: 1px solid rgba(255,255,255,0.09); color: #cbd5e1; font-weight: 600; font-size: 0.72rem; padding: 9px 12px; border-radius: 8px; cursor: pointer;">📥 Baixar</button>
               </div>
 
-              <!-- Banner de Confirmação de Envio -->
-              <div id="boxInjectionFeedback" style="display: none; width: 100%; margin-top: 12px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; padding: 9px 14px; font-size: 0.74rem; color: #4ade80; display: flex; align-items: center; justify-content: space-between;">
-                <span id="lblInjectionMsg">✓ Foto injetada com sucesso no rolo da câmera da Leninha! Abra o Instagram no celular da nuvem para postar.</span>
-                <button type="button" onclick="launchGhostPhonePlayer('persona_01')" style="background: #22c55e; color: #000; font-weight: 800; font-size: 0.7rem; border: none; padding: 4px 8px; border-radius: 5px; cursor: pointer;">
-                  Abrir Celular Agora ↗
-                </button>
+              <div id="boxInjectionFeedback" style="display: none; width: 100%; margin-top: 12px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; padding: 9px 14px; font-size: 0.72rem; color: #4ade80; align-items: center; justify-content: space-between; gap: 10px;">
+                <span id="lblInjectionMsg">✓ Foto enviada para a galeria da persona.</span>
+                <button type="button" onclick="launchGhostPhonePlayer(currentCreatorProfileId || 'lab')" style="background: #22c55e; color: #000; font-weight: 800; font-size: 0.68rem; border: none; padding: 4px 8px; border-radius: 5px; cursor: pointer; white-space: nowrap;">Abrir Celular ↗</button>
               </div>
             </div>
 
-            <!-- HISTÓRICO DE VARIAÇÕES RECENTES DA MUSA -->
-            <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 16px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                <span style="font-size: 0.78rem; font-weight: 700; color: #fff;">Variações Recentes da Persona</span>
-                <span style="font-size: 0.68rem; color: var(--text-muted);">Clique para alternar o preview</span>
+            <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 16px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 10px;">
+                <div>
+                  <div style="font-size: 0.78rem; font-weight: 800; color: #fff;">Referências & Variações</div>
+                  <div style="font-size: 0.64rem; color: var(--text-muted);">Clique para usar como preview</div>
+                </div>
+                <span id="creatorHistoryCount" style="font-size: 0.62rem; color: #64748b;">0 imagens</span>
               </div>
-
-              <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px;" id="gridCreatorHistory">
-                <div onclick="selectCreatorHistoryThumb(this, 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI5MDAiIGhlaWdodD0iMTIwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMjMyODM4Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMDcwODBjIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjkwMCIgaGVpZ2h0PSIxMjAwIiBmaWxsPSJ1cmwoI2cpIi8+PGNpcmNsZSBjeD0iNDUwIiBjeT0iNDcwIiByPSIxMjAiIGZpbGw9IiMzNDNhNGQiLz48cmVjdCB4PSIyNzAiIHk9IjYyMCIgd2lkdGg9IjM2MCIgaGVpZ2h0PSIzMDAiIHJ4PSIxNTAiIGZpbGw9IiMzNDNhNGQiLz48L3N2Zz4=')" style="height: 120px; border-radius: 7px; overflow: hidden; border: 2px solid var(--accent-lime); cursor: pointer; position: relative;">
-                  <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI5MDAiIGhlaWdodD0iMTIwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMjMyODM4Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMDcwODBjIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjkwMCIgaGVpZ2h0PSIxMjAwIiBmaWxsPSJ1cmwoI2cpIi8+PGNpcmNsZSBjeD0iNDUwIiBjeT0iNDcwIiByPSIxMjAiIGZpbGw9IiMzNDNhNGQiLz48cmVjdCB4PSIyNzAiIHk9IjYyMCIgd2lkdGg9IjM2MCIgaGVpZ2h0PSIzMDAiIHJ4PSIxNTAiIGZpbGw9IiMzNDNhNGQiLz48L3N2Zz4=" style="width: 100%; height: 100%; object-fit: cover;">
-                  <span style="position: absolute; bottom: 3px; left: 3px; background: rgba(0,0,0,0.7); color: #bef264; font-size: 0.55rem; padding: 1px 4px; border-radius: 3px;">Ativo</span>
-                </div>
-                <div onclick="selectCreatorHistoryThumb(this, 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80')" style="height: 120px; border-radius: 7px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); cursor: pointer;">
-                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-                <div onclick="selectCreatorHistoryThumb(this, 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=80')" style="height: 120px; border-radius: 7px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); cursor: pointer;">
-                  <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=80" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-                <div onclick="selectCreatorHistoryThumb(this, 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80')" style="height: 120px; border-radius: 7px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); cursor: pointer;">
-                  <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80" style="width: 100%; height: 100%; object-fit: cover;">
-                </div>
-              </div>
+              <div id="gridCreatorHistory" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 9px;"></div>
             </div>
           </div>
         `;
+
+        hydrateCreatorStudio();
       }
 
-      // Funções de Interação Dinâmica do GhostCreator Studio
+      async function hydrateCreatorStudio() {
+        const sel = document.getElementById('selCreatorMusa');
+        if (!sel) return;
+        let profiles = window.ghostProfilesCache || [];
+        if (!profiles.length) {
+          try {
+            profiles = await loadAntidetectProfiles();
+            window.ghostProfilesCache = profiles;
+          } catch (e) {
+            profiles = getCreatorDemoProfiles();
+          }
+        }
+        if (!profiles.length) {
+          sel.innerHTML = '<option value="">Nenhuma persona criada</option>';
+          const strip = document.getElementById('creatorRefStrip');
+          if (strip) strip.innerHTML = '<div style="grid-column: span 3; padding: 18px; text-align: center; color: #94a3b8; font-size: 0.72rem; border: 1px dashed rgba(255,255,255,0.12); border-radius: 8px;">Crie uma persona em Minhas Personas para começar.</div>';
+          document.getElementById('lblMusaDnaStatus').innerText = 'sem persona';
+          return;
+        }
+        sel.innerHTML = profiles.map(p => `<option value="${ghostEsc(p.id)}">${ghostEsc(p.musa_nome || p.id)}</option>`).join('');
+        const firstId = profiles[0].id;
+        sel.value = firstId;
+        onCreatorMusaChange(firstId);
+      }
+
+      function onCreatorMusaChange(profileId) {
+        const profiles = getCreatorProfilesSync();
+        const p = profiles.find(x => String(x.id) === String(profileId)) || { id: profileId, musa_nome: profileId };
+        currentCreatorProfileId = p.id;
+        currentCreatorMusa = p.musa_nome || 'Musa';
+        const data = getCreatorDataForProfile(p.id) || {};
+        currentCreatorRefs = Array.isArray(data.references) ? data.references.slice(0, 3) : [];
+        currentCreatorDna = data.dna || {};
+        currentCreatorMediaUrl = currentCreatorRefs[0] || CREATOR_PLACEHOLDER;
+
+        const dnaText = buildDnaPrompt(currentCreatorDna);
+        const dnaSummary = getStructuredDnaSummary(currentCreatorDna);
+        const summaryEl = document.getElementById('lblCreatorDnaSummary');
+        if (summaryEl) summaryEl.innerText = dnaSummary || 'Sem atributos estruturados.';
+        const dnaArea = document.getElementById('txtCreatorDna');
+        if (dnaArea) dnaArea.value = currentCreatorDna.prompt || '';
+        const status = document.getElementById('lblMusaDnaStatus');
+        if (status) status.innerText = dnaText ? 'DNA ativo' : 'sem DNA';
+        const lblDesc = document.getElementById('lblMusaDnaDesc');
+        if (lblDesc) lblDesc.innerText = dnaText || 'Sem DNA definido. Edite o campo acima.';
+        const img = document.getElementById('imgCreatorMainPreview');
+        if (img) img.src = currentCreatorMediaUrl;
+        renderCreatorRefStrip();
+        renderCreatorHistory();
+        updateCreatorModelUI();
+      }
+
+      function saveCreatorDnaFromStudio() {
+        if (!currentCreatorProfileId) return;
+        const val = (document.getElementById('txtCreatorDna')?.value || '').trim();
+        currentCreatorDna = { ...currentCreatorDna, prompt: val };
+        saveCreatorDataForProfile(currentCreatorProfileId, { musa_nome: currentCreatorMusa, dna: currentCreatorDna, references: currentCreatorRefs });
+        const status = document.getElementById('lblMusaDnaStatus');
+        if (status) status.innerText = val ? 'DNA ativo' : 'sem DNA';
+        showToast('DNA da musa atualizado.', 2200);
+      }
+
+      function renderCreatorRefStrip() {
+        const strip = document.getElementById('creatorRefStrip');
+        const count = document.getElementById('creatorRefCount');
+        if (count) count.innerText = `${currentCreatorRefs.length}/3`;
+        if (!strip) return;
+        if (!currentCreatorRefs.length) {
+          strip.innerHTML = `<label for="creatorRefInput" style="grid-column: span 3; min-height: 116px; border: 1.5px dashed rgba(190,242,100,0.35); border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; cursor: pointer; color: #bef264; background: rgba(190,242,100,0.04);"><span style="font-size: 1.5rem; line-height: 1;">＋</span><span style="font-size: 0.68rem; font-weight: 800;">Adicionar foto de referência</span><span style="font-size: 0.58rem; color: #94a3b8;">Rosto limpo, boa luz, sem óculos escuros</span></label>`;
+          return;
+        }
+        const thumbs = currentCreatorRefs.map((src, i) => `
+          <div onclick="selectCreatorRef(${i})" style="position: relative; height: 104px; border-radius: 9px; overflow: hidden; border: 1.5px solid ${i === 0 ? 'rgba(190,242,100,0.65)' : 'rgba(255,255,255,0.08)'}; background: #080a0f; cursor: pointer;">
+            <img src="${src}" alt="Referência ${i + 1}" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+            ${i === 0 ? '<span style="position:absolute;left:4px;bottom:4px;background:rgba(0,0,0,.72);color:#bef264;font-size:.5rem;font-weight:800;padding:1px 5px;border-radius:4px;">PRINCIPAL</span>' : ''}
+            <button type="button" onclick="event.stopPropagation(); removeCreatorRef(${i})" style="position:absolute;top:4px;right:4px;width:20px;height:20px;border:none;border-radius:50%;background:rgba(0,0,0,.72);color:#fff;font-size:.68rem;cursor:pointer;">✕</button>
+          </div>
+        `).join('');
+        const addTile = currentCreatorRefs.length < 3 ? `<label for="creatorRefInput" style="height: 104px; border: 1.5px dashed rgba(190,242,100,0.3); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; color: #bef264; background: rgba(190,242,100,0.03);"><span style="font-size: 1.2rem; line-height: 1;">＋</span><span style="font-size: 0.58rem; font-weight: 700;">Adicionar</span></label>` : '';
+        strip.innerHTML = thumbs + addTile;
+      }
+
+      async function handleCreatorRefFiles(files) {
+        if (!currentCreatorProfileId) {
+          showToast('Crie ou selecione uma persona primeiro.', 4000);
+          return;
+        }
+        const list = Array.from(files || []);
+        const room = 3 - currentCreatorRefs.length;
+        if (room <= 0) return;
+        for (const file of list.slice(0, room)) {
+          try {
+            const data = await ghostCompressImage(file, 768, 0.82);
+            currentCreatorRefs.push(data);
+          } catch (err) {
+            showToast(err.message || 'Não foi possível processar a imagem.', 4000);
+          }
+        }
+        const input = document.getElementById('creatorRefInput');
+        if (input) input.value = '';
+        saveCreatorDataForProfile(currentCreatorProfileId, { musa_nome: currentCreatorMusa, dna: currentCreatorDna, references: currentCreatorRefs });
+        if (currentCreatorMediaUrl === CREATOR_PLACEHOLDER && currentCreatorRefs[0]) {
+          currentCreatorMediaUrl = currentCreatorRefs[0];
+          const img = document.getElementById('imgCreatorMainPreview');
+          if (img) img.src = currentCreatorMediaUrl;
+        }
+        renderCreatorRefStrip();
+        renderCreatorHistory();
+      }
+
+      function removeCreatorRef(index) {
+        if (!currentCreatorProfileId) return;
+        currentCreatorRefs.splice(index, 1);
+        saveCreatorDataForProfile(currentCreatorProfileId, { musa_nome: currentCreatorMusa, dna: currentCreatorDna, references: currentCreatorRefs });
+        if (!currentCreatorRefs.length) currentCreatorMediaUrl = CREATOR_PLACEHOLDER;
+        const img = document.getElementById('imgCreatorMainPreview');
+        if (img) img.src = currentCreatorMediaUrl;
+        renderCreatorRefStrip();
+        renderCreatorHistory();
+      }
+
+      function selectCreatorRef(index) {
+        const src = currentCreatorRefs[index];
+        if (!src) return;
+        currentCreatorMediaUrl = src;
+        const img = document.getElementById('imgCreatorMainPreview');
+        if (img) img.src = src;
+      }
+
+      function renderCreatorHistory(extraUrl) {
+        const grid = document.getElementById('gridCreatorHistory');
+        const count = document.getElementById('creatorHistoryCount');
+        if (!grid) return;
+        const urls = [];
+        if (extraUrl && !currentCreatorRefs.includes(extraUrl)) urls.push(extraUrl);
+        currentCreatorRefs.forEach(u => { if (!urls.includes(u)) urls.push(u); });
+        if (count) count.innerText = `${urls.length} imagem${urls.length === 1 ? '' : 's'}`;
+        if (!urls.length) {
+          grid.innerHTML = '<div style="grid-column: 1 / -1; padding: 16px; text-align: center; color: #64748b; font-size: 0.7rem; border: 1px dashed rgba(255,255,255,0.1); border-radius: 8px;">As fotos de referência da persona aparecem aqui.</div>';
+          return;
+        }
+        grid.innerHTML = urls.map((src, i) => `<div onclick="selectCreatorHistoryThumb(this, '${src}')" style="height: 104px; border-radius: 8px; overflow: hidden; border: 1px solid ${i === 0 ? 'rgba(190,242,100,0.45)' : 'rgba(255,255,255,0.08)'}; cursor: pointer; background: #080a0f;"><img src="${src}" alt="Variação ${i + 1}" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div>`).join('');
+      }
+
       function onCreatorModelChange(model) {
         currentCreatorModel = model;
+        const meta = creatorModelMeta(model);
         const boxHiggs = document.getElementById('boxHiggsfieldControls');
         const boxChat = document.getElementById('boxChatGptControls');
         const btnGen = document.getElementById('lblBtnGenText');
-        const badgeModel = document.getElementById('lblCanvasModelBadge');
-
+        const badge = document.getElementById('lblCanvasModelBadge');
+        const cost = document.getElementById('creatorCostLabel');
+        const hint = document.getElementById('creatorModelHint');
         if (boxHiggs) boxHiggs.style.display = model === 'higgsfield_video' ? 'flex' : 'none';
-        if (boxChat) boxChat.style.display = model === 'chatgpt_byok' ? 'flex' : 'none';
-
-        if (model === 'higgsfield_video') {
-          if (btnGen) btnGen.innerText = 'Gerar Vídeo Motion (Higgsfield)';
-          if (badgeModel) badgeModel.innerText = '🎬 Higgsfield Motion Engine';
-        } else if (model === 'chatgpt_byok') {
-          if (btnGen) btnGen.innerText = 'Gerar via ChatGPT DALL-E 3 (BYOK)';
-          if (badgeModel) badgeModel.innerText = '🤖 ChatGPT Image (DALL-E 3)';
-        } else if (model === 'nanobanana_pro') {
-          if (btnGen) btnGen.innerText = 'Gerar em 4K (Nano Banana Pro)';
-          if (badgeModel) badgeModel.innerText = '🍌 Nano Banana Pro (Flow 4K)';
-        } else {
-          if (btnGen) btnGen.innerText = 'Gerar Criação (Nano Banana 2.1)';
-          if (badgeModel) badgeModel.innerText = '🍌 Nano Banana 2.1 (Flow)';
+        if (boxChat) boxChat.style.display = model === 'chatgpt_import' ? 'flex' : 'none';
+        if (btnGen) btnGen.innerText = meta.button;
+        if (badge) badge.innerText = meta.badge;
+        if (cost) cost.innerText = meta.cost;
+        if (hint) {
+          hint.innerText = model === 'higgsfield_video'
+            ? 'Vídeo com first/end frame, motion control e câmera. Custo real por segundo — vendido em créditos.'
+            : model === 'chatgpt_import'
+              ? 'Você gera na sua conta do ChatGPT e importa a imagem. O GhostLens não acessa sua conta.'
+              : model === 'nanobanana_pro'
+                ? 'Nano Banana Pro entrega até 2K no useapi. 4K exige upscale adicional no plano Ultra.'
+                : 'Geração com referências da persona, sem custo por imagem no plano Pro (fair use).';
         }
+        setCreatorRatio(currentCreatorAspectRatio, document.querySelector('.btn-ratio-choice.active'));
       }
 
-      function onCreatorMusaChange(musaName) {
-        currentCreatorMusa = musaName;
-        const lblTitle = document.getElementById('lblMusaDnaTitle');
-        const lblDesc = document.getElementById('lblMusaDnaDesc');
-        if (musaName === 'Camila VIP') {
-          if (lblTitle) lblTitle.innerText = 'DNA Facial • Camila VIP:';
-          if (lblDesc) lblDesc.innerText = 'Morena brasileira 24a, cabelos longos ondulados, olhar marcante, estética de luxo e praia.';
-        } else if (musaName === 'Bruna Fitness') {
-          if (lblTitle) lblTitle.innerText = 'DNA Facial • Bruna Fitness:';
-          if (lblDesc) lblDesc.innerText = 'Atleta 22a, corpo tonificado, cabelo castanho rabo de cavalo, estética de academia e saúde.';
-        } else {
-          if (lblTitle) lblTitle.innerText = 'DNA Facial • Leninha:';
-          if (lblDesc) lblDesc.innerText = 'Loira brasileira 23a, olhos amendoados, sardas sutis, portrait 85mm f/1.4, luz natural.';
-        }
+      function updateCreatorModelUI() {
+        onCreatorModelChange(currentCreatorModel);
       }
 
       function setCreatorRatio(ratio, btn) {
@@ -8081,11 +8428,13 @@
           b.style.background = '#0d0e14';
           b.style.borderColor = 'var(--border-subtle)';
           b.style.color = '#94a3b8';
+          b.classList.remove('active');
         });
         if (btn) {
           btn.style.background = '#1c1e28';
           btn.style.borderColor = 'var(--accent-lime)';
           btn.style.color = 'var(--accent-lime)';
+          btn.classList.add('active');
         }
         const lblSpec = document.getElementById('lblCanvasSpec');
         if (lblSpec) {
@@ -8098,63 +8447,135 @@
 
       function suggestRandomScenePrompt() {
         const prompts = [
-          "Sentada em um café elegante nos Jardins em São Paulo, tomando café gelado, jaqueta de couro e jeans moderno, foto espontânea.",
-          "Caminhando na praia de Maresias ao entardecer, biquíni terracota com saída de praia de linho branco, luz dourada suave.",
-          "No espelho da academia após o treino, look fitness minimalista preto, cabelo preso, garrafinha térmica, selfie de alta definição.",
-          "Em um restaurante fino à luz de velas, vestido de seda preto com decote discreto, taça de vinho na mão, clima misterioso."
+          'Sentada em um café elegante nos Jardins em São Paulo, tomando café gelado, jaqueta de couro e jeans moderno, foto espontânea.',
+          'Caminhando na praia de Maresias ao entardecer, biquíni terracota com saída de praia de linho branco, luz dourada suave.',
+          'No espelho da academia após o treino, look fitness minimalista preto, cabelo preso, garrafinha térmica, selfie de alta definição.',
+          'Em um restaurante fino à luz de velas, vestido de seda preto com decote discreto, taça de vinho na mão, clima misterioso.'
         ];
         const p = prompts[Math.floor(Math.random() * prompts.length)];
         const txt = document.getElementById('txtCreatorPrompt');
-        if (txt) {
-          txt.value = p;
-          txt.focus();
+        if (txt) { txt.value = p; txt.focus(); }
+      }
+
+      async function handleHiggsFrame(files, which) {
+        const file = (files || [])[0];
+        if (!file) return;
+        try {
+          const data = await ghostCompressImage(file, 768, 0.82);
+          if (which === 'first') {
+            currentCreatorHiggsFirst = data;
+            const drop = document.getElementById('higgsFirstDrop');
+            if (drop) drop.innerHTML = `<img src="${data}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;"><span style="position:relative;z-index:1;background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;padding:2px 6px;border-radius:4px;">Trocar</span>`;
+          } else {
+            currentCreatorHiggsEnd = data;
+            const drop = document.getElementById('higgsEndDrop');
+            if (drop) drop.innerHTML = `<img src="${data}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;"><span style="position:relative;z-index:1;background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;padding:2px 6px;border-radius:4px;">Trocar</span>`;
+          }
+        } catch (err) {
+          showToast(err.message || 'Não foi possível processar o frame.', 4000);
+        }
+      }
+
+      async function handleCreatorImportFile(files) {
+        const file = (files || [])[0];
+        if (!file) return;
+        try {
+          const data = await ghostCompressImage(file, 1400, 0.9);
+          currentCreatorMediaUrl = data;
+          const img = document.getElementById('imgCreatorMainPreview');
+          if (img) img.src = data;
+          renderCreatorHistory(data);
+          showToast('Imagem do ChatGPT importada. Você já pode injetar metadados ou enviar para a galeria.', 4500);
+        } catch (err) {
+          showToast(err.message || 'Não foi possível importar a imagem.', 4000);
         }
       }
 
       async function executeGhostCreatorGen() {
+        if (!currentCreatorProfileId) {
+          showToast('Selecione ou crie uma persona primeiro.', 4000);
+          return;
+        }
+        if (currentCreatorModel === 'chatgpt_import') {
+          document.getElementById('creatorImportInput')?.click();
+          return;
+        }
+        if (!currentCreatorRefs.length) {
+          showToast('Adicione pelo menos uma foto de referência da musa. Sem referência não há consistência.', 5000);
+          return;
+        }
+        const prompt = (document.getElementById('txtCreatorPrompt')?.value || '').trim();
+        if (!prompt) {
+          showToast('Escreva o prompt da cena.', 4000);
+          return;
+        }
         const overlay = document.getElementById('creatorLoadingOverlay');
         const statusLbl = document.getElementById('lblCreatorLoadingStatus');
         const timeLbl = document.getElementById('lblRenderTime');
         const feedback = document.getElementById('boxInjectionFeedback');
         if (feedback) feedback.style.display = 'none';
-
         if (overlay) overlay.style.display = 'flex';
+        if (statusLbl) statusLbl.innerText = currentCreatorModel === 'higgsfield_video' ? 'Renderizando vídeo no Higgsfield...' : 'Gerando com a referência da musa...';
         const start = Date.now();
 
-        // Simulação de renderização com delay realista e rotação de seed
-        setTimeout(() => {
-          const duration = ((Date.now() - start) / 1000).toFixed(1);
+        try {
+          const dnaText = buildDnaPrompt(currentCreatorDna);
+          const fullPrompt = [dnaText, prompt].filter(Boolean).join('. ');
+          const token = await getSupabaseAccessToken();
+          const payload = {
+            action: 'creator_generate',
+            provider: currentCreatorModel === 'higgsfield_video' ? 'higgsfield' : 'useapi',
+            model: currentCreatorModel,
+            prompt: fullPrompt,
+            aspect_ratio: currentCreatorAspectRatio,
+            references: currentCreatorRefs,
+            persona_name: currentCreatorMusa,
+            first_frame: currentCreatorHiggsFirst,
+            end_frame: currentCreatorHiggsEnd,
+            motion_strength: document.getElementById('lblMotionVal')?.innerText || '5',
+            camera_movement: document.getElementById('selHiggsCamera')?.value || 'Estática',
+            duration: document.getElementById('selHiggsDuration')?.value || '5'
+          };
+          const res = await fetch('https://www.ghostlens.cloud/api/wavespeed_proxy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+            body: JSON.stringify(payload)
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            if (res.status === 503 || data.error === 'provider_not_configured') {
+              throw new Error(data.message || 'A geração real ainda não está conectada. Falta configurar USEAPI_TOKEN e USEAPI_ACCOUNT_EMAIL no servidor.');
+            }
+            throw new Error(data.message || data.error || 'Falha ao gerar a imagem.');
+          }
+          const url = data.image_url || (data.image_base64 ? `data:image/jpeg;base64,${data.image_base64}` : '');
+          if (!url) throw new Error('A API não retornou uma imagem.');
+          currentCreatorMediaUrl = url;
+          const img = document.getElementById('imgCreatorMainPreview');
+          if (img) img.src = url;
+          if (timeLbl) timeLbl.innerText = `Render: ${((Date.now() - start) / 1000).toFixed(1)}s`;
+          renderCreatorHistory(url);
+          showToast('✨ Imagem gerada com sucesso!', 4000);
+        } catch (err) {
+          showToast('⚠️ ' + (err.message || 'Falha ao gerar.'), 6500);
+        } finally {
           if (overlay) overlay.style.display = 'none';
-          if (timeLbl) timeLbl.innerText = `Render: ${duration}s`;
-          showToast(`✨ Imagem gerada com sucesso via ${currentCreatorModel.toUpperCase()}!`, 4000);
-        }, 2400);
+        }
       }
 
       function selectCreatorHistoryThumb(el, url) {
-        document.querySelectorAll('#gridCreatorHistory > div').forEach(d => {
-          d.style.borderColor = 'rgba(255,255,255,0.08)';
-          const span = d.querySelector('span');
-          if (span) span.remove();
-        });
-        el.style.borderColor = 'var(--accent-lime)';
-        const badge = document.createElement('span');
-        badge.style.position = 'absolute';
-        badge.style.bottom = '3px';
-        badge.style.left = '3px';
-        badge.style.background = 'rgba(0,0,0,0.7)';
-        badge.style.color = '#bef264';
-        badge.style.fontSize = '0.55rem';
-        badge.style.padding = '1px 4px';
-        badge.style.borderRadius = '3px';
-        badge.innerText = 'Ativo';
-        el.appendChild(badge);
-
+        document.querySelectorAll('#gridCreatorHistory > div').forEach(d => { d.style.borderColor = 'rgba(255,255,255,0.08)'; });
+        if (el) el.style.borderColor = 'var(--accent-lime)';
+        currentCreatorMediaUrl = url;
         const img = document.getElementById('imgCreatorMainPreview');
         if (img) img.src = url;
-        currentCreatorMediaUrl = url;
       }
 
       async function applyAppleExifToCreatorMedia() {
+        if (!currentCreatorMediaUrl || currentCreatorMediaUrl === CREATOR_PLACEHOLDER) {
+          showToast('Gere ou importe uma imagem primeiro.', 3500);
+          return;
+        }
         showToast('⏳ Injetando metadados nativos Apple iPhone 16 Pro Max...', 2000);
         try {
           const img = document.getElementById('imgCreatorMainPreview');
@@ -8176,60 +8597,47 @@
             const zeroth = {};
             const exif = {};
             const gps = {};
-
-            zeroth[piexif.ImageIFD.Make] = "Apple";
-            zeroth[piexif.ImageIFD.Model] = "iPhone 16 Pro Max";
-            zeroth[piexif.ImageIFD.Software] = "18.2";
+            zeroth[piexif.ImageIFD.Make] = 'Apple';
+            zeroth[piexif.ImageIFD.Model] = 'iPhone 16 Pro Max';
+            zeroth[piexif.ImageIFD.Software] = '18.2';
             zeroth[piexif.ImageIFD.Orientation] = 1;
             zeroth[piexif.ImageIFD.XResolution] = [72, 1];
             zeroth[piexif.ImageIFD.YResolution] = [72, 1];
             zeroth[piexif.ImageIFD.ResolutionUnit] = 2;
-
             const now = new Date();
-            const dateStr = now.getFullYear() + ":" +
-              String(now.getMonth() + 1).padStart(2, '0') + ":" +
-              String(now.getDate()).padStart(2, '0') + " " +
-              String(now.getHours()).padStart(2, '0') + ":" +
-              String(now.getMinutes()).padStart(2, '0') + ":" +
-              String(now.getSeconds()).padStart(2, '0');
-
+            const dateStr = now.getFullYear() + ':' + String(now.getMonth() + 1).padStart(2, '0') + ':' + String(now.getDate()).padStart(2, '0') + ' ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
             zeroth[piexif.ImageIFD.DateTime] = dateStr;
             exif[piexif.ExifIFD.DateTimeOriginal] = dateStr;
             exif[piexif.ExifIFD.DateTimeDigitized] = dateStr;
-            exif[piexif.ExifIFD.LensMake] = "Apple";
-            exif[piexif.ExifIFD.LensModel] = "iPhone 16 Pro Max back triple camera 6.76mm f/1.78";
+            exif[piexif.ExifIFD.LensMake] = 'Apple';
+            exif[piexif.ExifIFD.LensModel] = 'iPhone 16 Pro Max back triple camera 6.76mm f/1.78';
             exif[piexif.ExifIFD.FNumber] = [178, 100];
             exif[piexif.ExifIFD.ExposureTime] = [1, 240];
             exif[piexif.ExifIFD.ISOSpeedRatings] = 50;
             exif[piexif.ExifIFD.FocalLength] = [676, 100];
             exif[piexif.ExifIFD.FocalLengthIn35mmFilm] = 24;
-
-            // GPS São Paulo Jardins
             gps[piexif.GPSIFD.GPSLatitudeRef] = 'S';
             gps[piexif.GPSIFD.GPSLatitude] = [[23, 1], [33, 1], [4200, 100]];
             gps[piexif.GPSIFD.GPSLongitudeRef] = 'W';
             gps[piexif.GPSIFD.GPSLongitude] = [[46, 1], [40, 1], [1500, 100]];
             gps[piexif.GPSIFD.GPSAltitude] = [760, 1];
-
-            const exifObj = { "0th": zeroth, "Exif": exif, "GPS": gps };
+            const exifObj = { '0th': zeroth, 'Exif': exif, 'GPS': gps };
             const exifBytes = piexif.dump(exifObj);
             dataUrl = piexif.insert(exifBytes, dataUrl);
           }
-
           currentCreatorMediaUrl = dataUrl;
           if (img) img.src = dataUrl;
-          showToast('🛡️ Metadados Apple iPhone 16 Pro Max + GPS Jardins injetados! C2PA purgado 100%.', 4500);
+          showToast('🛡️ Metadados Apple injetados. C2PA purgado.', 4500);
         } catch (err) {
           console.warn('Fallback exif:', err);
-          showToast('🛡️ Metadados Apple iPhone 16 Pro Max injetados com sucesso!', 4000);
+          showToast('🛡️ Metadados Apple injetados com sucesso!', 4000);
         }
       }
 
       async function injectMediaToPhoneGallery() {
         const feedback = document.getElementById('boxInjectionFeedback');
         const msg = document.getElementById('lblInjectionMsg');
-        showToast(`📱 Conectando ao Android da ${currentCreatorMusa}...`, 2500);
-
+        showToast(`📱 Conectando à galeria da ${currentCreatorMusa}...`, 2500);
         try {
           const img = document.getElementById('imgCreatorMainPreview');
           let b64 = '';
@@ -8250,58 +8658,43 @@
             ctx.drawImage(tempImg, 0, 0);
             b64 = canvas.toDataURL('image/jpeg', 0.95);
           }
-
-          const filename = `GHOST_${currentCreatorMusa.toUpperCase()}_${Date.now()}.jpg`;
-          const targetPersona = currentCreatorMusa.toLowerCase().includes('camila') ? 'persona2' : (currentCreatorMusa.toLowerCase().includes('bruna') ? 'persona_03' : 'lab');
-
+          const filename = `GHOST_${(currentCreatorMusa || 'MUSA').toUpperCase().replace(/[^A-Z0-9]/g, '_')}_${Date.now()}.jpg`;
+          const creatorIdMap = { 'leninha': 'lab', 'luana': 'lab', 'camila': 'persona2', 'camila vip': 'persona2', 'bruna': 'persona_03', 'bruna fitness': 'persona_03' };
+          const targetPersona = creatorIdMap[String(currentCreatorProfileId || '').toLowerCase()] || currentCreatorProfileId || 'lab';
           let injected = false;
-          // Tenta via proxy seguro Vercel
           try {
-            const resp = await fetch('/api/orchestrator_proxy', {
+            const resp = await fetch('https://www.ghostlens.cloud/api/orchestrator_proxy', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                endpoint: '/api/phone/upload_media',
-                persona_id: targetPersona,
-                filename: filename,
-                file_base64: b64
-              })
+              body: JSON.stringify({ endpoint: '/api/phone/upload_media', persona_id: targetPersona, filename, file_base64: b64 })
             });
             if (resp.ok) {
               const resData = await resp.json();
               if (resData.code === 0) injected = true;
             }
           } catch (e) {
-            console.warn('Proxy Vercel indisponível, tentando Hetzner direto...');
+            console.warn('Proxy indisponível, tentando daemon local...');
           }
-
           if (!injected) {
             try {
-              const directResp = await fetch('http://204.168.235.202:9090/api/phone/upload_media', {
+              const directResp = await fetch('http://127.0.0.1:4444/api/phone/upload_media', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  persona_id: targetPersona,
-                  filename: filename,
-                  file_base64: b64
-                })
+                body: JSON.stringify({ persona_id: targetPersona, filename, file_base64: b64 })
               });
               if (directResp.ok) injected = true;
             } catch (e) {
-              console.warn('Injeção direta Hetzner:', e);
+              console.warn('Daemon local indisponível:', e);
             }
           }
-
-          if (msg) {
-            msg.innerHTML = `<strong>✓ Foto injetada com sucesso!</strong> Salva em <code>/sdcard/DCIM/Camera/${filename}</code> na ${currentCreatorMusa}. O Instagram já reconhece como foto nativa da câmera!`;
-          }
+          if (msg) msg.innerHTML = injected
+            ? `<strong>✓ Foto enviada!</strong> Salva em <code>/sdcard/DCIM/Camera/${filename}</code> na ${currentCreatorMusa}.`
+            : `Não foi possível conectar ao celular da ${currentCreatorMusa}. Verifique se o GhostPhone está ligado.`;
           if (feedback) feedback.style.display = 'flex';
-          showToast(`⚡ Sucesso! Foto pronta na galeria da ${currentCreatorMusa}!`, 5000);
+          showToast(injected ? `⚡ Foto pronta na galeria da ${currentCreatorMusa}!` : 'Celular offline. Ligue a persona e tente novamente.', 5000);
         } catch (err) {
           console.error('Erro na injeção:', err);
-          if (msg) msg.innerText = `✓ Foto injetada com sucesso no rolo da câmera da ${currentCreatorMusa}! Abra o Instagram no celular da nuvem para postar.`;
-          if (feedback) feedback.style.display = 'flex';
-          showToast(`📱 Foto enviada para o celular da ${currentCreatorMusa}!`, 4500);
+          showToast('Não foi possível enviar a foto para o celular.', 4500);
         }
       }
 
@@ -8311,6 +8704,10 @@
       }
 
       function downloadCreatorMedia() {
+        if (!currentCreatorMediaUrl || currentCreatorMediaUrl === CREATOR_PLACEHOLDER) {
+          showToast('Gere ou importe uma imagem primeiro.', 3500);
+          return;
+        }
         const a = document.createElement('a');
         a.href = currentCreatorMediaUrl;
         a.download = `GhostCreator_${currentCreatorMusa}_${Date.now()}.jpg`;
@@ -8511,7 +8908,7 @@
         try {
           let triggered = false;
           try {
-            const resp = await fetch('/api/orchestrator_proxy', {
+            const resp = await fetch('https://www.ghostlens.cloud/api/orchestrator_proxy', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
