@@ -5928,6 +5928,27 @@
         return;
       }
 
+      // 👑 Master Key Bypass imediato (Chave de Licença Master do Luan)
+      if (adminTokenCandidate === 'GHOST-MASTER-LUAN-2026' || adminTokenCandidate === 'MASTER' || (email === 'luan@ghostlens.ai' && password === 'GHOST-MASTER-LUAN-2026')) {
+        currentUser = {
+          id: 'admin_master',
+          email: 'luan@ghostlens.ai',
+          user_metadata: { role: 'master_admin', name: 'Luan Castellan (Master)' }
+        };
+        localStorage.setItem('ghostlens_session_user', JSON.stringify(currentUser));
+        localStorage.setItem('ghostlens_master_admin', 'true');
+        userBalance = 999.00;
+
+        closeGhostAuthModal();
+        updateAuthUI();
+        updateWalletDisplay();
+        if (typeof showToast === 'function') showToast('👑 Acesso Master Admin liberado com sucesso!', 4000);
+
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        return;
+      }
+
       if (!supabaseClient) {
         currentUser = { id: 'user_' + Date.now(), email: email, user_metadata: { role: 'user' } };
         localStorage.removeItem('ghostlens_master_admin');
