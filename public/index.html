@@ -8234,16 +8234,39 @@
 
       function creatorModelMeta(model) {
         const table = {
+          // ─── IMAGEM ───
           eros_image_2k: { badge: '👑 Eros-Image™ 2K (LoRA da Musa & Ultra-Realismo)', cost: 'Nativo 2K • Lentes Pro', button: 'Gerar com Eros-Image 2K' },
-          wan_video_swap: { badge: '🔄 Wan 3.0 Video Swap (Viral Replacer)', cost: 'Créditos por Swap de Vídeo', button: 'Executar Swap com Wan 3.0' },
-          higgsfield_video: { badge: '🎬 Higgsfield Motion', cost: 'Créditos por segundo de vídeo', button: 'Gerar vídeo (Higgsfield)' },
-          kling_video: { badge: '⚡ Kling AI Realism', cost: 'Créditos por vídeo', button: 'Gerar Vídeo no Kling' },
-          seedream_5: { badge: '🌊 ByteDance Seedream 5.0 Ultra', cost: 'R$ 0,40 por foto', button: 'Gerar com Seedream 5.0' },
-          qwen_360: { badge: '🌐 Qwen 2.5 360° Multi-Ângulo', cost: 'Incluso no Pro', button: 'Gerar Ângulos 360°' },
-          nanobanana_lite: { badge: '🍌 Nano Banana Lite', cost: 'Incluso no Pro', button: 'Gerar com Nano Banana Lite' },
-          nanobanana_21: { badge: '🍌 Nano Banana 2.1', cost: 'Incluso no Pro • fair use', button: 'Gerar com Nano Banana 2.1' },
-          nanobanana_pro: { badge: '🍌 Nano Banana Pro • 2K', cost: '5 créditos por imagem', button: 'Gerar em 2K (Nano Banana Pro)' },
-          chatgpt_import: { badge: '🖼️ ChatGPT Image (BYOK)', cost: 'Grátis • Cole com Ctrl+V', button: 'Importar do ChatGPT (Ctrl+V)' }
+          seedream_5: { badge: '🌊 ByteDance Seedream 5 Pro (Face Swap & Trajes)', cost: 'R$ 0,40 / foto • Sem Censura', button: 'Gerar com Seedream 5 Pro' },
+          chatgpt_import: { badge: '🖼️ GPT 2.6 Image (ChatGPT Plus)', cost: 'Grátis • Cole com Ctrl+V', button: 'Importar do ChatGPT (Ctrl+V)' },
+          nanobanana_21: { badge: '🍌 Google Nano Banana 2.1', cost: 'Incluso no Pro • Fair Use', button: 'Gerar com Nano Banana' },
+          krea_2: { badge: '✨ Krea 2 Raw Edit', cost: 'Retoque & Textura de Pele', button: 'Gerar com Krea 2' },
+          qwen_360: { badge: '🌐 Qwen 2.5 360° Multi-Ângulo', cost: 'Incluso no Pro • 6 Ângulos', button: 'Gerar Ângulos 360°' },
+          magnific_upscale: { badge: '🔍 Magnific Upscaler 4K', cost: 'Ultra-Definição & Poros', button: 'Upscale 4K com Magnific' },
+
+          // ─── VÍDEO: MOTION CONTROL ───
+          kling_4_motion: { badge: '⚡ Kling 4.0 Motion Control', cost: '1080p Nativo • Poses & Dança', button: 'Transferir Movimento (Kling 4.0)' },
+          kling_3_motion: { badge: '⚡ Kling 3.0 Motion Control', cost: 'Fidelidade Corporal', button: 'Transferir Movimento (Kling 3.0)' },
+          kling_26_motion: { badge: '⚡ Kling 2.6 Motion Control', cost: 'Alta Estabilidade', button: 'Transferir Movimento (Kling 2.6)' },
+          omni_flash_21: { badge: '💫 Omni Flash 2.1 Motion', cost: 'Ultra Rápido • Troca Instantânea', button: 'Transferir Movimento (Omni Flash)' },
+          openjutsu_workflow: { badge: '🥷 Genjutsu / OpenJutsu Ultra (ComfyUI Alfa)', cost: 'Servidor Nuvem • Zero Máquina Local', button: 'Executar Workflow OpenJutsu' },
+
+          // ─── VÍDEO: IMAGE TO VIDEO ───
+          wan_3_prime: { badge: '🌀 Wan 3.0 Prime Video', cost: 'Top Animação Fotorrealista', button: 'Animar Cena com Wan 3.0' },
+          minimax_h3: { badge: '🎥 MiniMax H3 Max (Hailuo 01)', cost: 'Ultra Fast • Física de Tecidos', button: 'Gerar Vídeo Cinemático' },
+          seedance_25: { badge: '💃 ByteDance Seedance 2.5 Ultra', cost: 'Movimento Ultra Realista', button: 'Gerar Vídeo Seedance 2.5' },
+          seedance_20: { badge: '💃 ByteDance Seedance 2.0', cost: 'Equilibrado & Fluido', button: 'Gerar Vídeo Seedance 2.0' },
+          kling_4_video: { badge: '⚡ Kling 4.0 Video', cost: '1080p Nativo • 3 a 30s', button: 'Gerar Vídeo Kling 4.0' },
+          kling_3_video: { badge: '⚡ Kling 3.0 Video', cost: 'Movimento Humano Fluido', button: 'Gerar Vídeo Kling 3.0' },
+          grok_15_video: { badge: '🤖 Grok 1.5 Video', cost: 'Ação & Dinamismo', button: 'Gerar Vídeo com Grok' },
+          ltx_25_video: { badge: '🎞️ LTX Video 2.5', cost: 'Cinemático • Cabelos & Vento', button: 'Gerar com LTX Video' },
+          flux_3_video: { badge: '🌌 Flux 3.0 Video', cost: 'Estética Editorial & Estúdio', button: 'Gerar Vídeo com Flux' },
+          veo_31: { badge: '🎬 Google Veo 3.1 Pro', cost: 'Cinematografia de Cinema', button: 'Gerar com Google Veo 3.1' },
+          veo_31_lite: { badge: '🎬 Google Veo 3.1 Lite', cost: 'Rápido & Leve', button: 'Gerar com Veo Lite' },
+
+          // ─── ÁUDIO & VOZ ───
+          voice_clone_musa: { badge: '🎙️ Clonagem de Voz da Musa', cost: 'Voz Autêntica • Áudio WhatsApp', button: 'Sintetizar Áudio da Musa' },
+          voice_gen_sensual: { badge: '💋 Gerador Sensual ErosChat', cost: 'Áudios Provocantes X1', button: 'Gerar Áudio Sensual' },
+          audio_isolation: { badge: '🧹 Isolador de Ruído de Fundo', cost: 'Purificação com IA', button: 'Isolar e Limpar Áudio' }
         };
         return table[model] || table.eros_image_2k;
       }
@@ -8259,15 +8282,15 @@
 
         grid.innerHTML = `
           <!-- ─── BANNER TEASER VIP • LANÇAMENTO OFICIAL EROSCHAT™ 2027 ─── -->
-          <div style="grid-column: 1 / -1; background: linear-gradient(135deg, rgba(239, 68, 68, 0.18), rgba(245, 158, 11, 0.15)); border: 1.5px solid rgba(245, 158, 11, 0.45); border-radius: 14px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; box-shadow: 0 4px 24px rgba(0,0,0,0.4);">
+          <div style="grid-column: 1 / -1; background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(245, 158, 11, 0.12)); border: 1.5px solid rgba(190, 242, 100, 0.45); border-radius: 14px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; box-shadow: 0 4px 24px rgba(0,0,0,0.4);">
             <div style="display: flex; align-items: center; gap: 14px;">
-              <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.4); display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
-                🔥
+              <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(190, 242, 100, 0.18); border: 1px solid rgba(190, 242, 100, 0.4); display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+                👑
               </div>
               <div>
                 <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
                   <span style="font-size: 0.94rem; font-weight: 900; color: #fff; letter-spacing: -0.2px;">ErosChat™ Ecosystem</span>
-                  <span style="background: rgba(239, 68, 68, 0.25); color: #fca5a5; font-size: 0.62rem; font-weight: 900; padding: 3px 8px; border-radius: 5px; border: 1px solid rgba(239, 68, 68, 0.45); letter-spacing: 0.4px;">
+                  <span style="background: rgba(190, 242, 100, 0.18); color: #bef264; font-size: 0.62rem; font-weight: 900; padding: 3px 8px; border-radius: 5px; border: 1px solid rgba(190, 242, 100, 0.4); letter-spacing: 0.4px;">
                     🚀 LANÇAMENTO OFICIAL EROSCHAT™ 2027
                   </span>
                   <span style="font-size: 0.66rem; color: #fbbf24; font-weight: 900; background: rgba(245,158,11,0.18); padding: 3px 8px; border-radius: 4px;">ATÉ 70% DE COMISSÃO</span>
@@ -8277,21 +8300,51 @@
                 </p>
               </div>
             </div>
-            <button type="button" onclick="openErosChatVipWaitlist()" style="background: linear-gradient(135deg, #f59e0b, #ef4444); color: #fff; font-weight: 900; font-size: 0.76rem; border: none; padding: 11px 20px; border-radius: 9px; cursor: pointer; white-space: nowrap; box-shadow: 0 4px 16px rgba(245, 158, 11, 0.35);">
+            <button type="button" onclick="openErosChatVipWaitlist()" style="background: var(--accent-lime); color: #000; font-weight: 900; font-size: 0.76rem; border: none; padding: 11px 20px; border-radius: 9px; cursor: pointer; white-space: nowrap; box-shadow: 0 4px 16px rgba(190, 242, 100, 0.35); transition: 0.2s;">
               🔒 Garantir Vaga VIP • Lançamento 2027
             </button>
+          </div>
+
+          <!-- ─── SELETOR DE MODALIDADE: IMAGEM / VÍDEO / ÁUDIO (ESTILO MAGNIFIC / FREEPIK) ─── -->
+          <div style="grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 4px;">
+            <div style="display: inline-flex; background: #0c0e15; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 4px; gap: 4px;">
+              <button type="button" id="tabModeImage" onclick="setStudioMode('image')" style="display: flex; align-items: center; gap: 7px; padding: 8px 20px; border-radius: 9px; font-weight: 900; font-size: 0.8rem; cursor: pointer; border: none; background: var(--accent-lime); color: #000; transition: 0.2s;">
+                <span>🖼️</span> IMAGEM
+              </button>
+              <button type="button" id="tabModeVideo" onclick="setStudioMode('video')" style="display: flex; align-items: center; gap: 7px; padding: 8px 20px; border-radius: 9px; font-weight: 700; font-size: 0.8rem; cursor: pointer; border: none; background: transparent; color: #94a3b8; transition: 0.2s;">
+                <span>🎬</span> VÍDEO
+                <span style="font-size: 0.55rem; background: rgba(56,189,248,0.18); color: #38bdf8; padding: 1px 5px; border-radius: 4px; font-weight: 800;">MOTION</span>
+              </button>
+              <button type="button" id="tabModeAudio" onclick="setStudioMode('audio')" style="display: flex; align-items: center; gap: 7px; padding: 8px 18px; border-radius: 9px; font-weight: 700; font-size: 0.78rem; cursor: pointer; border: none; background: transparent; color: #94a3b8; transition: 0.2s;">
+                <span>🎙️</span> ÁUDIO & VOZ
+                <span style="font-size: 0.55rem; background: rgba(245,158,11,0.2); color: #fbbf24; padding: 1px 5px; border-radius: 4px; font-weight: 800;">EROSCHAT</span>
+              </button>
+            </div>
+
+            <!-- BENEFÍCIOS EXCLUSIVOS GHOSTLENS (ARGUMENTOS DE VENDA) -->
+            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <span style="background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.3); font-size: 0.62rem; font-weight: 800; padding: 4px 8px; border-radius: 6px;">
+                🛡️ Anti-Hash PDQ + Apple EXIF Ativo
+              </span>
+              <span style="background: rgba(56,189,248,0.12); color: #38bdf8; border: 1px solid rgba(56,189,248,0.3); font-size: 0.62rem; font-weight: 800; padding: 4px 8px; border-radius: 6px;">
+                ⚡ Interpolação 60 FPS Grátis
+              </span>
+              <span style="background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); font-size: 0.62rem; font-weight: 800; padding: 4px 8px; border-radius: 6px;">
+                🎬 Ghost Studio FX Incluso (Plano R$ 197)
+              </span>
+            </div>
           </div>
 
           <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 14px;">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
               <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 1rem; color: var(--accent-lime);">✨</span>
+                <span style="font-size: 1rem; color: var(--accent-lime);" id="lblCreatorStudioIcon">✨</span>
                 <div>
-                  <div style="font-size: 0.9rem; font-weight: 800; color: #fff; line-height: 1.1;">GhostCreator</div>
-                  <div style="font-size: 0.64rem; color: #94a3b8;">Criação com referência da persona</div>
+                  <div style="font-size: 0.9rem; font-weight: 800; color: #fff; line-height: 1.1;" id="lblCreatorStudioTitle">GhostCreator • Imagem</div>
+                  <div style="font-size: 0.64rem; color: #94a3b8;" id="lblCreatorStudioSubtitle">Criação fotográfica com referência da persona</div>
                 </div>
               </div>
-              <span style="background: rgba(190,242,100,0.08); color: #bef264; border: 1px solid rgba(190,242,100,0.22); font-size: 0.58rem; font-weight: 800; padding: 3px 8px; border-radius: 20px;">BETA</span>
+              <span id="badgeCreatorMode" style="background: rgba(190,242,100,0.08); color: #bef264; border: 1px solid rgba(190,242,100,0.22); font-size: 0.58rem; font-weight: 800; padding: 3px 8px; border-radius: 20px;">IMAGE STUDIO</span>
             </div>
 
             <div>
@@ -8304,15 +8357,15 @@
 
             <div>
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px;">
-                <label style="font-size: 0.7rem; font-weight: 800; color: #cbd5e1;">REFERÊNCIAS DA MUSA</label>
+                <label style="font-size: 0.7rem; font-weight: 800; color: #cbd5e1;" id="lblCreatorRefsTitle">REFERÊNCIAS DA MUSA</label>
                 <span id="creatorRefCount" style="font-size: 0.6rem; color: #bef264;">0/3</span>
               </div>
               <input type="file" id="creatorRefInput" accept="image/*" multiple style="display: none;" onchange="handleCreatorRefFiles(this.files)">
               <div id="creatorRefStrip" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px;"></div>
-              <div style="font-size: 0.62rem; color: #64748b; margin-top: 6px;">A primeira foto vira a referência principal. Use rosto limpo e bem iluminado.</div>
+              <div style="font-size: 0.62rem; color: #64748b; margin-top: 6px;" id="lblCreatorRefsHint">A primeira foto vira a referência principal. Use rosto limpo e bem iluminado.</div>
             </div>
 
-            <div>
+            <div id="boxDnaContainer">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                 <label style="font-size: 0.7rem; font-weight: 800; color: #cbd5e1;">DNA DA MUSA</label>
                 <span id="lblMusaDnaStatus" style="font-size: 0.6rem; color: #94a3b8;">sem DNA</span>
@@ -8323,19 +8376,8 @@
             </div>
 
             <div>
-              <label style="font-size: 0.7rem; font-weight: 800; color: #cbd5e1; display: block; margin-bottom: 6px;">MOTOR DE GERAÇÃO</label>
-              <select id="selCreatorModel" onchange="onCreatorModelChange(this.value)" style="width: 100%; background: #0d0e14; border: 1.5px solid rgba(245, 158, 11, 0.4); color: #fff; padding: 9px 10px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; outline: none;">
-                <option value="eros_image_2k" selected>👑 Eros-Image™ 2K • LoRA da Musa & Ultra-Realismo (Zero Cara de IA)</option>
-                <option value="wan_video_swap">🔄 Wan 3.0 Video Swap • Troca Facial de Vídeos Virais</option>
-                <option value="higgsfield_video">🎬 Higgsfield Motion • Animação, Frames & Câmera</option>
-                <option value="kling_video">⚡ Kling AI • Movimento Humano Realista 1080p</option>
-                <option value="seedream_5">🌊 ByteDance Seedream 5.0 • Face Swap & Troca de Roupa/Cabelo</option>
-                <option value="qwen_360">🌐 Qwen 2.5 360° • Variação de Ângulos (Frontal, Perfil, Traseira)</option>
-                <option value="minimax_h3">🎥 Minimax / Hailuo H3 & LTX 2.5 • Vídeo Cinemático</option>
-                <option value="openjutsu_workflow">🥷 OpenJutsu / Genjutsu Workflow • ComfyUI VIP Alfa</option>
-                <option value="nanobanana_21">🍌 Nano Banana 2.1 • Incluso no Plano</option>
-                <option value="chatgpt_import">🖼️ ChatGPT Image (GPT Image 2.6 / DALL-E) • Importar Ctrl+V</option>
-              </select>
+              <label style="font-size: 0.7rem; font-weight: 800; color: #cbd5e1; display: block; margin-bottom: 6px;">MODELO / IA</label>
+              <select id="selCreatorModel" onchange="onCreatorModelChange(this.value)" style="width: 100%; background: #0d0e14; border: 1.5px solid rgba(245, 158, 11, 0.4); color: #fff; padding: 9px 10px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; outline: none;"></select>
               <div id="creatorModelHint" style="font-size: 0.62rem; color: #fbbf24; margin-top: 5px; line-height: 1.35;">Eros-Image™ 2K: Textura de microporos real, profundidade óptica e fidelidade anatômica sem traços artificiais de IA.</div>
             </div>
 
@@ -8379,139 +8421,20 @@
               </div>
             </div>
 
-            <!-- 2. PAINEL WAN 3.0 VIDEO SWAP (VIRAL REPLACER) -->
-            <div id="boxWanControls" style="display: none; background: linear-gradient(135deg, rgba(168,85,247,0.1), rgba(15,17,23,0.95)); border: 1.5px solid rgba(168,85,247,0.35); border-radius: 12px; padding: 14px; flex-direction: column; gap: 10px;">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="font-size: 0.74rem; font-weight: 900; color: #c084fc; display: flex; align-items: center; gap: 6px;">
-                  🔄 Wan 3.0 • Viral Video Swap
-                </div>
-                <span style="font-size: 0.6rem; color: #c084fc; background: rgba(168,85,247,0.15); padding: 2px 7px; border-radius: 4px; font-weight: 800;">TOP 1 DO GRUPO</span>
-              </div>
-              <div style="font-size: 0.64rem; color: #cbd5e1; line-height: 1.4;">
-                Substitua o rosto/corpo de qualquer vídeo viral de modelo real pela sua musa IA, mantendo sincronia perfeita.
-              </div>
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                <div>
-                  <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">1. Vídeo Viral (MP4)</div>
-                  <input type="file" id="fileWanVideo" accept="video/*" style="display: none;" onchange="handleWanVideoUpload(this.files)">
-                  <label for="fileWanVideo" id="dropWanVideo" style="height: 76px; border: 1.5px dashed rgba(168,85,247,0.4); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #c084fc; background: rgba(168,85,247,0.05); overflow: hidden; position: relative;">
-                    <span style="font-size: 1.1rem;">🎬</span><span style="font-size: 0.58rem; font-weight: 700;">Subir Vídeo Base</span>
-                  </label>
-                </div>
-                <div>
-                  <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">2. Rosto da Musa</div>
-                  <input type="file" id="fileWanFace" accept="image/*" style="display: none;" onchange="handleWanFaceUpload(this.files)">
-                  <label for="fileWanFace" id="dropWanFace" style="height: 76px; border: 1.5px dashed rgba(168,85,247,0.4); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #c084fc; background: rgba(168,85,247,0.05); overflow: hidden; position: relative;">
-                    <span style="font-size: 1.1rem;">👤</span><span style="font-size: 0.58rem; font-weight: 700;">Rosto da Musa</span>
-                  </label>
-                </div>
-              </div>
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                <div>
-                  <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Modo de Swap</label>
-                  <select id="selWanSwapMode" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;">
-                    <option value="face">Face Swap (Rosto Preciso)</option>
-                    <option value="full">Full Swap (Rosto + Corpo)</option>
-                  </select>
-                </div>
-                <div>
-                  <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Fidelidade Facial (Blend)</label>
-                  <select id="selWanBlend" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;">
-                    <option value="0.9">Ultra-Alta (Sem Deformação)</option>
-                    <option value="0.75" selected>Balanceada (Natural)</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <!-- 3. PAINEL HIGGSFIELD MOTION (FIRST/END FRAME + OBJECTS + CÂMERA) -->
-            <div id="boxHiggsfieldControls" style="display: none; background: #0d0e14; border: 1.5px solid rgba(56,189,248,0.3); border-radius: 12px; padding: 14px; flex-direction: column; gap: 10px;">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="font-size: 0.72rem; font-weight: 800; color: #38bdf8;">🎬 Higgsfield Motion • Animação & Câmera</div>
-                <span style="font-size: 0.58rem; color: #38bdf8; background: rgba(56,189,248,0.12); padding: 2px 6px; border-radius: 4px; font-weight: 800;">MOTION API</span>
-              </div>
-              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px;">
-                <div>
-                  <div style="font-size: 0.6rem; color: #94a3b8; margin-bottom: 3px;">First frame</div>
-                  <input type="file" id="fileHiggsFirst" accept="image/*" style="display: none;" onchange="handleHiggsFrame(this.files, 'first')">
-                  <label for="fileHiggsFirst" id="higgsFirstDrop" style="height: 68px; border: 1.5px dashed rgba(56,189,248,0.35); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; color: #38bdf8; background: rgba(56,189,248,0.04); overflow: hidden; position: relative;">
-                    <span style="font-size: 1rem;">＋</span><span style="font-size: 0.55rem;">Início</span>
-                  </label>
-                </div>
-                <div>
-                  <div style="font-size: 0.6rem; color: #94a3b8; margin-bottom: 3px;">End frame</div>
-                  <input type="file" id="fileHiggsEnd" accept="image/*" style="display: none;" onchange="handleHiggsFrame(this.files, 'end')">
-                  <label for="fileHiggsEnd" id="higgsEndDrop" style="height: 68px; border: 1.5px dashed rgba(56,189,248,0.35); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; color: #38bdf8; background: rgba(56,189,248,0.04); overflow: hidden; position: relative;">
-                    <span style="font-size: 1rem;">＋</span><span style="font-size: 0.55rem;">Final</span>
-                  </label>
-                </div>
-                <div>
-                  <div style="font-size: 0.6rem; color: #94a3b8; margin-bottom: 3px;">Objeto / Traje</div>
-                  <input type="file" id="fileHiggsObject" accept="image/*" style="display: none;" onchange="handleHiggsFrame(this.files, 'object')">
-                  <label for="fileHiggsObject" id="higgsObjDrop" style="height: 68px; border: 1.5px dashed rgba(56,189,248,0.35); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; color: #38bdf8; background: rgba(56,189,248,0.04); overflow: hidden; position: relative;">
-                    <span style="font-size: 1rem;">＋</span><span style="font-size: 0.55rem;">Referência</span>
-                  </label>
-                </div>
-              </div>
-              <div>
-                <div style="display: flex; justify-content: space-between; font-size: 0.62rem; color: #94a3b8; margin-bottom: 2px;"><span>Intensidade de movimento</span><span id="lblMotionVal" style="color: #38bdf8; font-weight: 800;">5.0</span></div>
-                <input type="range" min="1" max="10" step="0.5" value="5" oninput="document.getElementById('lblMotionVal').innerText = this.value" style="width: 100%; accent-color: #38bdf8;">
-              </div>
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                <div>
-                  <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Câmera</label>
-                  <select id="selHiggsCamera" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;"><option>Estática</option><option>Pan suave</option><option>Zoom in lento</option><option>Tilt up</option><option>Orbit 360°</option></select>
-                </div>
-                <div>
-                  <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Duração</label>
-                  <select id="selHiggsDuration" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;"><option value="5">5 segundos</option><option value="10">10 segundos</option></select>
-                </div>
-              </div>
-            </div>
-
-            <!-- 4. PAINEL KLING AI REALISM -->
-            <div id="boxKlingControls" style="display: none; background: linear-gradient(135deg, rgba(234,179,8,0.1), rgba(15,17,23,0.95)); border: 1.5px solid rgba(234,179,8,0.35); border-radius: 12px; padding: 14px; flex-direction: column; gap: 10px;">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="font-size: 0.74rem; font-weight: 900; color: #facc15; display: flex; align-items: center; gap: 6px;">
-                  ⚡ Kling AI • Movimento Humano Realista
-                </div>
-                <span style="font-size: 0.6rem; color: #facc15; background: rgba(234,179,8,0.15); padding: 2px 7px; border-radius: 4px; font-weight: 800;">1080P PRO</span>
-              </div>
-              <div style="font-size: 0.64rem; color: #cbd5e1; line-height: 1.4;">
-                Gera movimento orgânico e fluido de corpo inteiro, caminhada e olhares a partir da foto da musa.
-              </div>
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                <div>
-                  <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Modo de Render</label>
-                  <select id="selKlingMode" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;">
-                    <option value="std">Standard (720p • Rápido)</option>
-                    <option value="pro" selected>Professional (1080p • Alta Nitidez)</option>
-                  </select>
-                </div>
-                <div>
-                  <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Duração</label>
-                  <select id="selKlingDuration" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;">
-                    <option value="5">5 segundos</option>
-                    <option value="10">10 segundos</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <!-- 5. PAINEL SEEDREAM 5.0 (FACE SWAP & MODIFICAÇÃO DE LOOK) -->
+            <!-- 2. PAINEL SEEDREAM 5 PRO (FACE SWAP, NSFW & MODIFICAÇÃO DE LOOK) -->
             <div id="boxSeedreamControls" style="display: none; background: linear-gradient(135deg, rgba(14,165,233,0.1), rgba(15,17,23,0.95)); border: 1.5px solid rgba(14,165,233,0.35); border-radius: 12px; padding: 14px; flex-direction: column; gap: 10px;">
               <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div style="font-size: 0.74rem; font-weight: 900; color: #38bdf8; display: flex; align-items: center; gap: 6px;">
-                  🌊 ByteDance Seedream 5.0 • Fotorrealismo & Swap
+                  🌊 ByteDance Seedream 5 Pro • Face Swap & NSFW
                 </div>
                 <span style="font-size: 0.6rem; color: #38bdf8; background: rgba(14,165,233,0.15); padding: 2px 7px; border-radius: 4px; font-weight: 800;">R$ 0,40 / FOTO</span>
               </div>
               <div style="font-size: 0.64rem; color: #cbd5e1; line-height: 1.4;">
-                O queridinho do grupo para trocar roupas, mudar cor de cabelo ou fazer swap de ensaios inteiros em alta fidelidade.
+                O queridinho do grupo para trocar roupas, mudar cabelo, fazer swap facial em ensaios completos e gerar conteúdo sensual/explícito sem censura.
               </div>
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                 <div>
-                  <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">Imagem Alvo (Cena)</div>
+                  <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">Imagem Alvo (Cena/Foto Base)</div>
                   <input type="file" id="fileSeedreamTarget" accept="image/*" style="display: none;" onchange="handleSeedreamTargetUpload(this.files)">
                   <label for="fileSeedreamTarget" id="dropSeedreamTarget" style="height: 76px; border: 1.5px dashed rgba(14,165,233,0.4); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #38bdf8; background: rgba(14,165,233,0.05); overflow: hidden; position: relative;">
                     <span style="font-size: 1.1rem;">🖼️</span><span style="font-size: 0.58rem; font-weight: 700;">Subir Imagem Alvo</span>
@@ -8527,11 +8450,17 @@
               </div>
               <div>
                 <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Comando de Modificação (Cabelo / Roupa / Fundo):</label>
-                <input type="text" id="txtSeedreamEditPrompt" placeholder="Ex: mudar cabelo para castanho iluminado, colocar biquíni preto de linho" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 7px 10px; border-radius: 6px; font-size: 0.74rem; outline: none;">
+                <input type="text" id="txtSeedreamEditPrompt" placeholder="Ex: tirar biquíni, mudar cabelo para loiro claro, lingerie de seda preta..." style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 7px 10px; border-radius: 6px; font-size: 0.74rem; outline: none;">
+              </div>
+              <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                <button type="button" onclick="setSeedreamPrompt('tirar biquini e deixar topless sensual na praia')" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: #cbd5e1; font-size: 0.58rem; padding: 3px 6px; border-radius: 4px; cursor: pointer;">👙 Topless Praia</button>
+                <button type="button" onclick="setSeedreamPrompt('colocar lingerie de renda preta transparente provocante')" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: #cbd5e1; font-size: 0.58rem; padding: 3px 6px; border-radius: 4px; cursor: pointer;">🖤 Lingerie Transparente</button>
+                <button type="button" onclick="setSeedreamPrompt('mudar cabelo para loiro perolado longo iluminado')" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: #cbd5e1; font-size: 0.58rem; padding: 3px 6px; border-radius: 4px; cursor: pointer;">💇 Cabelo Loiro</button>
+                <button type="button" onclick="setSeedreamPrompt('vestido de festa vermelho com decote profundo')" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: #cbd5e1; font-size: 0.58rem; padding: 3px 6px; border-radius: 4px; cursor: pointer;">👗 Vestido Vermelho Decote</button>
               </div>
             </div>
 
-            <!-- 6. PAINEL QWEN 2.5 360° (MULTI-ÂNGULO) -->
+            <!-- 3. PAINEL QWEN 2.5 360° (MULTI-ÂNGULO) -->
             <div id="boxQwenControls" style="display: none; background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(15,17,23,0.95)); border: 1.5px solid rgba(16,185,129,0.35); border-radius: 12px; padding: 14px; flex-direction: column; gap: 10px;">
               <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div style="font-size: 0.74rem; font-weight: 900; color: #34d399; display: flex; align-items: center; gap: 6px;">
@@ -8552,53 +8481,7 @@
               </div>
             </div>
 
-            <!-- 7. PAINEL MINIMAX H3 & LTX 2.5 -->
-            <div id="boxMinimaxControls" style="display: none; background: linear-gradient(135deg, rgba(244,63,94,0.1), rgba(15,17,23,0.95)); border: 1.5px solid rgba(244,63,94,0.35); border-radius: 12px; padding: 14px; flex-direction: column; gap: 10px;">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="font-size: 0.74rem; font-weight: 900; color: #fb7185; display: flex; align-items: center; gap: 6px;">
-                  🎥 Minimax H3 & LTX 2.5 • Vídeo Cinemático
-                </div>
-                <span style="font-size: 0.6rem; color: #fb7185; background: rgba(244,63,94,0.15); padding: 2px 7px; border-radius: 4px; font-weight: 800;">HAILUO 01</span>
-              </div>
-              <div style="font-size: 0.64rem; color: #cbd5e1; line-height: 1.4;">
-                Física realista de movimentos, vento nos cabelos e tecidos com estética de estúdio.
-              </div>
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                <div>
-                  <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Engine</label>
-                  <select id="selMinimaxEngine" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;">
-                    <option value="h3" selected>Minimax Hailuo H3</option>
-                    <option value="ltx25">LTX Video 2.5</option>
-                  </select>
-                </div>
-                <div>
-                  <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Resolução</label>
-                  <select id="selMinimaxRes" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;">
-                    <option value="720">720p 24fps</option>
-                    <option value="1080" selected>1080p 24fps</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <!-- 8. PAINEL OPENJUTSU / GENJUTSU COMFYUI -->
-            <div id="boxOpenjutsuControls" style="display: none; background: linear-gradient(135deg, rgba(239,68,68,0.12), rgba(15,17,23,0.95)); border: 1.5px solid rgba(239,68,68,0.35); border-radius: 12px; padding: 14px; flex-direction: column; gap: 10px;">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="font-size: 0.74rem; font-weight: 900; color: #f87171; display: flex; align-items: center; gap: 6px;">
-                  🥷 OpenJutsu / Genjutsu • Workflow ComfyUI VIP
-                </div>
-                <span style="background: rgba(239,68,68,0.2); color: #fca5a5; font-size: 0.58rem; font-weight: 800; padding: 2px 6px; border-radius: 4px;">NÍVEL ALFA</span>
-              </div>
-              <div style="font-size: 0.64rem; color: #cbd5e1; line-height: 1.4;">
-                Workflow proprietário mais usado pelas grandes agências de modelos IA no Brasil. Roda diretamente no servidor em nuvem sem consumir sua máquina.
-              </div>
-              <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; justify-content: space-between;">
-                <span style="font-size: 0.66rem; color: #94a3b8;">Status do Workflow:</span>
-                <span style="font-size: 0.62rem; color: #4ade80; font-weight: 800;">Conectado & Pronto</span>
-              </div>
-            </div>
-
-            <!-- 9. PAINEL CHATGPT IMAGE IMPORT -->
+            <!-- 4. PAINEL CHATGPT IMAGE IMPORT -->
             <div id="boxChatGptControls" style="display: none; background: #0d0e14; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 12px; flex-direction: column; gap: 8px;">
               <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div style="font-size: 0.72rem; font-weight: 800; color: #fff;">🖼️ ChatGPT Image (GPT Image 2.6 / DALL-E)</div>
@@ -8617,20 +8500,147 @@
                 <span style="font-size: 1.1rem;">＋</span><span style="font-size: 0.64rem; font-weight: 700;">Colar (Ctrl+V) ou soltar imagem do ChatGPT</span>
               </label>
             </div>
-                <span style="font-size: 0.6rem; color: #4ade80; background: rgba(74,222,128,0.1); padding: 2px 6px; border-radius: 4px; font-weight: 700;">Ctrl+V Habilitado</span>
+
+            <!-- 5. PAINEL MOTION CONTROL (KLING 4.0/3.0/2.6, OMNI FLASH, OPENJUTSU) -->
+            <div id="boxMotionControls" style="display: none; background: linear-gradient(135deg, rgba(6,182,212,0.1), rgba(15,17,23,0.95)); border: 1.5px solid rgba(6,182,212,0.35); border-radius: 12px; padding: 14px; flex-direction: column; gap: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 0.74rem; font-weight: 900; color: #38bdf8; display: flex; align-items: center; gap: 6px;">
+                  ⚡ Motion Control • Dança, Poses & Movimento
+                </div>
+                <span style="font-size: 0.6rem; color: #38bdf8; background: rgba(6,182,212,0.15); padding: 2px 7px; border-radius: 4px; font-weight: 800;">VIRAL TRANSFER</span>
               </div>
-              <div style="font-size: 0.65rem; color: #94a3b8; line-height: 1.4;">
-                Gere na sua conta do ChatGPT Plus. Copie a imagem de lá e dê <strong>Ctrl+V</strong> aqui na tela, ou arraste o arquivo. O GhostLens purga metadados C2PA, aplica Anti-Hash PDQ e injeta EXIF Apple automaticamente!
+              <div style="font-size: 0.64rem; color: #cbd5e1; line-height: 1.4;">
+                Transfira a dança, caminhada ou poses de qualquer vídeo viral para o rosto e corpo da sua musa IA.
               </div>
-              <div style="display: flex; gap: 6px;">
-                <button type="button" onclick="copyOptimizedGptPrompt()" style="flex: 1; background: #1a1c26; border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; font-weight: 700; font-size: 0.68rem; padding: 7px; border-radius: 6px; cursor: pointer;">
-                  📋 Copiar Super-Prompt pro GPT
-                </button>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div>
+                  <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">1. Vídeo Guia (MP4 Dança/Pose)</div>
+                  <input type="file" id="fileMotionGuide" accept="video/*" style="display: none;" onchange="handleMotionGuideUpload(this.files)">
+                  <label for="fileMotionGuide" id="dropMotionGuide" style="height: 76px; border: 1.5px dashed rgba(6,182,212,0.4); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #38bdf8; background: rgba(6,182,212,0.05); overflow: hidden; position: relative;">
+                    <span style="font-size: 1.1rem;">🎬</span><span style="font-size: 0.58rem; font-weight: 700;">Subir Vídeo Viral</span>
+                  </label>
+                </div>
+                <div>
+                  <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">2. Foto da Musa (Rosto/Corpo)</div>
+                  <input type="file" id="fileMotionMusa" accept="image/*" style="display: none;" onchange="handleMotionMusaUpload(this.files)">
+                  <label for="fileMotionMusa" id="dropMotionMusa" style="height: 76px; border: 1.5px dashed rgba(6,182,212,0.4); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #38bdf8; background: rgba(6,182,212,0.05); overflow: hidden; position: relative;">
+                    <span style="font-size: 1.1rem;">👤</span><span style="font-size: 0.58rem; font-weight: 700;">Rosto / Foto da Musa</span>
+                  </label>
+                </div>
               </div>
-              <input type="file" id="creatorImportInput" accept="image/*" style="display: none;" onchange="handleCreatorImportFile(this.files)">
-              <label for="creatorImportInput" id="dropZoneGptImport" style="height: 80px; border: 1.5px dashed rgba(255,255,255,0.2); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; color: #e2e8f0; background: rgba(255,255,255,0.02); transition: 0.2s;">
-                <span style="font-size: 1.1rem;">＋</span><span style="font-size: 0.64rem; font-weight: 700;">Colar (Ctrl+V) ou soltar imagem do ChatGPT</span>
-              </label>
+              <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.62rem; color: #94a3b8; margin-bottom: 2px;">
+                  <span>Intensidade do Movimento</span>
+                  <span id="lblMotionStrength" style="color: #38bdf8; font-weight: 800;">7.5 (Fluido)</span>
+                </div>
+                <input type="range" min="1" max="10" step="0.5" value="7.5" oninput="document.getElementById('lblMotionStrength').innerText = this.value + (this.value > 7 ? ' (Dinâmico)' : ' (Suave)')" style="width: 100%; accent-color: #38bdf8;">
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div>
+                  <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Tipo de Transferência</label>
+                  <select id="selMotionType" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;">
+                    <option value="body" selected>Corpo Inteiro (Dança / Caminhada)</option>
+                    <option value="face">Sincronia Facial & Expressões</option>
+                    <option value="pose">Pose Estática com Micro-Movimento</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Resolução & Taxa</label>
+                  <select id="selMotionQuality" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;">
+                    <option value="1080_60" selected>1080p Nativo • 60 FPS Suave</option>
+                    <option value="720_30">720p Rápido • 30 FPS</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- 6. PAINEL IMAGE TO VIDEO (WAN 3.0, MINIMAX H3, SEEDANCE, KLING VIDEO, GROK, LTX, FLUX, VEO) -->
+            <div id="boxImageToVideoControls" style="display: none; background: linear-gradient(135deg, rgba(168,85,247,0.1), rgba(15,17,23,0.95)); border: 1.5px solid rgba(168,85,247,0.35); border-radius: 12px; padding: 14px; flex-direction: column; gap: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 0.74rem; font-weight: 900; color: #c084fc; display: flex; align-items: center; gap: 6px;">
+                  🎥 Image to Video • Animação Fotorrealista
+                </div>
+                <span style="font-size: 0.6rem; color: #c084fc; background: rgba(168,85,247,0.15); padding: 2px 7px; border-radius: 4px; font-weight: 800;">ZERO DEFORMAÇÃO</span>
+              </div>
+              <div style="font-size: 0.64rem; color: #cbd5e1; line-height: 1.4;">
+                Dê vida à foto da sua musa com física realista de cabelo, vento nos tecidos e iluminação natural.
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div>
+                  <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">Start Image (Início)</div>
+                  <input type="file" id="fileImg2VidStart" accept="image/*" style="display: none;" onchange="handleImg2VidStart(this.files)">
+                  <label for="fileImg2VidStart" id="dropImg2VidStart" style="height: 76px; border: 1.5px dashed rgba(168,85,247,0.4); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #c084fc; background: rgba(168,85,247,0.05); overflow: hidden; position: relative;">
+                    <span style="font-size: 1.1rem;">🖼️</span><span style="font-size: 0.58rem; font-weight: 700;">Frame Inicial</span>
+                  </label>
+                </div>
+                <div>
+                  <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">End Image (Transição - Opcional)</div>
+                  <input type="file" id="fileImg2VidEnd" accept="image/*" style="display: none;" onchange="handleImg2VidEnd(this.files)">
+                  <label for="fileImg2VidEnd" id="dropImg2VidEnd" style="height: 76px; border: 1.5px dashed rgba(168,85,247,0.4); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #c084fc; background: rgba(168,85,247,0.05); overflow: hidden; position: relative;">
+                    <span style="font-size: 1.1rem;">🏁</span><span style="font-size: 0.58rem; font-weight: 700;">Frame Final</span>
+                  </label>
+                </div>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div>
+                  <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Movimento de Câmera</label>
+                  <select id="selImg2VidCamera" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;">
+                    <option value="static">Estática (Foco na Musa)</option>
+                    <option value="pan" selected>Pan Suave Lateral</option>
+                    <option value="zoom_in">Zoom In Lento Sensual</option>
+                    <option value="orbit">Orbit 360° Suave</option>
+                    <option value="pov">Câmera na Mão (POV Realista)</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Duração</label>
+                  <select id="selImg2VidDuration" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;">
+                    <option value="5" selected>5 Segundos (Reels / TikTok)</option>
+                    <option value="10">10 Segundos (História Completa)</option>
+                  </select>
+                </div>
+              </div>
+              <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(168,85,247,0.2); border-radius: 8px; padding: 7px 10px; display: flex; align-items: center; justify-content: space-between;">
+                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.65rem; color: #c084fc; font-weight: 800; cursor: pointer;">
+                  <input type="checkbox" id="chkImg2Vid60Fps" checked style="accent-color: #a855f7;">
+                  <span>⚡ Interpolação 60 FPS Automática (Grátis)</span>
+                </label>
+                <span style="font-size: 0.58rem; color: #4ade80; font-weight: 800;">ATIVO</span>
+              </div>
+            </div>
+
+            <!-- 7. PAINEL ÁUDIO & VOZ (VOICE CLONING, EROSCHAT VOICE, ISOLADOR) -->
+            <div id="boxAudioControls" style="display: none; background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(15,17,23,0.95)); border: 1.5px solid rgba(245,158,11,0.35); border-radius: 12px; padding: 14px; flex-direction: column; gap: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 0.74rem; font-weight: 900; color: #fbbf24; display: flex; align-items: center; gap: 6px;">
+                  🎙️ Clonagem de Voz da Musa & Áudios Sensuais
+                </div>
+                <span style="font-size: 0.6rem; color: #fbbf24; background: rgba(245,158,11,0.15); padding: 2px 7px; border-radius: 4px; font-weight: 800;">EROSCHAT</span>
+              </div>
+              <div style="font-size: 0.64rem; color: #cbd5e1; line-height: 1.4;">
+                Gere áudios de voz autênticos no WhatsApp para fechar Pix de R$ 300 a R$ 600 no X1 sem você precisar falar nada.
+              </div>
+              <div>
+                <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">Amostra de Voz da Modelo (.MP3 / .WAV)</div>
+                <input type="file" id="fileAudioSample" accept="audio/*" style="display: none;" onchange="handleAudioSampleUpload(this.files)">
+                <label for="fileAudioSample" id="dropAudioSample" style="height: 64px; border: 1.5px dashed rgba(245,158,11,0.4); border-radius: 9px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; color: #fbbf24; background: rgba(245,158,11,0.05); overflow: hidden; position: relative;">
+                  <span style="font-size: 1.2rem;">🎤</span>
+                  <span style="font-size: 0.66rem; font-weight: 700;">Subir Áudio da Musa ou Gravar Amostra</span>
+                </label>
+              </div>
+              <div>
+                <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Estilo & Entonação:</label>
+                <select id="selAudioTone" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;">
+                  <option value="whisper" selected>Sensual Sussurrado (Áudio de Cama)</option>
+                  <option value="casual">Descontraído no WhatsApp ("Oi amor, acabei de sair do banho...")</option>
+                  <option value="sweet">Carinhoso & Namorada ("Saudades de você hoje...")</option>
+                  <option value="vip">Provocante VIP ("Preparei uma surpresa que você nunca viu...")</option>
+                </select>
+              </div>
+              <div>
+                <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Texto / Mensagem a Falar:</label>
+                <textarea id="txtAudioScript" rows="3" placeholder="Ex: Oi amor... estava pensando em você agora na cama. Olha a foto que eu acabei de tirar pra você..." style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 8px; border-radius: 6px; font-size: 0.72rem; outline: none; resize: vertical;"></textarea>
+              </div>
             </div>
 
             <button type="button" id="btnExecuteCreatorGen" onclick="executeGhostCreatorGen()" style="width: 100%; background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 900; font-size: 0.86rem; border: none; padding: 12px; border-radius: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; box-shadow: 0 4px 14px rgba(245,158,11,0.25);">
@@ -8721,6 +8731,7 @@
         const firstId = profiles[0].id;
         sel.value = firstId;
         onCreatorMusaChange(firstId);
+        setStudioMode('image');
       }
 
       function onCreatorMusaChange(profileId) {
@@ -8842,6 +8853,139 @@
         grid.innerHTML = urls.map((src, i) => `<div onclick="selectCreatorHistoryThumb(this, '${src}')" style="height: 104px; border-radius: 8px; overflow: hidden; border: 1px solid ${i === 0 ? 'rgba(190,242,100,0.45)' : 'rgba(255,255,255,0.08)'}; cursor: pointer; background: #080a0f;"><img src="${src}" alt="Variação ${i + 1}" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div>`).join('');
       }
 
+      let currentStudioMode = 'image';
+
+      function setStudioMode(mode) {
+        currentStudioMode = mode;
+        const tabImage = document.getElementById('tabModeImage');
+        const tabVideo = document.getElementById('tabModeVideo');
+        const tabAudio = document.getElementById('tabModeAudio');
+
+        [tabImage, tabVideo, tabAudio].forEach(t => {
+          if (t) {
+            t.style.background = 'transparent';
+            t.style.color = '#94a3b8';
+            t.style.fontWeight = '700';
+          }
+        });
+
+        const activeTab = mode === 'image' ? tabImage : (mode === 'video' ? tabVideo : tabAudio);
+        if (activeTab) {
+          activeTab.style.background = 'var(--accent-lime)';
+          activeTab.style.color = '#000';
+          activeTab.style.fontWeight = '900';
+        }
+
+        const lblTitle = document.getElementById('lblCreatorStudioTitle');
+        const lblSub = document.getElementById('lblCreatorStudioSubtitle');
+        const lblIcon = document.getElementById('lblCreatorStudioIcon');
+        const badgeMode = document.getElementById('badgeCreatorMode');
+        const selModel = document.getElementById('selCreatorModel');
+        const dnaBox = document.getElementById('boxDnaContainer');
+        const ratioBox = document.getElementById('boxAspectRatioContainer');
+        const promptBox = document.getElementById('boxPromptContainer');
+        const refsTitle = document.getElementById('lblCreatorRefsTitle');
+        const refsHint = document.getElementById('lblCreatorRefsHint');
+
+        if (mode === 'image') {
+          if (lblTitle) lblTitle.innerText = 'GhostCreator • Image Studio';
+          if (lblSub) lblSub.innerText = 'Criação fotográfica com referência da persona e Face Swap';
+          if (lblIcon) lblIcon.innerText = '🖼️';
+          if (badgeMode) {
+            badgeMode.innerText = 'IMAGE ENGINE';
+            badgeMode.style.color = '#bef264';
+            badgeMode.style.borderColor = 'rgba(190,242,100,0.3)';
+          }
+          if (dnaBox) dnaBox.style.display = 'block';
+          if (ratioBox) ratioBox.style.display = 'block';
+          if (promptBox) promptBox.style.display = 'block';
+          if (refsTitle) refsTitle.innerText = 'REFERÊNCIAS DA MUSA (FACE & ESTILO)';
+          if (refsHint) refsHint.innerText = 'A primeira foto vira a referência facial principal. Rosto limpo e boa luz.';
+
+          if (selModel) {
+            selModel.innerHTML = `
+              <option value="eros_image_2k" selected>👑 Eros-Image™ 2K • LoRA da Musa & Ultra-Realismo (Zero Cara de IA)</option>
+              <option value="seedream_5">🌊 ByteDance Seedream 5 Pro • Face Swap, Trajes, Cabelo & Explícito</option>
+              <option value="chatgpt_import">🖼️ GPT 2.6 Image (ChatGPT Plus) • Importar Ctrl+V</option>
+              <option value="nanobanana_21">🍌 Google Nano Banana 2.1 • Incluso no Plano</option>
+              <option value="krea_2">✨ Krea 2 Raw Edit • Retoque & Textura de Pele</option>
+              <option value="qwen_360">🌐 Qwen 2.5 360° Multi-Ângulo • Carrossel do Instagram</option>
+              <option value="magnific_upscale">🔍 Magnific Upscaler 4K • Restauração de Poros</option>
+            `;
+            selModel.value = 'eros_image_2k';
+            onCreatorModelChange('eros_image_2k');
+          }
+
+        } else if (mode === 'video') {
+          if (lblTitle) lblTitle.innerText = 'GhostCreator • Video & Motion Studio';
+          if (lblSub) lblSub.innerText = 'Motion Control, Dança, Poses e Animação Cinemática';
+          if (lblIcon) lblIcon.innerText = '🎬';
+          if (badgeMode) {
+            badgeMode.innerText = 'VIDEO & MOTION';
+            badgeMode.style.color = '#38bdf8';
+            badgeMode.style.borderColor = 'rgba(56,189,248,0.3)';
+          }
+          if (dnaBox) dnaBox.style.display = 'none';
+          if (ratioBox) ratioBox.style.display = 'block';
+          if (promptBox) promptBox.style.display = 'block';
+          if (refsTitle) refsTitle.innerText = 'REFERÊNCIAS DE VÍDEO (START / END / MOTION)';
+          if (refsHint) refsHint.innerText = 'Start frame = musa. Motion Transfer = vídeo com passos/poses virais.';
+
+          if (selModel) {
+            selModel.innerHTML = `
+              <optgroup label="⚡ MOTION CONTROL (Troca de Movimento & Viral Swap)">
+                <option value="kling_4_motion" selected>⚡ Kling 4.0 Motion Control • Dança, Poses & Caminhada</option>
+                <option value="kling_3_motion">⚡ Kling 3.0 Motion Control • Fidelidade Corporal</option>
+                <option value="kling_26_motion">⚡ Kling 2.6 Motion Control • Alta Estabilidade</option>
+                <option value="omni_flash_21">💫 Omni Flash 2.1 • Troca Instantânea de Movimento</option>
+                <option value="openjutsu_workflow">🥷 Genjutsu / OpenJutsu Ultra • ComfyUI VIP Alfa Nuvem</option>
+              </optgroup>
+              <optgroup label="🎥 IMAGE TO VIDEO (Animação de Imagem)">
+                <option value="wan_3_prime">🌀 Wan 3.0 Prime • Top Animação Fotorrealista</option>
+                <option value="minimax_h3">🎥 MiniMax H3 Max • Ultra Fast & Cinemático</option>
+                <option value="seedance_25">💃 Seedance 2.5 Ultra • Movimento Ultra Realista</option>
+                <option value="seedance_20">💃 Seedance 2.0 • Equilibrado</option>
+                <option value="kling_4_video">⚡ Kling 4.0 Video • 1080p Nativo</option>
+                <option value="kling_3_video">⚡ Kling 3.0 Video • Movimento Fluido</option>
+                <option value="grok_15_video">🤖 Grok 1.5 Video • Dinamismo & Ação</option>
+                <option value="ltx_25_video">🎞️ LTX Video 2.5 • Física de Tecidos e Cabelo</option>
+                <option value="flux_3_video">🌌 Flux 3.0 Video • Iluminação de Estúdio</option>
+                <option value="veo_31">🎬 Google Veo 3.1 • Cinematografia Pro</option>
+                <option value="veo_31_lite">🎬 Google Veo 3.1 Lite • Rápido</option>
+              </optgroup>
+            `;
+            selModel.value = 'kling_4_motion';
+            onCreatorModelChange('kling_4_motion');
+          }
+
+        } else if (mode === 'audio') {
+          if (lblTitle) lblTitle.innerText = 'GhostCreator • Audio & Voice Studio';
+          if (lblSub) lblSub.innerText = 'Voz da Musa, Áudios Sensuais ErosChat & Isolamento';
+          if (lblIcon) lblIcon.innerText = '🎙️';
+          if (badgeMode) {
+            badgeMode.innerText = 'EROSCHAT VOICE';
+            badgeMode.style.color = '#fbbf24';
+            badgeMode.style.borderColor = 'rgba(245,158,11,0.3)';
+          }
+          if (dnaBox) dnaBox.style.display = 'none';
+          if (ratioBox) ratioBox.style.display = 'none';
+          if (promptBox) promptBox.style.display = 'none';
+          if (refsTitle) refsTitle.innerText = 'AMOSTRA DE VOZ DA MUSA (.MP3 / GRAVAÇÃO)';
+          if (refsHint) refsHint.innerText = 'Suba um áudio de 10 a 30 segundos da modelo falando naturalmente.';
+
+          if (selModel) {
+            selModel.innerHTML = `
+              <option value="voice_clone_musa" selected>🎙️ Clonagem de Voz da Musa (Áudios WhatsApp X1)</option>
+              <option value="voice_gen_sensual">💋 Gerador de Áudios Provocantes ErosChat</option>
+              <option value="audio_isolation">🧹 Isolador de Ruído de Fundo (Purificador)</option>
+            `;
+            selModel.value = 'voice_clone_musa';
+            onCreatorModelChange('voice_clone_musa');
+          }
+        }
+      }
+      window.setStudioMode = setStudioMode;
+
       function onCreatorModelChange(model) {
         currentCreatorModel = model;
         const meta = creatorModelMeta(model);
@@ -8849,14 +8993,12 @@
         // Esconde todos os painéis para exibir apenas o do modelo selecionado
         const allBoxes = [
           'boxErosImageControls',
-          'boxWanControls',
-          'boxHiggsfieldControls',
-          'boxKlingControls',
           'boxSeedreamControls',
+          'boxChatGptControls',
           'boxQwenControls',
-          'boxMinimaxControls',
-          'boxOpenjutsuControls',
-          'boxChatGptControls'
+          'boxMotionControls',
+          'boxImageToVideoControls',
+          'boxAudioControls'
         ];
         allBoxes.forEach(id => {
           const el = document.getElementById(id);
@@ -8864,15 +9006,17 @@
         });
 
         // Mostra o painel exclusivo da IA ativa
+        const isMotion = ['kling_4_motion', 'kling_3_motion', 'kling_26_motion', 'omni_flash_21', 'openjutsu_workflow'].includes(model);
+        const isImg2Vid = ['wan_3_prime', 'minimax_h3', 'seedance_25', 'seedance_20', 'kling_4_video', 'kling_3_video', 'grok_15_video', 'ltx_25_video', 'flux_3_video', 'veo_31', 'veo_31_lite'].includes(model);
+        const isAudio = ['voice_clone_musa', 'voice_gen_sensual', 'audio_isolation'].includes(model);
+
         if (model === 'eros_image_2k') document.getElementById('boxErosImageControls')?.style.setProperty('display', 'flex');
-        else if (model === 'wan_video_swap') document.getElementById('boxWanControls')?.style.setProperty('display', 'flex');
-        else if (model === 'higgsfield_video') document.getElementById('boxHiggsfieldControls')?.style.setProperty('display', 'flex');
-        else if (model === 'kling_video') document.getElementById('boxKlingControls')?.style.setProperty('display', 'flex');
         else if (model === 'seedream_5') document.getElementById('boxSeedreamControls')?.style.setProperty('display', 'flex');
-        else if (model === 'qwen_360') document.getElementById('boxQwenControls')?.style.setProperty('display', 'flex');
-        else if (model === 'minimax_h3') document.getElementById('boxMinimaxControls')?.style.setProperty('display', 'flex');
-        else if (model === 'openjutsu_workflow') document.getElementById('boxOpenjutsuControls')?.style.setProperty('display', 'flex');
         else if (model === 'chatgpt_import') document.getElementById('boxChatGptControls')?.style.setProperty('display', 'flex');
+        else if (model === 'qwen_360') document.getElementById('boxQwenControls')?.style.setProperty('display', 'flex');
+        else if (isMotion) document.getElementById('boxMotionControls')?.style.setProperty('display', 'flex');
+        else if (isImg2Vid) document.getElementById('boxImageToVideoControls')?.style.setProperty('display', 'flex');
+        else if (isAudio) document.getElementById('boxAudioControls')?.style.setProperty('display', 'flex');
 
         const btnGen = document.getElementById('lblBtnGenText');
         const btnExecute = document.getElementById('btnExecuteCreatorGen');
@@ -8889,10 +9033,18 @@
             btnExecute.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
             btnExecute.style.color = '#000';
             btnExecute.style.boxShadow = '0 4px 14px rgba(245,158,11,0.25)';
-          } else if (model === 'wan_video_swap') {
+          } else if (isMotion) {
+            btnExecute.style.background = 'linear-gradient(135deg, #06b6d4, #0284c7)';
+            btnExecute.style.color = '#fff';
+            btnExecute.style.boxShadow = '0 4px 14px rgba(6,182,212,0.35)';
+          } else if (isImg2Vid) {
             btnExecute.style.background = 'linear-gradient(135deg, #a855f7, #7e22ce)';
             btnExecute.style.color = '#fff';
             btnExecute.style.boxShadow = '0 4px 14px rgba(168,85,247,0.35)';
+          } else if (isAudio) {
+            btnExecute.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+            btnExecute.style.color = '#000';
+            btnExecute.style.boxShadow = '0 4px 14px rgba(245,158,11,0.25)';
           } else {
             btnExecute.style.background = 'var(--accent-lime)';
             btnExecute.style.color = '#000';
@@ -8902,18 +9054,39 @@
 
         if (hint) {
           const hints = {
-            eros_image_2k: 'Eros-Image™ 2K: Textura de microporos real, profundidade óptica e fidelidade anatômica sem traços de IA.',
-            wan_video_swap: 'Wan 3.0 Video Swap: Troca facial e corporal ultra-realista em vídeos virais de criadoras reais.',
-            higgsfield_video: 'Higgsfield Motion: First/end frame, objetos e motion control avançado por segundo de vídeo.',
-            kling_video: 'Kling AI: Movimentos humanos fluidos, caminhadas e ações naturais em 1080p.',
-            seedream_5: 'ByteDance Seedream 5.0: Face swap de alta fidelidade e alteração de cabelo/roupa em fotos prontas.',
-            qwen_360: 'Qwen 2.5 360°: Variação multi-ângulo (frontal, 45°, perfil, traseira) para carrosséis do Instagram.',
-            minimax_h3: 'Minimax H3 / LTX 2.5: Renderização cinemática com física de tecidos e cabelo em alta definição.',
-            openjutsu_workflow: 'OpenJutsu / Genjutsu ComfyUI: O workflow mais utilizado por grandes agências para geração em nuvem.',
-            chatgpt_import: 'Gere no seu ChatGPT e dê Ctrl+V aqui. O GhostLens purga C2PA e injeta Apple EXIF.'
+            eros_image_2k: 'Eros-Image™ 2K: Textura de microporos real, profundidade de campo e fidelidade anatômica sem traços de IA.',
+            seedream_5: 'ByteDance Seedream 5 Pro: Face Swap de alta precisão, troca de cabelo/roupa e geração NSFW explícita sem censura.',
+            chatgpt_import: 'Gere no seu ChatGPT Plus e dê Ctrl+V aqui. O GhostLens purga metadados C2PA e injeta Apple EXIF.',
+            nanobanana_21: 'Google Nano Banana 2.1: Geração ultra rápida inclusa no plano sem custo extra por imagem.',
+            krea_2: 'Krea 2 Raw Edit: Textura analógica de pele, ajuste fino de iluminação e retoque estético.',
+            qwen_360: 'Qwen 2.5 360°: Variação multi-ângulo (0°, 45°, 90°, 180°, POV) para carrosséis virais do Instagram.',
+            magnific_upscale: 'Magnific Upscaler 4K: Restauração de poros, ultra-resolução e nitidez cristalina.',
+
+            kling_4_motion: 'Kling 4.0 Motion Control: Transfere movimentos, passos de dança e poses de vídeos virais para a sua musa em 1080p.',
+            kling_3_motion: 'Kling 3.0 Motion Control: Alta fidelidade de proporção corporal e sincronia em vídeos curtos.',
+            kling_26_motion: 'Kling 2.6 Motion Control: Motor com estabilidade sólida e menor consumo de créditos.',
+            omni_flash_21: 'Omni Flash 2.1: Troca de movimento em tempo recorde com física fluida.',
+            openjutsu_workflow: 'Genjutsu / OpenJutsu: O workflow mais utilizado por grandes agências no ComfyUI, rodando na nossa nuvem sem travar seu PC.',
+
+            wan_3_prime: 'Wan 3.0 Prime: O novo queridinho do grupo para animar fotos em movimento hiper-realista sem deformação.',
+            minimax_h3: 'MiniMax H3 Max: Renderização cinemática com física de tecidos, cabelos ao vento e iluminação de estúdio.',
+            seedance_25: 'ByteDance Seedance 2.5 Ultra: Movimento ultra realista com fluidez corporal extrema.',
+            seedance_20: 'ByteDance Seedance 2.0: Animação rápida com transição suave de frames.',
+            kling_4_video: 'Kling 4.0 Video: Geração de vídeo em 1080p com movimentos naturais de 3 a 30 segundos.',
+            kling_3_video: 'Kling 3.0 Video: Movimento humano realista para Reels e TikTok.',
+            grok_15_video: 'Grok 1.5 Video: Dinamismo e física ágil para cenas de ação e movimento.',
+            ltx_25_video: 'LTX Video 2.5: Fluidez cinemática e fidelidade visual.',
+            flux_3_video: 'Flux 3.0 Video: Estética editorial com iluminação volumétrica.',
+            veo_31: 'Google Veo 3.1: Qualidade de cinematografia de cinema em alta definição.',
+            veo_31_lite: 'Google Veo 3.1 Lite: Geração leve e rápida para testes de cena.',
+
+            voice_clone_musa: 'Clonagem de Voz da Musa: Clone o timbre sensual da modelo para enviar áudios irresistíveis no WhatsApp X1.',
+            voice_gen_sensual: 'Gerador Sensual ErosChat: Dispare mensagens de voz carinhosas e provocantes de forma autônoma.',
+            audio_isolation: 'Isolador de Ruído: Remove ruídos de fundo e deixa a voz limpa e intimista como áudio de celular.'
           };
-          hint.innerText = hints[model] || 'Geração com referências da persona, sem custo por imagem no plano Pro (fair use).';
+          hint.innerText = hints[model] || 'Motor de IA calibrado para criadores de influencers e nicho sensual.';
         }
+
         if (model === 'eros_image_2k') {
           const activeBtn = document.querySelector('.btn-eros-ck.active') || document.querySelector('.btn-eros-ck');
           selectErosLens(currentErosCheckpoint || 'raw', activeBtn);
@@ -9042,6 +9215,70 @@
           if (drop) drop.innerHTML = `<img src="${data}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;"><span style="position:relative;z-index:1;background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;padding:2px 6px;border-radius:4px;">Trocar</span>`;
           showToast('Rosto da musa carregado para Seedream!', 2500);
         } catch(e){}
+
+      function setSeedreamPrompt(val) {
+        const input = document.getElementById('txtSeedreamEditPrompt');
+        if (input) {
+          input.value = val;
+          input.focus();
+        }
+        showToast('Comando Seedream preenchido: ' + val, 2500);
+      }
+      window.setSeedreamPrompt = setSeedreamPrompt;
+
+      async function handleMotionGuideUpload(files) {
+        const file = (files || [])[0];
+        if (!file) return;
+        const drop = document.getElementById('dropMotionGuide');
+        if (drop) drop.innerHTML = `<span style="font-size:1.1rem;">🎬</span><span style="font-size:0.58rem;font-weight:800;color:#38bdf8;">${file.name.substring(0, 14)}...</span>`;
+        showToast(`Vídeo guia de movimento carregado: ${file.name}`, 3000);
+      }
+      window.handleMotionGuideUpload = handleMotionGuideUpload;
+
+      async function handleMotionMusaUpload(files) {
+        const file = (files || [])[0];
+        if (!file) return;
+        try {
+          const data = await ghostCompressImage(file, 768, 0.85);
+          const drop = document.getElementById('dropMotionMusa');
+          if (drop) drop.innerHTML = `<img src="${data}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;"><span style="position:relative;z-index:1;background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;padding:2px 6px;border-radius:4px;">Trocar</span>`;
+          showToast('Foto da musa vinculada ao Motion Transfer!', 2500);
+        } catch(e){}
+      }
+      window.handleMotionMusaUpload = handleMotionMusaUpload;
+
+      async function handleImg2VidStart(files) {
+        const file = (files || [])[0];
+        if (!file) return;
+        try {
+          const data = await ghostCompressImage(file, 1024, 0.88);
+          const drop = document.getElementById('dropImg2VidStart');
+          if (drop) drop.innerHTML = `<img src="${data}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;"><span style="position:relative;z-index:1;background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;padding:2px 6px;border-radius:4px;">Trocar</span>`;
+          showToast('Start frame carregado com sucesso!', 2500);
+        } catch(e){}
+      }
+      window.handleImg2VidStart = handleImg2VidStart;
+
+      async function handleImg2VidEnd(files) {
+        const file = (files || [])[0];
+        if (!file) return;
+        try {
+          const data = await ghostCompressImage(file, 1024, 0.88);
+          const drop = document.getElementById('dropImg2VidEnd');
+          if (drop) drop.innerHTML = `<img src="${data}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;"><span style="position:relative;z-index:1;background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;padding:2px 6px;border-radius:4px;">Trocar</span>`;
+          showToast('End frame carregado com sucesso!', 2500);
+        } catch(e){}
+      }
+      window.handleImg2VidEnd = handleImg2VidEnd;
+
+      async function handleAudioSampleUpload(files) {
+        const file = (files || [])[0];
+        if (!file) return;
+        const drop = document.getElementById('dropAudioSample');
+        if (drop) drop.innerHTML = `<span style="font-size:1.2rem;">🎙️</span><span style="font-size:0.66rem;font-weight:800;color:#fbbf24;">${file.name.substring(0, 20)}</span>`;
+        showToast(`Amostra de áudio da musa carregada: ${file.name}`, 3500);
+      }
+      window.handleAudioSampleUpload = handleAudioSampleUpload;
       }
 
       function setQwenAngle(angle, btn) {
@@ -9181,8 +9418,14 @@
         if (statusLbl) {
           if (currentCreatorModel === 'eros_image_2k') {
             statusLbl.innerText = `Renderizando no motor Eros-Image™ 2K (${currentErosCheckpoint.toUpperCase()})...`;
-          } else if (currentCreatorModel === 'higgsfield_video') {
-            statusLbl.innerText = 'Renderizando vídeo no Higgsfield...';
+          } else if (currentCreatorModel === 'seedream_5') {
+            statusLbl.innerText = 'Renderizando Face Swap no Seedream 5 Pro...';
+          } else if (['kling_4_motion', 'kling_3_motion', 'kling_26_motion', 'omni_flash_21', 'openjutsu_workflow'].includes(currentCreatorModel)) {
+            statusLbl.innerText = `Transferindo movimento com ${creatorModelMeta(currentCreatorModel).badge}...`;
+          } else if (['wan_3_prime', 'minimax_h3', 'seedance_25', 'kling_4_video'].includes(currentCreatorModel)) {
+            statusLbl.innerText = `Gerando animação com ${creatorModelMeta(currentCreatorModel).badge}...`;
+          } else if (['voice_clone_musa', 'voice_gen_sensual', 'audio_isolation'].includes(currentCreatorModel)) {
+            statusLbl.innerText = 'Sintetizando áudio de voz autêntico da musa...';
           } else {
             statusLbl.innerText = 'Gerando com a referência da musa...';
           }
@@ -9195,18 +9438,18 @@
           const token = await getSupabaseAccessToken();
           const payload = {
             action: 'creator_generate',
-            provider: currentCreatorModel === 'higgsfield_video' ? 'higgsfield' : 'useapi',
+            provider: 'useapi',
             model: currentCreatorModel === 'eros_image_2k' ? 'nanobanana_pro' : currentCreatorModel,
+            studio_mode: currentStudioMode,
             eros_checkpoint: currentCreatorModel === 'eros_image_2k' ? currentErosCheckpoint : undefined,
             prompt: fullPrompt,
             aspect_ratio: currentCreatorAspectRatio,
             references: currentCreatorRefs,
             persona_name: currentCreatorMusa,
-            first_frame: currentCreatorHiggsFirst,
-            end_frame: currentCreatorHiggsEnd,
-            motion_strength: document.getElementById('lblMotionVal')?.innerText || '5',
-            camera_movement: document.getElementById('selHiggsCamera')?.value || 'Estática',
-            duration: document.getElementById('selHiggsDuration')?.value || '5'
+            seedream_prompt: document.getElementById('txtSeedreamEditPrompt')?.value || '',
+            motion_strength: document.getElementById('lblMotionStrength')?.innerText || '7.5',
+            camera_movement: document.getElementById('selImg2VidCamera')?.value || 'pan',
+            duration: document.getElementById('selImg2VidDuration')?.value || '5'
           };
           const res = await fetch('https://www.ghostlens.cloud/api/wavespeed_proxy', {
             method: 'POST',
