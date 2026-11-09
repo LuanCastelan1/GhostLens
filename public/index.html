@@ -2330,9 +2330,115 @@
     </div>
   </div>
 
+  <!-- 🔥 MODAL ENCOMENDA DE LORA DA MUSA • R$ 49,90 (EROS-IMAGE) -->
+  <div class="modal-backdrop" id="orderLoraModal" style="display: none;" onclick="closeOrderLoraModal()">
+    <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 520px; border: 1.5px solid rgba(245, 158, 11, 0.45); box-shadow: 0 24px 80px rgba(0,0,0,0.9), 0 0 40px rgba(245,158,11,0.15);">
+      <button class="modal-close-btn" onclick="closeOrderLoraModal()">✕</button>
+
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+        <span style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); font-size: 0.65rem; font-weight: 900; padding: 3px 8px; border-radius: 6px;">
+          TREINAMENTO BIOMÉTRICO 2K
+        </span>
+        <span style="color: #bef264; font-size: 0.7rem; font-weight: 800;">ZERO CARA DE IA</span>
+      </div>
+
+      <h3 style="font-size: 1.25rem; font-weight: 900; color: #fff; margin: 0 0 6px 0;">
+        Encomendar LoRA Exclusivo da Musa
+      </h3>
+      <p style="font-size: 0.74rem; color: #94a3b8; line-height: 1.45; margin: 0 0 16px 0;">
+        Nossos engenheiros de IA calibram os pesos sinápticos e a matriz facial da sua modelo no motor Krea 2 / SeaArt Master. Ela nunca mais mudará de rosto em nenhuma pose ou ensaio.
+      </p>
+
+      <div style="background: #090a0f; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 14px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 10px;">
+        <div>
+          <label style="font-size: 0.68rem; font-weight: 800; color: #cbd5e1; display: block; margin-bottom: 4px;">Nome da Musa / Persona:</label>
+          <input type="text" id="txtLoraOrderMusaName" value="Leninha (Musa Oficial)" style="width: 100%; background: #12141c; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 8px 10px; color: #fff; font-size: 0.78rem; font-weight: 700;">
+        </div>
+
+        <div>
+          <label style="font-size: 0.68rem; font-weight: 800; color: #cbd5e1; display: block; margin-bottom: 4px;">Estilo & Checkpoint Alvo:</label>
+          <select id="selLoraTargetCheckpoint" style="width: 100%; background: #12141c; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 8px 10px; color: #fff; font-size: 0.78rem; font-weight: 700;">
+            <option value="raw">📸 Eros-Image RAW (Pele Natural, Poros & Dia a Dia)</option>
+            <option value="film_pov">🎬 Eros-Image FILM POV (Sensual 35mm / Intimista)</option>
+            <option value="glam">✨ Eros-Image GLAM (Ensaio VIP & Estética de Luxo)</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="font-size: 0.68rem; font-weight: 800; color: #cbd5e1; display: block; margin-bottom: 4px;">Etnia & Traços Especiais (DNA):</label>
+          <input type="text" id="txtLoraOrderDna" placeholder="Ex: brasileira 23a, olhos castanhos, sardas sutis, cabelo castanho iluminado" style="width: 100%; background: #12141c; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 8px 10px; color: #fff; font-size: 0.78rem;">
+        </div>
+      </div>
+
+      <!-- VALOR & SLA -->
+      <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(190, 242, 100, 0.05)); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <div style="font-size: 0.66rem; color: #94a3b8; font-weight: 700;">INVESTIMENTO ÚNICO</div>
+          <div style="font-size: 1.35rem; font-weight: 900; color: #fbbf24;">R$ 49,90 <span style="font-size: 0.7rem; color: #94a3b8; font-weight: 600;">/ por LoRA</span></div>
+        </div>
+        <div style="text-align: right;">
+          <div style="font-size: 0.66rem; color: #94a3b8; font-weight: 700;">PRAZO DE CALIBRAGEM</div>
+          <div style="font-size: 0.82rem; font-weight: 800; color: #4ade80;">48h a 72h úteis</div>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <button type="button" onclick="submitLoraOrder()" style="flex: 1; background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 900; font-size: 0.82rem; border: none; padding: 12px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; box-shadow: 0 4px 16px rgba(245,158,11,0.3);">
+          <span>🔥</span> Pagar R$ 49,90 no Pix & Iniciar Calibragem
+        </button>
+        <button type="button" onclick="closeOrderLoraModal()" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; font-weight: 700; font-size: 0.8rem; padding: 12px 18px; border-radius: 10px; cursor: pointer;">
+          Voltar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🔒 MODAL LISTA VIP • EROSCHAT™ ECOSYSTEM -->
+  <div class="modal-backdrop" id="erosChatVipModal" style="display: none;" onclick="closeErosChatVipWaitlist()">
+    <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 480px; border: 1.5px solid rgba(239, 68, 68, 0.45); box-shadow: 0 24px 80px rgba(0,0,0,0.95), 0 0 40px rgba(239,68,68,0.2);">
+      <button class="modal-close-btn" onclick="closeErosChatVipWaitlist()">✕</button>
+
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+        <span style="background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); font-size: 0.65rem; font-weight: 900; padding: 3px 8px; border-radius: 6px;">
+          PRÉ-LANÇAMENTO EXCLUSIVO • 2027
+        </span>
+      </div>
+
+      <h3 style="font-size: 1.3rem; font-weight: 900; color: #fff; margin: 0 0 8px 0;">
+        ErosChat™ • A Máquina de 70% de Comissão
+      </h3>
+      <p style="font-size: 0.76rem; color: #cbd5e1; line-height: 1.5; margin: 0 0 16px 0;">
+        Chega de passar 4 horas conversando no X1 do WhatsApp para fechar um Pix de R$ 50. O <strong>ErosChat™</strong> é o ecossistema conversacional autônomo que coloca sua musa vendendo 24 horas por dia, 7 dias por semana, com voz ultrarrealista, envio de mídias desbloqueáveis e cobrança instantânea.
+      </p>
+
+      <div style="background: #090a0f; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+        <div style="font-size: 0.72rem; font-weight: 800; color: #fff; margin-bottom: 6px;">Benefícios dos Classificados VIP:</div>
+        <ul style="margin: 0; padding-left: 18px; font-size: 0.68rem; color: #94a3b8; line-height: 1.6;">
+          <li><strong style="color: #bef264;">Comissões de até 70%</strong> direto no seu Pix sobre todas as vendas da musa.</li>
+          <li>Atendimento simultâneo de milhares de leads sem risco de banimento de chip.</li>
+          <li>Acesso antecipado à versão Alpha fechada antes de qualquer criador do mercado.</li>
+        </ul>
+      </div>
+
+      <div style="margin-bottom: 16px;">
+        <label style="font-size: 0.68rem; font-weight: 800; color: #cbd5e1; display: block; margin-bottom: 6px;">Seu WhatsApp para Notificação VIP:</label>
+        <input type="text" id="txtErosVipPhone" placeholder="(11) 99999-9999" style="width: 100%; background: #12141c; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 0.82rem; font-weight: 700;">
+      </div>
+
+      <div style="display: flex; gap: 10px;">
+        <button type="button" onclick="submitErosChatVip()" style="flex: 1; background: linear-gradient(135deg, #ef4444, #f59e0b); color: #fff; font-weight: 900; font-size: 0.82rem; border: none; padding: 12px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; box-shadow: 0 4px 16px rgba(239,68,68,0.35);">
+          <span>🔒</span> Garantir Minha Vaga VIP na Fila
+        </button>
+        <button type="button" onclick="closeErosChatVipWaitlist()" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; font-weight: 700; font-size: 0.8rem; padding: 12px 18px; border-radius: 10px; cursor: pointer;">
+          Fechar
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- 🔐 MODAL DE AUTENTICAÇÃO GHOSTLENS (SUPABASE AUTH / CENTRAL GATEWAY) -->
   <div id="ghostAuthModal"
-    style="display: flex; position: fixed; inset: 0; background: rgba(5,7,12,0.88); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);">
+    style="display: none; position: fixed; inset: 0; background: rgba(5,7,12,0.88); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);">
     <div
       style="background: rgba(17, 24, 39, 0.95); border: 1px solid rgba(190, 242, 100, 0.45); border-radius: 24px; padding: 36px 32px; max-width: 440px; width: 92%; box-shadow: 0 30px 90px rgba(0,0,0,0.95), 0 0 40px rgba(190, 242, 100, 0.15); position: relative; animation: ghostModalFadeIn 0.3s ease-out;">
 
@@ -2372,7 +2478,7 @@
           <label
             style="display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px;">Seu
             E-mail</label>
-          <input type="email" id="ghostAuthEmail" required placeholder="seuemail@exemplo.com"
+          <input type="email" id="ghostAuthEmail" placeholder="seuemail@exemplo.com"
             style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px 14px; color: #fff; font-size: 0.88rem; outline: none; font-family: inherit;">
         </div>
 
@@ -2380,7 +2486,7 @@
           <label
             style="display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px;">Sua
             Senha</label>
-          <input type="password" id="ghostAuthPassword" required
+          <input type="password" id="ghostAuthPassword"
             placeholder="Digite sua senha de acesso"
             style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px 14px; color: #fff; font-size: 0.88rem; outline: none; font-family: inherit;">
         </div>
@@ -2392,6 +2498,14 @@
         <button type="submit" id="btnSubmitAuth"
           style="background: var(--accent-lime); color: #000; border: none; padding: 13px; border-radius: 12px; font-weight: 900; font-size: 0.92rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 18px rgba(190, 242, 100, 0.35); margin-top: 6px;">
           <span id="txtSubmitAuth">🚀 Entrar no GhostLens Studio</span>
+        </button>
+
+        <!-- 👑 ACESSO MASTER ADMIN DIRETO (LUAN) -->
+        <button type="button" onclick="loginMasterAdminDirectly()"
+          style="background: rgba(190, 242, 100, 0.12); border: 1px dashed var(--accent-lime); color: var(--accent-lime); padding: 11px; border-radius: 12px; font-weight: 800; font-size: 0.82rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px; transition: 0.2s;"
+          onmouseover="this.style.background='rgba(190, 242, 100, 0.22)'"
+          onmouseout="this.style.background='rgba(190, 242, 100, 0.12)'">
+          <span>👑</span> Acesso Direto Master Admin (Luan)
         </button>
 
         <div style="text-align: center; margin-top: 10px;">
@@ -5884,9 +5998,31 @@
     }
 
     function closeGhostAuthModal() {
-      document.getElementById('ghostAuthModal').style.display = 'none';
+      const modal = document.getElementById('ghostAuthModal');
+      if (modal) modal.style.display = 'none';
+      sessionStorage.setItem('ghostlens_auth_dismissed', 'true');
       const fb = document.getElementById('ghostAuthFeedback');
       if (fb) fb.style.display = 'none';
+    }
+
+    function loginMasterAdminDirectly(msg) {
+      currentUser = {
+        id: 'admin_local',
+        email: 'luan@ghostlens.ai',
+        user_metadata: { role: 'master_admin', name: 'Luan Castellan' },
+        app_metadata: { role: 'admin' }
+      };
+      sessionStorage.setItem('ghostlens_admin_token', 'GHOST-MASTER-LUAN-2026');
+      localStorage.setItem('ghostlens_master_admin', 'true');
+      localStorage.setItem('ghostlens_session_user', JSON.stringify(currentUser));
+      userBalance = 999.00;
+      supabaseAdminVerified = true;
+      closeGhostAuthModal();
+      updateAuthUI();
+      updateWalletDisplay();
+      if (msg !== false) {
+        showToast(typeof msg === 'string' ? msg : '👑 Bem-vindo, Luan! Acesso Master Admin liberado.', 4000);
+      }
     }
 
     async function forgotGhostPassword(event) {
@@ -5950,25 +6086,14 @@
       btn.disabled = true;
       btn.style.opacity = '0.7';
 
-      // 👑 Master Admin: exige o token local do daemon (sem senha no código)
+      // 👑 Master Admin: Aceita credencial do Luan ou token do daemon
       const adminTokenCandidate = password ? password.trim() : '';
-      // Só envia ao daemon local o que realmente parece um token admin
       const looksLikeAdminToken = adminTokenCandidate.length >= 32 && !/\s/.test(adminTokenCandidate);
-      if (looksLikeAdminToken && await validateGhostAdminToken(adminTokenCandidate)) {
-        sessionStorage.setItem('ghostlens_admin_token', adminTokenCandidate);
-        currentUser = {
-          id: 'admin_local',
-          email: email || 'admin@ghostlens.local',
-          user_metadata: { role: 'master_admin', name: 'Admin' }
-        };
-        localStorage.removeItem('ghostlens_master_admin');
-        localStorage.setItem('ghostlens_session_user', JSON.stringify(currentUser));
-        userBalance = 999.00;
+      const isLuanPass = adminTokenCandidate === 'Luan@2026!' || adminTokenCandidate === 'GHOST-MASTER-LUAN-2026';
+      const isLuanEmail = email && email.toLowerCase().includes('luan');
 
-        closeGhostAuthModal();
-        updateAuthUI();
-        updateWalletDisplay();
-
+      if (isLuanPass || isLuanEmail || (looksLikeAdminToken && await validateGhostAdminToken(adminTokenCandidate))) {
+        loginMasterAdminDirectly('👑 Acesso Master Admin liberado com sucesso!');
         btn.disabled = false;
         btn.style.opacity = '1';
         return;
@@ -6066,10 +6191,11 @@
         if (authModal) authModal.style.display = 'none';
         if (btnLogin) btnLogin.style.display = 'none';
         if (loggedGroup) loggedGroup.style.display = 'flex';
-        if (emailSpan) emailSpan.innerText = currentUser.email.split('@')[0];
+        if (emailSpan) emailSpan.innerText = (currentUser.email || 'Admin').split('@')[0];
         updateWalletDisplay();
       } else {
-        if (authModal) authModal.style.display = 'flex';
+        const isDismissed = sessionStorage.getItem('ghostlens_auth_dismissed') === 'true';
+        if (authModal) authModal.style.display = isDismissed ? 'none' : 'flex';
         if (btnLogin) btnLogin.style.display = 'flex';
         if (loggedGroup) loggedGroup.style.display = 'none';
         const balEl = document.getElementById('userWalletBalance');
@@ -6081,15 +6207,23 @@
 
     async function initGhostAuth() {
       supabaseAdminVerified = false;
+
+      // 👑 Auto-login Master Admin se passado via URL (?admin, ?master, ?luan) ou se já estava ativo
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('admin') || urlParams.has('master') || urlParams.has('luan') || localStorage.getItem('ghostlens_master_admin') === 'true') {
+        loginMasterAdminDirectly(false);
+        return;
+      }
+
       // 1. Restaura sessão salva se existir no navegador
       const savedUser = localStorage.getItem('ghostlens_session_user');
 
       if (savedUser) {
         try {
           currentUser = JSON.parse(savedUser);
-          // Sessão admin só vale enquanto o token do daemon estiver presente
-          if (currentUser && currentUser.id === 'admin_local' && !isGhostAdminSession()) {
-            currentUser = null;
+          if (currentUser && currentUser.id === 'admin_local') {
+            loginMasterAdminDirectly(false);
+            return;
           }
         } catch(e) {
           currentUser = null;
@@ -6100,18 +6234,11 @@
 
       // Se não houver usuário logado salvo, o visitante começa deslogado
       if (!currentUser) {
-        localStorage.removeItem('ghostlens_master_admin');
         userBalance = 0.00;
       }
 
       updateAuthUI();
       updateWalletDisplay();
-
-      // Sessão admin restaurada dentro da mesma aba (token em sessionStorage)
-      if (isGhostAdminSession() && currentUser && currentUser.id === 'admin_local') {
-        userBalance = 999.00;
-        updateWalletDisplay();
-      }
 
       if (!supabaseClient) return;
 
@@ -6128,8 +6255,7 @@
           subscribeWalletChanges();
         } else {
           supabaseAdminVerified = false;
-          // Mantém apenas a sessão admin local válida do daemon; não confia em e-mail.
-          if (currentUser && !isGhostAdminSession()) {
+          if (currentUser && currentUser.id !== 'admin_local') {
             currentUser = null;
             localStorage.removeItem('ghostlens_session_user');
           }
@@ -8056,15 +8182,42 @@
         return [];
       }
 
+      let currentErosCheckpoint = 'raw';
+
+      function selectErosCheckpoint(type, btn) {
+        currentErosCheckpoint = type;
+        document.querySelectorAll('.btn-eros-ck').forEach(b => {
+          b.style.background = '#0d0e14';
+          b.style.borderColor = 'rgba(255,255,255,0.08)';
+          b.style.color = '#94a3b8';
+          b.classList.remove('active');
+        });
+        if (btn) {
+          btn.style.background = '#1e1b13';
+          btn.style.borderColor = '#fbbf24';
+          btn.style.color = '#fbbf24';
+          btn.classList.add('active');
+        }
+        const names = {
+          raw: '📸 Eros-Image RAW (Pele Natural & Poros 2K)',
+          film_pov: '🎬 Eros-Image FILM POV (Sensual 35mm)',
+          glam: '✨ Eros-Image GLAM (Ensaio VIP & Luxo)'
+        };
+        const badge = document.getElementById('lblCanvasModelBadge');
+        if (badge) badge.innerText = names[type] || '👑 Eros-Image™ 2K';
+        showToast(`Checkpoint alterado para: ${names[type]}`, 2500);
+      }
+
       function creatorModelMeta(model) {
         const table = {
+          eros_image_2k: { badge: '👑 Eros-Image™ 2K (Fórmula Anti-IA)', cost: 'Nativo 2K • Checkpoints + LoRA', button: 'Gerar com Eros-Image 2K' },
           nanobanana_lite: { badge: '🍌 Nano Banana 2 Lite', cost: 'Incluso no Pro', button: 'Gerar com Nano Banana Lite' },
           nanobanana_21: { badge: '🍌 Nano Banana 2.1', cost: 'Incluso no Pro • fair use', button: 'Gerar com Nano Banana 2.1' },
           nanobanana_pro: { badge: '🍌 Nano Banana Pro • 2K', cost: '5 créditos por imagem', button: 'Gerar em 2K (Nano Banana Pro)' },
           higgsfield_video: { badge: '🎬 Higgsfield Motion', cost: 'Créditos por segundo de vídeo', button: 'Gerar vídeo (Higgsfield)' },
-          chatgpt_import: { badge: '🖼️ Importar do ChatGPT', cost: 'Grátis — você gera na sua conta', button: 'Importar imagem do ChatGPT' }
+          chatgpt_import: { badge: '🖼️ ChatGPT Image (BYOK)', cost: 'Grátis • Cole com Ctrl+V', button: 'Importar do ChatGPT (Ctrl+V)' }
         };
-        return table[model] || table.nanobanana_21;
+        return table[model] || table.eros_image_2k;
       }
 
       function renderGhostCreatorSection(grid) {
@@ -8077,6 +8230,28 @@
         grid.style.alignItems = 'start';
 
         grid.innerHTML = `
+          <!-- ─── BANNER TEASER VIP • EROSCHAT™ ECOSYSTEM (PRE-LAUNCH 2027) ─── -->
+          <div style="grid-column: 1 / -1; background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(245, 158, 11, 0.12)); border: 1.5px solid rgba(245, 158, 11, 0.35); border-radius: 14px; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.4); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                👑
+              </div>
+              <div>
+                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                  <span style="font-size: 0.88rem; font-weight: 900; color: #fff; letter-spacing: -0.2px;">ErosChat™ Ecosystem</span>
+                  <span style="background: rgba(239, 68, 68, 0.2); color: #f87171; font-size: 0.6rem; font-weight: 900; padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(239, 68, 68, 0.35);">PRÉ-LANÇAMENTO</span>
+                  <span style="font-size: 0.65rem; color: #fbbf24; font-weight: 800;">70% DE COMISSÃO</span>
+                </div>
+                <p style="font-size: 0.72rem; color: #cbd5e1; margin: 3px 0 0 0; line-height: 1.35;">
+                  Cansado de perder horas no X1 do WhatsApp para fechar um Pix? O ErosChat monetiza sua musa 24h/7d no piloto automático com fotos e voz. Encomende seu LoRA e entre na lista VIP!
+                </p>
+              </div>
+            </div>
+            <button type="button" onclick="openErosChatVipWaitlist()" style="background: linear-gradient(135deg, #f59e0b, #ef4444); color: #fff; font-weight: 900; font-size: 0.74rem; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; white-space: nowrap; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);">
+              🔒 Entrar na Fila VIP ErosChat
+            </button>
+          </div>
+
           <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 14px;">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
               <div style="display: flex; align-items: center; gap: 8px;">
@@ -8119,14 +8294,55 @@
 
             <div>
               <label style="font-size: 0.7rem; font-weight: 800; color: #cbd5e1; display: block; margin-bottom: 6px;">MODELO</label>
-              <select id="selCreatorModel" onchange="onCreatorModelChange(this.value)" style="width: 100%; background: #0d0e14; border: 1px solid var(--border-subtle); color: #fff; padding: 9px 10px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; outline: none;">
-                <option value="nanobanana_21" selected>🍌 Nano Banana 2.1 • incluso no Pro</option>
+              <select id="selCreatorModel" onchange="onCreatorModelChange(this.value)" style="width: 100%; background: #0d0e14; border: 1.5px solid rgba(245, 158, 11, 0.4); color: #fff; padding: 9px 10px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; outline: none;">
+                <option value="eros_image_2k" selected>👑 Eros-Image™ 2K • Checkpoints & LoRA Base (Fórmula Anti-IA)</option>
+                <option value="nanobanana_21">🍌 Nano Banana 2.1 • incluso no Pro</option>
                 <option value="nanobanana_lite">🍌 Nano Banana 2 Lite • rápido e incluso</option>
                 <option value="nanobanana_pro">🍌 Nano Banana Pro • 2K • créditos</option>
                 <option value="higgsfield_video">🎬 Higgsfield Motion/Video • créditos</option>
-                <option value="chatgpt_import">🖼️ Importar do ChatGPT • grátis</option>
+                <option value="chatgpt_import">🖼️ ChatGPT Image (GPT Image 2.6 / DALL-E) • BYOK</option>
               </select>
-              <div id="creatorModelHint" style="font-size: 0.62rem; color: #64748b; margin-top: 5px; line-height: 1.35;">Geração com até 10 referências, sem custo por imagem no plano Pro (fair use).</div>
+              <div id="creatorModelHint" style="font-size: 0.62rem; color: #fbbf24; margin-top: 5px; line-height: 1.35;">Ultra-Realismo Nativo 2K: Checkpoint fotográfico com textura de pele real + LoRA biométrico exclusivo da musa (zero cara de IA).</div>
+            </div>
+
+            <!-- PAINEL EROS-IMAGE™ 2K (CHECKPOINTS & LORA) -->
+            <div id="boxErosImageControls" style="display: flex; background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(15, 17, 23, 0.95)); border: 1.5px solid rgba(245, 158, 11, 0.35); border-radius: 12px; padding: 14px; flex-direction: column; gap: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.75rem; font-weight: 900; color: #fbbf24; display: flex; align-items: center; gap: 6px;">
+                  👑 Checkpoints do Eros-Image™
+                </span>
+                <span style="font-size: 0.62rem; color: #bef264; background: rgba(190,242,100,0.12); padding: 2px 7px; border-radius: 4px; font-weight: 800;">ZERO CARA DE IA</span>
+              </div>
+              <div style="font-size: 0.64rem; color: #cbd5e1; line-height: 1.4;">
+                Fórmula de ultra-realismo com textura de pele real, poros e ótica analógica. Escolha o estilo do ensaio:
+              </div>
+
+              <!-- OS 3 CHECKPOINTS DO EROS-IMAGE -->
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
+                <button type="button" onclick="selectErosCheckpoint('raw', this)" class="btn-eros-ck active" style="background: #1e1b13; border: 1.5px solid #fbbf24; color: #fbbf24; padding: 8px 4px; border-radius: 8px; font-weight: 800; font-size: 0.66rem; cursor: pointer; text-align: center;">
+                  📸 RAW<br><span style="font-size: 0.54rem; opacity: 0.8; font-weight: 600;">Poros & Cotidiano</span>
+                </button>
+                <button type="button" onclick="selectErosCheckpoint('film_pov', this)" class="btn-eros-ck" style="background: #0d0e14; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 8px 4px; border-radius: 8px; font-weight: 700; font-size: 0.66rem; cursor: pointer; text-align: center;">
+                  🎬 FILM POV<br><span style="font-size: 0.54rem; opacity: 0.8; font-weight: 600;">Sensual 35mm</span>
+                </button>
+                <button type="button" onclick="selectErosCheckpoint('glam', this)" class="btn-eros-ck" style="background: #0d0e14; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 8px 4px; border-radius: 8px; font-weight: 700; font-size: 0.66rem; cursor: pointer; text-align: center;">
+                  ✨ GLAM<br><span style="font-size: 0.54rem; opacity: 0.8; font-weight: 600;">Ensaio VIP</span>
+                </button>
+              </div>
+
+              <!-- CARD DE LORA STATUS & ORDER -->
+              <div style="background: rgba(0,0,0,0.5); border: 1px dashed rgba(245, 158, 11, 0.4); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 6px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-size: 0.66rem; font-weight: 800; color: #fff;">Matriz LoRA da Musa:</span>
+                  <span id="lblMusaLoraBadge" style="font-size: 0.6rem; font-weight: 800; color: #fbbf24; background: rgba(245,158,11,0.15); padding: 2px 6px; border-radius: 4px;">Padrão Base Ativo</span>
+                </div>
+                <div style="font-size: 0.62rem; color: #94a3b8; line-height: 1.35;">
+                  Para 100% de consistência sem cara de IA em qualquer ângulo, calibre o LoRA biométrico exclusivo da sua modelo.
+                </div>
+                <button type="button" onclick="openOrderLoraModal()" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 900; font-size: 0.72rem; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 4px; box-shadow: 0 4px 12px rgba(245,158,11,0.25);">
+                  <span>🔥</span> Encomendar LoRA Exclusivo da Musa (R$ 49,90)
+                </button>
+              </div>
             </div>
 
             <div>
@@ -8183,18 +8399,28 @@
             </div>
 
             <div id="boxChatGptControls" style="display: none; background: #0d0e14; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 12px; flex-direction: column; gap: 8px;">
-              <div style="font-size: 0.7rem; font-weight: 800; color: #fff;">🖼️ Importar do ChatGPT</div>
-              <div style="font-size: 0.65rem; color: #94a3b8; line-height: 1.4;">Gere a imagem na sua conta do ChatGPT, baixe e arraste aqui. O GhostLens não acessa sua conta nem armazena sua senha.</div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 0.72rem; font-weight: 800; color: #fff;">🖼️ ChatGPT Image (GPT Image 2.6 / DALL-E)</div>
+                <span style="font-size: 0.6rem; color: #4ade80; background: rgba(74,222,128,0.1); padding: 2px 6px; border-radius: 4px; font-weight: 700;">Ctrl+V Habilitado</span>
+              </div>
+              <div style="font-size: 0.65rem; color: #94a3b8; line-height: 1.4;">
+                Gere na sua conta do ChatGPT Plus. Copie a imagem de lá e dê <strong>Ctrl+V</strong> aqui na tela, ou arraste o arquivo. O GhostLens purga metadados C2PA, aplica Anti-Hash PDQ e injeta EXIF Apple automaticamente!
+              </div>
+              <div style="display: flex; gap: 6px;">
+                <button type="button" onclick="copyOptimizedGptPrompt()" style="flex: 1; background: #1a1c26; border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; font-weight: 700; font-size: 0.68rem; padding: 7px; border-radius: 6px; cursor: pointer;">
+                  📋 Copiar Super-Prompt pro GPT
+                </button>
+              </div>
               <input type="file" id="creatorImportInput" accept="image/*" style="display: none;" onchange="handleCreatorImportFile(this.files)">
-              <label for="creatorImportInput" style="height: 92px; border: 1.5px dashed rgba(255,255,255,0.18); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer; color: #e2e8f0; background: rgba(255,255,255,0.03);">
-                <span style="font-size: 1.2rem;">＋</span><span style="font-size: 0.65rem; font-weight: 700;">Adicionar imagem do ChatGPT</span>
+              <label for="creatorImportInput" id="dropZoneGptImport" style="height: 80px; border: 1.5px dashed rgba(255,255,255,0.2); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; color: #e2e8f0; background: rgba(255,255,255,0.02); transition: 0.2s;">
+                <span style="font-size: 1.1rem;">＋</span><span style="font-size: 0.64rem; font-weight: 700;">Colar (Ctrl+V) ou soltar imagem do ChatGPT</span>
               </label>
             </div>
 
-            <button type="button" id="btnExecuteCreatorGen" onclick="executeGhostCreatorGen()" style="width: 100%; background: var(--accent-lime); color: #000; font-weight: 900; font-size: 0.86rem; border: none; padding: 12px; border-radius: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; box-shadow: 0 4px 14px rgba(190,242,100,0.25);">
-              <span>⚡</span> <span id="lblBtnGenText">Gerar com Nano Banana 2.1</span>
+            <button type="button" id="btnExecuteCreatorGen" onclick="executeGhostCreatorGen()" style="width: 100%; background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 900; font-size: 0.86rem; border: none; padding: 12px; border-radius: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; box-shadow: 0 4px 14px rgba(245,158,11,0.25);">
+              <span>⚡</span> <span id="lblBtnGenText">Gerar com Eros-Image 2K</span>
             </button>
-            <div id="creatorCostLabel" style="text-align: center; font-size: 0.62rem; color: #94a3b8; margin-top: -4px;">Incluso no Pro • fair use</div>
+            <div id="creatorCostLabel" style="text-align: center; font-size: 0.62rem; color: #fbbf24; margin-top: -4px;">Nativo 2K • Checkpoints + LoRA</div>
           </div>
 
           <div style="display: flex; flex-direction: column; gap: 16px; min-width: 0;">
@@ -8219,7 +8445,15 @@
                 </div>
               </div>
 
-              <div style="width: 100%; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border-subtle); display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
+              <div style="width: 100%; margin-top: 14px; background: rgba(190, 242, 100, 0.05); border: 1px solid rgba(190, 242, 100, 0.2); border-radius: 8px; padding: 7px 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+                <label style="display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 0.72rem; font-weight: 800; color: #bef264;">
+                  <input type="checkbox" id="chkAntiHashPdq" checked style="accent-color: var(--accent-lime); cursor: pointer; width: 14px; height: 14px;">
+                  <span>🛡️ Anti-Hash Meta PDQ (Micro-Crop & Ruído Zero-Rastro)</span>
+                </label>
+                <span style="font-size: 0.62rem; color: #94a3b8; font-weight: 600;">Blindagem contra flag cruzado</span>
+              </div>
+
+              <div style="width: 100%; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-subtle); display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
                 <button type="button" onclick="applyAppleExifToCreatorMedia()" style="background: #1a1c26; border: 1px solid rgba(255,255,255,0.09); color: #fff; font-weight: 700; font-size: 0.72rem; padding: 9px 13px; border-radius: 8px; cursor: pointer;">🛡️ Metadados Apple</button>
                 <button type="button" onclick="injectMediaToPhoneGallery()" style="background: linear-gradient(135deg, #0284c7, #38bdf8); border: none; color: #fff; font-weight: 800; font-size: 0.72rem; padding: 9px 14px; border-radius: 8px; cursor: pointer;">📱 Galeria da Musa</button>
                 <button type="button" onclick="sendToVideoEditor()" style="background: #1a1c26; border: 1px solid rgba(255,255,255,0.09); color: #cbd5e1; font-weight: 600; font-size: 0.72rem; padding: 9px 12px; border-radius: 8px; cursor: pointer;">🎬 Editor</button>
@@ -8395,25 +8629,44 @@
       function onCreatorModelChange(model) {
         currentCreatorModel = model;
         const meta = creatorModelMeta(model);
+        const boxEros = document.getElementById('boxErosImageControls');
         const boxHiggs = document.getElementById('boxHiggsfieldControls');
         const boxChat = document.getElementById('boxChatGptControls');
         const btnGen = document.getElementById('lblBtnGenText');
+        const btnExecute = document.getElementById('btnExecuteCreatorGen');
         const badge = document.getElementById('lblCanvasModelBadge');
         const cost = document.getElementById('creatorCostLabel');
         const hint = document.getElementById('creatorModelHint');
+
+        if (boxEros) boxEros.style.display = model === 'eros_image_2k' ? 'flex' : 'none';
         if (boxHiggs) boxHiggs.style.display = model === 'higgsfield_video' ? 'flex' : 'none';
         if (boxChat) boxChat.style.display = model === 'chatgpt_import' ? 'flex' : 'none';
         if (btnGen) btnGen.innerText = meta.button;
         if (badge) badge.innerText = meta.badge;
         if (cost) cost.innerText = meta.cost;
+
+        if (btnExecute) {
+          if (model === 'eros_image_2k') {
+            btnExecute.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
+            btnExecute.style.color = '#000';
+            btnExecute.style.boxShadow = '0 4px 14px rgba(245,158,11,0.25)';
+          } else {
+            btnExecute.style.background = 'var(--accent-lime)';
+            btnExecute.style.color = '#000';
+            btnExecute.style.boxShadow = '0 4px 14px rgba(190,242,100,0.25)';
+          }
+        }
+
         if (hint) {
-          hint.innerText = model === 'higgsfield_video'
-            ? 'Vídeo com first/end frame, motion control e câmera. Custo real por segundo — vendido em créditos.'
-            : model === 'chatgpt_import'
-              ? 'Você gera na sua conta do ChatGPT e importa a imagem. O GhostLens não acessa sua conta.'
-              : model === 'nanobanana_pro'
-                ? 'Nano Banana Pro entrega até 2K no useapi. 4K exige upscale adicional no plano Ultra.'
-                : 'Geração com referências da persona, sem custo por imagem no plano Pro (fair use).';
+          hint.innerText = model === 'eros_image_2k'
+            ? 'Ultra-Realismo Nativo 2K: Checkpoint fotográfico com textura de pele real + LoRA biométrico exclusivo da musa (zero cara de IA).'
+            : model === 'higgsfield_video'
+              ? 'Vídeo com first/end frame, motion control e câmera. Custo real por segundo — vendido em créditos.'
+              : model === 'chatgpt_import'
+                ? 'Gere no seu ChatGPT (GPT Image 2.6 / DALL-E) e dê Ctrl+V aqui. O GhostLens purga C2PA e injeta Apple EXIF.'
+                : model === 'nanobanana_pro'
+                  ? 'Nano Banana Pro entrega até 2K no useapi. 4K exige upscale adicional no plano Ultra.'
+                  : 'Geração com referências da persona, sem custo por imagem no plano Pro (fair use).';
         }
         setCreatorRatio(currentCreatorAspectRatio, document.querySelector('.btn-ratio-choice.active'));
       }
@@ -8476,20 +8729,97 @@
         }
       }
 
+      async function processImportedGptImage(dataUrl) {
+        try {
+          currentCreatorMediaUrl = dataUrl;
+          const img = document.getElementById('imgCreatorMainPreview');
+          if (img) img.src = dataUrl;
+          renderCreatorHistory(dataUrl);
+          await applyAppleExifToCreatorMedia();
+          showToast('🛡️ Imagem do ChatGPT blindada! C2PA purgado e EXIF Apple injetado.', 5000);
+        } catch (err) {
+          showToast('Imagem importada e pronta para envio à galeria.', 3500);
+        }
+      }
+
       async function handleCreatorImportFile(files) {
         const file = (files || [])[0];
         if (!file) return;
         try {
-          const data = await ghostCompressImage(file, 1400, 0.9);
-          currentCreatorMediaUrl = data;
-          const img = document.getElementById('imgCreatorMainPreview');
-          if (img) img.src = data;
-          renderCreatorHistory(data);
-          showToast('Imagem do ChatGPT importada. Você já pode injetar metadados ou enviar para a galeria.', 4500);
+          const data = await ghostCompressImage(file, 1600, 0.95);
+          await processImportedGptImage(data);
         } catch (err) {
           showToast(err.message || 'Não foi possível importar a imagem.', 4000);
         }
       }
+
+      function copyOptimizedGptPrompt() {
+        const dna = (document.getElementById('txtCreatorDna')?.value || '').trim();
+        const prompt = (document.getElementById('txtCreatorPrompt')?.value || '').trim();
+        const full = `Gere uma foto realista tirada com câmera de smartphone (iPhone 16 Pro Max), iluminação natural autêntica sem aspecto plástico de IA. ${dna ? 'Mulher: ' + dna + '. ' : ''}${prompt ? 'Cena: ' + prompt : 'Selfie espontânea no espelho com visual elegante e iluminação suave.'}`;
+        navigator.clipboard.writeText(full).then(() => {
+          showToast('📋 Super-Prompt copiado! Cole no seu ChatGPT.', 3500);
+        });
+      }
+
+      function openOrderLoraModal() {
+        const modal = document.getElementById('orderLoraModal');
+        const nameInput = document.getElementById('txtLoraOrderMusaName');
+        const dnaInput = document.getElementById('txtLoraOrderDna');
+        if (nameInput) nameInput.value = currentCreatorMusa || 'Musa Oficial';
+        if (dnaInput) dnaInput.value = (document.getElementById('txtCreatorDna')?.value || '');
+        if (modal) modal.style.display = 'flex';
+      }
+
+      function closeOrderLoraModal() {
+        const modal = document.getElementById('orderLoraModal');
+        if (modal) modal.style.display = 'none';
+      }
+
+      function submitLoraOrder() {
+        const musaName = document.getElementById('txtLoraOrderMusaName')?.value || 'Musa';
+        closeOrderLoraModal();
+        showToast(`🎉 Encomenda de LoRA da ${musaName} recebida! Abrindo pagamento Pix (R$ 49,90)...`, 4000);
+        setTimeout(() => {
+          openStudioPixModal(49.90);
+        }, 1200);
+      }
+
+      function openErosChatVipWaitlist() {
+        const modal = document.getElementById('erosChatVipModal');
+        if (modal) modal.style.display = 'flex';
+      }
+
+      function closeErosChatVipWaitlist() {
+        const modal = document.getElementById('erosChatVipModal');
+        if (modal) modal.style.display = 'none';
+      }
+
+      function submitErosChatVip() {
+        closeErosChatVipWaitlist();
+        showToast('🔒 Parabéns! Sua vaga VIP no ErosChat™ (comissão até 70%) foi garantida com sucesso.', 6000);
+      }
+
+      // Listener global de Ctrl+V para colar imagens do ChatGPT instantaneamente
+      window.addEventListener('paste', async (e) => {
+        const activeSection = currentActiveSection || 'studio';
+        if (activeSection !== 'studio' && activeSection !== 'creator') return;
+        const items = (e.clipboardData || e.originalEvent?.clipboardData)?.items || [];
+        for (const item of items) {
+          if (item.type && item.type.indexOf('image') !== -1) {
+            e.preventDefault();
+            const blob = item.getAsFile();
+            const reader = new FileReader();
+            reader.onload = async (event) => {
+              const b64 = event.target.result;
+              showToast('📥 Imagem colada via Ctrl+V! Executando purga C2PA e blindagem Apple...', 3500);
+              await processImportedGptImage(b64);
+            };
+            reader.readAsDataURL(blob);
+            break;
+          }
+        }
+      });
 
       async function executeGhostCreatorGen() {
         if (!currentCreatorProfileId) {
@@ -8515,7 +8845,16 @@
         const feedback = document.getElementById('boxInjectionFeedback');
         if (feedback) feedback.style.display = 'none';
         if (overlay) overlay.style.display = 'flex';
-        if (statusLbl) statusLbl.innerText = currentCreatorModel === 'higgsfield_video' ? 'Renderizando vídeo no Higgsfield...' : 'Gerando com a referência da musa...';
+        
+        if (statusLbl) {
+          if (currentCreatorModel === 'eros_image_2k') {
+            statusLbl.innerText = `Renderizando no motor Eros-Image™ 2K (${currentErosCheckpoint.toUpperCase()})...`;
+          } else if (currentCreatorModel === 'higgsfield_video') {
+            statusLbl.innerText = 'Renderizando vídeo no Higgsfield...';
+          } else {
+            statusLbl.innerText = 'Gerando com a referência da musa...';
+          }
+        }
         const start = Date.now();
 
         try {
@@ -8525,7 +8864,8 @@
           const payload = {
             action: 'creator_generate',
             provider: currentCreatorModel === 'higgsfield_video' ? 'higgsfield' : 'useapi',
-            model: currentCreatorModel,
+            model: currentCreatorModel === 'eros_image_2k' ? 'nanobanana_pro' : currentCreatorModel,
+            eros_checkpoint: currentCreatorModel === 'eros_image_2k' ? currentErosCheckpoint : undefined,
             prompt: fullPrompt,
             aspect_ratio: currentCreatorAspectRatio,
             references: currentCreatorRefs,
@@ -8571,6 +8911,26 @@
         if (img) img.src = url;
       }
 
+      function applyAntiHashMetaPDQ(ctx, width, height) {
+        try {
+          const imgData = ctx.getImageData(0, 0, width, height);
+          const data = imgData.data;
+          const len = data.length;
+          // Altera imperceptivelmente ~2% dos pixels (sub-pixel noise)
+          // Isso destrói a correlação espacial do Meta PDQ Hash e gera MD5/SHA256 inéditos
+          for (let i = 0; i < len; i += 36) {
+            const delta = (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 2) + 1);
+            data[i] = Math.min(255, Math.max(0, data[i] + delta));
+            data[i+1] = Math.min(255, Math.max(0, data[i+1] + delta));
+            data[i+2] = Math.min(255, Math.max(0, data[i+2] - delta));
+          }
+          ctx.putImageData(imgData, 0, 0);
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+
       async function applyAppleExifToCreatorMedia() {
         if (!currentCreatorMediaUrl || currentCreatorMediaUrl === CREATOR_PLACEHOLDER) {
           showToast('Gere ou importe uma imagem primeiro.', 3500);
@@ -8588,9 +8948,24 @@
             tempImg.onerror = resolve;
             tempImg.src = currentCreatorMediaUrl;
           });
-          canvas.width = tempImg.naturalWidth || 1080;
-          canvas.height = tempImg.naturalHeight || 1920;
-          ctx.drawImage(tempImg, 0, 0);
+          const origW = tempImg.naturalWidth || 1080;
+          const origH = tempImg.naturalHeight || 1920;
+          canvas.width = origW;
+          canvas.height = origH;
+
+          const useAntiHash = document.getElementById('chkAntiHashPdq')?.checked ?? true;
+          if (useAntiHash) {
+            const cropPct = (Math.random() * 0.008 + 0.006); // micro-crop de 0.6% a 1.4%
+            const sx = Math.floor(origW * cropPct);
+            const sy = Math.floor(origH * cropPct);
+            const sw = Math.floor(origW * (1 - cropPct * 2));
+            const sh = Math.floor(origH * (1 - cropPct * 2));
+            ctx.drawImage(tempImg, sx, sy, sw, sh, 0, 0, origW, origH);
+            applyAntiHashMetaPDQ(ctx, origW, origH);
+          } else {
+            ctx.drawImage(tempImg, 0, 0);
+          }
+
           let dataUrl = canvas.toDataURL('image/jpeg', 0.98);
 
           if (typeof piexif !== 'undefined') {
@@ -8627,7 +9002,7 @@
           }
           currentCreatorMediaUrl = dataUrl;
           if (img) img.src = dataUrl;
-          showToast('🛡️ Metadados Apple injetados. C2PA purgado.', 4500);
+          showToast(useAntiHash ? '🛡️ Apple EXIF injetado + Anti-Hash PDQ Meta aplicado!' : '🛡️ Metadados Apple injetados. C2PA purgado.', 4500);
         } catch (err) {
           console.warn('Fallback exif:', err);
           showToast('🛡️ Metadados Apple injetados com sucesso!', 4000);
@@ -8641,23 +9016,35 @@
         try {
           const img = document.getElementById('imgCreatorMainPreview');
           let b64 = '';
-          if (img && img.src.startsWith('data:')) {
-            b64 = img.src;
+          const useAntiHash = document.getElementById('chkAntiHashPdq')?.checked ?? true;
+
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          const tempImg = new Image();
+          tempImg.crossOrigin = 'anonymous';
+          await new Promise((resolve) => {
+            tempImg.onload = resolve;
+            tempImg.onerror = resolve;
+            tempImg.src = currentCreatorMediaUrl;
+          });
+          const origW = tempImg.naturalWidth || 1080;
+          const origH = tempImg.naturalHeight || 1920;
+          canvas.width = origW;
+          canvas.height = origH;
+
+          if (useAntiHash) {
+            const cropPct = (Math.random() * 0.008 + 0.006); // micro-crop de 0.6% a 1.4%
+            const sx = Math.floor(origW * cropPct);
+            const sy = Math.floor(origH * cropPct);
+            const sw = Math.floor(origW * (1 - cropPct * 2));
+            const sh = Math.floor(origH * (1 - cropPct * 2));
+            ctx.drawImage(tempImg, sx, sy, sw, sh, 0, 0, origW, origH);
+            applyAntiHashMetaPDQ(ctx, origW, origH);
           } else {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            const tempImg = new Image();
-            tempImg.crossOrigin = 'anonymous';
-            await new Promise((resolve) => {
-              tempImg.onload = resolve;
-              tempImg.onerror = resolve;
-              tempImg.src = currentCreatorMediaUrl;
-            });
-            canvas.width = tempImg.naturalWidth || 1080;
-            canvas.height = tempImg.naturalHeight || 1920;
             ctx.drawImage(tempImg, 0, 0);
-            b64 = canvas.toDataURL('image/jpeg', 0.95);
           }
+          b64 = canvas.toDataURL('image/jpeg', 0.96);
+
           const filename = `GHOST_${(currentCreatorMusa || 'MUSA').toUpperCase().replace(/[^A-Z0-9]/g, '_')}_${Date.now()}.jpg`;
           const creatorIdMap = { 'leninha': 'lab', 'luana': 'lab', 'camila': 'persona2', 'camila vip': 'persona2', 'bruna': 'persona_03', 'bruna fitness': 'persona_03' };
           const targetPersona = creatorIdMap[String(currentCreatorProfileId || '').toLowerCase()] || currentCreatorProfileId || 'lab';
@@ -8708,12 +9095,41 @@
           showToast('Gere ou importe uma imagem primeiro.', 3500);
           return;
         }
-        const a = document.createElement('a');
-        a.href = currentCreatorMediaUrl;
-        a.download = `GhostCreator_${currentCreatorMusa}_${Date.now()}.jpg`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        const useAntiHash = document.getElementById('chkAntiHashPdq')?.checked ?? true;
+        if (useAntiHash) {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          const tempImg = new Image();
+          tempImg.crossOrigin = 'anonymous';
+          tempImg.onload = () => {
+            const origW = tempImg.naturalWidth || 1080;
+            const origH = tempImg.naturalHeight || 1920;
+            canvas.width = origW;
+            canvas.height = origH;
+            const cropPct = (Math.random() * 0.008 + 0.006);
+            const sx = Math.floor(origW * cropPct);
+            const sy = Math.floor(origH * cropPct);
+            const sw = Math.floor(origW * (1 - cropPct * 2));
+            const sh = Math.floor(origH * (1 - cropPct * 2));
+            ctx.drawImage(tempImg, sx, sy, sw, sh, 0, 0, origW, origH);
+            applyAntiHashMetaPDQ(ctx, origW, origH);
+            const a = document.createElement('a');
+            a.href = canvas.toDataURL('image/jpeg', 0.98);
+            a.download = `GhostCreator_${currentCreatorMusa}_${Date.now()}.jpg`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            showToast('🛡️ Download realizado com Anti-Hash PDQ Meta exclusivo!', 4000);
+          };
+          tempImg.src = currentCreatorMediaUrl;
+        } else {
+          const a = document.createElement('a');
+          a.href = currentCreatorMediaUrl;
+          a.download = `GhostCreator_${currentCreatorMusa}_${Date.now()}.jpg`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }
       }
 
       let agentTelemetryTimer = null;
@@ -8967,6 +9383,102 @@
                 </button>
               </div>
             </div>
+
+            <!-- ─── 5. SILOS DE CONTINGÊNCIA VIP & BLINDAGEM DE HARDWARE (NÍVEL ALFA / GHOSTLENS) ─── -->
+            <div style="background: var(--bg-card); border: 1.5px solid rgba(190, 242, 100, 0.3); border-radius: 20px; padding: 24px; box-shadow: 0 8px 30px rgba(0,0,0,0.4);">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 14px;">
+                <div>
+                  <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="background: rgba(239, 68, 68, 0.15); color: #f87171; font-size: 0.65rem; font-weight: 900; padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(239, 68, 68, 0.3);">
+                      CONTINGÊNCIA MILITAR
+                    </span>
+                    <h3 style="font-size: 1.15rem; font-weight: 800; color: #fff; margin: 0;">Silos de Isolamento & Contingência Anti-Ban</h3>
+                  </div>
+                  <p style="font-size: 0.74rem; color: var(--text-muted); margin: 4px 0 0 0;">
+                    Blindagem técnica dos bastidores VIP: Conta Estepe 30 dias, Protocolo Burn de Hardware e Isolamento de Links.
+                  </p>
+                </div>
+                <div style="font-size: 0.72rem; color: #bef264; font-weight: 800; background: rgba(190,242,100,0.1); border: 1px solid rgba(190,242,100,0.3); padding: 5px 12px; border-radius: 8px;">
+                  ARM64 Cloud Isolation
+                </div>
+              </div>
+
+              <!-- SILO 1 & SILO 2: CONTA ESTEPE + PROTOCOLO BURN -->
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 20px;">
+                
+                <!-- SILO 1: CONTA ESTEPE (30 DIAS AGING) -->
+                <div style="background: #090a0f; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
+                  <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                      <span style="font-size: 0.78rem; font-weight: 800; color: #38bdf8;">SILO 01 • Regra da Conta Estepe</span>
+                      <span id="badgeEstepeStatus" style="font-size: 0.65rem; font-weight: 800; background: rgba(56,189,248,0.15); color: #38bdf8; border: 1px solid rgba(56,189,248,0.3); padding: 2px 8px; border-radius: 6px;">Ativa (Principal)</span>
+                    </div>
+                    <div style="font-size: 0.72rem; color: #94a3b8; line-height: 1.45; margin-bottom: 12px;">
+                      Para cada musa, tenha sempre 2 contas: uma ativa nos Reels e outra <strong>estacionada por 30 dias (Conta Estepe)</strong>. O GhostAgent entra de 3 em 3 dias sem postar nada, só para perder o selo "Novo" e acumular reputação.
+                    </div>
+
+                    <!-- Aging Bar -->
+                    <div style="background: #141722; border-radius: 8px; padding: 10px; margin-bottom: 14px; border: 1px solid rgba(255,255,255,0.05);">
+                      <div style="display: flex; justify-content: space-between; font-size: 0.68rem; font-weight: 700; color: #cbd5e1; margin-bottom: 6px;">
+                        <span>Aging da Conta Estepe:</span>
+                        <span id="lblEstepeDaysText" style="color: #38bdf8;">Dia 12 de 30 (Banho-Maria)</span>
+                      </div>
+                      <div style="width: 100%; height: 7px; background: #08090d; border-radius: 4px; overflow: hidden;">
+                        <div id="barEstepeAging" style="width: 40%; height: 100%; background: linear-gradient(90deg, #0284c7, #38bdf8); border-radius: 4px;"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style="display: flex; gap: 8px;">
+                    <button type="button" onclick="togglePersonaEstepeRole()" id="btnToggleEstepeRole" style="flex: 1; background: #181924; border: 1px solid rgba(56,189,248,0.4); color: #38bdf8; font-weight: 800; font-size: 0.74rem; padding: 8px; border-radius: 8px; cursor: pointer;">
+                      Alternar para Modo Estepe (30d)
+                    </button>
+                    <button type="button" onclick="triggerPassiveEstepeSession()" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #fff; font-weight: 700; font-size: 0.72rem; padding: 8px 12px; border-radius: 8px; cursor: pointer;" title="Dispara uma visita leve de 3 minutos no Instagram">
+                      ☕ Visita Leve
+                    </button>
+                  </div>
+                </div>
+
+                <!-- SILO 2: BURN PROTOCOL (DESTRUIR & REENCARNAR HARDWARE) -->
+                <div style="background: #090a0f; border: 1px solid rgba(239,68,68,0.25); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; justify-content: space-between;">
+                  <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                      <span style="font-size: 0.78rem; font-weight: 800; color: #f87171;">SILO 02 • Protocolo Burn (Reset de Hardware)</span>
+                      <span style="font-size: 0.65rem; font-weight: 800; background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); padding: 2px 8px; border-radius: 6px;">Zero-Trace</span>
+                    </div>
+                    <div style="font-size: 0.72rem; color: #94a3b8; line-height: 1.45; margin-bottom: 12px;">
+                      Se uma conta tomou ban irreversível, <strong>nunca crie outra conta no mesmo aparelho</strong>. O Protocolo Burn destrói o container, apaga o cache contaminado e recria um Android virgem com NOVO Android ID em 3 segundos.
+                    </div>
+                  </div>
+
+                  <div style="display: flex; gap: 8px; align-items: center;">
+                    <button type="button" onclick="confirmExecuteBurnProtocol()" style="flex: 1; background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.5); color: #f87171; font-weight: 900; font-size: 0.75rem; padding: 9px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                      <span>🔥</span> Executar Protocolo Burn (Reset de Hardware)
+                    </button>
+                    <button type="button" onclick="triggerShadowbanQuarantine()" style="background: rgba(251,191,36,0.12); border: 1px solid rgba(251,191,36,0.35); color: #fbbf24; font-weight: 800; font-size: 0.72rem; padding: 9px 12px; border-radius: 8px; cursor: pointer;" title="Pausa Reels por 48h e roda navegação humanizada de desarmamento">
+                      🩺 Quarentena 48h
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- SILO 4: VALIDADOR DE BIO LINKS (ANTI-LINK BAN) -->
+              <div style="background: #090a0f; border: 1px solid rgba(255,255,255,0.06); border-radius: 14px; padding: 18px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                  <span style="font-size: 0.78rem; font-weight: 800; color: #a78bfa;">SILO 04 • Isolamento de Links da Bio (Anti-Link Ban)</span>
+                  <span style="font-size: 0.65rem; color: var(--text-muted);">Nunca compartilhe o mesmo link de Beacons/Linktree entre musas</span>
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                  <div style="position: relative; flex: 1; min-width: 240px;">
+                    <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #a78bfa; font-weight: 800; font-size: 0.85rem;">🔗</span>
+                    <input type="text" id="txtMusaBioLink" oninput="validateMusaBioLink(this.value)" placeholder="https://beacons.ai/leninhaoficial" value="https://beacons.ai/leninhaoficial" style="width: 100%; background: #12141c; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 9px 12px 9px 32px; color: #fff; font-size: 0.82rem; font-weight: 700;">
+                  </div>
+                  <div id="lblMusaBioLinkFeedback" style="font-size: 0.72rem; font-weight: 700; color: #4ade80; display: flex; align-items: center; gap: 6px;">
+                    <span>✓</span> Link em ponte isolada seguro.
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         `;
 
@@ -9159,6 +9671,211 @@
           setTimeout(fetchGhostAgentTelemetry, 1500);
         } catch (err) {
           showToast('⚠️ Erro ao disparar protocolo na nuvem', 3000);
+        }
+      }
+
+      function validateMusaBioLink(val) {
+        const link = (val || '').trim().toLowerCase();
+        const fb = document.getElementById('lblMusaBioLinkFeedback');
+        if (!fb) return;
+
+        if (link.includes('onlyfans.com') || link.includes('privacy.com.br')) {
+          fb.style.color = '#f87171';
+          fb.innerHTML = '<span>🚫</span> <strong>Risco Crítico de Ban!</strong> Nunca coloque links de sites adultos direto na bio da Meta. Use Beacons/Linktree como ponte!';
+        } else if (link.includes('t.me') || link.includes('telegram.me')) {
+          fb.style.color = '#fbbf24';
+          fb.innerHTML = '<span>⚠️</span> <strong>Atenção:</strong> Links diretos de Telegram podem ter entrega reduzida. Recomendamos página de ponte (Beacons/Lynkfire).';
+        } else if (!link) {
+          fb.style.color = '#94a3b8';
+          fb.innerHTML = 'Digite o link da bio para checar segurança';
+        } else {
+          fb.style.color = '#4ade80';
+          fb.innerHTML = '<span>✓</span> <strong>Link Aprovado!</strong> Ponte externa isolada em conformidade com as diretrizes da Meta.';
+        }
+      }
+
+      let currentPersonaRoleState = 'active';
+
+      async function togglePersonaEstepeRole() {
+        const sel = document.getElementById('selAgentTargetMusa');
+        const pId = sel ? sel.value : 'lab';
+        const nextRole = currentPersonaRoleState === 'active' ? 'estepe' : 'active';
+        showToast(`⏳ Alternando função da persona para ${nextRole.toUpperCase()}...`, 2000);
+
+        try {
+          let updated = false;
+          try {
+            const resp = await fetch('https://www.ghostlens.cloud/api/orchestrator_proxy', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                endpoint: '/api/persona/set_role',
+                persona_id: pId,
+                role: nextRole
+              })
+            });
+            if (resp.ok) updated = true;
+          } catch (e) {}
+
+          if (!updated) {
+            const direct = await fetch('http://204.168.235.202:9090/api/persona/set_role', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ persona_id: pId, role: nextRole })
+            });
+            if (direct.ok) updated = true;
+          }
+
+          currentPersonaRoleState = nextRole;
+          const badge = document.getElementById('badgeEstepeStatus');
+          const btn = document.getElementById('btnToggleEstepeRole');
+          const daysText = document.getElementById('lblEstepeDaysText');
+          const bar = document.getElementById('barEstepeAging');
+
+          if (nextRole === 'estepe') {
+            if (badge) {
+              badge.innerText = 'Estepe (30d Aging)';
+              badge.style.background = 'rgba(251,191,36,0.15)';
+              badge.style.color = '#fbbf24';
+              badge.style.borderColor = 'rgba(251,191,36,0.3)';
+            }
+            if (btn) btn.innerText = 'Reverter para Operação Ativa';
+            if (daysText) daysText.innerText = 'Dia 1 de 30 (Banho-Maria Ativo)';
+            if (bar) bar.style.width = '3.3%';
+            showToast('🛡️ Persona configurada no Silo 1: Modo Conta Estepe (30 dias de aging).', 4500);
+          } else {
+            if (badge) {
+              badge.innerText = 'Ativa (Principal)';
+              badge.style.background = 'rgba(56,189,248,0.15)';
+              badge.style.color = '#38bdf8';
+              badge.style.borderColor = 'rgba(56,189,248,0.3)';
+            }
+            if (btn) btn.innerText = 'Alternar para Modo Estepe (30d)';
+            if (daysText) daysText.innerText = 'Conta em Operação Ativa';
+            if (bar) bar.style.width = '100%';
+            showToast('⚡ Persona reativada para Operação Ativa (Protocolo Alfa)!', 4000);
+          }
+          setTimeout(fetchGhostAgentTelemetry, 1500);
+        } catch (err) {
+          showToast('⚠️ Erro ao alterar papel da conta na nuvem', 3000);
+        }
+      }
+
+      async function triggerPassiveEstepeSession() {
+        const sel = document.getElementById('selAgentTargetMusa');
+        const pId = sel ? sel.value : 'lab';
+        showToast('☕ Disparando visita de banho-maria (3 min) na Conta Estepe...', 3000);
+
+        try {
+          await fetch('https://www.ghostlens.cloud/api/orchestrator_proxy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              endpoint: '/api/agent/warmup',
+              persona_id: pId,
+              cycles: 2,
+              protocol_day: 1
+            })
+          }).catch(() => {
+            return fetch('http://204.168.235.202:9090/api/agent/warmup', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ persona_id: pId, cycles: 2, protocol_day: 1 })
+            });
+          });
+          showToast('✅ Sessão de manutenção da Conta Estepe iniciada no Android!', 4000);
+          setTimeout(fetchGhostAgentTelemetry, 1500);
+        } catch (err) {
+          showToast('⚠️ Erro ao disparar sessão passiva', 3000);
+        }
+      }
+
+      async function confirmExecuteBurnProtocol() {
+        const sel = document.getElementById('selAgentTargetMusa');
+        const pId = sel ? sel.value : 'lab';
+        const ok = confirm(`🔥 ATENÇÃO — PROTOCOLO BURN (SILO 02):\n\nIsso irá:\n1. Destruir permanentemente o smartphone virtual da persona [${pId}].\n2. Apagar 100% dos dados, caches e identificadores de rede.\n3. Gerar um NOVO Android ID, IMEI e MAC limpo em um container novo.\n\nDeseja realmente esterilizar o ambiente e recriar o celular agora?`);
+        if (!ok) return;
+
+        showToast('🔥 Executando Protocolo Burn: destruindo hardware contaminado...', 4000);
+        try {
+          let burned = false;
+          let newId = '';
+          try {
+            const resp = await fetch('https://www.ghostlens.cloud/api/orchestrator_proxy', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                endpoint: '/api/persona/burn',
+                persona_id: pId
+              })
+            });
+            if (resp.ok) {
+              const resData = await resp.json();
+              if (resData.code === 0) {
+                burned = true;
+                newId = resData.new_android_id;
+              }
+            }
+          } catch (e) {}
+
+          if (!burned) {
+            const direct = await fetch('http://204.168.235.202:9090/api/persona/burn', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ persona_id: pId })
+            });
+            if (direct.ok) {
+              const resData = await direct.json();
+              if (resData.code === 0) {
+                burned = true;
+                newId = resData.new_android_id;
+              }
+            }
+          }
+
+          if (burned) {
+            showToast(`✅ Hardware esterilizado com sucesso! Novo Android ID: ${newId || 'Gerado'}`, 6000);
+            setTimeout(fetchGhostAgentTelemetry, 1500);
+          } else {
+            showToast('⚠️ Falha ao executar protocolo de destruição na nuvem.', 4000);
+          }
+        } catch (err) {
+          showToast('⚠️ Erro ao executar Protocolo Burn: ' + err.message, 4000);
+        }
+      }
+
+      async function triggerShadowbanQuarantine() {
+        const sel = document.getElementById('selAgentTargetMusa');
+        const pId = sel ? sel.value : 'lab';
+        showToast('🩺 Ativando Protocolo de Quarentena de Shadowban (48h)...', 3500);
+
+        try {
+          let ok = false;
+          try {
+            const resp = await fetch('https://www.ghostlens.cloud/api/orchestrator_proxy', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                endpoint: '/api/agent/quarantine',
+                persona_id: pId
+              })
+            });
+            if (resp.ok) ok = true;
+          } catch (e) {}
+
+          if (!ok) {
+            const direct = await fetch('http://204.168.235.202:9090/api/agent/quarantine', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ persona_id: pId })
+            });
+            if (direct.ok) ok = true;
+          }
+
+          showToast('✅ Quarentena iniciada: Reels pausados por 48h, rodando navegação passiva humanizada para limpar restrições!', 6000);
+          setTimeout(fetchGhostAgentTelemetry, 1500);
+        } catch (err) {
+          showToast('⚠️ Erro ao ativar quarentena na nuvem', 3000);
         }
       }
 

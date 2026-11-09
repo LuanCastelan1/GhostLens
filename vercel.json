@@ -1,7 +1,8 @@
 {
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/studio", "destination": "/index.html" }
+    { "source": "/studio", "destination": "/studio.html" },
+    { "source": "/index", "destination": "/studio.html" }
   ],
   "functions": {
     "api/wavespeed_proxy.js": {

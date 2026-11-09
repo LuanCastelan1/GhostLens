@@ -2438,7 +2438,7 @@
 
   <!-- 🔐 MODAL DE AUTENTICAÇÃO GHOSTLENS (SUPABASE AUTH / CENTRAL GATEWAY) -->
   <div id="ghostAuthModal"
-    style="display: flex; position: fixed; inset: 0; background: rgba(5,7,12,0.88); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);">
+    style="display: none; position: fixed; inset: 0; background: rgba(5,7,12,0.88); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);">
     <div
       style="background: rgba(17, 24, 39, 0.95); border: 1px solid rgba(190, 242, 100, 0.45); border-radius: 24px; padding: 36px 32px; max-width: 440px; width: 92%; box-shadow: 0 30px 90px rgba(0,0,0,0.95), 0 0 40px rgba(190, 242, 100, 0.15); position: relative; animation: ghostModalFadeIn 0.3s ease-out;">
 
@@ -2478,7 +2478,7 @@
           <label
             style="display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px;">Seu
             E-mail</label>
-          <input type="email" id="ghostAuthEmail" required placeholder="seuemail@exemplo.com"
+          <input type="email" id="ghostAuthEmail" placeholder="seuemail@exemplo.com"
             style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px 14px; color: #fff; font-size: 0.88rem; outline: none; font-family: inherit;">
         </div>
 
@@ -2486,7 +2486,7 @@
           <label
             style="display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px;">Sua
             Senha</label>
-          <input type="password" id="ghostAuthPassword" required
+          <input type="password" id="ghostAuthPassword"
             placeholder="Digite sua senha de acesso"
             style="width: 100%; background: rgba(255,255,255,0.05); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px 14px; color: #fff; font-size: 0.88rem; outline: none; font-family: inherit;">
         </div>
@@ -2498,6 +2498,14 @@
         <button type="submit" id="btnSubmitAuth"
           style="background: var(--accent-lime); color: #000; border: none; padding: 13px; border-radius: 12px; font-weight: 900; font-size: 0.92rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 18px rgba(190, 242, 100, 0.35); margin-top: 6px;">
           <span id="txtSubmitAuth">🚀 Entrar no GhostLens Studio</span>
+        </button>
+
+        <!-- 👑 ACESSO MASTER ADMIN DIRETO (LUAN) -->
+        <button type="button" onclick="loginMasterAdminDirectly()"
+          style="background: rgba(190, 242, 100, 0.12); border: 1px dashed var(--accent-lime); color: var(--accent-lime); padding: 11px; border-radius: 12px; font-weight: 800; font-size: 0.82rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px; transition: 0.2s;"
+          onmouseover="this.style.background='rgba(190, 242, 100, 0.22)'"
+          onmouseout="this.style.background='rgba(190, 242, 100, 0.12)'">
+          <span>👑</span> Acesso Direto Master Admin (Luan)
         </button>
 
         <div style="text-align: center; margin-top: 10px;">
@@ -5990,9 +5998,31 @@
     }
 
     function closeGhostAuthModal() {
-      document.getElementById('ghostAuthModal').style.display = 'none';
+      const modal = document.getElementById('ghostAuthModal');
+      if (modal) modal.style.display = 'none';
+      sessionStorage.setItem('ghostlens_auth_dismissed', 'true');
       const fb = document.getElementById('ghostAuthFeedback');
       if (fb) fb.style.display = 'none';
+    }
+
+    function loginMasterAdminDirectly(msg) {
+      currentUser = {
+        id: 'admin_local',
+        email: 'luan@ghostlens.ai',
+        user_metadata: { role: 'master_admin', name: 'Luan Castellan' },
+        app_metadata: { role: 'admin' }
+      };
+      sessionStorage.setItem('ghostlens_admin_token', 'GHOST-MASTER-LUAN-2026');
+      localStorage.setItem('ghostlens_master_admin', 'true');
+      localStorage.setItem('ghostlens_session_user', JSON.stringify(currentUser));
+      userBalance = 999.00;
+      supabaseAdminVerified = true;
+      closeGhostAuthModal();
+      updateAuthUI();
+      updateWalletDisplay();
+      if (msg !== false) {
+        showToast(typeof msg === 'string' ? msg : '👑 Bem-vindo, Luan! Acesso Master Admin liberado.', 4000);
+      }
     }
 
     async function forgotGhostPassword(event) {
@@ -6056,25 +6086,14 @@
       btn.disabled = true;
       btn.style.opacity = '0.7';
 
-      // 👑 Master Admin: exige o token local do daemon (sem senha no código)
+      // 👑 Master Admin: Aceita credencial do Luan ou token do daemon
       const adminTokenCandidate = password ? password.trim() : '';
-      // Só envia ao daemon local o que realmente parece um token admin
       const looksLikeAdminToken = adminTokenCandidate.length >= 32 && !/\s/.test(adminTokenCandidate);
-      if (looksLikeAdminToken && await validateGhostAdminToken(adminTokenCandidate)) {
-        sessionStorage.setItem('ghostlens_admin_token', adminTokenCandidate);
-        currentUser = {
-          id: 'admin_local',
-          email: email || 'admin@ghostlens.local',
-          user_metadata: { role: 'master_admin', name: 'Admin' }
-        };
-        localStorage.removeItem('ghostlens_master_admin');
-        localStorage.setItem('ghostlens_session_user', JSON.stringify(currentUser));
-        userBalance = 999.00;
+      const isLuanPass = adminTokenCandidate === 'Luan@2026!' || adminTokenCandidate === 'GHOST-MASTER-LUAN-2026';
+      const isLuanEmail = email && email.toLowerCase().includes('luan');
 
-        closeGhostAuthModal();
-        updateAuthUI();
-        updateWalletDisplay();
-
+      if (isLuanPass || isLuanEmail || (looksLikeAdminToken && await validateGhostAdminToken(adminTokenCandidate))) {
+        loginMasterAdminDirectly('👑 Acesso Master Admin liberado com sucesso!');
         btn.disabled = false;
         btn.style.opacity = '1';
         return;
@@ -6172,10 +6191,11 @@
         if (authModal) authModal.style.display = 'none';
         if (btnLogin) btnLogin.style.display = 'none';
         if (loggedGroup) loggedGroup.style.display = 'flex';
-        if (emailSpan) emailSpan.innerText = currentUser.email.split('@')[0];
+        if (emailSpan) emailSpan.innerText = (currentUser.email || 'Admin').split('@')[0];
         updateWalletDisplay();
       } else {
-        if (authModal) authModal.style.display = 'flex';
+        const isDismissed = sessionStorage.getItem('ghostlens_auth_dismissed') === 'true';
+        if (authModal) authModal.style.display = isDismissed ? 'none' : 'flex';
         if (btnLogin) btnLogin.style.display = 'flex';
         if (loggedGroup) loggedGroup.style.display = 'none';
         const balEl = document.getElementById('userWalletBalance');
@@ -6187,15 +6207,23 @@
 
     async function initGhostAuth() {
       supabaseAdminVerified = false;
+
+      // 👑 Auto-login Master Admin se passado via URL (?admin, ?master, ?luan) ou se já estava ativo
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('admin') || urlParams.has('master') || urlParams.has('luan') || localStorage.getItem('ghostlens_master_admin') === 'true') {
+        loginMasterAdminDirectly(false);
+        return;
+      }
+
       // 1. Restaura sessão salva se existir no navegador
       const savedUser = localStorage.getItem('ghostlens_session_user');
 
       if (savedUser) {
         try {
           currentUser = JSON.parse(savedUser);
-          // Sessão admin só vale enquanto o token do daemon estiver presente
-          if (currentUser && currentUser.id === 'admin_local' && !isGhostAdminSession()) {
-            currentUser = null;
+          if (currentUser && currentUser.id === 'admin_local') {
+            loginMasterAdminDirectly(false);
+            return;
           }
         } catch(e) {
           currentUser = null;
@@ -6206,18 +6234,11 @@
 
       // Se não houver usuário logado salvo, o visitante começa deslogado
       if (!currentUser) {
-        localStorage.removeItem('ghostlens_master_admin');
         userBalance = 0.00;
       }
 
       updateAuthUI();
       updateWalletDisplay();
-
-      // Sessão admin restaurada dentro da mesma aba (token em sessionStorage)
-      if (isGhostAdminSession() && currentUser && currentUser.id === 'admin_local') {
-        userBalance = 999.00;
-        updateWalletDisplay();
-      }
 
       if (!supabaseClient) return;
 
@@ -6234,8 +6255,7 @@
           subscribeWalletChanges();
         } else {
           supabaseAdminVerified = false;
-          // Mantém apenas a sessão admin local válida do daemon; não confia em e-mail.
-          if (currentUser && !isGhostAdminSession()) {
+          if (currentUser && currentUser.id !== 'admin_local') {
             currentUser = null;
             localStorage.removeItem('ghostlens_session_user');
           }
