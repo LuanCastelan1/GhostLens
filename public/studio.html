@@ -2344,23 +2344,23 @@
     </div>
   </div>
 
-  <!-- 🔥 MODAL CALIBRAGEM BIOMÉTRICA DA MUSA • R$ 49,90 (EROS-IMAGE) -->
+  <!-- 🔥 MODAL ENCOMENDA DE LORA DA MUSA • R$ 49,90 (EROS-IMAGE) -->
   <div class="modal-backdrop" id="orderLoraModal" style="display: none;" onclick="closeOrderLoraModal()">
     <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 520px; border: 1.5px solid rgba(245, 158, 11, 0.45); box-shadow: 0 24px 80px rgba(0,0,0,0.9), 0 0 40px rgba(245,158,11,0.15);">
       <button class="modal-close-btn" onclick="closeOrderLoraModal()">✕</button>
 
       <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
         <span style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); font-size: 0.65rem; font-weight: 900; padding: 3px 8px; border-radius: 6px;">
-          CALIBRAGEM BIOMÉTRICA 2K
+          TREINAMENTO DE LORA 2K
         </span>
         <span style="color: #bef264; font-size: 0.7rem; font-weight: 800;">ZERO CARA DE IA</span>
       </div>
 
       <h3 style="font-size: 1.25rem; font-weight: 900; color: #fff; margin: 0 0 6px 0;">
-        Calibrar Identidade Facial da Musa
+        Encomendar LoRA Exclusivo da Musa
       </h3>
       <p style="font-size: 0.74rem; color: #94a3b8; line-height: 1.45; margin: 0 0 16px 0;">
-        Nossos especialistas em visão computacional calibram a biometria facial única da sua modelo diretamente no motor neural Eros-Image™ 2K. O rosto da sua musa permanece 100% idêntico e consistente em qualquer pose, ângulo ou iluminação, sem distorção e sem cara de IA.
+        Calibramos a matriz biométrica e o LoRA exclusivo da sua modelo diretamente no motor neural Eros-Image™ 2K. O rosto da sua musa permanece 100% idêntico e consistente em qualquer pose, ângulo ou iluminação, sem distorção e com zero cara de IA.
       </p>
 
       <div style="background: #090a0f; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 14px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 10px;">
@@ -8234,11 +8234,15 @@
 
       function creatorModelMeta(model) {
         const table = {
-          eros_image_2k: { badge: '👑 Eros-Image™ 2K (Ultra-Realismo Fotográfico)', cost: 'Nativo 2K • Óptica Pro', button: 'Gerar com Eros-Image 2K' },
+          eros_image_2k: { badge: '👑 Eros-Image™ 2K (LoRA da Musa & Ultra-Realismo)', cost: 'Nativo 2K • Lentes Pro', button: 'Gerar com Eros-Image 2K' },
+          wan_video_swap: { badge: '🔄 Wan 3.0 Video Swap (Viral Replacer)', cost: 'Créditos por Swap de Vídeo', button: 'Executar Swap com Wan 3.0' },
+          higgsfield_video: { badge: '🎬 Higgsfield Motion', cost: 'Créditos por segundo de vídeo', button: 'Gerar vídeo (Higgsfield)' },
+          kling_video: { badge: '⚡ Kling AI Realism', cost: 'Créditos por vídeo', button: 'Gerar Vídeo no Kling' },
+          seedream_5: { badge: '🌊 ByteDance Seedream 5.0 Ultra', cost: 'R$ 0,40 por foto', button: 'Gerar com Seedream 5.0' },
+          qwen_360: { badge: '🌐 Qwen 2.5 360° Multi-Ângulo', cost: 'Incluso no Pro', button: 'Gerar Ângulos 360°' },
           nanobanana_lite: { badge: '🍌 Nano Banana Lite', cost: 'Incluso no Pro', button: 'Gerar com Nano Banana Lite' },
           nanobanana_21: { badge: '🍌 Nano Banana 2.1', cost: 'Incluso no Pro • fair use', button: 'Gerar com Nano Banana 2.1' },
           nanobanana_pro: { badge: '🍌 Nano Banana Pro • 2K', cost: '5 créditos por imagem', button: 'Gerar em 2K (Nano Banana Pro)' },
-          higgsfield_video: { badge: '🎬 Higgsfield Motion', cost: 'Créditos por segundo de vídeo', button: 'Gerar vídeo (Higgsfield)' },
           chatgpt_import: { badge: '🖼️ ChatGPT Image (BYOK)', cost: 'Grátis • Cole com Ctrl+V', button: 'Importar do ChatGPT (Ctrl+V)' }
         };
         return table[model] || table.eros_image_2k;
@@ -8321,12 +8325,14 @@
             <div>
               <label style="font-size: 0.7rem; font-weight: 800; color: #cbd5e1; display: block; margin-bottom: 6px;">MOTOR DE GERAÇÃO</label>
               <select id="selCreatorModel" onchange="onCreatorModelChange(this.value)" style="width: 100%; background: #0d0e14; border: 1.5px solid rgba(245, 158, 11, 0.4); color: #fff; padding: 9px 10px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; outline: none;">
-                <option value="eros_image_2k" selected>👑 Eros-Image™ 2K • Ultra-Realismo Fotográfico (Zero Cara de IA)</option>
+                <option value="eros_image_2k" selected>👑 Eros-Image™ 2K • LoRA da Musa & Ultra-Realismo (Zero Cara de IA)</option>
+                <option value="wan_video_swap">🔄 Wan 3.0 Video Swap • Troca Facial de Vídeos Virais</option>
+                <option value="higgsfield_video">🎬 Higgsfield Motion • Animação & Câmera</option>
+                <option value="kling_video">⚡ Kling AI • Movimento Humano Realista</option>
+                <option value="seedream_5">🌊 ByteDance Seedream 5.0 • Fotorrealismo Extremo</option>
+                <option value="qwen_360">🌐 Qwen 2.5 360° • Variação de Ângulos</option>
                 <option value="nanobanana_21">🍌 Nano Banana 2.1 • Incluso no Plano</option>
-                <option value="nanobanana_lite">🍌 Nano Banana 2 Lite • Rápido</option>
-                <option value="nanobanana_pro">🍌 Nano Banana Pro • 2K Alta Resolução</option>
-                <option value="higgsfield_video">🎬 Higgsfield Motion/Vídeo • Animação</option>
-                <option value="chatgpt_import">🖼️ ChatGPT Image (GPT Image 2.6 / DALL-E) • Importar</option>
+                <option value="chatgpt_import">🖼️ ChatGPT Image (GPT Image 2.6 / DALL-E) • Importar Ctrl+V</option>
               </select>
               <div id="creatorModelHint" style="font-size: 0.62rem; color: #fbbf24; margin-top: 5px; line-height: 1.35;">Eros-Image™ 2K: Textura de microporos real, profundidade óptica e fidelidade anatômica sem traços artificiais de IA.</div>
             </div>
@@ -8356,17 +8362,17 @@
                 </button>
               </div>
 
-              <!-- CARD DE CALIBRAGEM BIOMÉTRICA EXCLUSIVA -->
+              <!-- CARD DO LORA EXCLUSIVO DA MUSA -->
               <div style="background: rgba(0,0,0,0.5); border: 1px dashed rgba(245, 158, 11, 0.4); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 6px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                  <span style="font-size: 0.66rem; font-weight: 800; color: #fff;">Identidade Facial da Musa:</span>
-                  <span id="lblMusaLoraBadge" style="font-size: 0.6rem; font-weight: 800; color: #fbbf24; background: rgba(245,158,11,0.15); padding: 2px 6px; border-radius: 4px;">Biometria Ativa</span>
+                  <span style="font-size: 0.66rem; font-weight: 800; color: #fff;">LoRA Exclusivo da Musa:</span>
+                  <span id="lblMusaLoraBadge" style="font-size: 0.6rem; font-weight: 800; color: #fbbf24; background: rgba(245,158,11,0.15); padding: 2px 6px; border-radius: 4px;">Padrão Base Ativo</span>
                 </div>
                 <div style="font-size: 0.62rem; color: #94a3b8; line-height: 1.35;">
-                  Calibre a matriz facial única da sua modelo para obter 100% de consistência sem distorção e sem cara de IA em qualquer ângulo ou iluminação.
+                  Calibre o LoRA biométrico exclusivo da sua modelo para obter 100% de consistência do rosto em qualquer pose, ângulo ou iluminação, sem distorção e sem cara de IA.
                 </div>
                 <button type="button" onclick="openOrderLoraModal()" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 900; font-size: 0.72rem; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 4px; box-shadow: 0 4px 12px rgba(245,158,11,0.25);">
-                  <span>🔥</span> Calibrar Identidade Facial da Musa (R$ 49,90)
+                  <span>🔥</span> Encomendar LoRA Exclusivo da Musa (R$ 49,90)
                 </button>
               </div>
             </div>
