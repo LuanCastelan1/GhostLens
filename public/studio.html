@@ -8327,17 +8327,19 @@
               <select id="selCreatorModel" onchange="onCreatorModelChange(this.value)" style="width: 100%; background: #0d0e14; border: 1.5px solid rgba(245, 158, 11, 0.4); color: #fff; padding: 9px 10px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; outline: none;">
                 <option value="eros_image_2k" selected>👑 Eros-Image™ 2K • LoRA da Musa & Ultra-Realismo (Zero Cara de IA)</option>
                 <option value="wan_video_swap">🔄 Wan 3.0 Video Swap • Troca Facial de Vídeos Virais</option>
-                <option value="higgsfield_video">🎬 Higgsfield Motion • Animação & Câmera</option>
-                <option value="kling_video">⚡ Kling AI • Movimento Humano Realista</option>
-                <option value="seedream_5">🌊 ByteDance Seedream 5.0 • Fotorrealismo Extremo</option>
-                <option value="qwen_360">🌐 Qwen 2.5 360° • Variação de Ângulos</option>
+                <option value="higgsfield_video">🎬 Higgsfield Motion • Animação, Frames & Câmera</option>
+                <option value="kling_video">⚡ Kling AI • Movimento Humano Realista 1080p</option>
+                <option value="seedream_5">🌊 ByteDance Seedream 5.0 • Face Swap & Troca de Roupa/Cabelo</option>
+                <option value="qwen_360">🌐 Qwen 2.5 360° • Variação de Ângulos (Frontal, Perfil, Traseira)</option>
+                <option value="minimax_h3">🎥 Minimax / Hailuo H3 & LTX 2.5 • Vídeo Cinemático</option>
+                <option value="openjutsu_workflow">🥷 OpenJutsu / Genjutsu Workflow • ComfyUI VIP Alfa</option>
                 <option value="nanobanana_21">🍌 Nano Banana 2.1 • Incluso no Plano</option>
                 <option value="chatgpt_import">🖼️ ChatGPT Image (GPT Image 2.6 / DALL-E) • Importar Ctrl+V</option>
               </select>
               <div id="creatorModelHint" style="font-size: 0.62rem; color: #fbbf24; margin-top: 5px; line-height: 1.35;">Eros-Image™ 2K: Textura de microporos real, profundidade óptica e fidelidade anatômica sem traços artificiais de IA.</div>
             </div>
 
-            <!-- PAINEL EROS-IMAGE™ 2K (LENTES & IDENTIDADE) -->
+            <!-- 1. PAINEL EROS-IMAGE™ 2K (LENTES & IDENTIDADE) -->
             <div id="boxErosImageControls" style="display: flex; background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(15, 17, 23, 0.95)); border: 1.5px solid rgba(245, 158, 11, 0.35); border-radius: 12px; padding: 14px; flex-direction: column; gap: 10px;">
               <div style="display: flex; justify-content: space-between; align-items: center;">
                 <span style="font-size: 0.75rem; font-weight: 900; color: #fbbf24; display: flex; align-items: center; gap: 6px;">
@@ -8377,39 +8379,77 @@
               </div>
             </div>
 
-            <div>
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <label style="font-size: 0.7rem; font-weight: 800; color: #cbd5e1;">PROMPT DA CENA</label>
-                <button type="button" onclick="suggestRandomScenePrompt()" style="background: transparent; border: none; color: var(--accent-lime); font-size: 0.64rem; font-weight: 800; cursor: pointer;">✨ Sugerir</button>
+            <!-- 2. PAINEL WAN 3.0 VIDEO SWAP (VIRAL REPLACER) -->
+            <div id="boxWanControls" style="display: none; background: linear-gradient(135deg, rgba(168,85,247,0.1), rgba(15,17,23,0.95)); border: 1.5px solid rgba(168,85,247,0.35); border-radius: 12px; padding: 14px; flex-direction: column; gap: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 0.74rem; font-weight: 900; color: #c084fc; display: flex; align-items: center; gap: 6px;">
+                  🔄 Wan 3.0 • Viral Video Swap
+                </div>
+                <span style="font-size: 0.6rem; color: #c084fc; background: rgba(168,85,247,0.15); padding: 2px 7px; border-radius: 4px; font-weight: 800;">TOP 1 DO GRUPO</span>
               </div>
-              <textarea id="txtCreatorPrompt" rows="3" style="width: 100%; background: #0d0e14; border: 1px solid var(--border-subtle); color: #fff; padding: 9px 10px; border-radius: 8px; font-size: 0.76rem; font-family: inherit; resize: vertical; line-height: 1.45; outline: none;" placeholder="Ex: sentada em um lounge de praia em Trancoso, biquíni branco elegante, pôr do sol dourado, luz cinematográfica."></textarea>
-            </div>
-
-            <div>
-              <label style="font-size: 0.7rem; font-weight: 800; color: #cbd5e1; display: block; margin-bottom: 6px;">PROPORÇÃO</label>
-              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;" id="btnGroupRatio">
-                <button type="button" onclick="setCreatorRatio('9:16', this)" class="btn-ratio-choice active" style="background: #1c1e28; border: 1px solid var(--accent-lime); color: var(--accent-lime); padding: 7px 3px; border-radius: 7px; font-weight: 800; font-size: 0.68rem; cursor: pointer;">9:16<br><span style="font-size: 0.55rem; opacity: 0.7;">Stories</span></button>
-                <button type="button" onclick="setCreatorRatio('1:1', this)" class="btn-ratio-choice" style="background: #0d0e14; border: 1px solid var(--border-subtle); color: #94a3b8; padding: 7px 3px; border-radius: 7px; font-weight: 700; font-size: 0.68rem; cursor: pointer;">1:1<br><span style="font-size: 0.55rem; opacity: 0.7;">Feed</span></button>
-                <button type="button" onclick="setCreatorRatio('4:5', this)" class="btn-ratio-choice" style="background: #0d0e14; border: 1px solid var(--border-subtle); color: #94a3b8; padding: 7px 3px; border-radius: 7px; font-weight: 700; font-size: 0.68rem; cursor: pointer;">4:5<br><span style="font-size: 0.55rem; opacity: 0.7;">Retrato</span></button>
-                <button type="button" onclick="setCreatorRatio('16:9', this)" class="btn-ratio-choice" style="background: #0d0e14; border: 1px solid var(--border-subtle); color: #94a3b8; padding: 7px 3px; border-radius: 7px; font-weight: 700; font-size: 0.68rem; cursor: pointer;">16:9<br><span style="font-size: 0.55rem; opacity: 0.7;">Cinema</span></button>
+              <div style="font-size: 0.64rem; color: #cbd5e1; line-height: 1.4;">
+                Substitua o rosto/corpo de qualquer vídeo viral de modelo real pela sua musa IA, mantendo sincronia perfeita.
               </div>
-            </div>
-
-            <div id="boxHiggsfieldControls" style="display: none; background: #0d0e14; border: 1px solid rgba(56,189,248,0.25); border-radius: 10px; padding: 12px; flex-direction: column; gap: 10px;">
-              <div style="font-size: 0.7rem; font-weight: 800; color: #38bdf8;">🎬 Higgsfield Motion</div>
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                 <div>
-                  <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">First frame</div>
-                  <input type="file" id="fileHiggsFirst" accept="image/*" style="display: none;" onchange="handleHiggsFrame(this.files, 'first')">
-                  <label for="fileHiggsFirst" id="higgsFirstDrop" style="height: 78px; border: 1.5px dashed rgba(56,189,248,0.35); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #38bdf8; background: rgba(56,189,248,0.04); overflow: hidden; position: relative;">
-                    <span style="font-size: 1.1rem; line-height: 1;">＋</span><span style="font-size: 0.58rem;">Adicionar</span>
+                  <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">1. Vídeo Viral (MP4)</div>
+                  <input type="file" id="fileWanVideo" accept="video/*" style="display: none;" onchange="handleWanVideoUpload(this.files)">
+                  <label for="fileWanVideo" id="dropWanVideo" style="height: 76px; border: 1.5px dashed rgba(168,85,247,0.4); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #c084fc; background: rgba(168,85,247,0.05); overflow: hidden; position: relative;">
+                    <span style="font-size: 1.1rem;">🎬</span><span style="font-size: 0.58rem; font-weight: 700;">Subir Vídeo Base</span>
                   </label>
                 </div>
                 <div>
-                  <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">End frame</div>
+                  <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">2. Rosto da Musa</div>
+                  <input type="file" id="fileWanFace" accept="image/*" style="display: none;" onchange="handleWanFaceUpload(this.files)">
+                  <label for="fileWanFace" id="dropWanFace" style="height: 76px; border: 1.5px dashed rgba(168,85,247,0.4); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #c084fc; background: rgba(168,85,247,0.05); overflow: hidden; position: relative;">
+                    <span style="font-size: 1.1rem;">👤</span><span style="font-size: 0.58rem; font-weight: 700;">Rosto da Musa</span>
+                  </label>
+                </div>
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div>
+                  <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Modo de Swap</label>
+                  <select id="selWanSwapMode" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;">
+                    <option value="face">Face Swap (Rosto Preciso)</option>
+                    <option value="full">Full Swap (Rosto + Corpo)</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Fidelidade Facial (Blend)</label>
+                  <select id="selWanBlend" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;">
+                    <option value="0.9">Ultra-Alta (Sem Deformação)</option>
+                    <option value="0.75" selected>Balanceada (Natural)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. PAINEL HIGGSFIELD MOTION (FIRST/END FRAME + OBJECTS + CÂMERA) -->
+            <div id="boxHiggsfieldControls" style="display: none; background: #0d0e14; border: 1.5px solid rgba(56,189,248,0.3); border-radius: 12px; padding: 14px; flex-direction: column; gap: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 0.72rem; font-weight: 800; color: #38bdf8;">🎬 Higgsfield Motion • Animação & Câmera</div>
+                <span style="font-size: 0.58rem; color: #38bdf8; background: rgba(56,189,248,0.12); padding: 2px 6px; border-radius: 4px; font-weight: 800;">MOTION API</span>
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px;">
+                <div>
+                  <div style="font-size: 0.6rem; color: #94a3b8; margin-bottom: 3px;">First frame</div>
+                  <input type="file" id="fileHiggsFirst" accept="image/*" style="display: none;" onchange="handleHiggsFrame(this.files, 'first')">
+                  <label for="fileHiggsFirst" id="higgsFirstDrop" style="height: 68px; border: 1.5px dashed rgba(56,189,248,0.35); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; color: #38bdf8; background: rgba(56,189,248,0.04); overflow: hidden; position: relative;">
+                    <span style="font-size: 1rem;">＋</span><span style="font-size: 0.55rem;">Início</span>
+                  </label>
+                </div>
+                <div>
+                  <div style="font-size: 0.6rem; color: #94a3b8; margin-bottom: 3px;">End frame</div>
                   <input type="file" id="fileHiggsEnd" accept="image/*" style="display: none;" onchange="handleHiggsFrame(this.files, 'end')">
-                  <label for="fileHiggsEnd" id="higgsEndDrop" style="height: 78px; border: 1.5px dashed rgba(56,189,248,0.35); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #38bdf8; background: rgba(56,189,248,0.04); overflow: hidden; position: relative;">
-                    <span style="font-size: 1.1rem; line-height: 1;">＋</span><span style="font-size: 0.58rem;">Adicionar</span>
+                  <label for="fileHiggsEnd" id="higgsEndDrop" style="height: 68px; border: 1.5px dashed rgba(56,189,248,0.35); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; color: #38bdf8; background: rgba(56,189,248,0.04); overflow: hidden; position: relative;">
+                    <span style="font-size: 1rem;">＋</span><span style="font-size: 0.55rem;">Final</span>
+                  </label>
+                </div>
+                <div>
+                  <div style="font-size: 0.6rem; color: #94a3b8; margin-bottom: 3px;">Objeto / Traje</div>
+                  <input type="file" id="fileHiggsObject" accept="image/*" style="display: none;" onchange="handleHiggsFrame(this.files, 'object')">
+                  <label for="fileHiggsObject" id="higgsObjDrop" style="height: 68px; border: 1.5px dashed rgba(56,189,248,0.35); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; color: #38bdf8; background: rgba(56,189,248,0.04); overflow: hidden; position: relative;">
+                    <span style="font-size: 1rem;">＋</span><span style="font-size: 0.55rem;">Referência</span>
                   </label>
                 </div>
               </div>
@@ -8420,19 +8460,163 @@
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                 <div>
                   <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Câmera</label>
-                  <select id="selHiggsCamera" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;"><option>Estática</option><option>Pan suave</option><option>Zoom in lento</option><option>Tilt up</option></select>
+                  <select id="selHiggsCamera" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;"><option>Estática</option><option>Pan suave</option><option>Zoom in lento</option><option>Tilt up</option><option>Orbit 360°</option></select>
                 </div>
                 <div>
                   <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Duração</label>
                   <select id="selHiggsDuration" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;"><option value="5">5 segundos</option><option value="10">10 segundos</option></select>
                 </div>
               </div>
-              <div style="font-size: 0.6rem; color: #64748b; line-height: 1.35;">Sem first/end frame, o Higgsfield usa a referência principal da musa como base.</div>
             </div>
 
+            <!-- 4. PAINEL KLING AI REALISM -->
+            <div id="boxKlingControls" style="display: none; background: linear-gradient(135deg, rgba(234,179,8,0.1), rgba(15,17,23,0.95)); border: 1.5px solid rgba(234,179,8,0.35); border-radius: 12px; padding: 14px; flex-direction: column; gap: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 0.74rem; font-weight: 900; color: #facc15; display: flex; align-items: center; gap: 6px;">
+                  ⚡ Kling AI • Movimento Humano Realista
+                </div>
+                <span style="font-size: 0.6rem; color: #facc15; background: rgba(234,179,8,0.15); padding: 2px 7px; border-radius: 4px; font-weight: 800;">1080P PRO</span>
+              </div>
+              <div style="font-size: 0.64rem; color: #cbd5e1; line-height: 1.4;">
+                Gera movimento orgânico e fluido de corpo inteiro, caminhada e olhares a partir da foto da musa.
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div>
+                  <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Modo de Render</label>
+                  <select id="selKlingMode" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;">
+                    <option value="std">Standard (720p • Rápido)</option>
+                    <option value="pro" selected>Professional (1080p • Alta Nitidez)</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Duração</label>
+                  <select id="selKlingDuration" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;">
+                    <option value="5">5 segundos</option>
+                    <option value="10">10 segundos</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- 5. PAINEL SEEDREAM 5.0 (FACE SWAP & MODIFICAÇÃO DE LOOK) -->
+            <div id="boxSeedreamControls" style="display: none; background: linear-gradient(135deg, rgba(14,165,233,0.1), rgba(15,17,23,0.95)); border: 1.5px solid rgba(14,165,233,0.35); border-radius: 12px; padding: 14px; flex-direction: column; gap: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 0.74rem; font-weight: 900; color: #38bdf8; display: flex; align-items: center; gap: 6px;">
+                  🌊 ByteDance Seedream 5.0 • Fotorrealismo & Swap
+                </div>
+                <span style="font-size: 0.6rem; color: #38bdf8; background: rgba(14,165,233,0.15); padding: 2px 7px; border-radius: 4px; font-weight: 800;">R$ 0,40 / FOTO</span>
+              </div>
+              <div style="font-size: 0.64rem; color: #cbd5e1; line-height: 1.4;">
+                O queridinho do grupo para trocar roupas, mudar cor de cabelo ou fazer swap de ensaios inteiros em alta fidelidade.
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div>
+                  <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">Imagem Alvo (Cena)</div>
+                  <input type="file" id="fileSeedreamTarget" accept="image/*" style="display: none;" onchange="handleSeedreamTargetUpload(this.files)">
+                  <label for="fileSeedreamTarget" id="dropSeedreamTarget" style="height: 76px; border: 1.5px dashed rgba(14,165,233,0.4); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #38bdf8; background: rgba(14,165,233,0.05); overflow: hidden; position: relative;">
+                    <span style="font-size: 1.1rem;">🖼️</span><span style="font-size: 0.58rem; font-weight: 700;">Subir Imagem Alvo</span>
+                  </label>
+                </div>
+                <div>
+                  <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">Rosto da Musa</div>
+                  <input type="file" id="fileSeedreamFace" accept="image/*" style="display: none;" onchange="handleSeedreamFaceUpload(this.files)">
+                  <label for="fileSeedreamFace" id="dropSeedreamFace" style="height: 76px; border: 1.5px dashed rgba(14,165,233,0.4); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #38bdf8; background: rgba(14,165,233,0.05); overflow: hidden; position: relative;">
+                    <span style="font-size: 1.1rem;">👤</span><span style="font-size: 0.58rem; font-weight: 700;">Rosto da Musa</span>
+                  </label>
+                </div>
+              </div>
+              <div>
+                <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Comando de Modificação (Cabelo / Roupa / Fundo):</label>
+                <input type="text" id="txtSeedreamEditPrompt" placeholder="Ex: mudar cabelo para castanho iluminado, colocar biquíni preto de linho" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 7px 10px; border-radius: 6px; font-size: 0.74rem; outline: none;">
+              </div>
+            </div>
+
+            <!-- 6. PAINEL QWEN 2.5 360° (MULTI-ÂNGULO) -->
+            <div id="boxQwenControls" style="display: none; background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(15,17,23,0.95)); border: 1.5px solid rgba(16,185,129,0.35); border-radius: 12px; padding: 14px; flex-direction: column; gap: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 0.74rem; font-weight: 900; color: #34d399; display: flex; align-items: center; gap: 6px;">
+                  🌐 Qwen 2.5 • Ângulo Orbital 360°
+                </div>
+                <span style="font-size: 0.6rem; color: #34d399; background: rgba(16,185,129,0.15); padding: 2px 7px; border-radius: 4px; font-weight: 800;">CARROSSEL IG</span>
+              </div>
+              <div style="font-size: 0.64rem; color: #cbd5e1; line-height: 1.4;">
+                Gera a mesma musa em diferentes ângulos da mesma cena para postar carrosséis com engajamento explosivo.
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
+                <button type="button" onclick="setQwenAngle('0', this)" class="btn-qwen-angle active" style="background: #13281e; border: 1.5px solid #34d399; color: #34d399; padding: 7px 4px; border-radius: 7px; font-weight: 800; font-size: 0.66rem; cursor: pointer; text-align: center;">0° Frontal</button>
+                <button type="button" onclick="setQwenAngle('45', this)" class="btn-qwen-angle" style="background: #0d0e14; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 7px 4px; border-radius: 7px; font-weight: 700; font-size: 0.66rem; cursor: pointer; text-align: center;">45° Lateral</button>
+                <button type="button" onclick="setQwenAngle('90', this)" class="btn-qwen-angle" style="background: #0d0e14; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 7px 4px; border-radius: 7px; font-weight: 700; font-size: 0.66rem; cursor: pointer; text-align: center;">90° Perfil</button>
+                <button type="button" onclick="setQwenAngle('135', this)" class="btn-qwen-angle" style="background: #0d0e14; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 7px 4px; border-radius: 7px; font-weight: 700; font-size: 0.66rem; cursor: pointer; text-align: center;">135° Olhando Atrás</button>
+                <button type="button" onclick="setQwenAngle('180', this)" class="btn-qwen-angle" style="background: #0d0e14; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 7px 4px; border-radius: 7px; font-weight: 700; font-size: 0.66rem; cursor: pointer; text-align: center;">180° Traseira</button>
+                <button type="button" onclick="setQwenAngle('pov', this)" class="btn-qwen-angle" style="background: #0d0e14; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 7px 4px; border-radius: 7px; font-weight: 700; font-size: 0.66rem; cursor: pointer; text-align: center;">POV Íntimo</button>
+              </div>
+            </div>
+
+            <!-- 7. PAINEL MINIMAX H3 & LTX 2.5 -->
+            <div id="boxMinimaxControls" style="display: none; background: linear-gradient(135deg, rgba(244,63,94,0.1), rgba(15,17,23,0.95)); border: 1.5px solid rgba(244,63,94,0.35); border-radius: 12px; padding: 14px; flex-direction: column; gap: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 0.74rem; font-weight: 900; color: #fb7185; display: flex; align-items: center; gap: 6px;">
+                  🎥 Minimax H3 & LTX 2.5 • Vídeo Cinemático
+                </div>
+                <span style="font-size: 0.6rem; color: #fb7185; background: rgba(244,63,94,0.15); padding: 2px 7px; border-radius: 4px; font-weight: 800;">HAILUO 01</span>
+              </div>
+              <div style="font-size: 0.64rem; color: #cbd5e1; line-height: 1.4;">
+                Física realista de movimentos, vento nos cabelos e tecidos com estética de estúdio.
+              </div>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div>
+                  <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Engine</label>
+                  <select id="selMinimaxEngine" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;">
+                    <option value="h3" selected>Minimax Hailuo H3</option>
+                    <option value="ltx25">LTX Video 2.5</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Resolução</label>
+                  <select id="selMinimaxRes" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;">
+                    <option value="720">720p 24fps</option>
+                    <option value="1080" selected>1080p 24fps</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- 8. PAINEL OPENJUTSU / GENJUTSU COMFYUI -->
+            <div id="boxOpenjutsuControls" style="display: none; background: linear-gradient(135deg, rgba(239,68,68,0.12), rgba(15,17,23,0.95)); border: 1.5px solid rgba(239,68,68,0.35); border-radius: 12px; padding: 14px; flex-direction: column; gap: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-size: 0.74rem; font-weight: 900; color: #f87171; display: flex; align-items: center; gap: 6px;">
+                  🥷 OpenJutsu / Genjutsu • Workflow ComfyUI VIP
+                </div>
+                <span style="background: rgba(239,68,68,0.2); color: #fca5a5; font-size: 0.58rem; font-weight: 800; padding: 2px 6px; border-radius: 4px;">NÍVEL ALFA</span>
+              </div>
+              <div style="font-size: 0.64rem; color: #cbd5e1; line-height: 1.4;">
+                Workflow proprietário mais usado pelas grandes agências de modelos IA no Brasil. Roda diretamente no servidor em nuvem sem consumir sua máquina.
+              </div>
+              <div style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 8px 10px; display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 0.66rem; color: #94a3b8;">Status do Workflow:</span>
+                <span style="font-size: 0.62rem; color: #4ade80; font-weight: 800;">Conectado & Pronto</span>
+              </div>
+            </div>
+
+            <!-- 9. PAINEL CHATGPT IMAGE IMPORT -->
             <div id="boxChatGptControls" style="display: none; background: #0d0e14; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 12px; flex-direction: column; gap: 8px;">
               <div style="display: flex; justify-content: space-between; align-items: center;">
                 <div style="font-size: 0.72rem; font-weight: 800; color: #fff;">🖼️ ChatGPT Image (GPT Image 2.6 / DALL-E)</div>
+                <span style="font-size: 0.6rem; color: #4ade80; background: rgba(74,222,128,0.1); padding: 2px 6px; border-radius: 4px; font-weight: 700;">Ctrl+V Habilitado</span>
+              </div>
+              <div style="font-size: 0.65rem; color: #94a3b8; line-height: 1.4;">
+                Gere na sua conta do ChatGPT Plus. Copie a imagem de lá e dê <strong>Ctrl+V</strong> aqui na tela, ou arraste o arquivo. O GhostLens purga metadados C2PA, aplica Anti-Hash PDQ e injeta EXIF Apple automaticamente!
+              </div>
+              <div style="display: flex; gap: 6px;">
+                <button type="button" onclick="copyOptimizedGptPrompt()" style="flex: 1; background: #1a1c26; border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; font-weight: 700; font-size: 0.68rem; padding: 7px; border-radius: 6px; cursor: pointer;">
+                  📋 Copiar Super-Prompt pro GPT
+                </button>
+              </div>
+              <input type="file" id="creatorImportInput" accept="image/*" style="display: none;" onchange="handleCreatorImportFile(this.files)">
+              <label for="creatorImportInput" id="dropZoneGptImport" style="height: 80px; border: 1.5px dashed rgba(255,255,255,0.2); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; color: #e2e8f0; background: rgba(255,255,255,0.02); transition: 0.2s;">
+                <span style="font-size: 1.1rem;">＋</span><span style="font-size: 0.64rem; font-weight: 700;">Colar (Ctrl+V) ou soltar imagem do ChatGPT</span>
+              </label>
+            </div>
                 <span style="font-size: 0.6rem; color: #4ade80; background: rgba(74,222,128,0.1); padding: 2px 6px; border-radius: 4px; font-weight: 700;">Ctrl+V Habilitado</span>
               </div>
               <div style="font-size: 0.65rem; color: #94a3b8; line-height: 1.4;">
@@ -8661,18 +8845,41 @@
       function onCreatorModelChange(model) {
         currentCreatorModel = model;
         const meta = creatorModelMeta(model);
-        const boxEros = document.getElementById('boxErosImageControls');
-        const boxHiggs = document.getElementById('boxHiggsfieldControls');
-        const boxChat = document.getElementById('boxChatGptControls');
+
+        // Esconde todos os painéis para exibir apenas o do modelo selecionado
+        const allBoxes = [
+          'boxErosImageControls',
+          'boxWanControls',
+          'boxHiggsfieldControls',
+          'boxKlingControls',
+          'boxSeedreamControls',
+          'boxQwenControls',
+          'boxMinimaxControls',
+          'boxOpenjutsuControls',
+          'boxChatGptControls'
+        ];
+        allBoxes.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.style.display = 'none';
+        });
+
+        // Mostra o painel exclusivo da IA ativa
+        if (model === 'eros_image_2k') document.getElementById('boxErosImageControls')?.style.setProperty('display', 'flex');
+        else if (model === 'wan_video_swap') document.getElementById('boxWanControls')?.style.setProperty('display', 'flex');
+        else if (model === 'higgsfield_video') document.getElementById('boxHiggsfieldControls')?.style.setProperty('display', 'flex');
+        else if (model === 'kling_video') document.getElementById('boxKlingControls')?.style.setProperty('display', 'flex');
+        else if (model === 'seedream_5') document.getElementById('boxSeedreamControls')?.style.setProperty('display', 'flex');
+        else if (model === 'qwen_360') document.getElementById('boxQwenControls')?.style.setProperty('display', 'flex');
+        else if (model === 'minimax_h3') document.getElementById('boxMinimaxControls')?.style.setProperty('display', 'flex');
+        else if (model === 'openjutsu_workflow') document.getElementById('boxOpenjutsuControls')?.style.setProperty('display', 'flex');
+        else if (model === 'chatgpt_import') document.getElementById('boxChatGptControls')?.style.setProperty('display', 'flex');
+
         const btnGen = document.getElementById('lblBtnGenText');
         const btnExecute = document.getElementById('btnExecuteCreatorGen');
         const badge = document.getElementById('lblCanvasModelBadge');
         const cost = document.getElementById('creatorCostLabel');
         const hint = document.getElementById('creatorModelHint');
 
-        if (boxEros) boxEros.style.display = model === 'eros_image_2k' ? 'flex' : 'none';
-        if (boxHiggs) boxHiggs.style.display = model === 'higgsfield_video' ? 'flex' : 'none';
-        if (boxChat) boxChat.style.display = model === 'chatgpt_import' ? 'flex' : 'none';
         if (btnGen) btnGen.innerText = meta.button;
         if (badge) badge.innerText = meta.badge;
         if (cost) cost.innerText = meta.cost;
@@ -8682,6 +8889,10 @@
             btnExecute.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
             btnExecute.style.color = '#000';
             btnExecute.style.boxShadow = '0 4px 14px rgba(245,158,11,0.25)';
+          } else if (model === 'wan_video_swap') {
+            btnExecute.style.background = 'linear-gradient(135deg, #a855f7, #7e22ce)';
+            btnExecute.style.color = '#fff';
+            btnExecute.style.boxShadow = '0 4px 14px rgba(168,85,247,0.35)';
           } else {
             btnExecute.style.background = 'var(--accent-lime)';
             btnExecute.style.color = '#000';
@@ -8690,15 +8901,18 @@
         }
 
         if (hint) {
-          hint.innerText = model === 'eros_image_2k'
-            ? 'Eros-Image™ 2K: Textura de microporos real, profundidade óptica e fidelidade anatômica sem traços de IA.'
-            : model === 'higgsfield_video'
-              ? 'Vídeo com first/end frame, motion control e câmera. Custo real por segundo — vendido em créditos.'
-              : model === 'chatgpt_import'
-                ? 'Gere no seu ChatGPT (GPT Image 2.6 / DALL-E) e dê Ctrl+V aqui. O GhostLens purga C2PA e injeta Apple EXIF.'
-                : model === 'nanobanana_pro'
-                  ? 'Nano Banana Pro entrega até 2K no useapi. 4K exige upscale adicional no plano Ultra.'
-                  : 'Geração com referências da persona, sem custo por imagem no plano Pro (fair use).';
+          const hints = {
+            eros_image_2k: 'Eros-Image™ 2K: Textura de microporos real, profundidade óptica e fidelidade anatômica sem traços de IA.',
+            wan_video_swap: 'Wan 3.0 Video Swap: Troca facial e corporal ultra-realista em vídeos virais de criadoras reais.',
+            higgsfield_video: 'Higgsfield Motion: First/end frame, objetos e motion control avançado por segundo de vídeo.',
+            kling_video: 'Kling AI: Movimentos humanos fluidos, caminhadas e ações naturais em 1080p.',
+            seedream_5: 'ByteDance Seedream 5.0: Face swap de alta fidelidade e alteração de cabelo/roupa em fotos prontas.',
+            qwen_360: 'Qwen 2.5 360°: Variação multi-ângulo (frontal, 45°, perfil, traseira) para carrosséis do Instagram.',
+            minimax_h3: 'Minimax H3 / LTX 2.5: Renderização cinemática com física de tecidos e cabelo em alta definição.',
+            openjutsu_workflow: 'OpenJutsu / Genjutsu ComfyUI: O workflow mais utilizado por grandes agências para geração em nuvem.',
+            chatgpt_import: 'Gere no seu ChatGPT e dê Ctrl+V aqui. O GhostLens purga C2PA e injeta Apple EXIF.'
+          };
+          hint.innerText = hints[model] || 'Geração com referências da persona, sem custo por imagem no plano Pro (fair use).';
         }
         if (model === 'eros_image_2k') {
           const activeBtn = document.querySelector('.btn-eros-ck.active') || document.querySelector('.btn-eros-ck');
@@ -8775,14 +8989,76 @@
             currentCreatorHiggsFirst = data;
             const drop = document.getElementById('higgsFirstDrop');
             if (drop) drop.innerHTML = `<img src="${data}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;"><span style="position:relative;z-index:1;background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;padding:2px 6px;border-radius:4px;">Trocar</span>`;
-          } else {
+          } else if (which === 'end') {
             currentCreatorHiggsEnd = data;
             const drop = document.getElementById('higgsEndDrop');
+            if (drop) drop.innerHTML = `<img src="${data}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;"><span style="position:relative;z-index:1;background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;padding:2px 6px;border-radius:4px;">Trocar</span>`;
+          } else if (which === 'object') {
+            window.__currentHiggsObject = data;
+            const drop = document.getElementById('higgsObjDrop');
             if (drop) drop.innerHTML = `<img src="${data}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;"><span style="position:relative;z-index:1;background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;padding:2px 6px;border-radius:4px;">Trocar</span>`;
           }
         } catch (err) {
           showToast(err.message || 'Não foi possível processar o frame.', 4000);
         }
+      }
+
+      async function handleWanVideoUpload(files) {
+        const file = (files || [])[0];
+        if (!file) return;
+        const drop = document.getElementById('dropWanVideo');
+        if (drop) drop.innerHTML = `<span style="font-size:1.1rem;">🎬</span><span style="font-size:0.58rem;font-weight:800;color:#c084fc;">${file.name.substring(0, 14)}...</span>`;
+        showToast(`Vídeo viral carregado: ${file.name}`, 3000);
+      }
+
+      async function handleWanFaceUpload(files) {
+        const file = (files || [])[0];
+        if (!file) return;
+        try {
+          const data = await ghostCompressImage(file, 768, 0.85);
+          const drop = document.getElementById('dropWanFace');
+          if (drop) drop.innerHTML = `<img src="${data}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;"><span style="position:relative;z-index:1;background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;padding:2px 6px;border-radius:4px;">Trocar</span>`;
+          showToast('Rosto da musa carregado para Wan 3.0!', 2500);
+        } catch(e){}
+      }
+
+      async function handleSeedreamTargetUpload(files) {
+        const file = (files || [])[0];
+        if (!file) return;
+        try {
+          const data = await ghostCompressImage(file, 1024, 0.88);
+          const drop = document.getElementById('dropSeedreamTarget');
+          if (drop) drop.innerHTML = `<img src="${data}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;"><span style="position:relative;z-index:1;background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;padding:2px 6px;border-radius:4px;">Trocar</span>`;
+          showToast('Imagem alvo pronta para Seedream 5.0!', 2500);
+        } catch(e){}
+      }
+
+      async function handleSeedreamFaceUpload(files) {
+        const file = (files || [])[0];
+        if (!file) return;
+        try {
+          const data = await ghostCompressImage(file, 768, 0.85);
+          const drop = document.getElementById('dropSeedreamFace');
+          if (drop) drop.innerHTML = `<img src="${data}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;"><span style="position:relative;z-index:1;background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;padding:2px 6px;border-radius:4px;">Trocar</span>`;
+          showToast('Rosto da musa carregado para Seedream!', 2500);
+        } catch(e){}
+      }
+
+      function setQwenAngle(angle, btn) {
+        window.__currentQwenAngle = angle;
+        document.querySelectorAll('.btn-qwen-angle').forEach(b => {
+          b.style.background = '#0d0e14';
+          b.style.borderColor = 'rgba(255,255,255,0.08)';
+          b.style.color = '#94a3b8';
+          b.classList.remove('active');
+        });
+        if (btn) {
+          btn.style.background = '#13281e';
+          btn.style.borderColor = '#34d399';
+          btn.style.color = '#34d399';
+          btn.classList.add('active');
+        }
+        showToast(`Ângulo orbital definido: ${angle}°`, 2000);
       }
 
       async function processImportedGptImage(dataUrl) {
