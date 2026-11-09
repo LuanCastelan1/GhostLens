@@ -1929,6 +1929,20 @@
             <div class="dock-dropdown-header" id="header_photo_engines" style="margin-top: 6px;">Motores de Imagem &
               Metadados</div>
 
+            <!-- NOVO: ATALHO DIRETO PARA EROS-IMAGE 2K -->
+            <div class="dock-model-item" id="item_dock_eros_image"
+              onclick="switchSection('creator'); onCreatorModelChange('eros_image_2k'); togglePopup('enginePopup');"
+              style="border-left: 2px solid #fbbf24; background: rgba(245, 158, 11, 0.08);">
+              <div>
+                <div class="dock-model-name" style="color: #fbbf24; font-weight: 800; display: flex; align-items: center; gap: 5px;">
+                  👑 Eros-Image™ 2K (Motor Neural)
+                  <span style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; font-size: 0.58rem; padding: 1px 5px; border-radius: 4px;">NOVO</span>
+                </div>
+                <div class="dock-model-desc">Gerador de ensaios com lentes RAW, FILM POV e GLAM VIP</div>
+              </div>
+              <div class="dock-model-price" style="color: #fbbf24;">2K Nativo<span>Estúdio</span></div>
+            </div>
+
             <div class="dock-model-item" id="item_apple_clean"
               onclick="selectModel('apple_clean', 'Apple Stealth Purger (C2PA Shield)', 'R$ 0,20')">
               <div>
@@ -2330,23 +2344,23 @@
     </div>
   </div>
 
-  <!-- 🔥 MODAL ENCOMENDA DE LORA DA MUSA • R$ 49,90 (EROS-IMAGE) -->
+  <!-- 🔥 MODAL CALIBRAGEM BIOMÉTRICA DA MUSA • R$ 49,90 (EROS-IMAGE) -->
   <div class="modal-backdrop" id="orderLoraModal" style="display: none;" onclick="closeOrderLoraModal()">
     <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 520px; border: 1.5px solid rgba(245, 158, 11, 0.45); box-shadow: 0 24px 80px rgba(0,0,0,0.9), 0 0 40px rgba(245,158,11,0.15);">
       <button class="modal-close-btn" onclick="closeOrderLoraModal()">✕</button>
 
       <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
         <span style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.4); font-size: 0.65rem; font-weight: 900; padding: 3px 8px; border-radius: 6px;">
-          TREINAMENTO BIOMÉTRICO 2K
+          CALIBRAGEM BIOMÉTRICA 2K
         </span>
         <span style="color: #bef264; font-size: 0.7rem; font-weight: 800;">ZERO CARA DE IA</span>
       </div>
 
       <h3 style="font-size: 1.25rem; font-weight: 900; color: #fff; margin: 0 0 6px 0;">
-        Encomendar LoRA Exclusivo da Musa
+        Calibrar Identidade Facial da Musa
       </h3>
       <p style="font-size: 0.74rem; color: #94a3b8; line-height: 1.45; margin: 0 0 16px 0;">
-        Nossos engenheiros de IA calibram os pesos sinápticos e a matriz facial da sua modelo no motor Krea 2 / SeaArt Master. Ela nunca mais mudará de rosto em nenhuma pose ou ensaio.
+        Nossos especialistas em visão computacional calibram a biometria facial única da sua modelo diretamente no motor neural Eros-Image™ 2K. O rosto da sua musa permanece 100% idêntico e consistente em qualquer pose, ângulo ou iluminação, sem distorção e sem cara de IA.
       </p>
 
       <div style="background: #090a0f; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; padding: 14px; margin-bottom: 14px; display: flex; flex-direction: column; gap: 10px;">
@@ -2356,11 +2370,11 @@
         </div>
 
         <div>
-          <label style="font-size: 0.68rem; font-weight: 800; color: #cbd5e1; display: block; margin-bottom: 4px;">Estilo & Checkpoint Alvo:</label>
+          <label style="font-size: 0.68rem; font-weight: 800; color: #cbd5e1; display: block; margin-bottom: 4px;">Estilo de Óptica Principal:</label>
           <select id="selLoraTargetCheckpoint" style="width: 100%; background: #12141c; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 8px 10px; color: #fff; font-size: 0.78rem; font-weight: 700;">
-            <option value="raw">📸 Eros-Image RAW (Pele Natural, Poros & Dia a Dia)</option>
-            <option value="film_pov">🎬 Eros-Image FILM POV (Sensual 35mm / Intimista)</option>
-            <option value="glam">✨ Eros-Image GLAM (Ensaio VIP & Estética de Luxo)</option>
+            <option value="raw">📸 Lente RAW (Pele Natural & Luz Dia)</option>
+            <option value="film_pov">🎬 Lente FILM POV (Sensual 35mm & Intimista)</option>
+            <option value="glam">✨ Lente GLAM VIP (Ensaio Editorial & Estética de Luxo)</option>
           </select>
         </div>
 
@@ -2374,7 +2388,7 @@
       <div style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(190, 242, 100, 0.05)); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
         <div>
           <div style="font-size: 0.66rem; color: #94a3b8; font-weight: 700;">INVESTIMENTO ÚNICO</div>
-          <div style="font-size: 1.35rem; font-weight: 900; color: #fbbf24;">R$ 49,90 <span style="font-size: 0.7rem; color: #94a3b8; font-weight: 600;">/ por LoRA</span></div>
+          <div style="font-size: 1.35rem; font-weight: 900; color: #fbbf24;">R$ 49,90 <span style="font-size: 0.7rem; color: #94a3b8; font-weight: 600;">/ por Musa</span></div>
         </div>
         <div style="text-align: right;">
           <div style="font-size: 0.66rem; color: #94a3b8; font-weight: 700;">PRAZO DE CALIBRAGEM</div>
@@ -8184,7 +8198,7 @@
 
       let currentErosCheckpoint = 'raw';
 
-      function selectErosCheckpoint(type, btn) {
+      function selectErosLens(type, btn) {
         currentErosCheckpoint = type;
         document.querySelectorAll('.btn-eros-ck').forEach(b => {
           b.style.background = '#0d0e14';
@@ -8198,20 +8212,30 @@
           btn.style.color = '#fbbf24';
           btn.classList.add('active');
         }
-        const names = {
-          raw: '📸 Eros-Image RAW (Pele Natural & Poros 2K)',
-          film_pov: '🎬 Eros-Image FILM POV (Sensual 35mm)',
-          glam: '✨ Eros-Image GLAM (Ensaio VIP & Luxo)'
+        const lensLabels = {
+          raw: '📸 Lente RAW Natural • Textura Real 2K',
+          film_pov: '🎬 Lente FILM POV • 35mm Analógico & Sensual',
+          glam: '✨ Lente GLAM VIP • Editorial de Alto Luxo'
+        };
+        const lensSpecs = {
+          raw: 'Lente RAW 35mm • Pele Natural',
+          film_pov: 'Lente POV 28mm • Grão Analógico',
+          glam: 'Lente 85mm f/1.4 • Studio VIP'
         };
         const badge = document.getElementById('lblCanvasModelBadge');
-        if (badge) badge.innerText = names[type] || '👑 Eros-Image™ 2K';
-        showToast(`Checkpoint alterado para: ${names[type]}`, 2500);
+        if (badge) badge.innerText = lensLabels[type] || '👑 Eros-Image™ 2K';
+
+        const lblSpec = document.getElementById('lblCanvasSpec');
+        if (lblSpec) lblSpec.innerText = `${currentCreatorAspectRatio} • ${lensSpecs[type]} • 2K Ultra HD`;
+
+        showToast(`Óptica selecionada: ${lensLabels[type]}`, 2500);
       }
+      window.selectErosCheckpoint = selectErosLens;
 
       function creatorModelMeta(model) {
         const table = {
-          eros_image_2k: { badge: '👑 Eros-Image™ 2K (Fórmula Anti-IA)', cost: 'Nativo 2K • Checkpoints + LoRA', button: 'Gerar com Eros-Image 2K' },
-          nanobanana_lite: { badge: '🍌 Nano Banana 2 Lite', cost: 'Incluso no Pro', button: 'Gerar com Nano Banana Lite' },
+          eros_image_2k: { badge: '👑 Eros-Image™ 2K (Ultra-Realismo Fotográfico)', cost: 'Nativo 2K • Óptica Pro', button: 'Gerar com Eros-Image 2K' },
+          nanobanana_lite: { badge: '🍌 Nano Banana Lite', cost: 'Incluso no Pro', button: 'Gerar com Nano Banana Lite' },
           nanobanana_21: { badge: '🍌 Nano Banana 2.1', cost: 'Incluso no Pro • fair use', button: 'Gerar com Nano Banana 2.1' },
           nanobanana_pro: { badge: '🍌 Nano Banana Pro • 2K', cost: '5 créditos por imagem', button: 'Gerar em 2K (Nano Banana Pro)' },
           higgsfield_video: { badge: '🎬 Higgsfield Motion', cost: 'Créditos por segundo de vídeo', button: 'Gerar vídeo (Higgsfield)' },
@@ -8230,25 +8254,27 @@
         grid.style.alignItems = 'start';
 
         grid.innerHTML = `
-          <!-- ─── BANNER TEASER VIP • EROSCHAT™ ECOSYSTEM (PRE-LAUNCH 2027) ─── -->
-          <div style="grid-column: 1 / -1; background: linear-gradient(135deg, rgba(239, 68, 68, 0.12), rgba(245, 158, 11, 0.12)); border: 1.5px solid rgba(245, 158, 11, 0.35); border-radius: 14px; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.4); display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
-                👑
+          <!-- ─── BANNER TEASER VIP • LANÇAMENTO OFICIAL EROSCHAT™ 2027 ─── -->
+          <div style="grid-column: 1 / -1; background: linear-gradient(135deg, rgba(239, 68, 68, 0.18), rgba(245, 158, 11, 0.15)); border: 1.5px solid rgba(245, 158, 11, 0.45); border-radius: 14px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; box-shadow: 0 4px 24px rgba(0,0,0,0.4);">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.4); display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
+                🔥
               </div>
               <div>
                 <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                  <span style="font-size: 0.88rem; font-weight: 900; color: #fff; letter-spacing: -0.2px;">ErosChat™ Ecosystem</span>
-                  <span style="background: rgba(239, 68, 68, 0.2); color: #f87171; font-size: 0.6rem; font-weight: 900; padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(239, 68, 68, 0.35);">PRÉ-LANÇAMENTO</span>
-                  <span style="font-size: 0.65rem; color: #fbbf24; font-weight: 800;">70% DE COMISSÃO</span>
+                  <span style="font-size: 0.94rem; font-weight: 900; color: #fff; letter-spacing: -0.2px;">ErosChat™ Ecosystem</span>
+                  <span style="background: rgba(239, 68, 68, 0.25); color: #fca5a5; font-size: 0.62rem; font-weight: 900; padding: 3px 8px; border-radius: 5px; border: 1px solid rgba(239, 68, 68, 0.45); letter-spacing: 0.4px;">
+                    🚀 LANÇAMENTO OFICIAL EROSCHAT™ 2027
+                  </span>
+                  <span style="font-size: 0.66rem; color: #fbbf24; font-weight: 900; background: rgba(245,158,11,0.18); padding: 3px 8px; border-radius: 4px;">ATÉ 70% DE COMISSÃO</span>
                 </div>
-                <p style="font-size: 0.72rem; color: #cbd5e1; margin: 3px 0 0 0; line-height: 1.35;">
-                  Cansado de perder horas no X1 do WhatsApp para fechar um Pix? O ErosChat monetiza sua musa 24h/7d no piloto automático com fotos e voz. Encomende seu LoRA e entre na lista VIP!
+                <p style="font-size: 0.74rem; color: #cbd5e1; margin: 4px 0 0 0; line-height: 1.4;">
+                  Chega de passar o dia no X1 do WhatsApp para fechar um Pix de R$ 300 a R$ 600. Em 2027, o ErosChat assume sua musa com vendas autônomas 24h/7d, fotos e áudios dinâmicos e monetização automática.
                 </p>
               </div>
             </div>
-            <button type="button" onclick="openErosChatVipWaitlist()" style="background: linear-gradient(135deg, #f59e0b, #ef4444); color: #fff; font-weight: 900; font-size: 0.74rem; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; white-space: nowrap; box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);">
-              🔒 Entrar na Fila VIP ErosChat
+            <button type="button" onclick="openErosChatVipWaitlist()" style="background: linear-gradient(135deg, #f59e0b, #ef4444); color: #fff; font-weight: 900; font-size: 0.76rem; border: none; padding: 11px 20px; border-radius: 9px; cursor: pointer; white-space: nowrap; box-shadow: 0 4px 16px rgba(245, 158, 11, 0.35);">
+              🔒 Garantir Vaga VIP • Lançamento 2027
             </button>
           </div>
 
@@ -8293,54 +8319,54 @@
             </div>
 
             <div>
-              <label style="font-size: 0.7rem; font-weight: 800; color: #cbd5e1; display: block; margin-bottom: 6px;">MODELO</label>
+              <label style="font-size: 0.7rem; font-weight: 800; color: #cbd5e1; display: block; margin-bottom: 6px;">MOTOR DE GERAÇÃO</label>
               <select id="selCreatorModel" onchange="onCreatorModelChange(this.value)" style="width: 100%; background: #0d0e14; border: 1.5px solid rgba(245, 158, 11, 0.4); color: #fff; padding: 9px 10px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; outline: none;">
-                <option value="eros_image_2k" selected>👑 Eros-Image™ 2K • Checkpoints & LoRA Base (Fórmula Anti-IA)</option>
-                <option value="nanobanana_21">🍌 Nano Banana 2.1 • incluso no Pro</option>
-                <option value="nanobanana_lite">🍌 Nano Banana 2 Lite • rápido e incluso</option>
-                <option value="nanobanana_pro">🍌 Nano Banana Pro • 2K • créditos</option>
-                <option value="higgsfield_video">🎬 Higgsfield Motion/Video • créditos</option>
-                <option value="chatgpt_import">🖼️ ChatGPT Image (GPT Image 2.6 / DALL-E) • BYOK</option>
+                <option value="eros_image_2k" selected>👑 Eros-Image™ 2K • Ultra-Realismo Fotográfico (Zero Cara de IA)</option>
+                <option value="nanobanana_21">🍌 Nano Banana 2.1 • Incluso no Plano</option>
+                <option value="nanobanana_lite">🍌 Nano Banana 2 Lite • Rápido</option>
+                <option value="nanobanana_pro">🍌 Nano Banana Pro • 2K Alta Resolução</option>
+                <option value="higgsfield_video">🎬 Higgsfield Motion/Vídeo • Animação</option>
+                <option value="chatgpt_import">🖼️ ChatGPT Image (GPT Image 2.6 / DALL-E) • Importar</option>
               </select>
-              <div id="creatorModelHint" style="font-size: 0.62rem; color: #fbbf24; margin-top: 5px; line-height: 1.35;">Ultra-Realismo Nativo 2K: Checkpoint fotográfico com textura de pele real + LoRA biométrico exclusivo da musa (zero cara de IA).</div>
+              <div id="creatorModelHint" style="font-size: 0.62rem; color: #fbbf24; margin-top: 5px; line-height: 1.35;">Eros-Image™ 2K: Textura de microporos real, profundidade óptica e fidelidade anatômica sem traços artificiais de IA.</div>
             </div>
 
-            <!-- PAINEL EROS-IMAGE™ 2K (CHECKPOINTS & LORA) -->
+            <!-- PAINEL EROS-IMAGE™ 2K (LENTES & IDENTIDADE) -->
             <div id="boxErosImageControls" style="display: flex; background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(15, 17, 23, 0.95)); border: 1.5px solid rgba(245, 158, 11, 0.35); border-radius: 12px; padding: 14px; flex-direction: column; gap: 10px;">
               <div style="display: flex; justify-content: space-between; align-items: center;">
                 <span style="font-size: 0.75rem; font-weight: 900; color: #fbbf24; display: flex; align-items: center; gap: 6px;">
-                  👑 Checkpoints do Eros-Image™
+                  👑 Lentes de Captura • Eros-Image™ 2K
                 </span>
-                <span style="font-size: 0.62rem; color: #bef264; background: rgba(190,242,100,0.12); padding: 2px 7px; border-radius: 4px; font-weight: 800;">ZERO CARA DE IA</span>
+                <span style="font-size: 0.62rem; color: #bef264; background: rgba(190,242,100,0.12); padding: 2px 7px; border-radius: 4px; font-weight: 800;">ULTRA-REALISTA</span>
               </div>
               <div style="font-size: 0.64rem; color: #cbd5e1; line-height: 1.4;">
-                Fórmula de ultra-realismo com textura de pele real, poros e ótica analógica. Escolha o estilo do ensaio:
+                Escolha o estilo de ótica e iluminação para o ensaio da sua musa:
               </div>
 
-              <!-- OS 3 CHECKPOINTS DO EROS-IMAGE -->
+              <!-- AS 3 LENTES EXCLUSIVAS -->
               <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
-                <button type="button" onclick="selectErosCheckpoint('raw', this)" class="btn-eros-ck active" style="background: #1e1b13; border: 1.5px solid #fbbf24; color: #fbbf24; padding: 8px 4px; border-radius: 8px; font-weight: 800; font-size: 0.66rem; cursor: pointer; text-align: center;">
-                  📸 RAW<br><span style="font-size: 0.54rem; opacity: 0.8; font-weight: 600;">Poros & Cotidiano</span>
+                <button type="button" onclick="selectErosLens('raw', this)" class="btn-eros-ck active" style="background: #1e1b13; border: 1.5px solid #fbbf24; color: #fbbf24; padding: 8px 4px; border-radius: 8px; font-weight: 800; font-size: 0.66rem; cursor: pointer; text-align: center;">
+                  📸 RAW Natural<br><span style="font-size: 0.54rem; opacity: 0.8; font-weight: 600;">Pele Real & Luz Dia</span>
                 </button>
-                <button type="button" onclick="selectErosCheckpoint('film_pov', this)" class="btn-eros-ck" style="background: #0d0e14; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 8px 4px; border-radius: 8px; font-weight: 700; font-size: 0.66rem; cursor: pointer; text-align: center;">
+                <button type="button" onclick="selectErosLens('film_pov', this)" class="btn-eros-ck" style="background: #0d0e14; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 8px 4px; border-radius: 8px; font-weight: 700; font-size: 0.66rem; cursor: pointer; text-align: center;">
                   🎬 FILM POV<br><span style="font-size: 0.54rem; opacity: 0.8; font-weight: 600;">Sensual 35mm</span>
                 </button>
-                <button type="button" onclick="selectErosCheckpoint('glam', this)" class="btn-eros-ck" style="background: #0d0e14; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 8px 4px; border-radius: 8px; font-weight: 700; font-size: 0.66rem; cursor: pointer; text-align: center;">
-                  ✨ GLAM<br><span style="font-size: 0.54rem; opacity: 0.8; font-weight: 600;">Ensaio VIP</span>
+                <button type="button" onclick="selectErosLens('glam', this)" class="btn-eros-ck" style="background: #0d0e14; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 8px 4px; border-radius: 8px; font-weight: 700; font-size: 0.66rem; cursor: pointer; text-align: center;">
+                  ✨ GLAM VIP<br><span style="font-size: 0.54rem; opacity: 0.8; font-weight: 600;">Editorial de Luxo</span>
                 </button>
               </div>
 
-              <!-- CARD DE LORA STATUS & ORDER -->
+              <!-- CARD DE CALIBRAGEM BIOMÉTRICA EXCLUSIVA -->
               <div style="background: rgba(0,0,0,0.5); border: 1px dashed rgba(245, 158, 11, 0.4); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 6px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                  <span style="font-size: 0.66rem; font-weight: 800; color: #fff;">Matriz LoRA da Musa:</span>
-                  <span id="lblMusaLoraBadge" style="font-size: 0.6rem; font-weight: 800; color: #fbbf24; background: rgba(245,158,11,0.15); padding: 2px 6px; border-radius: 4px;">Padrão Base Ativo</span>
+                  <span style="font-size: 0.66rem; font-weight: 800; color: #fff;">Identidade Facial da Musa:</span>
+                  <span id="lblMusaLoraBadge" style="font-size: 0.6rem; font-weight: 800; color: #fbbf24; background: rgba(245,158,11,0.15); padding: 2px 6px; border-radius: 4px;">Biometria Ativa</span>
                 </div>
                 <div style="font-size: 0.62rem; color: #94a3b8; line-height: 1.35;">
-                  Para 100% de consistência sem cara de IA em qualquer ângulo, calibre o LoRA biométrico exclusivo da sua modelo.
+                  Calibre a matriz facial única da sua modelo para obter 100% de consistência sem distorção e sem cara de IA em qualquer ângulo ou iluminação.
                 </div>
                 <button type="button" onclick="openOrderLoraModal()" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 900; font-size: 0.72rem; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 4px; box-shadow: 0 4px 12px rgba(245,158,11,0.25);">
-                  <span>🔥</span> Encomendar LoRA Exclusivo da Musa (R$ 49,90)
+                  <span>🔥</span> Calibrar Identidade Facial da Musa (R$ 49,90)
                 </button>
               </div>
             </div>
@@ -8659,7 +8685,7 @@
 
         if (hint) {
           hint.innerText = model === 'eros_image_2k'
-            ? 'Ultra-Realismo Nativo 2K: Checkpoint fotográfico com textura de pele real + LoRA biométrico exclusivo da musa (zero cara de IA).'
+            ? 'Eros-Image™ 2K: Textura de microporos real, profundidade óptica e fidelidade anatômica sem traços de IA.'
             : model === 'higgsfield_video'
               ? 'Vídeo com first/end frame, motion control e câmera. Custo real por segundo — vendido em créditos.'
               : model === 'chatgpt_import'
@@ -8667,6 +8693,10 @@
                 : model === 'nanobanana_pro'
                   ? 'Nano Banana Pro entrega até 2K no useapi. 4K exige upscale adicional no plano Ultra.'
                   : 'Geração com referências da persona, sem custo por imagem no plano Pro (fair use).';
+        }
+        if (model === 'eros_image_2k') {
+          const activeBtn = document.querySelector('.btn-eros-ck.active') || document.querySelector('.btn-eros-ck');
+          selectErosLens(currentErosCheckpoint || 'raw', activeBtn);
         }
         setCreatorRatio(currentCreatorAspectRatio, document.querySelector('.btn-ratio-choice.active'));
       }
@@ -8691,21 +8721,41 @@
         }
         const lblSpec = document.getElementById('lblCanvasSpec');
         if (lblSpec) {
-          if (ratio === '9:16') lblSpec.innerText = '1080×1920 • 9:16';
-          else if (ratio === '1:1') lblSpec.innerText = '1080×1080 • 1:1';
-          else if (ratio === '4:5') lblSpec.innerText = '1080×1350 • 4:5';
-          else lblSpec.innerText = '1920×1080 • 16:9';
+          const lensMap = {
+            raw: 'Lente RAW 35mm',
+            film_pov: 'Lente POV 28mm',
+            glam: 'Lente 85mm VIP'
+          };
+          const lensInfo = (currentCreatorModel === 'eros_image_2k') ? ` • ${lensMap[currentErosCheckpoint || 'raw']}` : '';
+          if (ratio === '9:16') lblSpec.innerText = `1080×1920 • 9:16${lensInfo}`;
+          else if (ratio === '1:1') lblSpec.innerText = `1080×1080 • 1:1${lensInfo}`;
+          else if (ratio === '4:5') lblSpec.innerText = `1080×1350 • 4:5${lensInfo}`;
+          else lblSpec.innerText = `1920×1080 • 16:9${lensInfo}`;
         }
       }
 
       function suggestRandomScenePrompt() {
-        const prompts = [
-          'Sentada em um café elegante nos Jardins em São Paulo, tomando café gelado, jaqueta de couro e jeans moderno, foto espontânea.',
-          'Caminhando na praia de Maresias ao entardecer, biquíni terracota com saída de praia de linho branco, luz dourada suave.',
-          'No espelho da academia após o treino, look fitness minimalista preto, cabelo preso, garrafinha térmica, selfie de alta definição.',
-          'Em um restaurante fino à luz de velas, vestido de seda preto com decote discreto, taça de vinho na mão, clima misterioso.'
-        ];
-        const p = prompts[Math.floor(Math.random() * prompts.length)];
+        const prompts = {
+          raw: [
+            'Sentada em um café elegante nos Jardins em São Paulo, tomando café gelado, jaqueta de couro e jeans moderno, luz natural de fim de tarde, foto espontânea sem pose.',
+            'Caminhando na praia de Maresias ao entardecer, biquíni terracota com saída de praia de linho branco, vento suave no cabelo, luz dourada natural.',
+            'No espelho da academia após o treino, look fitness minimalista preto, cabelo preso despojado, garrafinha térmica, iluminação ambiente sem flash.',
+            'Almoçando no terraço de um bistrô sofisticado, luz suave da tarde, sorriso leve e descontraído, foto estilo tirada por amiga.'
+          ],
+          film_pov: [
+            'Foto sensual estilo POV 35mm, deitada na cama com lençóis brancos de linho desarrumados, camisa social oversized entreaberta, grão analógico cinematográfico.',
+            'POV tomando taça de vinho à meia-luz em um lounge intimista, vestido de seda com alças finas, iluminação quente e misteriosa estilo cinema 35mm.',
+            'Ensaio intimista em frente ao espelho com iluminação suave de abajur, lingerie de renda preta elegante, visual vintage 35mm Kodachrome.'
+          ],
+          glam: [
+            'Ensaio fotográfico editorial de luxo, vestido de alta costura com fenda elegante, fundo escuro minimalista, iluminação dramática de estúdio estilo capa da Vogue.',
+            'No lounge VIP de uma cobertura em Dubai, vestido de gala dourado cintilante, taça de champanhe, iluminação de holofotes e skyline noturno ao fundo.',
+            'Editorial de beleza em estúdio profissional, close-up nos olhos e lábios com maquiagem perfeita, joias finas, iluminação beauty dish cristalina.'
+          ]
+        };
+        const activeLens = (currentCreatorModel === 'eros_image_2k') ? (currentErosCheckpoint || 'raw') : 'raw';
+        const list = prompts[activeLens] || prompts.raw;
+        const p = list[Math.floor(Math.random() * list.length)];
         const txt = document.getElementById('txtCreatorPrompt');
         if (txt) { txt.value = p; txt.focus(); }
       }
