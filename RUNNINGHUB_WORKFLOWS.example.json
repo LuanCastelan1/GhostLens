@@ -6,21 +6,66 @@
     "instanceType": "plus",
     "credits": 50,
     "control": "eros",
-    "tags": ["Refs", "2K", "LoRA"],
+    "tags": [
+      "Refs",
+      "2K",
+      "LoRA"
+    ],
     "badge": "Eros-Image RAW 35mm",
     "button": "Gerar com Eros-Image",
     "maxReferences": 3,
     "requiresReference": true,
     "inputs": {
-      "prompt": { "nodeId": "6", "fieldName": "text" },
-      "image": { "nodeId": "14", "fieldName": "image", "assetValue": "fileName" },
-      "lora": { "nodeId": "21", "fieldName": "lora_name", "asset": "lora" },
-      "lora_weight": { "nodeId": "21", "fieldName": "strength_model", "type": "number" },
-      "seed": { "nodeId": "3", "fieldName": "seed", "type": "number" }
+      "prompt": {
+        "nodeId": "6",
+        "fieldName": "text"
+      },
+      "image": {
+        "nodeId": "14",
+        "fieldName": "image",
+        "assetValue": "fileName"
+      },
+      "lora": {
+        "nodeId": "21",
+        "fieldName": "lora_name",
+        "asset": "lora"
+      },
+      "lora_weight": {
+        "nodeId": "21",
+        "fieldName": "strength_model",
+        "type": "number"
+      },
+      "seed": {
+        "nodeId": "3",
+        "fieldName": "seed",
+        "type": "number"
+      }
     },
     "extraNodes": [
-      { "nodeId": "6", "fieldName": "text", "fieldValue": "RAW 35mm, pele natural, luz do dia, fotorrealista" }
-    ]
+      {
+        "nodeId": "6",
+        "fieldName": "text",
+        "fieldValue": "RAW 35mm, pele natural, luz do dia, fotorrealista"
+      }
+    ],
+    "defaultSpeedMode": "ghostflash",
+    "speedModes": [
+      "ghostflash",
+      "ghostlite"
+    ],
+    "swapInputs": {
+      "remove_tattoos": {
+        "nodeId": "40",
+        "fieldName": "remove_tattoos"
+      },
+      "remove_watermark": {
+        "nodeId": "41",
+        "fieldName": "remove_watermark"
+      }
+    },
+    "vision": {
+      "enabled": true
+    }
   },
   "eros_image_film": {
     "name": "Eros-Image Film POV 28mm",
@@ -29,21 +74,66 @@
     "instanceType": "plus",
     "credits": 50,
     "control": "eros",
-    "tags": ["Refs", "2K", "LoRA"],
+    "tags": [
+      "Refs",
+      "2K",
+      "LoRA"
+    ],
     "badge": "Eros-Image Film POV",
     "button": "Gerar com Eros-Image",
     "maxReferences": 3,
     "requiresReference": true,
     "inputs": {
-      "prompt": { "nodeId": "6", "fieldName": "text" },
-      "image": { "nodeId": "14", "fieldName": "image", "assetValue": "fileName" },
-      "lora": { "nodeId": "21", "fieldName": "lora_name", "asset": "lora" },
-      "lora_weight": { "nodeId": "21", "fieldName": "strength_model", "type": "number" },
-      "seed": { "nodeId": "3", "fieldName": "seed", "type": "number" }
+      "prompt": {
+        "nodeId": "6",
+        "fieldName": "text"
+      },
+      "image": {
+        "nodeId": "14",
+        "fieldName": "image",
+        "assetValue": "fileName"
+      },
+      "lora": {
+        "nodeId": "21",
+        "fieldName": "lora_name",
+        "asset": "lora"
+      },
+      "lora_weight": {
+        "nodeId": "21",
+        "fieldName": "strength_model",
+        "type": "number"
+      },
+      "seed": {
+        "nodeId": "3",
+        "fieldName": "seed",
+        "type": "number"
+      }
     },
     "extraNodes": [
-      { "nodeId": "6", "fieldName": "text", "fieldValue": "Film POV 28mm, intimista, grão suave, luz cinematográfica" }
-    ]
+      {
+        "nodeId": "6",
+        "fieldName": "text",
+        "fieldValue": "Film POV 28mm, intimista, grão suave, luz cinematográfica"
+      }
+    ],
+    "defaultSpeedMode": "ghostflash",
+    "speedModes": [
+      "ghostflash",
+      "ghostlite"
+    ],
+    "swapInputs": {
+      "remove_tattoos": {
+        "nodeId": "40",
+        "fieldName": "remove_tattoos"
+      },
+      "remove_watermark": {
+        "nodeId": "41",
+        "fieldName": "remove_watermark"
+      }
+    },
+    "vision": {
+      "enabled": true
+    }
   },
   "eros_image_glam": {
     "name": "Eros-Image Glam 85mm",
@@ -52,21 +142,66 @@
     "instanceType": "plus",
     "credits": 50,
     "control": "eros",
-    "tags": ["Refs", "2K", "LoRA"],
+    "tags": [
+      "Refs",
+      "2K",
+      "LoRA"
+    ],
     "badge": "Eros-Image Glam 85mm",
     "button": "Gerar com Eros-Image",
     "maxReferences": 3,
     "requiresReference": true,
     "inputs": {
-      "prompt": { "nodeId": "6", "fieldName": "text" },
-      "image": { "nodeId": "14", "fieldName": "image", "assetValue": "fileName" },
-      "lora": { "nodeId": "21", "fieldName": "lora_name", "asset": "lora" },
-      "lora_weight": { "nodeId": "21", "fieldName": "strength_model", "type": "number" },
-      "seed": { "nodeId": "3", "fieldName": "seed", "type": "number" }
+      "prompt": {
+        "nodeId": "6",
+        "fieldName": "text"
+      },
+      "image": {
+        "nodeId": "14",
+        "fieldName": "image",
+        "assetValue": "fileName"
+      },
+      "lora": {
+        "nodeId": "21",
+        "fieldName": "lora_name",
+        "asset": "lora"
+      },
+      "lora_weight": {
+        "nodeId": "21",
+        "fieldName": "strength_model",
+        "type": "number"
+      },
+      "seed": {
+        "nodeId": "3",
+        "fieldName": "seed",
+        "type": "number"
+      }
     },
     "extraNodes": [
-      { "nodeId": "6", "fieldName": "text", "fieldValue": "Glam 85mm, ensaio editorial, estética de luxo, luz de estúdio" }
-    ]
+      {
+        "nodeId": "6",
+        "fieldName": "text",
+        "fieldValue": "Glam 85mm, ensaio editorial, estética de luxo, luz de estúdio"
+      }
+    ],
+    "defaultSpeedMode": "ghostflash",
+    "speedModes": [
+      "ghostflash",
+      "ghostlite"
+    ],
+    "swapInputs": {
+      "remove_tattoos": {
+        "nodeId": "40",
+        "fieldName": "remove_tattoos"
+      },
+      "remove_watermark": {
+        "nodeId": "41",
+        "fieldName": "remove_watermark"
+      }
+    },
+    "vision": {
+      "enabled": true
+    }
   },
   "video_motion": {
     "name": "Motion Control",
@@ -75,16 +210,39 @@
     "instanceType": "plus",
     "credits": 600,
     "control": "motion",
-    "tags": ["Motion", "1080p"],
+    "tags": [
+      "Motion",
+      "1080p"
+    ],
     "badge": "Motion Control",
     "button": "Transferir Movimento",
     "maxReferences": 2,
     "requiresReference": true,
     "inputs": {
-      "prompt": { "nodeId": "6", "fieldName": "text" },
-      "image": { "nodeId": "14", "fieldName": "image", "assetValue": "fileName" },
-      "reference_2": { "nodeId": "15", "fieldName": "image", "assetValue": "fileName" },
-      "duration": { "nodeId": "30", "fieldName": "duration", "type": "number" }
-    }
+      "prompt": {
+        "nodeId": "6",
+        "fieldName": "text"
+      },
+      "image": {
+        "nodeId": "14",
+        "fieldName": "image",
+        "assetValue": "fileName"
+      },
+      "reference_2": {
+        "nodeId": "15",
+        "fieldName": "image",
+        "assetValue": "fileName"
+      },
+      "duration": {
+        "nodeId": "30",
+        "fieldName": "duration",
+        "type": "number"
+      }
+    },
+    "defaultSpeedMode": "ghostflash",
+    "speedModes": [
+      "ghostflash",
+      "ghostlite"
+    ]
   }
 }

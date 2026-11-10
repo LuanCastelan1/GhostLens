@@ -18,7 +18,7 @@ const {
   enforceRateLimit,
   supabaseRest
 } = require('../lib/ghostlens-backend');
-const { generateCreatorImage, queryCreatorTask, getCreatorCatalog, creatorConfigured } = require('../lib/creator');
+const { generateCreatorImage, generateCreatorFromVision, queryCreatorTask, getCreatorCatalog, creatorConfigured, visionConfigured } = require('../lib/creator');
 
 const WAVESPEED_API_KEY = process.env.WAVESPEED_API_KEY || '';
 const WAVESPEED_API = (process.env.WAVESPEED_API_BASE || 'https://api.wavespeed.ai/api/v3').replace(/\/+$/, '');
@@ -134,7 +134,8 @@ module.exports = async (req, res) => {
       service: 'GhostLens Media Proxy 1.2',
       wavespeed: WAVESPEED_API_KEY ? 'configured' : 'not_configured',
       creator: creatorConfigured ? 'configured' : 'not_configured',
-      runninghub: process.env.RUNNINGHUB_API_KEY ? 'configured' : 'not_configured'
+      runninghub: process.env.RUNNINGHUB_API_KEY ? 'configured' : 'not_configured',
+      vision: visionConfigured ? 'configured' : 'not_configured'
     });
   }
 
@@ -176,6 +177,11 @@ module.exports = async (req, res) => {
 
     if (action === 'creator_generate') {
       const result = await generateCreatorImage(body, user);
+      return res.status(result.status).json(result.payload);
+    }
+
+    if (action === 'creator_vision') {
+      const result = await generateCreatorFromVision(body, user);
       return res.status(result.status).json(result.payload);
     }
 
