@@ -8162,11 +8162,13 @@
       // ─── GHOSTCREATOR STUDIO™ (REFERÊNCIAS DA PERSONA + USEAPI/HIGGSFIELD) ───
       const CREATOR_PLACEHOLDER = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI5MDAiIGhlaWdodD0iMTIwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIwIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMjMyODM4Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMDcwODBjIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3Qgd2lkdGg9IjkwMCIgaGVpZ2h0PSIxMjAwIiBmaWxsPSJ1cmwoI2cpIi8+PGNpcmNsZSBjeD0iNDUwIiBjeT0iNDcwIiByPSIxMjAiIGZpbGw9IiMzNDNhNGQiLz48cmVjdCB4PSIyNzAiIHk9IjYyMCIgd2lkdGg9IjM2MCIgaGVpZ2h0PSIzMDAiIHJ4PSIxNTAiIGZpbGw9IiMzNDNhNGQiLz48L3N2Zz4=';
       let currentCreatorModel = 'nanobanana_21';
+      let currentStudioMode = 'image';
       let currentCreatorMusa = '';
       let currentCreatorProfileId = '';
       let currentCreatorAspectRatio = '9:16';
       let currentCreatorMediaUrl = CREATOR_PLACEHOLDER;
       let currentCreatorRefs = [];
+      let currentCreatorHistory = [];
       let currentCreatorDna = {};
       let currentCreatorHiggsFirst = null;
       let currentCreatorHiggsEnd = null;
@@ -8225,6 +8227,14 @@
       window.selectErosCheckpoint = selectErosLens;
 
       function creatorModelMeta(model) {
+        const live = getLiveCreatorModel(model);
+        if (live) {
+          return {
+            badge: live.badge || live.name || model,
+            cost: live.cost_label || `${live.credits || 0} créditos`,
+            button: live.button || 'Gerar'
+          };
+        }
         const table = {
           // ─── IMAGEM ───
           eros_image_2k: { badge: 'Eros-Image 2K (LoRA da Musa)', cost: 'Render Nativo 2K • Alta Consistência', button: 'Gerar com Eros-Image' },
@@ -8275,10 +8285,10 @@
         grid.style.position = 'relative';
 
         grid.innerHTML = `
-          <!-- ─── BACKDROP GLOBAL PARA FECHAR MODAIS AO CLICAR FORA ─── -->
+          <!-- BACKDROP GLOBAL PARA FECHAR MODAIS AO CLICAR FORA -->
           <div id="modalCreatorModelPickerBackdrop" onclick="closeCreatorModelPicker(); closeFlyoutToolsDrawer();" style="display: none; position: fixed; inset: 0; z-index: 55; background: rgba(0,0,0,0.55); backdrop-filter: blur(2px);"></div>
 
-          <!-- ─── BANNER TEASER VIP • EROSCHAT™ 2027 ─── -->
+          <!-- BANNER TEASER VIP • EROSCHAT™ 2027 -->
           <div style="grid-column: 1 / -1; background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(20, 24, 33, 0.95)); border: 1.5px solid rgba(190, 242, 100, 0.35); border-radius: 14px; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.4);">
             <div>
               <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
@@ -8297,7 +8307,7 @@
             </button>
           </div>
 
-          <!-- ─── BARRA DE NAVEGAÇÃO SUPERIOR (MAGNIFIC STYLE) ─── -->
+          <!-- BARRA DE NAVEGAÇÃO SUPERIOR (MAGNIFIC STYLE - SCREENSHOTS 1, 2, 3) -->
           <div style="grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 2px;">
             <div style="display: inline-flex; align-items: center; background: #0c0e14; border: 1px solid rgba(255,255,255,0.08); border-radius: 9999px; padding: 4px 6px; gap: 4px;">
               <button type="button" onclick="scrollStudioNav('left')" style="background: transparent; border: none; color: #64748b; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;">
@@ -8334,48 +8344,67 @@
             </div>
           </div>
 
-          <!-- ─── COLUNA ESQUERDA: WORKSPACE DE CRIAÇÃO ─── -->
+          <!-- COLUNA ESQUERDA: WORKSPACE DE CRIAÇÃO -->
           <div style="display: flex; flex-direction: column; gap: 14px; position: relative;">
 
-            <!-- GAVETA FLUTUANTE DE SUB-FERRAMENTAS (FLYOUT DRAWER - SCREENSHOT 1, 2, 3) -->
-            <div id="flyoutToolsDrawer" style="display: none; position: absolute; top: 0; left: 0; width: 330px; background: #0e1117; border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.9); padding: 14px; z-index: 60; flex-direction: column; gap: 10px; max-height: 580px; overflow-y: auto;">
-              <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px;">
-                <span id="lblFlyoutToolsHeader" style="font-size: 0.78rem; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.5px;">Ferramentas de Imagem</span>
-                <button type="button" onclick="closeFlyoutToolsDrawer()" style="background: transparent; border: none; color: #94a3b8; font-size: 1rem; cursor: pointer;">✕</button>
+            <!-- GAVETA FLUTUANTE DE SUB-FERRAMENTAS (FLYOUT DRAWER - SCREENSHOTS 1, 2, 3) -->
+            <div id="flyoutToolsDrawer" style="display: none; position: absolute; top: 0; left: 0; width: 340px; background: #0c0e14; border: 1.5px solid rgba(255,255,255,0.12); border-radius: 16px; box-shadow: 0 24px 60px rgba(0,0,0,0.95); padding: 14px; z-index: 60; flex-direction: column; gap: 12px; max-height: 600px; overflow-y: auto;">
+              <!-- TOPO DA GAVETA: NAVEGAÇÃO ENTRE CATEGORIAS -->
+              <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 10px;">
+                <div style="display: inline-flex; align-items: center; gap: 4px; background: #141720; padding: 3px 6px; border-radius: 9999px; border: 1px solid rgba(255,255,255,0.06);">
+                  <button type="button" id="drawerTabImage" onclick="setStudioMode('image'); renderFlyoutToolsList();" style="padding: 4px 10px; border-radius: 9999px; font-size: 0.68rem; font-weight: 800; border: none; cursor: pointer; background: #272a30; color: #fff;">Image</button>
+                  <button type="button" id="drawerTabVideo" onclick="setStudioMode('video'); renderFlyoutToolsList();" style="padding: 4px 10px; border-radius: 9999px; font-size: 0.68rem; font-weight: 700; border: none; cursor: pointer; background: transparent; color: #94a3b8;">Video</button>
+                  <button type="button" id="drawerTabAudio" onclick="setStudioMode('audio'); renderFlyoutToolsList();" style="padding: 4px 10px; border-radius: 9999px; font-size: 0.68rem; font-weight: 700; border: none; cursor: pointer; background: transparent; color: #94a3b8;">Audio</button>
+                </div>
+                <button type="button" onclick="closeFlyoutToolsDrawer()" style="background: rgba(255,255,255,0.05); border: none; color: #94a3b8; width: 26px; height: 26px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.85rem;">✕</button>
               </div>
-              <div id="listFlyoutTools" style="display: flex; flex-direction: column; gap: 6px;"></div>
+              <div id="listFlyoutTools" style="display: flex; flex-direction: column; gap: 7px;"></div>
             </div>
 
-            <!-- MODAL / DRAWER FLUTUANTE DE SELEÇÃO DE IAs (SCREENSHOT 4 & 5) -->
-            <div id="modalCreatorModelPicker" style="display: none; position: absolute; top: 0; left: 0; width: 100%; min-width: 370px; background: #0c0e15; border: 1.5px solid rgba(255,255,255,0.12); border-radius: 16px; box-shadow: 0 24px 60px rgba(0,0,0,0.95); padding: 16px; z-index: 70; flex-direction: column; gap: 14px; max-height: 620px; overflow-y: auto;">
+            <!-- MODAL / DRAWER FLUTUANTE DE SELEÇÃO DE IAs (SCREENSHOTS 4 & 5) -->
+            <div id="modalCreatorModelPicker" style="display: none; position: absolute; top: 0; left: 0; width: 100%; min-width: 375px; background: #0c0e15; border: 1.5px solid rgba(255,255,255,0.12); border-radius: 16px; box-shadow: 0 24px 60px rgba(0,0,0,0.95); padding: 16px; z-index: 70; flex-direction: column; gap: 14px; max-height: 620px; overflow-y: auto;">
               <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
                 <div style="position: relative; flex: 1;">
                   <span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #64748b; display: flex;">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                   </span>
-                  <input type="text" id="txtModelSearchInput" oninput="filterCreatorModels(this.value)" placeholder="Buscar modelo de IA..." style="width: 100%; background: #141720; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 8px 10px 8px 32px; border-radius: 8px; font-size: 0.74rem; outline: none;">
+                  <input type="text" id="txtModelSearchInput" oninput="filterCreatorModels(this.value)" placeholder="Search" style="width: 100%; background: #141720; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 8px 10px 8px 32px; border-radius: 8px; font-size: 0.74rem; outline: none;">
                 </div>
                 <button type="button" onclick="closeCreatorModelPicker()" style="background: transparent; border: none; color: #94a3b8; font-size: 1.1rem; cursor: pointer; padding: 4px 6px;">✕</button>
               </div>
 
-              <!-- Filtros rápidos -->
-              <div style="display: flex; align-items: center; gap: 6px; overflow-x: auto; padding-bottom: 2px;">
-                <button type="button" class="btn-picker-filter active" onclick="applyModelPickerFilter('all', this)" style="background: #1e2330; border: 1px solid rgba(255,255,255,0.1); color: #fff; font-size: 0.62rem; font-weight: 700; padding: 4px 9px; border-radius: 6px; cursor: pointer; white-space: nowrap;">Todos</button>
-                <button type="button" class="btn-picker-filter" onclick="applyModelPickerFilter('fast', this)" style="background: #12141c; border: 1px solid rgba(255,255,255,0.06); color: #94a3b8; font-size: 0.62rem; font-weight: 700; padding: 4px 9px; border-radius: 6px; cursor: pointer; white-space: nowrap;">Ultra Rápidos</button>
-                <button type="button" class="btn-picker-filter" onclick="applyModelPickerFilter('photoreal', this)" style="background: #12141c; border: 1px solid rgba(255,255,255,0.06); color: #94a3b8; font-size: 0.62rem; font-weight: 700; padding: 4px 9px; border-radius: 6px; cursor: pointer; white-space: nowrap;">Fotorrealismo</button>
-                <button type="button" class="btn-picker-filter" onclick="applyModelPickerFilter('swap', this)" style="background: #12141c; border: 1px solid rgba(255,255,255,0.06); color: #94a3b8; font-size: 0.62rem; font-weight: 700; padding: 4px 9px; border-radius: 6px; cursor: pointer; white-space: nowrap;">Swap & Motion</button>
+              <!-- Filtros de Modelo (Dropdown Pills Magnific Style - Screenshots 4 & 5) -->
+              <div id="boxPickerFiltersRow" style="display: flex; align-items: center; justify-content: space-between; gap: 6px; overflow-x: auto; padding-bottom: 2px;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <button type="button" class="btn-picker-filter active" onclick="applyModelPickerFilter('all', this)" style="background: #1e2330; border: 1px solid rgba(255,255,255,0.1); color: #fff; font-size: 0.62rem; font-weight: 700; padding: 4px 9px; border-radius: 6px; cursor: pointer; white-space: nowrap;">Provider ▾</button>
+                  <button type="button" class="btn-picker-filter" onclick="applyModelPickerFilter('fast', this)" style="background: #12141c; border: 1px solid rgba(255,255,255,0.06); color: #94a3b8; font-size: 0.62rem; font-weight: 700; padding: 4px 9px; border-radius: 6px; cursor: pointer; white-space: nowrap;">Features ▾</button>
+                  <button type="button" class="btn-picker-filter" onclick="applyModelPickerFilter('photoreal', this)" style="background: #12141c; border: 1px solid rgba(255,255,255,0.06); color: #94a3b8; font-size: 0.62rem; font-weight: 700; padding: 4px 9px; border-radius: 6px; cursor: pointer; white-space: nowrap;">Best for ▾</button>
+                </div>
+                <div style="display: flex; align-items: center; gap: 5px; margin-left: auto;">
+                  <span style="font-size: 0.6rem; color: #64748b; font-weight: 700;">Multiple</span>
+                  <label style="position: relative; display: inline-block; width: 28px; height: 16px; margin: 0; cursor: pointer;">
+                    <input type="checkbox" id="chkPickerMultiple" style="opacity: 0; width: 0; height: 0;">
+                    <span style="position: absolute; inset: 0; background-color: #272a30; border-radius: 16px; transition: .2s;"></span>
+                  </label>
+                </div>
               </div>
 
               <!-- Seção FEATURED -->
               <div>
-                <div style="font-size: 0.62rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px;">Destaques (Featured)</div>
-                <div id="listPickerFeatured" style="display: flex; flex-direction: column; gap: 5px;"></div>
+                <div style="font-size: 0.62rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 7px;">FEATURED</div>
+                <div id="listPickerFeatured" style="display: flex; flex-direction: column; gap: 6px;"></div>
               </div>
 
-              <!-- Seção TODOS OS MODELOS (Por Provedor) -->
+              <!-- Seção RECENT -->
               <div>
-                <div style="font-size: 0.62rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px;">Todos os Modelos por Provedor</div>
-                <div id="listPickerProviders" style="display: flex; flex-direction: column; gap: 8px;"></div>
+                <div style="font-size: 0.62rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 7px;">RECENT</div>
+                <div id="listPickerRecent" style="display: flex; flex-direction: column; gap: 6px;"></div>
+              </div>
+
+              <!-- Seção ALL MODELS (Acordeões por Provedor) -->
+              <div>
+                <div style="font-size: 0.62rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 7px;">ALL MODELS</div>
+                <div id="listPickerProviders" style="display: flex; flex-direction: column; gap: 6px;"></div>
               </div>
             </div>
 
@@ -8387,7 +8416,7 @@
                 <div style="display: flex; align-items: center; gap: 8px;">
                   <button type="button" onclick="toggleFlyoutToolsDrawer()" style="background: #141720; border: 1px solid rgba(255,255,255,0.08); color: #cbd5e1; font-size: 0.68rem; font-weight: 700; padding: 5px 10px; border-radius: 7px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                    <span>Ferramentas</span>
+                    <span>Tools</span>
                   </button>
                   <div style="display: flex; align-items: center; gap: 6px;">
                     <span id="lblActiveToolTitle" style="font-size: 0.88rem; font-weight: 900; color: #fff;">Image Generator</span>
@@ -8404,7 +8433,7 @@
 
               <!-- SELETOR DE MODELO (SELETOR PILL MAGNIFIC) -->
               <div>
-                <label style="font-size: 0.62rem; font-weight: 800; color: #64748b; display: block; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;">Modelo de IA</label>
+                <label style="font-size: 0.62rem; font-weight: 800; color: #64748b; display: block; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;">MODEL</label>
                 <div id="btnOpenModelPicker" onclick="openCreatorModelPicker()" style="width: 100%; background: #0c0e14; border: 1px solid rgba(255,255,255,0.09); border-radius: 10px; padding: 10px 14px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s;">
                   <div style="display: flex; align-items: center; gap: 10px;">
                     <div style="width: 24px; height: 24px; border-radius: 6px; background: rgba(190,242,100,0.15); display: flex; align-items: center; justify-content: center; color: var(--accent-lime);">
@@ -8422,7 +8451,7 @@
                 <select id="selCreatorModel" style="display: none;" onchange="onCreatorModelChange(this.value)"></select>
               </div>
 
-              <!-- ─── PAINEL DA MUSA PARA EROS-IMAGE (O FRAME QUADRADINHO DA MUSA + ANÚNCIO DE LORA) ─── -->
+              <!-- PAINEL DA MUSA PARA EROS-IMAGE (O FRAME QUADRADINHO DA MUSA + ANÚNCIO DE LORA) -->
               <div id="boxErosMusaFrame" style="background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px;">
                 <div style="display: flex; align-items: center; gap: 12px;">
                   <!-- O frame quadradinho com a foto da musa selecionada -->
@@ -8452,7 +8481,7 @@
                   </div>
                 </div>
 
-                <!-- ─── ANÚNCIO / OFERTA DE CALIBRAR LORA (VISÍVEL ENQUANTO A MUSA NÃO TIVER LORA) ─── -->
+                <!-- ANÚNCIO / OFERTA DE CALIBRAR LORA (VISÍVEL ENQUANTO A MUSA NÃO TIVER LORA) -->
                 <div id="boxMusaLoraOffer" style="display: flex; align-items: center; justify-content: space-between; background: rgba(190,242,100,0.06); border: 1.5px dashed rgba(190,242,100,0.35); border-radius: 10px; padding: 10px 12px; gap: 10px;">
                   <div>
                     <div style="font-size: 0.74rem; font-weight: 800; color: #fff;">Calibrar LoRA da Musa</div>
@@ -8476,14 +8505,14 @@
                 </div>
               </div>
 
-              <!-- ─── SEÇÃO DE REFERÊNCIAS GERAIS (USADA APENAS POR OUTROS MODELOS QUE USAM MULTI-REFS) ─── -->
+              <!-- SEÇÃO DE REFERÊNCIAS GERAIS (SCREENSHOTS 4 & 5) -->
               <div id="boxGeneralReferencesSection" style="display: none;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                  <label id="lblGeneralReferencesTitle" style="font-size: 0.62rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Referências (0/10)</label>
+                  <label id="lblGeneralReferencesTitle" style="font-size: 0.62rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">REFERENCES (0/10)</label>
                 </div>
 
-                <!-- MODO IMAGEM GERAL: STYLE / ADD -->
-                <div id="boxReferencesImage" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+                <!-- MODO IMAGEM GERAL: STYLE / CHARACTER / ADD (SCREENSHOT 5) -->
+                <div id="boxReferencesImage" style="display: none; grid-template-columns: repeat(3, 1fr); gap: 8px;">
                   <div onclick="selectErosLens('raw', this)" style="background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; height: 75px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer;">
                     <span style="color: #94a3b8;">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
@@ -8491,221 +8520,236 @@
                     <span style="font-size: 0.66rem; font-weight: 700; color: #cbd5e1;">Style</span>
                   </div>
 
+                  <div onclick="onCreatorMusaChange(currentCreatorProfileId)" style="background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; height: 75px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer;">
+                    <span style="color: #38bdf8;">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </span>
+                    <span style="font-size: 0.66rem; font-weight: 700; color: #cbd5e1;">Character</span>
+                  </div>
+
                   <div onclick="document.getElementById('creatorImportInput')?.click()" style="background: #0a0c12; border: 1px dashed rgba(255,255,255,0.14); border-radius: 10px; height: 75px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer;">
                     <span style="color: #64748b;">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     </span>
-                    <span style="font-size: 0.66rem; font-weight: 700; color: #64748b;">Add Media</span>
+                    <span style="font-size: 0.66rem; font-weight: 700; color: #64748b;">Add</span>
                   </div>
                 </div>
 
-                <!-- MODO VÍDEO: START / END / MOTION TRANSFER -->
-                <div id="boxReferencesVideo" style="display: none; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-                  <div onclick="document.getElementById('fileImg2VidStart')?.click()" style="background: #0a0c12; border: 1px dashed rgba(255,255,255,0.12); border-radius: 10px; height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer;">
-                    <span style="color: #38bdf8;">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                    </span>
-                    <span style="font-size: 0.64rem; font-weight: 700; color: #cbd5e1;">Start image</span>
+                <!-- MODO VÍDEO: START IMAGE / END IMAGE / MOTION TRANSFER (SCREENSHOT 4) -->
+                <div id="boxReferencesVideo" style="display: none; flex-direction: column; gap: 8px;">
+                  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                    <div onclick="document.getElementById('fileImg2VidStart')?.click()" style="background: #0a0c12; border: 1px dashed rgba(255,255,255,0.12); border-radius: 10px; height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer;">
+                      <span style="color: #38bdf8;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                      </span>
+                      <span style="font-size: 0.62rem; font-weight: 700; color: #cbd5e1;">Start image</span>
+                    </div>
+
+                    <div onclick="document.getElementById('fileImg2VidEnd')?.click()" style="background: #0a0c12; border: 1px dashed rgba(255,255,255,0.12); border-radius: 10px; height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer;">
+                      <span style="color: #94a3b8;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                      </span>
+                      <span style="font-size: 0.62rem; font-weight: 700; color: #cbd5e1;">End image</span>
+                    </div>
+
+                    <div onclick="document.getElementById('fileMotionGuide')?.click()" style="background: #0a0c12; border: 1px solid rgba(190,242,100,0.25); border-radius: 10px; height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; position: relative;">
+                      <span style="position: absolute; top: 4px; right: 4px; background: #e11d48; color: #fff; font-size: 0.48rem; font-weight: 800; padding: 1px 4px; border-radius: 3px;">NEW</span>
+                      <span style="color: var(--accent-lime);">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                      </span>
+                      <span style="font-size: 0.62rem; font-weight: 700; color: #fff;">Motion Transfer</span>
+                    </div>
                   </div>
-                  <div onclick="document.getElementById('fileImg2VidEnd')?.click()" style="background: #0a0c12; border: 1px dashed rgba(255,255,255,0.12); border-radius: 10px; height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer;">
-                    <span style="color: #38bdf8;">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-                    </span>
-                    <span style="font-size: 0.64rem; font-weight: 700; color: #cbd5e1;">End image</span>
-                  </div>
-                  <div onclick="document.getElementById('fileMotionGuide')?.click()" style="background: #0a0c12; border: 1px solid rgba(56,189,248,0.3); border-radius: 10px; height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; position: relative;">
-                    <span style="position: absolute; top: 4px; right: 4px; background: #e11d48; color: #fff; font-size: 0.5rem; font-weight: 900; padding: 1px 4px; border-radius: 3px;">NEW</span>
-                    <span style="color: #38bdf8;">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2"></rect></svg>
-                    </span>
-                    <span style="font-size: 0.62rem; font-weight: 800; color: #38bdf8;">Motion Transfer</span>
+
+                  <!-- BARRA DE ÍCONES DE MÍDIA INFERIOR (SCREENSHOT 4) -->
+                  <div style="display: flex; align-items: center; gap: 6px; background: #0c0e14; border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 4px 8px;">
+                    <button type="button" title="Image" style="background: transparent; border: none; color: #94a3b8; cursor: pointer; padding: 3px;">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle></svg>
+                    </button>
+                    <button type="button" title="Video" style="background: transparent; border: none; color: #94a3b8; cursor: pointer; padding: 3px;">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                    </button>
+                    <button type="button" title="Person" style="background: transparent; border: none; color: #94a3b8; cursor: pointer; padding: 3px;">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </button>
+                    <button type="button" title="Enhance" style="background: transparent; border: none; color: #94a3b8; cursor: pointer; padding: 3px;">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3 1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3Z"></path></svg>
+                    </button>
+                    <button type="button" title="Brush" style="background: transparent; border: none; color: #94a3b8; cursor: pointer; padding: 3px;">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m14 8 2 2-7 7H7v-2l7-7Z"></path></svg>
+                    </button>
+                    <div style="margin-left: auto;">
+                      <button type="button" onclick="document.getElementById('creatorImportInput')?.click()" style="background: transparent; border: none; color: var(--accent-lime); font-size: 0.62rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 3px;">
+                        <span>+ Add media</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <!-- CONTROLES ESPECÍFICOS DE CADA MODELO -->
-              <div id="boxErosImageControls" style="display: flex; flex-direction: column; gap: 8px;">
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
-                  <button type="button" onclick="selectErosLens('raw', this)" class="btn-eros-ck active" style="background: #0f1410; border: 1.5px solid var(--accent-lime); color: var(--accent-lime); padding: 7px 4px; border-radius: 7px; font-weight: 800; font-size: 0.64rem; cursor: pointer; text-align: center;">RAW 35mm</button>
-                  <button type="button" onclick="selectErosLens('film_pov', this)" class="btn-eros-ck" style="background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 7px 4px; border-radius: 7px; font-weight: 700; font-size: 0.64rem; cursor: pointer; text-align: center;">Film POV 28mm</button>
-                  <button type="button" onclick="selectErosLens('glam', this)" class="btn-eros-ck" style="background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 7px 4px; border-radius: 7px; font-weight: 700; font-size: 0.64rem; cursor: pointer; text-align: center;">Glam 85mm</button>
-                </div>
-                <div style="background: #0a0c12; border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 8px 10px;">
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                    <span style="font-size: 0.64rem; font-weight: 800; color: #cbd5e1; text-transform: uppercase;">Peso do LoRA</span>
-                    <span id="lblLoraWeightVal" style="font-size: 0.68rem; color: var(--accent-lime); font-weight: 800; font-family: monospace;">1.00</span>
-                  </div>
-                  <input type="range" id="rngLoraWeight" min="0.5" max="2.0" step="0.05" value="1.0" oninput="document.getElementById('lblLoraWeightVal').innerText = parseFloat(this.value).toFixed(2)" style="width: 100%; accent-color: var(--accent-lime);">
-                </div>
-              </div>
-
-              <!-- Kling Image Controls -->
-              <div id="boxKlingImageControls" style="display: none; background: #0a0c12; border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 8px 10px;">
-                <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Modo Kling Image</label>
-                <select id="selKlingImageMode" style="width: 100%; background: #12141c; border: 1px solid var(--border-subtle); color: #fff; padding: 5px; border-radius: 5px; font-size: 0.68rem; outline: none;">
-                  <option value="pro" selected>Professional (1080p Nativo • Alta Fidelidade)</option>
-                  <option value="std">Standard (720p • Render Rápido)</option>
-                </select>
-              </div>
-
-              <!-- Seedream Controls -->
-              <div id="boxSeedreamControls" style="display: none; background: #0a0c12; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 10px; flex-direction: column; gap: 8px;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-                  <div>
-                    <input type="file" id="fileSeedreamTarget" accept="image/*" style="display: none;" onchange="handleSeedreamTargetUpload(this.files)">
-                    <label for="fileSeedreamTarget" id="dropSeedreamTarget" style="height: 60px; border: 1.5px dashed rgba(255,255,255,0.15); border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #94a3b8; font-size: 0.62rem; font-weight: 700; text-align: center;">Imagem Alvo</label>
-                  </div>
-                  <div>
-                    <input type="file" id="fileSeedreamFace" accept="image/*" style="display: none;" onchange="handleSeedreamFaceUpload(this.files)">
-                    <label for="fileSeedreamFace" id="dropSeedreamFace" style="height: 60px; border: 1.5px dashed rgba(255,255,255,0.15); border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #94a3b8; font-size: 0.62rem; font-weight: 700; text-align: center;">Rosto da Musa</label>
+              <!-- CONTROLES ESPECÍFICOS DO EROS-IMAGE -->
+              <div id="boxErosImageControls" style="display: flex; flex-direction: column; gap: 10px;">
+                <div>
+                  <label style="font-size: 0.62rem; font-weight: 800; color: #64748b; display: block; margin-bottom: 5px; text-transform: uppercase;">Lentes Ópticas (Preservação Fotográfica)</label>
+                  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
+                    <button type="button" class="btn-lens active" onclick="selectErosLens('raw', this)" style="background: #1e2230; border: 1.5px solid var(--accent-lime); color: #fff; font-size: 0.66rem; font-weight: 800; padding: 7px 4px; border-radius: 8px; cursor: pointer;">RAW 35mm</button>
+                    <button type="button" class="btn-lens" onclick="selectErosLens('film', this)" style="background: #12141c; border: 1px solid rgba(255,255,255,0.06); color: #94a3b8; font-size: 0.66rem; font-weight: 700; padding: 7px 4px; border-radius: 8px; cursor: pointer;">Film POV 28mm</button>
+                    <button type="button" class="btn-lens" onclick="selectErosLens('glam', this)" style="background: #12141c; border: 1px solid rgba(255,255,255,0.06); color: #94a3b8; font-size: 0.66rem; font-weight: 700; padding: 7px 4px; border-radius: 8px; cursor: pointer;">Glam 85mm</button>
                   </div>
                 </div>
-                <input type="text" id="txtSeedreamEditPrompt" placeholder="Modificação (ex: vestido de seda preto)..." style="width: 100%; background: #12141c; border: 1px solid var(--border-subtle); color: #fff; padding: 6px 8px; border-radius: 5px; font-size: 0.7rem; outline: none;">
-              </div>
 
-              <!-- Qwen Controls -->
-              <div id="boxQwenControls" style="display: none; background: #0a0c12; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 8px; flex-direction: column; gap: 6px;">
-                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px;">
-                  <button type="button" onclick="setQwenAngle('0', this)" class="btn-qwen-angle active" style="background: #0f1410; border: 1px solid var(--accent-lime); color: var(--accent-lime); padding: 5px; border-radius: 5px; font-weight: 800; font-size: 0.62rem; cursor: pointer;">0° Frontal</button>
-                  <button type="button" onclick="setQwenAngle('45', this)" class="btn-qwen-angle" style="background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 5px; border-radius: 5px; font-weight: 700; font-size: 0.62rem; cursor: pointer;">45° Lateral</button>
-                  <button type="button" onclick="setQwenAngle('90', this)" class="btn-qwen-angle" style="background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 5px; border-radius: 5px; font-weight: 700; font-size: 0.62rem; cursor: pointer;">90° Perfil</button>
-                  <button type="button" onclick="setQwenAngle('135', this)" class="btn-qwen-angle" style="background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 5px; border-radius: 5px; font-weight: 700; font-size: 0.62rem; cursor: pointer;">135° Três Quartos</button>
-                  <button type="button" onclick="setQwenAngle('180', this)" class="btn-qwen-angle" style="background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 5px; border-radius: 5px; font-weight: 700; font-size: 0.62rem; cursor: pointer;">180° Costas</button>
-                  <button type="button" onclick="setQwenAngle('pov', this)" class="btn-qwen-angle" style="background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 5px; border-radius: 5px; font-weight: 700; font-size: 0.62rem; cursor: pointer;">POV Íntimo</button>
-                </div>
-              </div>
-
-              <!-- ChatGPT Controls -->
-              <div id="boxChatGptControls" style="display: none; background: #0a0c12; border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 8px; flex-direction: column; gap: 6px;">
-                <button type="button" onclick="copyOptimizedGptPrompt()" style="background: #1a1c26; border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; font-weight: 700; font-size: 0.66rem; padding: 6px; border-radius: 5px; cursor: pointer;">Copiar Super-Prompt</button>
-                <input type="file" id="creatorImportInput" accept="image/*" style="display: none;" onchange="handleCreatorImportFile(this.files)">
-                <label for="creatorImportInput" id="dropZoneGptImport" style="height: 50px; border: 1.5px dashed rgba(255,255,255,0.15); border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #cbd5e1; font-size: 0.64rem; font-weight: 700;">Colar (Ctrl+V) ou soltar arquivo</label>
-              </div>
-
-              <!-- Motion Controls -->
-              <div id="boxMotionControls" style="display: none; background: #0a0c12; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 10px; flex-direction: column; gap: 8px;">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-                  <div>
-                    <input type="file" id="fileMotionGuide" accept="video/*" style="display: none;" onchange="handleMotionGuideUpload(this.files)">
-                    <label for="fileMotionGuide" id="dropMotionGuide" style="height: 55px; border: 1.5px dashed rgba(56,189,248,0.3); border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #38bdf8; font-size: 0.6rem; font-weight: 700; text-align: center;">Vídeo Guia</label>
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.62rem; font-weight: 800; color: #64748b; margin-bottom: 4px;">
+                    <span>PESO DA CONSISTÊNCIA FACIAL</span>
+                    <span id="lblLoraWeightVal" style="color: var(--accent-lime);">1.00</span>
                   </div>
-                  <div>
-                    <input type="file" id="fileMotionMusa" accept="image/*" style="display: none;" onchange="handleMotionMusaUpload(this.files)">
-                    <label for="fileMotionMusa" id="dropMotionMusa" style="height: 55px; border: 1.5px dashed rgba(56,189,248,0.3); border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #38bdf8; font-size: 0.6rem; font-weight: 700; text-align: center;">Foto Musa</label>
+                  <input type="range" id="rngLoraWeight" min="0.5" max="2.0" step="0.05" value="1.0" oninput="document.getElementById('lblLoraWeightVal').innerText = parseFloat(this.value).toFixed(2)" style="width: 100%; accent-color: var(--accent-lime); cursor: pointer;">
+                </div>
+              </div>
+
+              <!-- CONTROLES ESPECÍFICOS DO KLING IMAGE -->
+              <div id="boxKlingImageControls" style="display: none; flex-direction: column; gap: 8px; background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-size: 0.68rem; font-weight: 800; color: #fff;">Render 1080p Nativo</span>
+                  <span style="font-size: 0.58rem; background: rgba(56,189,248,0.15); color: #38bdf8; padding: 2px 6px; border-radius: 4px; font-weight: 800;">Ultra Sharp</span>
+                </div>
+              </div>
+
+              <!-- CONTROLES DO SEEDREAM 5 PRO (SWAP) -->
+              <div id="boxSeedreamControls" style="display: none; flex-direction: column; gap: 10px; background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-size: 0.72rem; font-weight: 800; color: #fff;">Swap com Seedream</span>
+                  <span style="font-size: 0.58rem; background: rgba(16,185,129,0.15); color: #34d399; padding: 2px 6px; border-radius: 4px; font-weight: 800;">Até Nu Explícito</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                  <div onclick="document.getElementById('fileSeedreamTarget')?.click()" style="background: #141720; border: 1px dashed rgba(255,255,255,0.14); border-radius: 8px; padding: 10px 6px; text-align: center; cursor: pointer;">
+                    <div style="font-size: 0.64rem; font-weight: 800; color: #fff;">Foto Destino</div>
+                    <div style="font-size: 0.54rem; color: #94a3b8; margin-top: 2px;">Cena / Roupa</div>
+                  </div>
+                  <div onclick="document.getElementById('fileSeedreamFace')?.click()" style="background: #141720; border: 1px dashed rgba(255,255,255,0.14); border-radius: 8px; padding: 10px 6px; text-align: center; cursor: pointer;">
+                    <div style="font-size: 0.64rem; font-weight: 800; color: var(--accent-lime);">Rosto da Musa</div>
+                    <div style="font-size: 0.54rem; color: #94a3b8; margin-top: 2px;">Identidade</div>
                   </div>
                 </div>
-                <div style="display: flex; justify-content: space-between; font-size: 0.6rem; color: #94a3b8;">
-                  <span>Intensidade: <strong id="lblMotionStrength" style="color: #38bdf8;">7.5</strong></span>
-                  <select id="selMotionType" style="background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; font-size: 0.64rem; padding: 3px; border-radius: 4px;">
-                    <option value="body">Corpo Inteiro</option>
-                    <option value="face">Sincronia Facial</option>
-                  </select>
+              </div>
+
+              <!-- CONTROLES DO MOTION CONTROL -->
+              <div id="boxMotionControls" style="display: none; flex-direction: column; gap: 8px; background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-size: 0.68rem; font-weight: 800; color: #fff;">Motion Control 60 FPS</span>
+                  <span style="font-size: 0.58rem; background: rgba(190,242,100,0.15); color: var(--accent-lime); padding: 2px 6px; border-radius: 4px; font-weight: 800;">Pose Lock</span>
                 </div>
-                <input type="range" min="1" max="10" step="0.5" value="7.5" oninput="document.getElementById('lblMotionStrength').innerText = this.value" style="width: 100%; accent-color: #38bdf8;">
               </div>
 
-              <!-- Image to Video Controls -->
-              <div id="boxImageToVideoControls" style="display: none; background: #0a0c12; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 10px; flex-direction: column; gap: 8px;">
-                <input type="file" id="fileImg2VidStart" accept="image/*" style="display: none;" onchange="handleImg2VidStart(this.files)">
-                <input type="file" id="fileImg2VidEnd" accept="image/*" style="display: none;" onchange="handleImg2VidEnd(this.files)">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-                  <select id="selImg2VidCamera" style="background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 5px; border-radius: 5px; font-size: 0.66rem;">
-                    <option value="pan" selected>Pan Suave</option>
-                    <option value="zoom_in">Zoom In</option>
-                    <option value="orbit">Orbit 360°</option>
-                    <option value="pov">POV Câmera</option>
-                  </select>
-                  <select id="selImg2VidDuration" style="background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 5px; border-radius: 5px; font-size: 0.66rem;">
-                    <option value="5" selected>5 Segundos</option>
-                    <option value="10">10 Segundos</option>
-                  </select>
+              <!-- CONTROLES DO IMAGE TO VIDEO -->
+              <div id="boxImageToVideoControls" style="display: none; flex-direction: column; gap: 8px; background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-size: 0.68rem; font-weight: 800; color: #fff;">Animação Realista</span>
+                  <span style="font-size: 0.58rem; background: rgba(192,132,252,0.15); color: #c084fc; padding: 2px 6px; border-radius: 4px; font-weight: 800;">Vídeo</span>
                 </div>
-                <label style="display: flex; align-items: center; gap: 6px; font-size: 0.62rem; color: #c084fc; font-weight: 800; cursor: pointer;">
-                  <input type="checkbox" id="chkImg2Vid60Fps" checked style="accent-color: #a855f7;">
-                  <span>Interpolação 60 FPS Ativa</span>
-                </label>
               </div>
 
-              <!-- Audio Controls -->
-              <div id="boxAudioControls" style="display: none; background: #0a0c12; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 10px; flex-direction: column; gap: 8px;">
-                <input type="file" id="fileAudioSample" accept="audio/*" style="display: none;" onchange="handleAudioSampleUpload(this.files)">
-                <label for="fileAudioSample" id="dropAudioSample" style="height: 50px; border: 1.5px dashed rgba(190,242,100,0.3); border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--accent-lime); font-size: 0.64rem; font-weight: 700;">Subir Áudio da Musa (.mp3/.wav)</label>
-                <select id="selAudioTone" style="background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 5px; border-radius: 5px; font-size: 0.66rem;">
-                  <option value="whisper" selected>Sensual Sussurrado</option>
-                  <option value="casual">Descontraído no WhatsApp</option>
-                  <option value="vip">Exclusivo VIP</option>
-                </select>
-                <textarea id="txtAudioScript" rows="2" placeholder="Digite o roteiro da mensagem de voz..." style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 5px; font-size: 0.68rem; outline: none; resize: vertical;"></textarea>
+              <!-- CONTROLES DO QWEN 360 -->
+              <div id="boxQwenControls" style="display: none; flex-direction: column; gap: 8px; background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px;">
+                <span style="font-size: 0.66rem; font-weight: 800; color: #fff;">Ângulo Orbital 360</span>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;">
+                  <button type="button" class="btn-qwen-angle active" onclick="setQwenAngle('front', this)" style="background:#1e2230;border:1px solid var(--accent-lime);color:#fff;font-size:0.6rem;padding:5px;border-radius:5px;">Frontal</button>
+                  <button type="button" class="btn-qwen-angle" onclick="setQwenAngle('three_quarters', this)" style="background:#141720;border:1px solid rgba(255,255,255,0.06);color:#94a3b8;font-size:0.6rem;padding:5px;border-radius:5px;">3/4</button>
+                  <button type="button" class="btn-qwen-angle" onclick="setQwenAngle('profile', this)" style="background:#141720;border:1px solid rgba(255,255,255,0.06);color:#94a3b8;font-size:0.6rem;padding:5px;border-radius:5px;">Perfil</button>
+                  <button type="button" class="btn-qwen-angle" onclick="setQwenAngle('back', this)" style="background:#141720;border:1px solid rgba(255,255,255,0.06);color:#94a3b8;font-size:0.6rem;padding:5px;border-radius:5px;">Costas</button>
+                </div>
               </div>
 
-              <!-- CAMPO DE PROMPT (SCREENSHOT 4 & 5) -->
+              <!-- CONTROLES DE ÁUDIO -->
+              <div id="boxAudioControls" style="display: none; flex-direction: column; gap: 8px; background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px;">
+                <span style="font-size: 0.68rem; font-weight: 800; color: #fff;">Voz da Musa Virtual</span>
+                <span style="font-size: 0.58rem; color: #94a3b8;">Clonagem e síntese para áudios do WhatsApp e Telegram.</span>
+              </div>
+
+              <!-- CAMPO DE PROMPT / SHOT (SCREENSHOTS 4 & 5) -->
               <div id="boxPromptContainer">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                  <label style="font-size: 0.62rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Prompt</label>
-                  <label style="display: flex; align-items: center; gap: 6px; font-size: 0.62rem; color: #cbd5e1; font-weight: 700; cursor: pointer;">
-                    <input type="checkbox" id="chkAiPromptEnhancer" checked style="accent-color: var(--accent-lime); cursor: pointer;">
-                    <span>AI prompt</span>
-                  </label>
+                  <label id="lblPromptHeader" style="font-size: 0.62rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">PROMPT</label>
+                  <button type="button" onclick="suggestRandomScenePrompt()" style="background: transparent; border: none; color: var(--accent-lime); font-size: 0.62rem; font-weight: 700; cursor: pointer; padding: 0;">Sugerir Cena</button>
                 </div>
-                <textarea id="txtCreatorPrompt" rows="3" placeholder="Describe your image, try @ for references or / for templates..." style="width: 100%; background: #0a0c12; border: 1px solid var(--border-subtle); color: #fff; padding: 10px; border-radius: 8px; font-size: 0.74rem; font-family: inherit; resize: vertical; line-height: 1.4; outline: none;"></textarea>
+                <textarea id="txtCreatorPrompt" rows="3" placeholder="Describe your image, try @ for references or / for templates" style="width: 100%; background: #0c0e14; border: 1px solid rgba(255,255,255,0.09); color: #fff; padding: 9px 11px; border-radius: 9px; font-size: 0.74rem; font-family: inherit; resize: vertical; outline: none;"></textarea>
+
+                <div id="boxAiPromptToggle" style="display: flex; align-items: center; justify-content: space-between; margin-top: 6px; padding: 2px 2px;">
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <label style="position: relative; display: inline-block; width: 30px; height: 16px; margin: 0; cursor: pointer;">
+                      <input type="checkbox" id="chkAiPrompt" checked style="opacity: 0; width: 0; height: 0;">
+                      <span style="position: absolute; inset: 0; background-color: var(--accent-lime); border-radius: 16px; transition: .2s;"></span>
+                    </label>
+                    <span style="font-size: 0.64rem; color: #cbd5e1; font-weight: 700;">AI prompt</span>
+                  </div>
+                  <span id="creatorCostLabel" style="font-size: 0.62rem; color: #64748b;">(c) 80 - 120</span>
+                </div>
               </div>
 
-              <!-- BARRA INFERIOR DE CONTROLES: CONTAGEM, PROPORÇÃO, RESOLUÇÃO E GERAR -->
-              <div style="display: flex; flex-direction: column; gap: 10px;">
-                <div id="boxBottomControlsRow" style="display: flex; align-items: center; justify-content: space-between; gap: 6px; flex-wrap: wrap;">
-                  <!-- Contador de lote -->
-                  <div style="display: inline-flex; align-items: center; background: #0a0c12; border: 1px solid var(--border-subtle); border-radius: 8px; padding: 3px 6px; gap: 6px;">
-                    <button type="button" onclick="adjustBatchCount(-1)" style="background: transparent; border: none; color: #94a3b8; font-size: 0.8rem; cursor: pointer; padding: 2px 4px;">-</button>
-                    <span id="lblBatchCount" style="font-size: 0.68rem; font-weight: 800; color: #fff; font-family: monospace;">1</span>
-                    <button type="button" onclick="adjustBatchCount(1)" style="background: transparent; border: none; color: #94a3b8; font-size: 0.8rem; cursor: pointer; padding: 2px 4px;">+</button>
+              <!-- CONTROLES INFERIORES: BATCH / RATIO / QUALITY / GENERATE (SCREENSHOT 5) -->
+              <div id="boxBottomControlsRow" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <!-- Contador de Fotos -->
+                  <div style="display: inline-flex; align-items: center; background: #0c0e14; border: 1px solid rgba(255,255,255,0.08); border-radius: 7px; padding: 2px 5px; gap: 4px;">
+                    <button type="button" onclick="adjustBatchCount(-1)" style="background: none; border: none; color: #94a3b8; font-size: 0.8rem; cursor: pointer; padding: 1px 4px;">-</button>
+                    <span id="lblBatchCount" style="font-size: 0.68rem; font-weight: 800; color: #fff;">1</span>
+                    <button type="button" onclick="adjustBatchCount(1)" style="background: none; border: none; color: #94a3b8; font-size: 0.8rem; cursor: pointer; padding: 1px 4px;">+</button>
                   </div>
 
-                  <!-- Seletor de Proporção Pill -->
-                  <button type="button" id="btnCreatorRatioPicker" onclick="cycleCreatorRatio()" style="background: #0a0c12; border: 1px solid var(--border-subtle); color: #cbd5e1; padding: 6px 10px; border-radius: 8px; font-weight: 700; font-size: 0.68rem; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect></svg>
-                    <span id="lblCurrentRatio">9:16</span>
+                  <!-- Seletor de Aspect Ratio -->
+                  <button type="button" onclick="cycleCreatorRatio()" id="btnRatioCycler" style="background: #0c0e14; border: 1px solid rgba(255,255,255,0.08); border-radius: 7px; padding: 5px 8px; font-size: 0.66rem; font-weight: 700; color: #cbd5e1; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"></rect></svg>
+                    <span id="lblCurrentRatio">16:9</span>
                   </button>
 
-                  <!-- Seletor de Resolução / Qualidade Pill -->
-                  <button type="button" id="btnCreatorQualityPicker" onclick="cycleCreatorQuality()" style="background: #0a0c12; border: 1px solid var(--border-subtle); color: #cbd5e1; padding: 6px 10px; border-radius: 8px; font-weight: 700; font-size: 0.68rem; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                  <!-- Seletor de Resolução / Qualidade -->
+                  <button type="button" onclick="cycleCreatorQuality()" id="btnQualityCycler" style="background: #0c0e14; border: 1px solid rgba(255,255,255,0.08); border-radius: 7px; padding: 5px 8px; font-size: 0.66rem; font-weight: 700; color: #cbd5e1; cursor: pointer; display: flex; align-items: center; gap: 4px;">
                     <span id="lblCurrentQuality">2K · High</span>
                   </button>
                 </div>
 
-                <!-- GhostStealth Toggle -->
-                <div style="background: rgba(190, 242, 100, 0.04); border: 1px solid rgba(190, 242, 100, 0.15); border-radius: 8px; padding: 7px 10px; display: flex; justify-content: space-between; align-items: center;">
-                  <label style="display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 0.68rem; font-weight: 800; color: var(--accent-lime);">
-                    <input type="checkbox" id="chkAntiHashPdq" checked style="accent-color: var(--accent-lime); cursor: pointer; width: 14px; height: 14px;">
-                    <span>GhostStealth™ Ativo (Camuflagem de postagem)</span>
-                  </label>
-                </div>
-
-                <!-- Botão Gerar Sólido Minimalista (Verde Limão) -->
-                <button type="button" id="btnExecuteCreatorGen" onclick="executeGhostCreatorGen()" style="width: 100%; background: var(--accent-lime); color: #000; font-weight: 900; font-size: 0.86rem; border: none; padding: 12px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 14px rgba(190,242,100,0.25); transition: 0.2s;">
-                  <span id="lblBtnGenText">Gerar com Eros-Image</span>
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
+                <!-- Botão Gerar Principal -->
+                <button type="button" id="btnExecuteCreatorGen" onclick="executeGhostCreatorGen()" style="background: var(--accent-lime); color: #000; border: none; font-size: 0.82rem; font-weight: 900; padding: 9px 18px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 18px rgba(190, 242, 100, 0.35); transition: 0.2s;">
+                  <span id="lblBtnGenText">Generate</span>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="m12 3 1.912 5.813a2 2 0 0 0 1.275 1.275L21 12l-5.813 1.912a2 2 0 0 0-1.275 1.275L12 21l-1.912-5.813a2 2 0 0 0-1.275-1.275L3 12l5.813-1.912a2 2 0 0 0 1.275-1.275L12 3Z"></path></svg>
                 </button>
-                <div id="creatorCostLabel" style="text-align: center; font-size: 0.62rem; color: var(--accent-lime); margin-top: -3px;">Render Nativo 2K • Alta Consistência</div>
               </div>
 
+              <!-- INPUTS OCULTOS DE UPLOAD -->
+              <input type="file" id="creatorRefInput" style="display:none;" multiple accept="image/*" onchange="handleCreatorRefFiles(this.files)">
+              <input type="file" id="creatorImportInput" style="display:none;" accept="image/*" onchange="handleCreatorImportFile(this.files)">
+              <input type="file" id="fileHiggsFirst" style="display:none;" accept="image/*" onchange="handleHiggsFrame(this.files, 'first')">
+              <input type="file" id="fileHiggsEnd" style="display:none;" accept="image/*" onchange="handleHiggsFrame(this.files, 'end')">
+              <input type="file" id="fileHiggsObj" style="display:none;" accept="image/*" onchange="handleHiggsFrame(this.files, 'object')">
+              <input type="file" id="fileWanVideo" style="display:none;" accept="video/mp4" onchange="handleWanVideoUpload(this.files)">
+              <input type="file" id="fileWanFace" style="display:none;" accept="image/*" onchange="handleWanFaceUpload(this.files)">
+              <input type="file" id="fileSeedreamTarget" style="display:none;" accept="image/*" onchange="handleSeedreamTargetUpload(this.files)">
+              <input type="file" id="fileSeedreamFace" style="display:none;" accept="image/*" onchange="handleSeedreamFaceUpload(this.files)">
+              <input type="file" id="fileMotionGuide" style="display:none;" accept="video/mp4" onchange="handleMotionGuideUpload(this.files)">
+              <input type="file" id="fileMotionMusa" style="display:none;" accept="image/*" onchange="handleMotionMusaUpload(this.files)">
+              <input type="file" id="fileImg2VidStart" style="display:none;" accept="image/*" onchange="handleImg2VidStart(this.files)">
+              <input type="file" id="fileImg2VidEnd" style="display:none;" accept="image/*" onchange="handleImg2VidEnd(this.files)">
+              <input type="file" id="fileAudioSample" style="display:none;" accept="audio/*" onchange="handleAudioSampleUpload(this.files)">
             </div>
           </div>
 
-          <!-- ─── COLUNA DIREITA: CANVAS DE PREVIEW E HISTÓRICO ─── -->
-          <div style="display: flex; flex-direction: column; gap: 16px; min-width: 0;">
-            <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; align-items: center;">
-              <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 10px; flex-wrap: wrap;">
+          <!-- COLUNA DIREITA: CANVAS PREVIEW E HISTÓRICO -->
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 18px; display: flex; flex-direction: column; align-items: center; position: relative;">
+              <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; flex-wrap: wrap;">
                 <div style="display: flex; align-items: center; gap: 8px;">
-                  <span id="lblCanvasModelBadge" style="font-size: 0.78rem; font-weight: 800; color: #fff;">Eros-Image 2K</span>
-                  <span id="lblCanvasSpec" style="font-size: 0.64rem; color: var(--text-muted);">1080×1920 • 9:16</span>
+                  <span style="font-size: 0.78rem; font-weight: 800; color: #fff;">Preview do Render</span>
+                  <span id="lblCanvasModelBadge" style="background: rgba(190, 242, 100, 0.12); color: var(--accent-lime); font-size: 0.58rem; font-weight: 800; padding: 2px 7px; border-radius: 5px; border: 1px solid rgba(190, 242, 100, 0.25);">Eros-Image™ 2K</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 6px;">
-                  <span style="width: 6px; height: 6px; border-radius: 50%; background: #4ade80;"></span>
-                  <span id="lblRenderTime" style="font-size: 0.64rem; color: #94a3b8; font-family: monospace;">Pronto</span>
+                  <span id="lblCanvasSpec" style="font-size: 0.62rem; color: #94a3b8; font-weight: 600;">2K · High • 16:9</span>
+                  <button type="button" onclick="openCreatorFullscreen()" title="Tela cheia" style="background: #141720; border: 1px solid rgba(255,255,255,0.08); color: #cbd5e1; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg>
+                  </button>
                 </div>
               </div>
 
-              <div style="width: 100%; max-width: 540px; min-height: 520px; background: #08090d; border: 1px solid rgba(255,255,255,0.06); border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 16px 40px rgba(0,0,0,0.6);">
+              <div id="creatorPreviewCanvas" style="width: 100%; min-height: 520px; background: #000; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 16px 40px rgba(0,0,0,0.6);">
                 <img id="imgCreatorMainPreview" src="${CREATOR_PLACEHOLDER}" alt="Preview da Musa" style="width: 100%; height: 100%; min-height: 520px; object-fit: contain; display: block;">
                 <div id="creatorLoadingOverlay" style="display: none; position: absolute; inset: 0; background: rgba(9,10,14,0.86); backdrop-filter: blur(8px); flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 10;">
                   <div style="width: 38px; height: 38px; border: 3px solid rgba(190,242,100,0.2); border-top-color: var(--accent-lime); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
@@ -8751,238 +8795,398 @@
         hydrateCreatorStudio();
       }
 
+      window.GHOST_CREATOR_CATALOG = [];
+      window.GHOST_CREATOR_MODEL_MAP = {};
+
+      function getLiveCreatorModel(id) {
+        return (window.GHOST_CREATOR_MODEL_MAP || {})[id] || null;
+      }
+
+      function creatorPickerModel(m) {
+        return {
+          id: m.id,
+          name: m.name,
+          provider: m.provider || 'GhostLens',
+          tags: Array.isArray(m.tags) ? m.tags : [],
+          cost: m.cost_label || `${m.credits || 0} créditos`,
+          badge: m.badge || m.name,
+          button: m.button || 'Gerar',
+          workflow_key: m.id,
+          credits: Number(m.credits) || 0,
+          providerKey: m.provider || 'ghostlens',
+          mode: m.mode || 'image',
+          control: m.control || ''
+        };
+      }
+
+      function applyCreatorCatalogToPicker(models) {
+        const byMode = { image: [], video: [], audio: [] };
+        (models || []).forEach(m => {
+          const mode = m.mode || 'image';
+          if (!byMode[mode]) byMode[mode] = [];
+          byMode[mode].push(creatorPickerModel(m));
+        });
+        Object.keys(CREATOR_MODELS_CATALOG).forEach(mode => {
+          const list = byMode[mode] || [];
+          CREATOR_MODELS_CATALOG[mode] = {
+            featured: list,
+            recent: [],
+            allProviders: list.reduce((acc, m) => {
+              const provider = m.provider || 'GhostLens';
+              if (!acc[provider]) acc[provider] = [];
+              acc[provider].push(m);
+              return acc;
+            }, {})
+          };
+        });
+        if (typeof renderModelPickerContent === 'function') renderModelPickerContent();
+      }
+
+      async function loadCreatorCatalog() {
+        try {
+          const res = await fetch('https://www.ghostlens.cloud/api/wavespeed_proxy?action=creator_catalog', { cache: 'no-store' });
+          const data = await res.json().catch(() => ({}));
+          const models = Array.isArray(data.models) ? data.models : [];
+          window.GHOST_CREATOR_CATALOG = models;
+          window.GHOST_CREATOR_MODEL_MAP = Object.fromEntries(models.map(m => [m.id, m]));
+          applyCreatorCatalogToPicker(models);
+          return models;
+        } catch (err) {
+          console.warn('Catálogo GhostCreator indisponível:', err.message);
+          window.GHOST_CREATOR_CATALOG = [];
+          window.GHOST_CREATOR_MODEL_MAP = {};
+          applyCreatorCatalogToPicker([]);
+          return [];
+        }
+      }
+
       async function hydrateCreatorStudio() {
-        const sel = document.getElementById('selCreatorMusa');
-        if (!sel) return;
-        let profiles = window.ghostProfilesCache || [];
-        if (!profiles.length) {
-          try {
-            profiles = await loadAntidetectProfiles();
-            window.ghostProfilesCache = profiles;
-          } catch (e) {
-            profiles = getCreatorDemoProfiles();
+        const liveModels = await loadCreatorCatalog();
+        const selMusa = document.getElementById('selCreatorMusa');
+        if (selMusa) {
+          selMusa.innerHTML = '';
+          const personas = (window.GHOST_PERSONAS && window.GHOST_PERSONAS.length)
+            ? window.GHOST_PERSONAS
+            : [{ id: 'lab', name: 'Musa Alpha' }];
+
+          personas.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p.id;
+            opt.innerText = p.name;
+            selMusa.appendChild(opt);
+          });
+
+          if (currentCreatorProfileId) {
+            selMusa.value = currentCreatorProfileId;
+          } else if (personas[0]) {
+            currentCreatorProfileId = personas[0].id;
+            selMusa.value = personas[0].id;
           }
         }
-        if (!profiles.length) {
-          sel.innerHTML = '<option value="">Nenhuma persona criada</option>';
-          document.getElementById('lblMusaDnaStatus').innerText = 'sem persona';
-          return;
+
+        if (liveModels.length && !liveModels.some(m => m.id === currentCreatorModel)) {
+          currentCreatorModel = liveModels[0].id;
         }
-        sel.innerHTML = profiles.map(p => `<option value="${ghostEsc(p.id)}">${ghostEsc(p.musa_nome || p.id)}</option>`).join('');
-        const firstId = profiles[0].id;
-        sel.value = firstId;
-        onCreatorMusaChange(firstId);
-        setStudioMode('image');
+        if (!liveModels.length) {
+          const nameEl = document.getElementById('lblSelectedModelName');
+          if (nameEl) nameEl.innerText = 'Nenhum modelo conectado';
+          const tagEl = document.getElementById('lblSelectedModelTag');
+          if (tagEl) tagEl.innerText = 'Configure USEAPI ou RunningHub';
+        }
+        const genBtn = document.getElementById('btnExecuteCreatorGen');
+        if (genBtn) {
+          genBtn.disabled = !liveModels.length;
+          genBtn.style.opacity = liveModels.length ? '1' : '0.5';
+          genBtn.style.cursor = liveModels.length ? 'pointer' : 'not-allowed';
+        }
+        if (!liveModels.length) {
+          const costEl = document.getElementById('creatorCostLabel');
+          if (costEl) costEl.innerText = 'Nenhum provedor conectado. Configure USEAPI_TOKEN ou RUNNINGHUB_API_KEY.';
+        }
+        onCreatorMusaChange(currentCreatorProfileId || 'lab');
+        renderCreatorRefStrip();
+        renderCreatorHistory();
+        onCreatorModelChange(currentCreatorModel);
       }
       window.hydrateCreatorStudio = hydrateCreatorStudio;
 
       function saveCreatorDnaFromStudio() {
+        const dna = (document.getElementById('txtCreatorDna')?.value || '').trim();
         if (!currentCreatorProfileId) return;
-        const val = (document.getElementById('txtCreatorDna')?.value || '').trim();
-        currentCreatorDna = { ...currentCreatorDna, prompt: val };
-        saveCreatorDataForProfile(currentCreatorProfileId, { musa_nome: currentCreatorMusa, dna: currentCreatorDna, references: currentCreatorRefs });
+        localStorage.setItem(`ghost_dna_${currentCreatorProfileId}`, dna);
         const status = document.getElementById('lblMusaDnaStatus');
-        if (status) status.innerText = val ? 'DNA ativo' : 'sem DNA';
-        showToast('DNA da musa atualizado.', 2200);
+        if (status) status.innerText = dna ? `${dna.length} chars` : 'sem DNA';
+        showToast('DNA da musa salvo com sucesso!', 3000);
       }
       window.saveCreatorDnaFromStudio = saveCreatorDnaFromStudio;
 
       function renderCreatorRefStrip() {
-        const strip = document.getElementById('creatorRefStrip');
         const count = document.getElementById('creatorRefCount');
-        if (count) count.innerText = `${currentCreatorRefs.length}/3`;
-        if (!strip) return;
-        if (!currentCreatorRefs.length) {
-          strip.innerHTML = '<div style="grid-column: span 3; padding: 18px; text-align: center; color: #94a3b8; font-size: 0.72rem; border: 1px dashed rgba(255,255,255,0.12); border-radius: 8px;">Sem referências adicionadas.</div>';
-          return;
-        }
-        strip.innerHTML = currentCreatorRefs.map((src, i) => `
-          <div style="position: relative; width: 60px; height: 60px; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
-            <img src="${ghostEsc(src)}" style="width: 100%; height: 100%; object-fit: cover;">
-          </div>
-        `).join('');
+        if (count) count.innerText = `${currentCreatorRefs.length}/10`;
       }
+      window.renderCreatorRefStrip = renderCreatorRefStrip;
 
       async function handleCreatorRefFiles(files) {
-        const list = Array.from(files || []);
-        if (!list.length) return;
-        for (const file of list.slice(0, 3)) {
-          const data = await ghostCompressImage(file, 768, 0.82);
-          currentCreatorRefs.push(data);
-        }
-        currentCreatorRefs = currentCreatorRefs.slice(0, 3);
-        if (currentCreatorRefs[0]) {
-          const img = document.getElementById('imgCreatorMainPreview');
-          if (img) img.src = currentCreatorRefs[0];
+        if (!files || !files.length) return;
+        for (const f of Array.from(files)) {
+          if (currentCreatorRefs.length >= 10) break;
+          try {
+            const b64 = await ghostCompressImage(f, 768, 0.85);
+            currentCreatorRefs.push(b64);
+          } catch (e) {
+            console.warn('Erro comprimindo ref:', e);
+          }
         }
         renderCreatorRefStrip();
       }
       window.handleCreatorRefFiles = handleCreatorRefFiles;
 
-      function removeCreatorRef(index) {
-        currentCreatorRefs.splice(index, 1);
+      function removeCreatorRef(idx) {
+        currentCreatorRefs.splice(idx, 1);
         renderCreatorRefStrip();
       }
       window.removeCreatorRef = removeCreatorRef;
 
-      function selectCreatorRef(index) {
-        const src = currentCreatorRefs[index];
-        if (src) {
-          const img = document.getElementById('imgCreatorMainPreview');
-          if (img) img.src = src;
-        }
+      function selectCreatorRef(idx) {
+        if (!currentCreatorRefs[idx]) return;
+        const main = document.getElementById('imgCreatorMainPreview');
+        if (main) main.src = currentCreatorRefs[idx];
       }
       window.selectCreatorRef = selectCreatorRef;
 
-      function renderCreatorHistory(extraUrl) {
+      function renderCreatorHistory() {
         const grid = document.getElementById('gridCreatorHistory');
         const count = document.getElementById('creatorHistoryCount');
         if (!grid) return;
-        const urls = [];
-        if (extraUrl) urls.push(extraUrl);
-        if (currentCreatorMediaUrl && !urls.includes(currentCreatorMediaUrl)) urls.push(currentCreatorMediaUrl);
-        currentCreatorRefs.forEach(u => { if (!urls.includes(u)) urls.push(u); });
-        if (count) count.innerText = `${urls.length} variações`;
-        grid.innerHTML = urls.map(u => `
-          <div onclick="selectCreatorHistoryThumb('${ghostEsc(u)}')" style="height: 72px; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); cursor: pointer; background: #000;">
+        if (count) count.innerText = `${currentCreatorHistory.length} imagens`;
+
+        if (!currentCreatorHistory.length) {
+          grid.innerHTML = '<div style="grid-column: 1 / -1; font-size: 0.68rem; color: #64748b; padding: 12px 0;">Nenhuma imagem gerada nesta sessão.</div>';
+          return;
+        }
+
+        grid.innerHTML = currentCreatorHistory.map((u, i) => `
+          <div onclick="selectCreatorHistoryItem(${i})" style="width: 100%; aspect-ratio: 1; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); background: #000; cursor: pointer; transition: 0.15s;">
             <img src="${ghostEsc(u)}" style="width: 100%; height: 100%; object-fit: cover;">
           </div>
         `).join('');
       }
       window.renderCreatorHistory = renderCreatorHistory;
 
+      /* CATÁLOGO DE MODELOS DE IA MAGNIFIC STYLE (SCREENSHOTS 4 & 5) */
       const CREATOR_MODELS_CATALOG = {
         image: {
           featured: [
-            { id: 'eros_image_2k', name: 'Eros-Image 2K', provider: 'Eros Studio', tags: ['Refs', '~30s', '2K-4K', '100% Consistência'], cost: '50 - 100', badge: 'Eros-Image 2K', button: 'Gerar com Eros-Image' },
-            { id: 'seedream_5', name: 'Seedream 5 Pro', provider: 'ByteDance', tags: ['Refs', '~56s', '2K', 'Face & Look Swap'], cost: '75 - 100', badge: 'Seedream 5 Pro', button: 'Swap com Seedream' },
-            { id: 'kling_image', name: 'Kling Image Pro', provider: 'Kuaishou', tags: ['Refs', '~40s', '1080p HD', 'Fotorrealismo'], cost: '60 - 90', badge: 'Kling Image Pro', button: 'Gerar com Kling Image' },
-            { id: 'chatgpt_import', name: 'GPT 2.6 Image', provider: 'OpenAI', isNew: true, tags: ['Refs', '~47s', '2K-4K', 'Ctrl+V Import'], cost: '15 - 940', badge: 'GPT 2.6 Import', button: 'Importar Imagem GPT' },
-            { id: 'nanobanana_21', name: 'Google Nano Banana 2.1', provider: 'Google', tags: ['Refs', '~40s', '2K-4K', 'Ultra Rápido'], cost: '50 - 145', badge: 'Nano Banana 2.1', button: 'Gerar com Nano Banana' }
+            { id: 'eros_image_2k', name: 'Eros-Image 2K', provider: 'Eros Studio', tags: ['LoRA Nativo', 'GhostStealth™', 'Ultra Real', '2K'], cost: '80 - 120', badge: 'Eros-Image 2K', button: 'Gerar com Eros-Image' },
+            { id: 'auto_image', name: 'Auto', provider: 'Auto Engine', tags: ['Refs', '~5s', '2K-4K'], cost: '10 - 145', badge: 'Auto Mode', button: 'Gerar Auto' },
+            { id: 'seedream_5', name: 'Seedream 5 Pro', provider: 'ByteDance', tags: ['Refs', '~56s', '2K'], cost: '75 - 100', badge: 'Seedream 5 Pro', button: 'Swap com Seedream' },
+            { id: 'cinematic_img', name: 'Cinematic', provider: 'Magnific', tags: ['Refs', '~43s', '2K-4K'], cost: '75 - 150', badge: 'Cinematic', button: 'Gerar Cinematic' },
+            { id: 'magnific_one', name: 'Magnific One', provider: 'Magnific', tags: ['Refs', '~1m 14s', '2K-4K'], cost: '100 - 1000', badge: 'Magnific One', button: 'Gerar com Magnific' },
+            { id: 'nanobanana_21', name: 'Google Nano Banana 2.1', provider: 'Google', tags: ['Refs', '~40s', '2K-4K'], cost: '50 - 145', badge: 'Nano Banana 2.1', button: 'Gerar com Nano Banana' },
+            { id: 'chatgpt_import', name: 'GPT 2.6', provider: 'OpenAI', isNew: true, tags: ['Refs', '~47s', '2K-4K'], cost: '15 - 940', badge: 'GPT 2.6', button: 'Importar Imagem GPT' },
+            { id: 'kling_image', name: 'Kling Image Pro', provider: 'Kuaishou', tags: ['Refs', '1080p', 'Fotorrealismo'], cost: '60 - 120', badge: 'Kling Image Pro', button: 'Gerar com Kling Image' },
+            { id: 'qwen_360', name: 'Qwen 360 Image', provider: 'Alibaba', tags: ['360 Angle', 'Face Lock', '2K'], cost: '70 - 130', badge: 'Qwen 360', button: 'Gerar Multi-Ângulo' }
+          ],
+          recent: [
+            { id: 'krea_2', name: 'Krea 2', provider: 'Krea AI', tags: ['Refs', '~30s'], cost: '80 - 160', badge: 'Krea 2 Raw', button: 'Gerar com Krea 2' }
           ],
           allProviders: {
-            'Eros Studio': [
-              { id: 'eros_image_2k', name: 'Eros-Image 2K (LoRA da Musa)', tags: ['Consistência 100%', '2K-4K'], cost: '50 - 100' },
-              { id: 'krea_2', name: 'Krea 2 Raw Edit', tags: ['RAW Natural', 'Retoque'], cost: '80 - 160' },
-              { id: 'magnific_upscale', name: 'Magnific Upscaler 4K', tags: ['Upscale 4K-8K', 'Fidelidade Extrema'], cost: '100 - 300' }
-            ],
-            'ByteDance': [
-              { id: 'seedream_5', name: 'Seedream 5 Pro', tags: ['Face Swap', 'Troca de Roupa'], cost: '75 - 100' }
-            ],
-            'Kuaishou': [
-              { id: 'kling_image', name: 'Kling Image Pro', tags: ['1080p Nativo', 'Alta Nitidez'], cost: '60 - 90' }
-            ],
-            'Alibaba': [
-              { id: 'qwen_360', name: 'Qwen 2.5 360° Multi-Ângulo', tags: ['6 Poses Orbitais', 'Consistência'], cost: '45 - 80' }
-            ],
-            'OpenAI': [
-              { id: 'chatgpt_import', name: 'GPT 2.6 Image Direct', tags: ['ChatGPT Plus', 'Super-Prompt'], cost: '15 - 940' }
+            'Magnific': [
+              { id: 'magnific_one', name: 'Magnific One Pro', tags: ['2K-4K', 'Fidelidade Extrema'], cost: '100 - 1000' }
             ],
             'Google': [
-              { id: 'nanobanana_21', name: 'Google Nano Banana 2.1', tags: ['Latência Baixa', '2K'], cost: '50 - 145' }
+              { id: 'nanobanana_21', name: 'Google Nano Banana 2.1', tags: ['Latência Baixa', '2K'], cost: '50 - 145' },
+              { id: 'veo_img', name: 'Google Veo Photoreal', tags: ['4K Ultra', 'Consistência'], cost: '120 - 240' }
+            ],
+            'GPT / OpenAI': [
+              { id: 'chatgpt_import', name: 'GPT 2.6 Image Direct', tags: ['ChatGPT Plus', 'Super-Prompt'], cost: '15 - 940' }
+            ],
+            'Seedream / ByteDance': [
+              { id: 'seedream_5', name: 'Seedream 5 Pro', tags: ['Face Swap', 'Troca de Roupa'], cost: '75 - 100' }
+            ],
+            'Alibaba': [
+              { id: 'qwen_360', name: 'Qwen 2.5 360 Multi-Ângulo', tags: ['6 Poses Orbitais', 'Consistência'], cost: '70 - 130' }
+            ],
+            'Kuaishou Kling': [
+              { id: 'kling_image', name: 'Kling Image Pro', tags: ['1080p Nativo', 'Alta Nitidez'], cost: '60 - 120' }
+            ],
+            'Eros Pro Network': [
+              { id: 'eros_image_2k', name: 'Eros-Image 2K (LoRA da Musa)', tags: ['Consistência 100%', '2K-4K'], cost: '80 - 120' },
+              { id: 'krea_2', name: 'Krea 2 Raw Edit', tags: ['RAW Natural', 'Retoque'], cost: '80 - 160' }
             ]
           }
         },
         video: {
           featured: [
-            { id: 'wan_3_prime', name: 'Wan 3.0 Prime', provider: 'Alibaba', tags: ['Refs', 'Multi', 'Start/End', '1080p'], cost: '164 - 15.3k', badge: 'Wan 3.0 Prime', button: 'Gerar com Wan 3.0' },
-            { id: 'minimax_h3', name: 'MiniMax H3 Max', provider: 'MiniMax', tags: ['Ultra Fast', 'Refs', 'Multi', 'Start/End', '768p'], cost: '250 - 4800', badge: 'MiniMax H3 Max', button: 'Gerar com MiniMax H3' },
+            { id: 'auto_video', name: 'Auto', provider: 'Auto Engine', tags: ['Refs', 'Multi', 'Start/End', '1080p', 'Audio'], cost: '100 - 2800', badge: 'Auto Video', button: 'Gerar Vídeo Auto' },
+            { id: 'wan_3_prime', name: 'Wan 3.0 Prime', provider: 'Alibaba', tags: ['Refs', 'Multi', 'Start/End', 'Custom seed', '1080p'], cost: '164 - 15.3k', badge: 'Wan 3.0 Prime', button: 'Gerar com Wan 3.0' },
+            { id: 'minimax_h3_max', name: 'MiniMax H3 Max', provider: 'MiniMax', tags: ['Ultra Fast', 'Refs', 'Multi', 'Start/End', '768p'], cost: '250 - 4800', badge: 'MiniMax H3 Max', button: 'Gerar com MiniMax H3' },
             { id: 'seedance_25', name: 'Seedance 2.5', provider: 'ByteDance', tags: ['Refs', 'Multi', 'Start/End', '1080p', 'Audio refs'], cost: '800 - 23.7k', badge: 'Seedance 2.5', button: 'Gerar com Seedance 2.5' },
-            { id: 'kling_4_video', name: 'Kling 4.0', provider: 'Kuaishou', isNew: true, tags: ['Start/End', '1080p', '3-30s'], cost: '570 - 8400', badge: 'Kling 4.0 Video', button: 'Gerar com Kling 4.0' },
-            { id: 'kling_4_motion', name: 'Kling 4.0 Motion Control', provider: 'Kuaishou', tags: ['Motion Guide', '1080p 60fps', 'Troca de Corpo'], cost: '600 - 8000', badge: 'Kling 4.0 Motion', button: 'Transferir Movimento Kling 4.0' }
+            { id: 'minimax_h3', name: 'MiniMax H3', provider: 'MiniMax', isDiscount: 'up to 50% off', tags: ['Refs', 'Multi', 'Start/End', '2K', 'Audio refs'], cost: '375 - 3300', badge: 'MiniMax H3', button: 'Gerar com MiniMax H3' },
+            { id: 'kling_4_video', name: 'Kling 4.0', provider: 'Kuaishou', isNew: true, tags: ['Start/End', '1080p', '3 - 30"'], cost: '570 - 8400', badge: 'Kling 4.0 Video', button: 'Gerar com Kling 4.0' },
+            { id: 'kling_4_motion', name: 'Kling Motion Control', provider: 'Kuaishou', tags: ['Motion Transfer', '1080p', 'Face Swap'], cost: '450 - 3200', badge: 'Kling Motion Control', button: 'Transferir Movimento' },
+            { id: 'openjutsu_workflow', name: 'OpenJutso / Wan Swap', provider: 'Serverless', tags: ['Pose Guide', 'Camuflagem', '60 FPS'], cost: '300 - 2500', badge: 'OpenJutso Swap', button: 'Executar Swap Serverless' }
+          ],
+          recent: [
+            { id: 'wan_3_prime', name: 'Wan 3.0', provider: 'Alibaba', tags: ['Refs', 'Multi', 'Start/End', 'Custom seed', '1080p'], cost: '100 - 9000', badge: 'Wan 3.0', button: 'Gerar com Wan 3.0' }
           ],
           allProviders: {
-            'Kuaishou (Kling)': [
-              { id: 'kling_4_video', name: 'Kling 4.0 Video', tags: ['1080p', '3-30s'], cost: '570 - 8400' },
-              { id: 'kling_4_motion', name: 'Kling 4.0 Motion Control', tags: ['60 FPS', 'Motion Guide'], cost: '600 - 8000' },
-              { id: 'kling_3_motion', name: 'Kling 3.0 Motion Control', tags: ['Alta Precisão'], cost: '400 - 6500' },
-              { id: 'kling_26_motion', name: 'Kling 2.6 Motion Control', tags: ['Render Econômico'], cost: '300 - 4500' }
-            ],
             'Alibaba': [
-              { id: 'wan_3_prime', name: 'Wan 3.0 Prime Video', tags: ['Refs', 'Start/End', '1080p'], cost: '164 - 15.3k' }
-            ],
-            'ByteDance': [
-              { id: 'seedance_25', name: 'Seedance 2.5 Ultra', tags: ['Ultra Real', 'Audio refs'], cost: '800 - 23.7k' },
-              { id: 'seedance_20', name: 'Seedance 2.0', tags: ['Econômico', '1080p'], cost: '400 - 12k' }
+              { id: 'wan_3_prime', name: 'Wan 3.0 Prime', tags: ['1080p 60fps', 'Multi-frame'], cost: '164 - 15.3k' }
             ],
             'MiniMax': [
-              { id: 'minimax_h3', name: 'MiniMax H3 Max', tags: ['Ultra Fast', '768p'], cost: '250 - 4800' }
+              { id: 'minimax_h3_max', name: 'MiniMax H3 Max', tags: ['Ultra Fast', '768p'], cost: '250 - 4800' },
+              { id: 'minimax_h3', name: 'MiniMax H3 HD', tags: ['2K Res', 'Audio Sync'], cost: '375 - 3300' }
             ],
-            'Eros Studio / Outros': [
-              { id: 'omni_flash_21', name: 'Omni Flash 2.1 Motion', tags: ['Render Rápido'], cost: '350 - 5000' },
-              { id: 'openjutsu_workflow', name: 'Genjutsu Ultra (Comfy Cloud)', tags: ['Workflow Pro'], cost: '500 - 6000' },
-              { id: 'ltx_25_video', name: 'LTX Video 2.5', tags: ['Cinemático'], cost: '200 - 3200' },
-              { id: 'grok_15_video', name: 'Grok 1.5 Video', tags: ['Movimento Fluido'], cost: '300 - 4500' },
-              { id: 'veo_31', name: 'Veo 3.1 Pro', tags: ['Google DeepMind'], cost: '500 - 7000' }
+            'ByteDance / Seedance': [
+              { id: 'seedance_25', name: 'Seedance 2.5 Cinema', tags: ['1080p', 'Ultra Real'], cost: '800 - 23.7k' }
+            ],
+            'Kuaishou Kling': [
+              { id: 'kling_4_video', name: 'Kling 4.0 HD', tags: ['1080p', '3-30s'], cost: '570 - 8400' },
+              { id: 'kling_4_motion', name: 'Kling 4.0 Motion Control', tags: ['Transferência de Movimento'], cost: '450 - 3200' }
             ]
           }
         },
         audio: {
           featured: [
-            { id: 'voice_clone_musa', name: 'Voice Generator (Clonagem)', provider: 'Eros Studio', tags: ['ErosChat', 'Áudio WhatsApp', 'Ultra Real'], cost: '30 - 80', badge: 'Voz da Musa', button: 'Clonar e Gerar Áudio' },
-            { id: 'voice_gen_sensual', name: 'Audio Generator (Sensual)', provider: 'Eros Studio', isNew: true, tags: ['ErosChat', 'Sussurro', 'VIP X1'], cost: '25 - 60', badge: 'Áudio ErosChat', button: 'Gerar Mensagem de Voz' },
-            { id: 'audio_isolation', name: 'Audio Isolation (Limpeza)', provider: 'Eros Studio', tags: ['Limpeza', 'Studio Quality'], cost: '15 - 40', badge: 'Isolamento Acústico', button: 'Limpar Áudio' }
+            { id: 'voice_clone_musa', name: 'Voice Generator', provider: 'Eros Voice', tags: ['Voice Clone', 'Alta Fidelidade'], cost: '40 - 80', badge: 'Voice Generator', button: 'Sintetizar Voz' },
+            { id: 'music_generator', name: 'Music Generator', provider: 'Eros Audio', tags: ['Background Tracks', 'BGM'], cost: '30 - 60', badge: 'Music Generator', button: 'Gerar Trilha' },
+            { id: 'audio_gen_new', name: 'Audio Generator', provider: 'Eros Audio', isNew: true, tags: ['Text-to-Audio', 'SFX'], cost: '25 - 50', badge: 'Audio Generator', button: 'Gerar Áudio' }
           ],
+          recent: [],
           allProviders: {
-            'ErosChat Voice': [
-              { id: 'voice_clone_musa', name: 'Clonagem de Voz da Musa', tags: ['Fidelidade 100%'], cost: '30 - 80' },
-              { id: 'voice_gen_sensual', name: 'Gerador Sensual Sussurrado', tags: ['Sedução X1'], cost: '25 - 60' },
-              { id: 'audio_isolation', name: 'Isolador de Ruído', tags: ['Limpeza de Voz'], cost: '15 - 40' }
+            'Eros Voice': [
+              { id: 'voice_clone_musa', name: 'Clonagem de Voz da Musa', tags: ['Voz da Musa'], cost: '40 - 80' },
+              { id: 'audio_isolation', name: 'Audio Isolation Studio', tags: ['Limpeza de Ruído'], cost: '20 - 40' }
             ]
           }
         }
       };
 
+      function creatorModelMeta(model) {
+        const live = getLiveCreatorModel(model);
+        if (live) {
+          return {
+            badge: live.badge || live.name || model,
+            cost: live.cost_label || `${live.credits || 0} créditos`,
+            button: live.button || 'Gerar'
+          };
+        }
+        const table = {
+          eros_image_2k: { badge: 'Eros-Image™ 2K', cost: '100% Consistência • LoRA', button: 'Generate' },
+          auto_image: { badge: 'Auto Mode', cost: 'Multi-Engine Inteligente', button: 'Generate Auto' },
+          seedream_5: { badge: 'Seedream 5 Pro', cost: 'Swap de Face & Roupa', button: 'Executar Swap' },
+          cinematic_img: { badge: 'Cinematic Shot', cost: 'Composição Cinematográfica', button: 'Gerar Cena' },
+          magnific_one: { badge: 'Magnific One Pro', cost: 'Fidelidade Extrema', button: 'Gerar com Magnific' },
+          kling_image: { badge: 'Kling Image Pro', cost: 'Render 1080p Nativo', button: 'Gerar com Kling' },
+          chatgpt_import: { badge: 'GPT 2.6 Image', cost: 'Super-Prompt • Import', button: 'Importar Imagem GPT' },
+          nanobanana_21: { badge: 'Google Nano Banana 2.1', cost: 'Ultra Rápido • 2K', button: 'Gerar com Nano Banana' },
+          qwen_360: { badge: 'Qwen 360 Multi-Ângulo', cost: 'Consistência Orbital 360', button: 'Gerar Multi-Ângulo' },
+          krea_2: { badge: 'Krea 2 Raw Edit', cost: 'RAW Natural 35mm', button: 'Gerar com Krea 2' },
+          auto_video: { badge: 'Auto Video Engine', cost: 'Seleção Automática', button: 'Gerar Vídeo' },
+          wan_3_prime: { badge: 'Wan 3.0 Prime', cost: 'Vídeo Ultra Realista 1080p', button: 'Gerar com Wan 3.0' },
+          minimax_h3_max: { badge: 'MiniMax H3 Max', cost: 'Ultra Rápido 768p', button: 'Gerar com MiniMax H3' },
+          minimax_h3: { badge: 'MiniMax H3 (50% Off)', cost: 'Render 2K Fluido', button: 'Gerar com MiniMax' },
+          seedance_25: { badge: 'Seedance 2.5 Cinema', cost: 'Hiper-Realismo Cinematográfico', button: 'Gerar com Seedance' },
+          kling_4_video: { badge: 'Kling 4.0 Video', cost: 'Movimento Corporal Realista', button: 'Gerar com Kling 4.0' },
+          kling_4_motion: { badge: 'Kling Motion Control', cost: 'Troca de Corpo & Movimento', button: 'Transferir Movimento' },
+          openjutsu_workflow: { badge: 'OpenJutso Serverless', cost: 'Workflow Privado ComfyUI', button: 'Executar OpenJutso' },
+          voice_clone_musa: { badge: 'Voice Generator', cost: 'Clonagem Autêntica', button: 'Sintetizar Voz' },
+          music_generator: { badge: 'Music Generator', cost: 'Trilhas Sonoras', button: 'Gerar Música' },
+          audio_gen_new: { badge: 'Audio Generator', cost: 'Efeitos & Voz', button: 'Gerar Áudio' }
+        };
+        return table[model] || table.eros_image_2k;
+      }
+
+      /* CATÁLOGO DE SUB-FERRAMENTAS MAGNIFIC STYLE (SCREENSHOTS 1, 2, 3) */
       const CREATOR_SUBTOOLS_CATALOG = {
         image: [
-          { id: 'tool_img_gen', name: 'Image Generator', desc: 'Create images from text prompts', model: 'eros_image_2k', pinned: true },
-          { id: 'tool_img_editor', name: 'Image Editor', desc: 'Edit and modify existing images', model: 'krea_2', pinned: false },
-          { id: 'tool_img_upscaler', name: 'Image Upscaler', desc: 'Enhance resolution and detail', model: 'magnific_upscale', pinned: false },
-          { id: 'tool_img_cinematic', name: 'Cinematic Shot', desc: 'Generate cinematic compositions', model: 'eros_image_2k', pinned: false },
-          { id: 'tool_img_variations', name: 'Variations', desc: 'Create variations of an image', model: 'eros_image_2k', pinned: false },
-          { id: 'tool_img_skin', name: 'Skin Enhancer', desc: 'Retouch and enhance skin detail', model: 'eros_image_2k', pinned: false },
-          { id: 'tool_img_camera', name: 'Change Camera', desc: 'Adjust camera angle and lens (360°)', model: 'qwen_360', pinned: false },
-          { id: 'tool_img_swap', name: 'Face & Look Swap', desc: 'Swap face and clothing with Seedream', model: 'seedream_5', pinned: false },
-          { id: 'tool_img_rmbg', name: 'Remove Background', desc: 'Isolate subjects from background', model: 'krea_2', pinned: false },
-          { id: 'tool_img_relight', name: 'Relight', desc: 'Change lighting and atmosphere', model: 'eros_image_2k', pinned: false }
+          { id: 'tool_img_gen', name: 'Image Generator', desc: 'Create images from text prompts', model: 'eros_image_2k', pinned: true, icon: 'img_gen' },
+          { id: 'tool_img_editor', name: 'Image Editor', desc: 'Edit and modify existing images', model: 'krea_2', pinned: false, icon: 'img_edit' },
+          { id: 'tool_img_upscaler', name: 'Image Upscaler', desc: 'Enhance resolution and detail', model: 'magnific_one', pinned: false, icon: 'upscale' },
+          { id: 'tool_img_cinematic', name: 'Cinematic Shot', desc: 'Generate cinematic compositions', model: 'cinematic_img', pinned: false, icon: 'cinematic' },
+          { id: 'tool_img_variations', name: 'Variations', desc: 'Create variations of an image', model: 'eros_image_2k', pinned: false, icon: 'variations' },
+          { id: 'tool_img_skin', name: 'Skin Enhancer', desc: 'Retouch and enhance skin detail', model: 'eros_image_2k', pinned: false, icon: 'skin' },
+          { id: 'tool_img_camera', name: 'Change Camera', desc: 'Adjust camera angle and lens', model: 'qwen_360', pinned: false, icon: 'camera' },
+          { id: 'tool_img_mockup', name: 'Mockup Generator', desc: 'Place designs on product mockups', model: 'eros_image_2k', pinned: false, icon: 'mockup' },
+          { id: 'tool_img_rmbg', name: 'Remove Background', desc: 'Isolate subjects from background', model: 'krea_2', pinned: false, icon: 'rmbg' },
+          { id: 'tool_img_relight', name: 'Relight', desc: 'Change lighting and atmosphere', model: 'eros_image_2k', pinned: false, icon: 'relight' }
         ],
         video: [
-          { id: 'tool_vid_gen', name: 'Video Generator', desc: 'Create videos from text prompts', model: 'wan_3_prime', pinned: true },
-          { id: 'tool_vid_clip_editor', name: 'Clip Editor', desc: 'Trim, cut, and edit video clips', model: 'wan_3_prime', pinned: false },
-          { id: 'tool_vid_upscaler', name: 'Video Upscaler', desc: 'Enhance video resolution', model: 'wan_3_prime', pinned: false },
-          { id: 'tool_vid_motion', name: 'Motion Transfer', desc: 'Transfer motion to musa with Kling', model: 'kling_4_motion', pinned: false },
-          { id: 'tool_vid_project', name: 'Video Project ...', desc: 'Edit multi-clip video projects', model: 'wan_3_prime', isExperimental: true, pinned: false },
-          { id: 'tool_vid_speak', name: 'Speak', desc: 'Generate realistic talking videos', model: 'wan_3_prime', pinned: false },
-          { id: 'tool_vid_relight', name: 'Video Relight', desc: 'Change lighting and atmosphere', model: 'wan_3_prime', pinned: false },
-          { id: 'tool_vid_cinematic', name: 'Cinematic Video', desc: 'Generate cinematic video shots', model: 'kling_4_video', pinned: false }
+          { id: 'tool_vid_gen', name: 'Video Generator', desc: 'Create videos from text prompts', model: 'wan_3_prime', pinned: true, icon: 'vid_gen' },
+          { id: 'tool_vid_clip_editor', name: 'Clip Editor', desc: 'Trim, cut, and edit video clips', model: 'wan_3_prime', pinned: false, icon: 'clip_edit' },
+          { id: 'tool_vid_upscaler', name: 'Video Upscaler', desc: 'Enhance video resolution', model: 'wan_3_prime', pinned: false, icon: 'upscale' },
+          { id: 'tool_vid_modify', name: 'Modify video', desc: 'Modify your video with AI', model: 'kling_4_video', pinned: false, icon: 'modify_vid' },
+          { id: 'tool_vid_project', name: 'Video Project ...', desc: 'Edit multi-clip video projects', model: 'wan_3_prime', isExperimental: true, pinned: false, icon: 'project' },
+          { id: 'tool_vid_speak', name: 'Speak', desc: 'Generate realistic talking videos', model: 'wan_3_prime', pinned: false, icon: 'speak' },
+          { id: 'tool_vid_relight', name: 'Video Relight', desc: 'Change lighting and atmosphere', model: 'wan_3_prime', pinned: false, icon: 'relight' },
+          { id: 'tool_vid_cinematic', name: 'Cinematic Video', desc: 'Generate cinematic video shots', model: 'kling_4_video', pinned: false, icon: 'cinematic_vid' }
         ],
         audio: [
-          { id: 'tool_aud_voice', name: 'Voice Generator', desc: 'Generate realistic voiceovers', model: 'voice_clone_musa', pinned: true },
-          { id: 'tool_aud_music', name: 'Music Generator', desc: 'Create music from text prompts', model: 'voice_gen_sensual', pinned: false },
-          { id: 'tool_aud_gen', name: 'Audio Generator', desc: 'Create audio from text prompts', model: 'voice_gen_sensual', isNew: true, pinned: false },
-          { id: 'tool_aud_sfx', name: 'Sound Effect Generator', desc: 'Create custom sound effects', model: 'voice_gen_sensual', pinned: false },
-          { id: 'tool_aud_clone', name: 'Voice Cloning', desc: 'Clone any voice with AI', model: 'voice_clone_musa', pinned: false },
-          { id: 'tool_aud_changer', name: 'Voice Changer', desc: 'Transform voice characteristics', model: 'voice_gen_sensual', pinned: false },
-          { id: 'tool_aud_isolation', name: 'Audio Isolation', desc: 'Remove background noise from audio', model: 'audio_isolation', pinned: false }
+          { id: 'tool_aud_voice', name: 'Voice Generator', desc: 'Generate realistic voiceovers', model: 'voice_clone_musa', pinned: true, icon: 'mic' },
+          { id: 'tool_aud_music', name: 'Music Generator', desc: 'Create music from text prompts', model: 'music_generator', pinned: false, icon: 'music' },
+          { id: 'tool_aud_gen', name: 'Audio Generator', desc: 'Create audio from text prompts', model: 'audio_gen_new', isNew: true, pinned: false, icon: 'audio_wave' },
+          { id: 'tool_aud_sfx', name: 'Sound Effect Generator', desc: 'Create custom sound effects', model: 'audio_gen_new', pinned: false, icon: 'sfx' },
+          { id: 'tool_aud_clone', name: 'Voice Cloning', desc: 'Clone any voice with AI', model: 'voice_clone_musa', pinned: false, icon: 'clone' },
+          { id: 'tool_aud_changer', name: 'Voice Changer', desc: 'Transform voice characteristics', model: 'voice_clone_musa', pinned: false, icon: 'changer' },
+          { id: 'tool_aud_isolation', name: 'Audio Isolation', desc: 'Remove background noise from audio', model: 'voice_clone_musa', pinned: false, icon: 'isolation' }
         ]
       };
 
-      let currentStudioMode = 'image';
-      let currentCreatorBatchCount = 1;
-      let currentCreatorQuality = '2K · High';
+      /* ÍCONES SVG PERSONALIZADOS PARA CADA SUB-FERRAMENTA (SEM EMOJIS) */
+      function getSubtoolSvgIcon(iconKey) {
+        const icons = {
+          img_gen: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="m21 15-5-5L5 21"></path><path d="m19 5 1.5 1.5"></path></svg>',
+          img_edit: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="m14 8 2 2-7 7H7v-2l7-7Z"></path></svg>',
+          upscale: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>',
+          cinematic: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>',
+          variations: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="8" width="13" height="13" rx="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>',
+          skin: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>',
+          camera: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2"></rect></svg>',
+          mockup: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"></path></svg>',
+          rmbg: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line><path d="m14 8 2 2"></path><path d="m14 14 4 4"></path></svg>',
+          relight: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line></svg>',
+          vid_gen: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2"></rect><path d="m8 10 1.5 1.5"></path></svg>',
+          clip_edit: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><path d="m14 9 2 2-4 4h-2v-2l4-4Z"></path></svg>',
+          modify_vid: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>',
+          project: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 11v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8H4Z"></path><path d="m4 11 3-6h14l-3 6H4Z"></path></svg>',
+          speak: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M19 8a3 3 0 0 1 0 6"></path><path d="M22 6a6 6 0 0 1 0 10"></path></svg>',
+          cinematic_vid: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2"></rect></svg>',
+          mic: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>',
+          music: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>',
+          audio_wave: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>',
+          sfx: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>',
+          clone: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>',
+          changer: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>',
+          isolation: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="16" y1="7" x2="16" y2="17"></line><line x1="20" y1="10" x2="20" y2="14"></line></svg>'
+        };
+        return icons[iconKey] || icons.img_gen;
+      }
 
       function scrollStudioNav(direction) {
         const modes = ['image', 'video', 'audio'];
-        const curIdx = modes.indexOf(currentStudioMode);
-        if (direction === 'left' && curIdx > 0) setStudioMode(modes[curIdx - 1]);
-        else if (direction === 'right' && curIdx < modes.length - 1) setStudioMode(modes[curIdx + 1]);
+        let idx = modes.indexOf(currentStudioMode);
+        if (direction === 'left') {
+          idx = (idx - 1 + modes.length) % modes.length;
+        } else {
+          idx = (idx + 1) % modes.length;
+        }
+        setStudioMode(modes[idx]);
       }
       window.scrollStudioNav = scrollStudioNav;
 
       function toggleDnaEditorDrawer() {
-        const drawer = document.getElementById('boxDnaDrawer');
-        if (!drawer) return;
-        drawer.style.display = drawer.style.display === 'none' ? 'flex' : 'none';
+        const d = document.getElementById('boxDnaDrawer');
+        if (!d) return;
+        const willOpen = d.style.display === 'none';
+        d.style.display = willOpen ? 'flex' : 'none';
+        if (willOpen && currentCreatorProfileId) {
+          const dna = localStorage.getItem(`ghost_dna_${currentCreatorProfileId}`) || '';
+          const txt = document.getElementById('txtCreatorDna');
+          if (txt) txt.value = dna;
+          const status = document.getElementById('lblMusaDnaStatus');
+          if (status) status.innerText = dna ? `${dna.length} chars` : 'sem DNA';
+        }
       }
       window.toggleDnaEditorDrawer = toggleDnaEditorDrawer;
 
@@ -9009,29 +9213,36 @@
 
       function renderFlyoutToolsList() {
         const container = document.getElementById('listFlyoutTools');
-        const header = document.getElementById('lblFlyoutToolsHeader');
         if (!container) return;
         const mode = currentStudioMode || 'image';
-        if (header) {
-          header.innerText = mode === 'image' ? 'Ferramentas de Imagem' : (mode === 'video' ? 'Ferramentas de Vídeo' : 'Ferramentas de Áudio');
-        }
+
+        // Atualiza botões de abas dentro da gaveta
+        const tabImg = document.getElementById('drawerTabImage');
+        const tabVid = document.getElementById('drawerTabVideo');
+        const tabAud = document.getElementById('drawerTabAudio');
+        [tabImg, tabVid, tabAud].forEach(b => {
+          if (b) { b.style.background = 'transparent'; b.style.color = '#94a3b8'; }
+        });
+        const activeTab = mode === 'image' ? tabImg : (mode === 'video' ? tabVid : tabAud);
+        if (activeTab) { activeTab.style.background = '#272a30'; activeTab.style.color = '#fff'; }
+
         const tools = CREATOR_SUBTOOLS_CATALOG[mode] || [];
         container.innerHTML = tools.map(t => `
-          <div onclick="selectStudioSubTool('${t.id}', '${ghostEsc(t.name)}', '${t.model}')" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 9px; cursor: pointer; background: #141720; border: 1px solid rgba(255,255,255,0.06); transition: 0.2s;">
-            <div style="display: flex; align-items: center; gap: 9px;">
-              <div style="width: 26px; height: 26px; border-radius: 6px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; color: var(--accent-lime);">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect></svg>
+          <div onclick="selectStudioSubTool('${t.id}', '${ghostEsc(t.name)}', '${t.model}')" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 12px; border-radius: 12px; cursor: pointer; background: #131620; border: 1px solid rgba(255,255,255,0.06); transition: 0.15s;" onmouseover="this.style.background='#1a1e2b'; this.style.borderColor='rgba(255,255,255,0.12)';" onmouseout="this.style.background='#131620'; this.style.borderColor='rgba(255,255,255,0.06)';">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(45,212,191,0.08); display: flex; align-items: center; justify-content: center; color: #2dd4bf; flex-shrink: 0;">
+                ${getSubtoolSvgIcon(t.icon)}
               </div>
               <div>
-                <div style="font-size: 0.74rem; font-weight: 800; color: #fff; line-height: 1.1;">
-                  ${ghostEsc(t.name)}
-                  ${t.isNew ? '<span style="font-size: 0.5rem; background: #e11d48; color: #fff; padding: 1px 4px; border-radius: 3px; margin-left: 4px;">New</span>' : ''}
-                  ${t.isExperimental ? '<span style="font-size: 0.5rem; background: #8b5cf6; color: #fff; padding: 1px 4px; border-radius: 3px; margin-left: 4px;">Experimental</span>' : ''}
+                <div style="font-size: 0.85rem; font-weight: 800; color: #fff; line-height: 1.2; display: flex; align-items: center; gap: 6px;">
+                  <span>${ghostEsc(t.name)}</span>
+                  ${t.isNew ? '<span style="font-size: 0.58rem; background: #e11d48; color: #fff; padding: 1px 6px; border-radius: 4px; font-weight: 800;">New</span>' : ''}
+                  ${t.isExperimental ? '<span style="font-size: 0.58rem; background: #be185d; color: #fff; padding: 1px 6px; border-radius: 4px; font-weight: 800;">Experimental</span>' : ''}
                 </div>
-                <div style="font-size: 0.58rem; color: #94a3b8; margin-top: 1px;">${ghostEsc(t.desc)}</div>
+                <div style="font-size: 0.68rem; color: #94a3b8; margin-top: 2px; line-height: 1.25;">${ghostEsc(t.desc)}</div>
               </div>
             </div>
-            ${t.pinned ? '<span style="color: #64748b; font-size: 0.75rem;">📌</span>' : ''}
+            ${t.pinned ? '<span style="color: #64748b; display: flex;"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M16 3a1 1 0 0 1 .993.883L17 4v3.586l1.707 1.707a1 1 0 0 1 .284.576L19 10v2a1 1 0 0 1-.883.993L18 13h-4v7a1 1 0 0 1-1.993.117L12 20v-7H8a1 1 0 0 1-.993-.883L7 12v-2a1 1 0 0 1 .206-.608l.087-.099L9 7.586V4a1 1 0 0 1 .883-.993L10 3h6z"/></svg></span>' : ''}
           </div>
         `).join('');
       }
@@ -9060,12 +9271,15 @@
         const modal = document.getElementById('modalCreatorModelPicker');
         const backdrop = document.getElementById('modalCreatorModelPickerBackdrop');
         if (modal) modal.style.display = 'none';
-        if (backdrop) backdrop.style.display = 'none';
+        if (backdrop && (!document.getElementById('flyoutToolsDrawer') || document.getElementById('flyoutToolsDrawer').style.display === 'none')) {
+          backdrop.style.display = 'none';
+        }
       }
       window.closeCreatorModelPicker = closeCreatorModelPicker;
 
       function renderModelPickerContent(filterTerm = '') {
         const featuredList = document.getElementById('listPickerFeatured');
+        const recentList = document.getElementById('listPickerRecent');
         const providersList = document.getElementById('listPickerProviders');
         if (!featuredList || !providersList) return;
 
@@ -9075,45 +9289,65 @@
         // Render Featured
         const filteredFeatured = modeData.featured.filter(m => !term || m.name.toLowerCase().includes(term) || m.tags.some(t => t.toLowerCase().includes(term)));
         featuredList.innerHTML = filteredFeatured.map(m => `
-          <div onclick="selectModelFromPicker('${m.id}')" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 8px; cursor: pointer; background: #131620; border: 1px solid rgba(255,255,255,0.06); transition: 0.2s;">
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <div style="width: 22px; height: 22px; border-radius: 5px; background: rgba(190,242,100,0.12); color: var(--accent-lime); display: flex; align-items: center; justify-content: center;">
+          <div onclick="selectModelFromPicker('${m.id}')" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 8px; cursor: pointer; background: #131620; border: 1px solid rgba(255,255,255,0.06); transition: 0.15s;" onmouseover="this.style.background='#1a1e2b'; this.style.borderColor='rgba(255,255,255,0.12)';" onmouseout="this.style.background='#131620'; this.style.borderColor='rgba(255,255,255,0.06)';">
+            <div style="display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0;">
+              <div style="width: 22px; height: 22px; border-radius: 5px; background: rgba(190,242,100,0.12); color: var(--accent-lime); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
               </div>
-              <div>
-                <div style="font-size: 0.72rem; font-weight: 800; color: #fff; line-height: 1.1;">
-                  ${ghostEsc(m.name)}
-                  ${m.isNew ? '<span style="font-size: 0.48rem; background: #e11d48; color: #fff; padding: 1px 4px; border-radius: 3px; margin-left: 3px;">New</span>' : ''}
+              <div style="min-width: 0;">
+                <div style="font-size: 0.74rem; font-weight: 800; color: #fff; line-height: 1.1; display: flex; align-items: center; gap: 4px;">
+                  <span>${ghostEsc(m.name)}</span>
+                  ${m.isNew ? '<span style="font-size: 0.5rem; background: #e11d48; color: #fff; padding: 1px 4px; border-radius: 3px; font-weight: 800;">New</span>' : ''}
+                  ${m.isDiscount ? `<span style="font-size: 0.5rem; background: rgba(225,29,72,0.15); color: #f43f5e; border: 1px solid rgba(225,29,72,0.3); padding: 1px 4px; border-radius: 3px; font-weight: 800;">${m.isDiscount}</span>` : ''}
                 </div>
-                <div style="display: flex; gap: 4px; margin-top: 2px;">
-                  ${m.tags.slice(0, 3).map(tag => `<span style="font-size: 0.54rem; color: #94a3b8; background: rgba(255,255,255,0.04); padding: 1px 4px; border-radius: 3px;">${ghostEsc(tag)}</span>`).join('')}
+                <div style="display: flex; gap: 4px; margin-top: 3px; flex-wrap: wrap;">
+                  ${m.tags.slice(0, 5).map(tag => `<span style="font-size: 0.54rem; color: #94a3b8; background: rgba(255,255,255,0.04); padding: 1px 5px; border-radius: 3px;">${ghostEsc(tag)}</span>`).join('')}
                 </div>
               </div>
             </div>
-            <div style="text-align: right;">
-              <span style="font-size: 0.64rem; font-weight: 700; color: var(--accent-lime);">${ghostEsc(m.cost)}</span>
+            <div style="text-align: right; flex-shrink: 0; margin-left: 8px;">
+              <span style="font-size: 0.66rem; font-weight: 700; color: var(--accent-lime);">${ghostEsc(m.cost)}</span>
             </div>
           </div>
-        `).join('') || '<div style="font-size: 0.64rem; color: #64748b; padding: 8px;">Nenhum modelo encontrado.</div>';
+        `).join('') || '<div style="font-size: 0.64rem; color: #64748b; padding: 8px;">Nenhum modelo em destaque.</div>';
 
-        // Render Providers
+        // Render Recent
+        if (recentList) {
+          const recents = modeData.recent || [];
+          if (!recents.length) {
+            recentList.innerHTML = '<div style="font-size: 0.64rem; color: #64748b; padding: 6px 8px;">Nenhum modelo recente.</div>';
+          } else {
+            recentList.innerHTML = recents.map(m => `
+              <div onclick="selectModelFromPicker('${m.id}')" style="display: flex; align-items: center; justify-content: space-between; padding: 7px 10px; border-radius: 8px; cursor: pointer; background: #131620; border: 1px solid rgba(255,255,255,0.06); transition: 0.15s;" onmouseover="this.style.background='#1a1e2b';" onmouseout="this.style.background='#131620';">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <span style="font-size: 0.74rem; font-weight: 800; color: #fff;">${ghostEsc(m.name)}</span>
+                  <div style="display: flex; gap: 4px;">
+                    ${m.tags.map(t => `<span style="font-size: 0.54rem; color: #94a3b8; background: rgba(255,255,255,0.04); padding: 1px 4px; border-radius: 3px;">${ghostEsc(t)}</span>`).join('')}
+                  </div>
+                </div>
+                <span style="font-size: 0.64rem; font-weight: 700; color: #cbd5e1;">${ghostEsc(m.cost)}</span>
+              </div>
+            `).join('');
+          }
+        }
+
+        // Render Providers Accordion
         let provHtml = '';
         for (const [providerName, list] of Object.entries(modeData.allProviders)) {
           const matching = list.filter(m => !term || m.name.toLowerCase().includes(term) || (m.tags && m.tags.some(t => t.toLowerCase().includes(term))));
           if (!matching.length) continue;
           provHtml += `
             <div style="border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; overflow: hidden; background: #0a0c12;">
-              <div style="font-size: 0.66rem; font-weight: 800; color: #cbd5e1; padding: 7px 10px; background: #12151e; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between;">
+              <div onclick="toggleProviderAccordion(this)" style="font-size: 0.68rem; font-weight: 800; color: #cbd5e1; padding: 8px 12px; background: #12151e; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
                 <span>${ghostEsc(providerName)}</span>
-                <span style="color: #64748b; font-size: 0.58rem;">${matching.length} modelos</span>
+                <span style="color: #64748b; font-size: 0.58rem; display: flex; align-items: center; gap: 4px;">
+                  ${matching.length} modelos ▾
+                </span>
               </div>
-              <div style="display: flex; flex-direction: column;">
+              <div class="provider-models-drawer" style="display: flex; flex-direction: column; gap: 4px; padding: 6px;">
                 ${matching.map(m => `
-                  <div onclick="selectModelFromPicker('${m.id}')" style="display: flex; justify-content: space-between; align-items: center; padding: 7px 10px; border-bottom: 1px solid rgba(255,255,255,0.03); cursor: pointer;">
-                    <div>
-                      <span style="font-size: 0.7rem; font-weight: 700; color: #cbd5e1;">${ghostEsc(m.name)}</span>
-                      <div style="font-size: 0.54rem; color: #64748b; margin-top: 1px;">${m.tags ? m.tags.join(' • ') : ''}</div>
-                    </div>
+                  <div onclick="selectModelFromPicker('${m.id}')" style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; border-radius: 6px; cursor: pointer; background: #141722; transition: 0.15s;" onmouseover="this.style.background='#1d2130';" onmouseout="this.style.background='#141722';">
+                    <span style="font-size: 0.68rem; font-weight: 700; color: #fff;">${ghostEsc(m.name)}</span>
                     <span style="font-size: 0.62rem; color: var(--accent-lime); font-weight: 700;">${ghostEsc(m.cost)}</span>
                   </div>
                 `).join('')}
@@ -9121,7 +9355,7 @@
             </div>
           `;
         }
-        providersList.innerHTML = provHtml;
+        providersList.innerHTML = provHtml || '<div style="font-size: 0.64rem; color: #64748b; padding: 8px;">Nenhum provedor encontrado.</div>';
       }
 
       function filterCreatorModels(term) {
@@ -9129,21 +9363,30 @@
       }
       window.filterCreatorModels = filterCreatorModels;
 
-      function applyModelPickerFilter(type, btn) {
+      function applyModelPickerFilter(filterType, btn) {
         document.querySelectorAll('.btn-picker-filter').forEach(b => {
+          b.classList.remove('active');
           b.style.background = '#12141c';
           b.style.color = '#94a3b8';
+          b.style.borderColor = 'rgba(255,255,255,0.06)';
         });
         if (btn) {
+          btn.classList.add('active');
           btn.style.background = '#1e2330';
           btn.style.color = '#fff';
+          btn.style.borderColor = 'rgba(255,255,255,0.1)';
         }
-        if (type === 'all') renderModelPickerContent('');
-        else if (type === 'fast') renderModelPickerContent('Rápido');
-        else if (type === 'photoreal') renderModelPickerContent('Fotorrealismo');
-        else if (type === 'swap') renderModelPickerContent('Swap');
+        renderModelPickerContent(filterType === 'all' ? '' : filterType);
       }
       window.applyModelPickerFilter = applyModelPickerFilter;
+
+      function toggleProviderAccordion(headerEl) {
+        if (!headerEl || !headerEl.nextElementSibling) return;
+        const drawer = headerEl.nextElementSibling;
+        const isOpen = drawer.style.display !== 'none';
+        drawer.style.display = isOpen ? 'none' : 'flex';
+      }
+      window.toggleProviderAccordion = toggleProviderAccordion;
 
       function selectModelFromPicker(modelId) {
         currentCreatorModel = modelId;
@@ -9171,7 +9414,7 @@
       window.selectModelFromPicker = selectModelFromPicker;
 
       function cycleCreatorRatio() {
-        const ratios = ['9:16', '1:1', '4:5', '16:9'];
+        const ratios = ['16:9', '9:16', '1:1', '4:5'];
         const curIdx = ratios.indexOf(currentCreatorAspectRatio);
         const next = ratios[(curIdx + 1) % ratios.length];
         currentCreatorAspectRatio = next;
@@ -9224,74 +9467,91 @@
         const boxPrompt = document.getElementById('boxPromptContainer');
         const boxBottom = document.getElementById('boxBottomControlsRow');
         const titleEl = document.getElementById('lblActiveToolTitle');
+        const promptHeader = document.getElementById('lblPromptHeader');
+        const promptTxt = document.getElementById('txtCreatorPrompt');
 
         if (mode === 'image') {
           if (boxPrompt) boxPrompt.style.display = 'block';
           if (boxBottom) boxBottom.style.display = 'flex';
           if (titleEl) titleEl.innerText = 'Image Generator';
+          if (promptHeader) promptHeader.innerText = 'PROMPT';
+          if (promptTxt) promptTxt.placeholder = 'Describe your image, try @ for references or / for templates';
           selectModelFromPicker('eros_image_2k');
         } else if (mode === 'video') {
           if (boxPrompt) boxPrompt.style.display = 'block';
           if (boxBottom) boxBottom.style.display = 'flex';
           if (titleEl) titleEl.innerText = 'Video Generator';
+          if (promptHeader) promptHeader.innerText = 'SHOT (+)';
+          if (promptTxt) promptTxt.placeholder = 'Describe your video—try @ to add references';
           selectModelFromPicker('wan_3_prime');
         } else if (mode === 'audio') {
-          if (boxPrompt) boxPrompt.style.display = 'none';
-          if (boxBottom) boxBottom.style.display = 'none';
+          if (boxPrompt) boxPrompt.style.display = 'block';
+          if (boxBottom) boxBottom.style.display = 'flex';
           if (titleEl) titleEl.innerText = 'Voice Generator';
+          if (promptHeader) promptHeader.innerText = 'VOICE SCRIPT';
+          if (promptTxt) promptTxt.placeholder = 'Digite o texto que a musa irá falar no áudio...';
           selectModelFromPicker('voice_clone_musa');
         }
       }
       window.setStudioMode = setStudioMode;
 
-      function onCreatorMusaChange(profileId) {
-        const profiles = getCreatorProfilesSync();
-        const p = profiles.find(x => String(x.id) === String(profileId)) || { id: profileId, musa_nome: profileId };
-        currentCreatorProfileId = p.id;
-        currentCreatorMusa = p.musa_nome || 'Musa';
-        const data = getCreatorDataForProfile(p.id) || {};
-        currentCreatorRefs = Array.isArray(data.references) ? data.references.slice(0, 3) : [];
-        currentCreatorDna = data.dna || {};
-        currentCreatorMediaUrl = currentCreatorRefs[0] || CREATOR_PLACEHOLDER;
-
-        // Atualiza avatar no frame quadradinho da musa
-        const avatarImg = document.getElementById('imgMusaAvatarMini');
-        if (avatarImg) avatarImg.src = currentCreatorMediaUrl;
-
-        // Verifica se a musa tem LoRA calibrado (NÃO assume calibrado por padrão!)
-        const hasLora = Boolean(data.has_lora === true || p.has_lora === true);
+      async function onCreatorMusaChange(profileId) {
+        currentCreatorProfileId = profileId;
+        const mini = document.getElementById('imgMusaAvatarMini');
+        const dnaTxt = document.getElementById('txtCreatorDna');
+        const dnaStatus = document.getElementById('lblMusaDnaStatus');
+        const offerBox = document.getElementById('boxMusaLoraOffer');
         const badgeActive = document.getElementById('badgeMusaLoraActive');
         const badgeDefault = document.getElementById('badgeMusaLoraDefault');
-        const offerBox = document.getElementById('boxMusaLoraOffer');
 
-        if (hasLora) {
-          if (badgeActive) badgeActive.style.display = 'inline-block';
-          if (badgeDefault) badgeDefault.style.display = 'none';
-          if (offerBox) offerBox.style.display = 'none';
-        } else {
-          // Se não tem LoRA, EXIBE O ANÚNCIO DE CALIBRAR LORA!
-          if (badgeActive) badgeActive.style.display = 'none';
-          if (badgeDefault) badgeDefault.style.display = 'inline-block';
-          if (offerBox) offerBox.style.display = 'flex';
+        // Carregar foto e dados da persona selecionada
+        const personas = window.GHOST_PERSONAS || [];
+        const p = personas.find(x => x.id === profileId) || {};
+
+        if (mini) {
+          mini.src = p.avatar_url || p.photo || CREATOR_PLACEHOLDER;
         }
 
-        const dnaText = buildDnaPrompt(currentCreatorDna);
-        const dnaArea = document.getElementById('txtCreatorDna');
-        if (dnaArea) dnaArea.value = currentCreatorDna.prompt || '';
-        const status = document.getElementById('lblMusaDnaStatus');
-        if (status) status.innerText = dnaText ? 'DNA ativo' : 'sem DNA';
+        // Buscar DNA e status de LoRA salvo
+        const savedDna = localStorage.getItem(`ghost_dna_${profileId}`) || p.dna || '';
+        if (dnaTxt) dnaTxt.value = savedDna;
+        if (dnaStatus) dnaStatus.innerText = savedDna ? `${savedDna.length} chars` : 'sem DNA';
 
-        const img = document.getElementById('imgCreatorMainPreview');
-        if (img) img.src = currentCreatorMediaUrl;
-        renderCreatorRefStrip();
-        renderCreatorHistory();
-        updateCreatorModelUI();
+        // REGRA DE OURO DO USUÁRIO:
+        // Enquanto a musa NÃO tiver LoRA calibrado, o anúncio para calibrar DEVE aparecer!
+        // Quando a musa TIVER LoRA calibrado, o anúncio some e aparece o badge verde de consistência 100%!
+        let hasLora = false;
+        try {
+          const res = await fetch(`/api/personas/${profileId}/lora_status`);
+          if (res.ok) {
+            const data = await res.json();
+            hasLora = data.has_lora === true;
+          }
+        } catch (e) {
+          hasLora = p.has_lora === true;
+        }
+
+        if (hasLora) {
+          if (offerBox) offerBox.style.display = 'none';
+          if (badgeActive) badgeActive.style.display = 'inline-block';
+          if (badgeDefault) badgeDefault.style.display = 'none';
+        } else {
+          if (offerBox) offerBox.style.display = 'flex';
+          if (badgeActive) badgeActive.style.display = 'none';
+          if (badgeDefault) badgeDefault.style.display = 'inline-block';
+        }
       }
       window.onCreatorMusaChange = onCreatorMusaChange;
 
       function onCreatorModelChange(model) {
         currentCreatorModel = model;
         const meta = creatorModelMeta(model);
+        const live = getLiveCreatorModel(model);
+        const liveControl = live && live.control;
+        const headerName = document.getElementById('lblSelectedModelName');
+        if (headerName) headerName.innerText = meta.badge || model;
+        const headerTag = document.getElementById('lblSelectedModelTag');
+        if (headerTag) headerTag.innerText = meta.cost || '';
 
         const allBoxes = [
           'boxErosImageControls',
@@ -9314,7 +9574,7 @@
         const boxRefsImg = document.getElementById('boxReferencesImage');
         const boxRefsVid = document.getElementById('boxReferencesVideo');
 
-        if (model === 'eros_image_2k') {
+        if (model === 'eros_image_2k' || liveControl === 'eros') {
           if (boxErosFrame) boxErosFrame.style.display = 'flex';
           if (boxGeneralRefs) boxGeneralRefs.style.display = 'none';
           if (boxRefsImg) boxRefsImg.style.display = 'none';
@@ -9325,9 +9585,9 @@
 
           if (currentStudioMode === 'video') {
             if (boxGeneralRefs) boxGeneralRefs.style.display = 'block';
-            if (boxRefsVid) boxRefsVid.style.display = 'grid';
+            if (boxRefsVid) boxRefsVid.style.display = 'flex';
             if (boxRefsImg) boxRefsImg.style.display = 'none';
-          } else if (currentStudioMode === 'image' && ['kling_image', 'nanobanana_21', 'krea_2'].includes(model)) {
+          } else if (currentStudioMode === 'image') {
             if (boxGeneralRefs) boxGeneralRefs.style.display = 'block';
             if (boxRefsImg) boxRefsImg.style.display = 'grid';
             if (boxRefsVid) boxRefsVid.style.display = 'none';
@@ -9336,38 +9596,24 @@
           }
 
           const isMotion = ['kling_4_motion', 'kling_3_motion', 'kling_26_motion', 'omni_flash_21', 'openjutsu_workflow'].includes(model);
-          const isImg2Vid = ['wan_3_prime', 'minimax_h3', 'seedance_25', 'seedance_20', 'kling_4_video', 'kling_3_video', 'grok_15_video', 'ltx_25_video', 'flux_3_video', 'veo_31', 'veo_31_lite'].includes(model);
-          const isAudio = ['voice_clone_musa', 'voice_gen_sensual', 'audio_isolation'].includes(model);
+          const isImg2Vid = ['wan_3_prime', 'minimax_h3', 'minimax_h3_max', 'seedance_25', 'seedance_20', 'kling_4_video', 'kling_3_video', 'grok_15_video', 'ltx_25_video', 'flux_3_video', 'veo_31', 'veo_31_lite', 'auto_video'].includes(model);
+          const isAudio = ['voice_clone_musa', 'music_generator', 'audio_gen_new', 'audio_isolation'].includes(model);
 
           if (model === 'kling_image') document.getElementById('boxKlingImageControls')?.style.setProperty('display', 'flex');
-          else if (model === 'seedream_5') document.getElementById('boxSeedreamControls')?.style.setProperty('display', 'flex');
+          else if (model === 'seedream_5' || liveControl === 'seedream') document.getElementById('boxSeedreamControls')?.style.setProperty('display', 'flex');
           else if (model === 'chatgpt_import') document.getElementById('boxChatGptControls')?.style.setProperty('display', 'flex');
           else if (model === 'qwen_360') document.getElementById('boxQwenControls')?.style.setProperty('display', 'flex');
-          else if (isMotion) document.getElementById('boxMotionControls')?.style.setProperty('display', 'flex');
-          else if (isImg2Vid) document.getElementById('boxImageToVideoControls')?.style.setProperty('display', 'flex');
-          else if (isAudio) document.getElementById('boxAudioControls')?.style.setProperty('display', 'flex');
+          else if (isMotion || liveControl === 'motion') document.getElementById('boxMotionControls')?.style.setProperty('display', 'flex');
+          else if (isImg2Vid || liveControl === 'video') document.getElementById('boxImageToVideoControls')?.style.setProperty('display', 'flex');
+          else if (isAudio || liveControl === 'audio') document.getElementById('boxAudioControls')?.style.setProperty('display', 'flex');
         }
 
         const btnGen = document.getElementById('lblBtnGenText');
-        const btnExecute = document.getElementById('btnExecuteCreatorGen');
-        const badge = document.getElementById('lblCanvasModelBadge');
-        const cost = document.getElementById('creatorCostLabel');
-
-        if (btnGen) btnGen.innerText = meta.button;
-        if (badge) badge.innerText = meta.badge;
-        if (cost) cost.innerText = meta.cost;
-
-        if (btnExecute) {
-          btnExecute.style.background = 'var(--accent-lime)';
-          btnExecute.style.color = '#000';
-          btnExecute.style.boxShadow = '0 4px 14px rgba(190,242,100,0.25)';
-        }
-
-        if (model === 'eros_image_2k') {
-          const activeBtn = document.querySelector('.btn-eros-ck.active') || document.querySelector('.btn-eros-ck');
-          selectErosLens(currentErosCheckpoint || 'raw', activeBtn);
-        }
-        setCreatorRatio(currentCreatorAspectRatio, document.querySelector('.btn-ratio-choice.active'));
+        if (btnGen) btnGen.innerText = meta.button || 'Generate';
+        const costLbl = document.getElementById('creatorCostLabel');
+        if (costLbl) costLbl.innerText = meta.cost || '(c) 80 - 120';
+        const canvasBadge = document.getElementById('lblCanvasModelBadge');
+        if (canvasBadge) canvasBadge.innerText = meta.badge || model;
       }
       window.onCreatorModelChange = onCreatorModelChange;
 
@@ -9378,150 +9624,122 @@
 
       function setCreatorRatio(ratio, btn) {
         currentCreatorAspectRatio = ratio;
-        document.querySelectorAll('.btn-ratio-choice').forEach(b => {
-          b.style.background = '#0d0e14';
-          b.style.borderColor = 'var(--border-subtle)';
-          b.style.color = '#94a3b8';
-          b.classList.remove('active');
-        });
-        if (btn) {
-          btn.style.background = '#1c1e28';
-          btn.style.borderColor = 'var(--accent-lime)';
-          btn.style.color = 'var(--accent-lime)';
-          btn.classList.add('active');
-        }
-        const lblSpec = document.getElementById('lblCanvasSpec');
-        if (lblSpec) {
-          const lensMap = {
-            raw: 'Lente RAW 35mm',
-            film_pov: 'Lente POV 28mm',
-            glam: 'Lente 85mm VIP'
-          };
-          const lensInfo = (currentCreatorModel === 'eros_image_2k') ? ` • ${lensMap[currentErosCheckpoint || 'raw']}` : '';
-          if (ratio === '9:16') lblSpec.innerText = `1080×1920 • 9:16${lensInfo}`;
-          else if (ratio === '1:1') lblSpec.innerText = `1080×1080 • 1:1${lensInfo}`;
-          else if (ratio === '4:5') lblSpec.innerText = `1080×1350 • 4:5${lensInfo}`;
-          else lblSpec.innerText = `1920×1080 • 16:9${lensInfo}`;
-        }
+        const spec = document.getElementById('lblCanvasSpec');
+        if (spec) spec.innerText = `${currentCreatorQuality} • ${ratio}`;
       }
+      window.setCreatorRatio = setCreatorRatio;
 
       function suggestRandomScenePrompt() {
-        const prompts = {
-          raw: [
-            'Sentada em um café elegante nos Jardins em São Paulo, tomando café gelado, jaqueta de couro e jeans moderno, luz natural de fim de tarde, foto espontânea sem pose.',
-            'Caminhando na praia de Maresias ao entardecer, biquíni terracota com saída de praia de linho branco, vento suave no cabelo, luz dourada natural.',
-            'No espelho da academia após o treino, look fitness minimalista preto, cabelo preso despojado, garrafinha térmica, iluminação ambiente sem flash.',
-            'Almoçando no terraço de um bistrô sofisticado, luz suave da tarde, sorriso leve e descontraído, foto estilo tirada por amiga.'
-          ],
-          film_pov: [
-            'Foto sensual estilo POV 35mm, deitada na cama com lençóis brancos de linho desarrumados, camisa social oversized entreaberta, grão analógico cinematográfico.',
-            'POV tomando taça de vinho à meia-luz em um lounge intimista, vestido de seda com alças finas, iluminação quente e misteriosa estilo cinema 35mm.',
-            'Ensaio intimista em frente ao espelho com iluminação suave de abajur, lingerie de renda preta elegante, visual vintage 35mm Kodachrome.'
-          ],
-          glam: [
-            'Ensaio fotográfico editorial de luxo, vestido de alta costura com fenda elegante, fundo escuro minimalista, iluminação dramática de estúdio estilo capa da Vogue.',
-            'No lounge VIP de uma cobertura em Dubai, vestido de gala dourado cintilante, taça de champanhe, iluminação de holofotes e skyline noturno ao fundo.',
-            'Editorial de beleza em estúdio profissional, close-up nos olhos e lábios com maquiagem perfeita, joias finas, iluminação beauty dish cristalina.'
-          ]
-        };
-        const activeLens = (currentCreatorModel === 'eros_image_2k') ? (currentErosCheckpoint || 'raw') : 'raw';
-        const list = prompts[activeLens] || prompts.raw;
-        const p = list[Math.floor(Math.random() * list.length)];
+        const scenes = [
+          'foto casual de espelho no provador de loja, iluminação suave de teto, jeans de cintura alta e top preto simples, olhar confiante',
+          'sentada em um café elegante em Milão, segurando xícara de porcelana, luz dourada da tarde, camisa de seda branca',
+          'selfie no banco do passageiro de um carro esportivo, golden hour suave, cabelo levemente despenteado pelo vento, óculos escuros na gola',
+          'caminhando pela orla ao pôr do sol, vestido floral esvoaçante, luz de contra-dia natural, foco no olhar sereno',
+          'foto no quarto estilo estúdio, luz quente de abajur, roupão de cetim preto, maquiagem natural e pele brilhante'
+        ];
+        const pick = scenes[Math.floor(Math.random() * scenes.length)];
         const txt = document.getElementById('txtCreatorPrompt');
-        if (txt) { txt.value = p; txt.focus(); }
+        if (txt) {
+          txt.value = pick;
+          showToast('Sugestão de cena aplicada!', 2500);
+        }
       }
+      window.suggestRandomScenePrompt = suggestRandomScenePrompt;
 
+      function selectErosLens(lensType, btn) {
+        currentErosLens = lensType;
+        document.querySelectorAll('.btn-lens').forEach(b => {
+          b.classList.remove('active');
+          b.style.background = '#12141c';
+          b.style.color = '#94a3b8';
+          b.style.border = '1px solid rgba(255,255,255,0.06)';
+        });
+        if (btn) {
+          btn.classList.add('active');
+          btn.style.background = '#1e2230';
+          btn.style.color = '#fff';
+          btn.style.border = '1.5px solid var(--accent-lime)';
+        }
+      }
+      window.selectErosLens = selectErosLens;
+
+      /* UPLOAD E CONTROLES ESPECÍFICOS DOS MODELOS */
       async function handleHiggsFrame(files, which) {
         const file = (files || [])[0];
         if (!file) return;
         try {
           const data = await ghostCompressImage(file, 768, 0.82);
-          if (which === 'first') {
-            currentCreatorHiggsFirst = data;
-            const drop = document.getElementById('higgsFirstDrop');
-            if (drop) drop.innerHTML = `<img src="${data}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;"><span style="position:relative;z-index:1;background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;padding:2px 6px;border-radius:4px;">Trocar</span>`;
-          } else if (which === 'end') {
-            currentCreatorHiggsEnd = data;
-            const drop = document.getElementById('higgsEndDrop');
-            if (drop) drop.innerHTML = `<img src="${data}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;"><span style="position:relative;z-index:1;background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;padding:2px 6px;border-radius:4px;">Trocar</span>`;
-          } else if (which === 'object') {
-            window.__currentHiggsObject = data;
-            const drop = document.getElementById('higgsObjDrop');
-            if (drop) drop.innerHTML = `<img src="${data}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;"><span style="position:relative;z-index:1;background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;padding:2px 6px;border-radius:4px;">Trocar</span>`;
-          }
+          if (which === 'first') currentCreatorHiggsFirst = data;
+          else if (which === 'end') currentCreatorHiggsEnd = data;
+          showToast('Frame de referência carregado com sucesso!', 2500);
         } catch (err) {
           showToast(err.message || 'Não foi possível processar o frame.', 4000);
         }
       }
+      window.handleHiggsFrame = handleHiggsFrame;
 
       async function handleWanVideoUpload(files) {
         const file = (files || [])[0];
         if (!file) return;
-        const drop = document.getElementById('dropWanVideo');
-        if (drop) drop.innerHTML = `<span style="font-size:1.1rem;">🎬</span><span style="font-size:0.58rem;font-weight:800;color:#c084fc;">${file.name.substring(0, 14)}...</span>`;
         showToast(`Vídeo viral carregado: ${file.name}`, 3000);
       }
+      window.handleWanVideoUpload = handleWanVideoUpload;
 
       async function handleWanFaceUpload(files) {
         const file = (files || [])[0];
         if (!file) return;
         try {
           const data = await ghostCompressImage(file, 768, 0.85);
-          const drop = document.getElementById('dropWanFace');
-          if (drop) drop.innerHTML = `<img src="${data}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;"><span style="position:relative;z-index:1;background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;padding:2px 6px;border-radius:4px;">Trocar</span>`;
-          showToast('Rosto da musa carregado para Wan 3.0!', 2500);
-        } catch(e){}
+          showToast('Rosto de identidade carregado!', 2500);
+        } catch (e) {
+          showToast('Erro ao comprimir imagem da face.', 4000);
+        }
       }
+      window.handleWanFaceUpload = handleWanFaceUpload;
 
       async function handleSeedreamTargetUpload(files) {
         const file = (files || [])[0];
         if (!file) return;
         try {
-          const data = await ghostCompressImage(file, 1024, 0.88);
-          const drop = document.getElementById('dropSeedreamTarget');
-          if (drop) drop.innerHTML = `<img src="${data}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;"><span style="position:relative;z-index:1;background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;padding:2px 6px;border-radius:4px;">Trocar</span>`;
-          showToast('Imagem alvo pronta para Seedream 5.0!', 2500);
-        } catch(e){}
+          const data = await ghostCompressImage(file, 768, 0.85);
+          currentSeedreamTarget = data;
+          showToast('Foto destino do Seedream carregada!', 2500);
+        } catch (e) {
+          showToast('Erro no upload da foto destino.', 4000);
+        }
       }
+      window.handleSeedreamTargetUpload = handleSeedreamTargetUpload;
 
       async function handleSeedreamFaceUpload(files) {
         const file = (files || [])[0];
         if (!file) return;
         try {
           const data = await ghostCompressImage(file, 768, 0.85);
-          const drop = document.getElementById('dropSeedreamFace');
-          if (drop) drop.innerHTML = `<img src="${data}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;"><span style="position:relative;z-index:1;background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;padding:2px 6px;border-radius:4px;">Trocar</span>`;
-          showToast('Rosto da musa carregado para Seedream!', 2500);
-        } catch(e){}
-
-      function setSeedreamPrompt(val) {
-        const input = document.getElementById('txtSeedreamEditPrompt');
-        if (input) {
-          input.value = val;
-          input.focus();
+          currentSeedreamFace = data;
+          showToast('Rosto da Musa para swap carregado!', 2500);
+        } catch (e) {
+          showToast('Erro no upload do rosto da musa.', 4000);
         }
-        showToast('Comando Seedream preenchido: ' + val, 2500);
+      }
+      window.handleSeedreamFaceUpload = handleSeedreamFaceUpload;
+
+      function setSeedreamPrompt(text) {
+        const el = document.getElementById('txtSeedreamPrompt');
+        if (el) el.value = text;
       }
       window.setSeedreamPrompt = setSeedreamPrompt;
 
       async function handleMotionGuideUpload(files) {
         const file = (files || [])[0];
         if (!file) return;
-        const drop = document.getElementById('dropMotionGuide');
-        if (drop) drop.innerHTML = `<span style="font-size:1.1rem;">🎬</span><span style="font-size:0.58rem;font-weight:800;color:#38bdf8;">${file.name.substring(0, 14)}...</span>`;
-        showToast(`Vídeo guia de movimento carregado: ${file.name}`, 3000);
+        showToast(`Vídeo guia de movimento: ${file.name}`, 3000);
       }
       window.handleMotionGuideUpload = handleMotionGuideUpload;
 
       async function handleMotionMusaUpload(files) {
         const file = (files || [])[0];
         if (!file) return;
-        try {
-          const data = await ghostCompressImage(file, 768, 0.85);
-          const drop = document.getElementById('dropMotionMusa');
-          if (drop) drop.innerHTML = `<img src="${data}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;"><span style="position:relative;z-index:1;background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;padding:2px 6px;border-radius:4px;">Trocar</span>`;
-          showToast('Foto da musa vinculada ao Motion Transfer!', 2500);
-        } catch(e){}
+        showToast('Foto da musa carregada para o Motion Control!', 2500);
       }
       window.handleMotionMusaUpload = handleMotionMusaUpload;
 
@@ -9529,11 +9747,11 @@
         const file = (files || [])[0];
         if (!file) return;
         try {
-          const data = await ghostCompressImage(file, 1024, 0.88);
-          const drop = document.getElementById('dropImg2VidStart');
-          if (drop) drop.innerHTML = `<img src="${data}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;"><span style="position:relative;z-index:1;background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;padding:2px 6px;border-radius:4px;">Trocar</span>`;
-          showToast('Start frame carregado com sucesso!', 2500);
-        } catch(e){}
+          const data = await ghostCompressImage(file, 768, 0.85);
+          showToast('Frame inicial (Start image) definido!', 2500);
+        } catch (e) {
+          showToast('Erro ao carregar imagem inicial.', 4000);
+        }
       }
       window.handleImg2VidStart = handleImg2VidStart;
 
@@ -9541,129 +9759,137 @@
         const file = (files || [])[0];
         if (!file) return;
         try {
-          const data = await ghostCompressImage(file, 1024, 0.88);
-          const drop = document.getElementById('dropImg2VidEnd');
-          if (drop) drop.innerHTML = `<img src="${data}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;"><span style="position:relative;z-index:1;background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;padding:2px 6px;border-radius:4px;">Trocar</span>`;
-          showToast('End frame carregado com sucesso!', 2500);
-        } catch(e){}
+          const data = await ghostCompressImage(file, 768, 0.85);
+          showToast('Frame final (End image) definido!', 2500);
+        } catch (e) {
+          showToast('Erro ao carregar imagem final.', 4000);
+        }
       }
       window.handleImg2VidEnd = handleImg2VidEnd;
 
       async function handleAudioSampleUpload(files) {
         const file = (files || [])[0];
         if (!file) return;
-        const drop = document.getElementById('dropAudioSample');
-        if (drop) drop.innerHTML = `<span style="font-size:1.2rem;">🎙️</span><span style="font-size:0.66rem;font-weight:800;color:#fbbf24;">${file.name.substring(0, 20)}</span>`;
-        showToast(`Amostra de áudio da musa carregada: ${file.name}`, 3500);
+        showToast(`Amostra de áudio carregada: ${file.name}`, 3000);
       }
       window.handleAudioSampleUpload = handleAudioSampleUpload;
-      }
 
       function setQwenAngle(angle, btn) {
-        window.__currentQwenAngle = angle;
+        currentQwenAngle = angle;
         document.querySelectorAll('.btn-qwen-angle').forEach(b => {
-          b.style.background = '#0d0e14';
-          b.style.borderColor = 'rgba(255,255,255,0.08)';
-          b.style.color = '#94a3b8';
           b.classList.remove('active');
+          b.style.background = '#141720';
+          b.style.color = '#94a3b8';
+          b.style.borderColor = 'rgba(255,255,255,0.06)';
         });
         if (btn) {
-          btn.style.background = '#13281e';
-          btn.style.borderColor = '#34d399';
-          btn.style.color = '#34d399';
           btn.classList.add('active');
+          btn.style.background = '#1e2230';
+          btn.style.color = '#fff';
+          btn.style.borderColor = 'var(--accent-lime)';
         }
-        showToast(`Ângulo orbital definido: ${angle}°`, 2000);
       }
+      window.setQwenAngle = setQwenAngle;
 
-      async function processImportedGptImage(dataUrl) {
+      async function processImportedGptImage(base64Data) {
+        const overlay = document.getElementById('creatorLoadingOverlay');
+        const status = document.getElementById('lblCreatorLoadingStatus');
+        if (overlay) overlay.style.display = 'flex';
+        if (status) status.innerText = 'Sanitizando metadados com GhostStealth™...';
+
         try {
-          currentCreatorMediaUrl = dataUrl;
-          const img = document.getElementById('imgCreatorMainPreview');
-          if (img) img.src = dataUrl;
-          renderCreatorHistory(dataUrl);
-          await applyAppleExifToCreatorMedia();
-          showToast('🛡️ Imagem do ChatGPT blindada! C2PA purgado e EXIF Apple injetado.', 5000);
+          const cleansed = await applyAntiHashPDQ(base64Data);
+          currentCreatorGeneratedUrl = cleansed;
+          const mainImg = document.getElementById('imgCreatorMainPreview');
+          if (mainImg) mainImg.src = cleansed;
+
+          currentCreatorHistory.unshift(cleansed);
+          if (currentCreatorHistory.length > 20) currentCreatorHistory.pop();
+          renderCreatorHistory();
+
+          await autoSaveMediaToGallery(cleansed);
+          showToast('Imagem blindada com sucesso pelo GhostStealth™!', 4000);
         } catch (err) {
-          showToast('Imagem importada e pronta para envio à galeria.', 3500);
+          console.error(err);
+          showToast('Erro ao sanitizar imagem.', 4000);
+        } finally {
+          if (overlay) overlay.style.display = 'none';
         }
       }
+      window.processImportedGptImage = processImportedGptImage;
 
       async function handleCreatorImportFile(files) {
         const file = (files || [])[0];
         if (!file) return;
-        try {
-          const data = await ghostCompressImage(file, 1600, 0.95);
-          await processImportedGptImage(data);
-        } catch (err) {
-          showToast(err.message || 'Não foi possível importar a imagem.', 4000);
-        }
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+          await processImportedGptImage(e.target.result);
+        };
+        reader.readAsDataURL(file);
       }
+      window.handleCreatorImportFile = handleCreatorImportFile;
 
       function copyOptimizedGptPrompt() {
-        const dna = (document.getElementById('txtCreatorDna')?.value || '').trim();
-        const prompt = (document.getElementById('txtCreatorPrompt')?.value || '').trim();
-        const full = `Gere uma foto realista tirada com câmera de smartphone (iPhone 16 Pro Max), iluminação natural autêntica sem aspecto plástico de IA. ${dna ? 'Mulher: ' + dna + '. ' : ''}${prompt ? 'Cena: ' + prompt : 'Selfie espontânea no espelho com visual elegante e iluminação suave.'}`;
-        navigator.clipboard.writeText(full).then(() => {
-          showToast('📋 Super-Prompt copiado! Cole no seu ChatGPT.', 3500);
+        const promptEl = document.getElementById('txtGptSuperPrompt');
+        const text = promptEl ? promptEl.innerText : '';
+        navigator.clipboard.writeText(text).then(() => {
+          showToast('Prompt copiado para a área de transferência!', 3000);
         });
       }
+      window.copyOptimizedGptPrompt = copyOptimizedGptPrompt;
 
+      /* MODAIS DE OFERTA DE LORA E VIP EROSCHAT */
       function openOrderLoraModal() {
-        const modal = document.getElementById('orderLoraModal');
+        const modal = document.getElementById('modalOrderLora');
+        if (!modal) return;
         const nameInput = document.getElementById('txtLoraOrderMusaName');
-        const dnaInput = document.getElementById('txtLoraOrderDna');
-        if (nameInput) nameInput.value = currentCreatorMusa || 'Musa Oficial';
-        if (dnaInput) dnaInput.value = (document.getElementById('txtCreatorDna')?.value || '');
-        if (modal) modal.style.display = 'flex';
+        const personas = window.GHOST_PERSONAS || [];
+        const p = personas.find(x => x.id === currentCreatorProfileId) || {};
+        if (nameInput) nameInput.value = p.name || 'Minha Musa Virtual';
+        modal.style.display = 'flex';
       }
+      window.openOrderLoraModal = openOrderLoraModal;
 
       function closeOrderLoraModal() {
-        const modal = document.getElementById('orderLoraModal');
+        const modal = document.getElementById('modalOrderLora');
         if (modal) modal.style.display = 'none';
       }
+      window.closeOrderLoraModal = closeOrderLoraModal;
 
       function submitLoraOrder() {
-        const musaName = document.getElementById('txtLoraOrderMusaName')?.value || 'Musa';
         closeOrderLoraModal();
-        if (currentCreatorProfileId) {
-          saveCreatorDataForProfile(currentCreatorProfileId, { musa_nome: currentCreatorMusa, dna: currentCreatorDna, references: currentCreatorRefs, has_lora: true });
-          onCreatorMusaChange(currentCreatorProfileId);
-        }
-        showToast(`LoRA da musa ${musaName} calibrado com sucesso!`, 3500);
-        setTimeout(() => {
-          openStudioPixModal(49.90);
-        }, 1000);
+        showToast('Solicitação de calibração enviada! O modelo ficará pronto em instantes.', 5000);
       }
+      window.submitLoraOrder = submitLoraOrder;
 
       function openErosChatVipWaitlist() {
-        const modal = document.getElementById('erosChatVipModal');
+        const modal = document.getElementById('modalErosChatVip');
         if (modal) modal.style.display = 'flex';
       }
+      window.openErosChatVipWaitlist = openErosChatVipWaitlist;
 
       function closeErosChatVipWaitlist() {
-        const modal = document.getElementById('erosChatVipModal');
+        const modal = document.getElementById('modalErosChatVip');
         if (modal) modal.style.display = 'none';
       }
+      window.closeErosChatVipWaitlist = closeErosChatVipWaitlist;
 
       function submitErosChatVip() {
         closeErosChatVipWaitlist();
-        showToast('🔒 Parabéns! Sua vaga VIP no ErosChat™ (comissão até 70%) foi garantida com sucesso.', 6000);
+        showToast('Parabéns! Sua vaga VIP no ecossistema ErosChat foi reservada.', 5000);
       }
+      window.submitErosChatVip = submitErosChatVip;
 
-      // Listener global de Ctrl+V para colar imagens do ChatGPT instantaneamente
+      // Event listener para colar imagem diretamente no Studio (Ctrl+V / Cmd+V)
       window.addEventListener('paste', async (e) => {
-        const activeSection = currentActiveSection || 'studio';
-        if (activeSection !== 'studio' && activeSection !== 'creator') return;
-        const items = (e.clipboardData || e.originalEvent?.clipboardData)?.items || [];
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
         for (const item of items) {
-          if (item.type && item.type.indexOf('image') !== -1) {
-            e.preventDefault();
+          if (item.kind === 'file' && item.type.startsWith('image/')) {
             const blob = item.getAsFile();
             const reader = new FileReader();
             reader.onload = async (event) => {
               const b64 = event.target.result;
-              showToast('📥 Imagem colada via Ctrl+V! Executando purga C2PA e blindagem Apple...', 3500);
+              showToast('Imagem colada detectada! Executando blindagem GhostStealth™...', 3500);
               await processImportedGptImage(b64);
             };
             reader.readAsDataURL(blob);
@@ -9672,6 +9898,23 @@
         }
       });
 
+      async function pollCreatorTask(taskId) {
+        const token = await getSupabaseAccessToken();
+        for (let attempt = 0; attempt < 40; attempt++) {
+          await new Promise(resolve => setTimeout(resolve, 3000));
+          const res = await fetch('https://www.ghostlens.cloud/api/wavespeed_proxy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+            body: JSON.stringify({ action: 'creator_status', task_id: taskId })
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data.message || 'Falha ao consultar o workflow.');
+          if (data.status === 'success') return data;
+          if (data.status === 'failed') throw new Error(data.message || 'O workflow falhou.');
+        }
+        throw new Error('O workflow demorou demais. Tente novamente em instantes.');
+      }
+
       async function executeGhostCreatorGen() {
         if (!currentCreatorProfileId) {
           showToast('Selecione ou crie uma persona primeiro.', 4000);
@@ -9679,6 +9922,10 @@
         }
         if (currentCreatorModel === 'chatgpt_import') {
           document.getElementById('creatorImportInput')?.click();
+          return;
+        }
+        if (!getLiveCreatorModel(currentCreatorModel)) {
+          showToast('Este modelo ainda não está conectado. Configure USEAPI_TOKEN ou RunningHub.', 5000);
           return;
         }
         if (!currentCreatorRefs.length && currentCreatorModel !== 'eros_image_2k') {
@@ -9718,10 +9965,16 @@
           const dnaText = buildDnaPrompt(currentCreatorDna);
           const fullPrompt = [dnaText, prompt].filter(Boolean).join('. ');
           const token = await getSupabaseAccessToken();
+          const liveModel = getLiveCreatorModel(currentCreatorModel) || {};
+          const isRunningHub = liveModel.provider === 'runninghub' || Boolean(liveModel.workflow_key);
+          const personaCreator = getCreatorDataForProfile(currentCreatorProfileId) || {};
           const payload = {
             action: 'creator_generate',
-            provider: 'useapi',
-            model: currentCreatorModel === 'eros_image_2k' ? 'nanobanana_pro' : currentCreatorModel,
+            provider: isRunningHub ? 'runninghub' : 'useapi',
+            workflow_key: isRunningHub ? (liveModel.workflow_key || currentCreatorModel) : undefined,
+            model: isRunningHub ? currentCreatorModel : (currentCreatorModel === 'eros_image_2k' ? 'nanobanana_pro' : currentCreatorModel),
+            lora_file: personaCreator.lora_file || personaCreator.lora_url || undefined,
+            lora_weight: Number(document.getElementById('rngLoraWeight')?.value || 1),
             studio_mode: currentStudioMode,
             eros_checkpoint: currentCreatorModel === 'eros_image_2k' ? currentErosCheckpoint : undefined,
             prompt: fullPrompt,
@@ -9744,6 +9997,19 @@
               throw new Error(data.message || 'A geração real ainda não está conectada. Falta configurar USEAPI_TOKEN e USEAPI_ACCOUNT_EMAIL no servidor.');
             }
             throw new Error(data.message || data.error || 'Falha ao gerar a imagem.');
+          }
+          if (data.status === 'processing' && data.task_id) {
+            if (statusLbl) statusLbl.innerText = 'Workflow enviado. Aguardando o RunningHub...';
+            const final = await pollCreatorTask(data.task_id);
+            const finalUrl = final.image_url || '';
+            if (!finalUrl) throw new Error('O workflow não retornou imagem.');
+            currentCreatorMediaUrl = finalUrl;
+            const img = document.getElementById('imgCreatorMainPreview');
+            if (img) img.src = finalUrl;
+            if (timeLbl) timeLbl.innerText = `Render: ${((Date.now() - start) / 1000).toFixed(1)}s`;
+            renderCreatorHistory(finalUrl);
+            showToast('✨ Imagem gerada com sucesso!', 4000);
+            return;
           }
           const url = data.image_url || (data.image_base64 ? `data:image/jpeg;base64,${data.image_base64}` : '');
           if (!url) throw new Error('A API não retornou uma imagem.');

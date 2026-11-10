@@ -18,7 +18,7 @@ const {
   enforceRateLimit,
   supabaseRest
 } = require('../lib/ghostlens-backend');
-const { generateCreatorImage, creatorConfigured } = require('../lib/creator');
+const { generateCreatorImage, queryCreatorTask, getCreatorCatalog, creatorConfigured } = require('../lib/creator');
 
 const WAVESPEED_API_KEY = process.env.WAVESPEED_API_KEY || '';
 const WAVESPEED_API = (process.env.WAVESPEED_API_BASE || 'https://api.wavespeed.ai/api/v3').replace(/\/+$/, '');
@@ -125,11 +125,16 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   if (req.method === 'GET') {
+    const queryAction = String((req.query && req.query.action) || '').trim();
+    if (queryAction === 'creator_catalog') {
+      return res.status(200).json({ models: getCreatorCatalog() });
+    }
     return res.status(200).json({
       status: 'online',
-      service: 'GhostLens Media Proxy 1.1',
+      service: 'GhostLens Media Proxy 1.2',
       wavespeed: WAVESPEED_API_KEY ? 'configured' : 'not_configured',
-      creator: creatorConfigured ? 'configured' : 'not_configured'
+      creator: creatorConfigured ? 'configured' : 'not_configured',
+      runninghub: process.env.RUNNINGHUB_API_KEY ? 'configured' : 'not_configured'
     });
   }
 
@@ -171,6 +176,11 @@ module.exports = async (req, res) => {
 
     if (action === 'creator_generate') {
       const result = await generateCreatorImage(body, user);
+      return res.status(result.status).json(result.payload);
+    }
+
+    if (action === 'creator_status') {
+      const result = await queryCreatorTask(body.task_id);
       return res.status(result.status).json(result.payload);
     }
 
