@@ -8428,34 +8428,79 @@
                 <select id="selCreatorModel" style="display: none;" onchange="onCreatorModelChange(this.value)"></select>
               </div>
 
-              <!-- SEÇÃO DE REFERÊNCIAS (REFERENCES - SCREENSHOT 4 & 5) -->
-              <div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                  <label style="font-size: 0.62rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Referências (0/10)</label>
+              <!-- ─── PAINEL DA MUSA PARA EROS-IMAGE (APENAS O FRAME QUADRADINHO DA MUSA + LORA) ─── -->
+              <div id="boxErosMusaFrame" style="background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <!-- O frame quadradinho com a foto da musa selecionada -->
+                  <div style="position: relative; width: 62px; height: 62px; flex-shrink: 0; border-radius: 10px; overflow: hidden; border: 1.5px solid var(--accent-lime); background: #000; box-shadow: 0 4px 14px rgba(0,0,0,0.5);">
+                    <img id="imgMusaAvatarMini" src="${CREATOR_PLACEHOLDER}" alt="Avatar da Musa" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                  </div>
+
+                  <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px;">
+                    <div style="display: flex; gap: 6px; align-items: center;">
+                      <select id="selCreatorMusa" onchange="onCreatorMusaChange(this.value)" style="flex: 1; background: #12141c; border: 1px solid var(--border-subtle); color: #fff; padding: 6px 8px; border-radius: 6px; font-weight: 700; font-size: 0.76rem; outline: none;"></select>
+                      <button type="button" onclick="openGhostProfileModal()" title="Criar nova persona" style="width: 28px; height: 28px; background: #1a1c26; border: 1px solid rgba(255,255,255,0.08); color: var(--accent-lime); border-radius: 6px; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center;">＋</button>
+                    </div>
+
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px; flex-wrap: wrap;">
+                      <div id="boxMusaLoraStatus">
+                        <span id="badgeMusaLoraActive" style="display: none; background: rgba(190,242,100,0.15); color: var(--accent-lime); border: 1px solid rgba(190,242,100,0.3); font-size: 0.58rem; font-weight: 800; padding: 2px 7px; border-radius: 4px;">
+                          LoRA Calibrado (100% Consistência)
+                        </span>
+                        <span id="badgeMusaLoraDefault" style="display: inline-block; background: rgba(255,255,255,0.06); color: #94a3b8; font-size: 0.58rem; font-weight: 700; padding: 2px 6px; border-radius: 4px;">
+                          LoRA Padrão
+                        </span>
+                      </div>
+                      <button type="button" onclick="toggleDnaEditorDrawer()" style="background: transparent; border: none; color: var(--accent-lime); font-size: 0.62rem; font-weight: 700; text-decoration: underline; cursor: pointer; padding: 0;">
+                        Editar DNA
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
-                <!-- MODO IMAGEM: STYLE / CHARACTER / ADD -->
-                <div id="boxReferencesImage" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-                  <div onclick="selectErosLens('raw', this)" style="background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer; transition: 0.2s;">
+                <!-- OFERTA DE CALIBRAR LORA (SÓ APARECE SE A PERSONA NÃO TIVER LORA CALIBRADO AINDA) -->
+                <div id="boxMusaLoraOffer" style="display: flex; align-items: center; justify-content: space-between; background: rgba(190,242,100,0.05); border: 1px dashed rgba(190,242,100,0.3); border-radius: 8px; padding: 8px 10px; gap: 8px;">
+                  <div style="font-size: 0.62rem; color: #cbd5e1; line-height: 1.3;">
+                    Consistência facial fotográfica de 100%.
+                  </div>
+                  <button type="button" onclick="openOrderLoraModal()" style="background: var(--accent-lime); color: #000; font-weight: 900; font-size: 0.64rem; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; white-space: nowrap;">
+                    Calibrar LoRA (R$ 49,90)
+                  </button>
+                </div>
+
+                <!-- DRAWER COLAPSÁVEL DE EDIÇÃO DO DNA (OCULTO POR PADRÃO) -->
+                <div id="boxDnaDrawer" style="display: none; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px; flex-direction: column; gap: 6px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.62rem; font-weight: 800; color: #94a3b8;">DNA BASE DA MUSA</span>
+                    <span id="lblMusaDnaStatus" style="font-size: 0.58rem; color: var(--accent-lime);">sem DNA</span>
+                  </div>
+                  <textarea id="txtCreatorDna" rows="2" placeholder="Ex: brasileira 23 anos, cabelo castanho iluminado, olhos amendoados..." style="width: 100%; background: #12141c; border: 1px solid var(--border-subtle); color: #fff; padding: 7px 9px; border-radius: 6px; font-size: 0.7rem; font-family: inherit; resize: vertical; outline: none;"></textarea>
+                  <div style="display: flex; justify-content: flex-end;">
+                    <button type="button" onclick="saveCreatorDnaFromStudio()" style="background: #1e2230; border: 1px solid rgba(255,255,255,0.1); color: #fff; font-size: 0.62rem; font-weight: 700; padding: 4px 10px; border-radius: 5px; cursor: pointer;">Salvar DNA</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ─── SEÇÃO DE REFERÊNCIAS GERAIS (USADA APENAS POR OUTROS MODELOS QUE USAM MULTI-REFS) ─── -->
+              <div id="boxGeneralReferencesSection" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <label id="lblGeneralReferencesTitle" style="font-size: 0.62rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Referências (0/10)</label>
+                </div>
+
+                <!-- MODO IMAGEM GERAL: STYLE / ADD -->
+                <div id="boxReferencesImage" style="display: none; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+                  <div onclick="selectErosLens('raw', this)" style="background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; height: 75px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer;">
                     <span style="color: #94a3b8;">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                     </span>
                     <span style="font-size: 0.66rem; font-weight: 700; color: #cbd5e1;">Style</span>
                   </div>
 
-                  <div onclick="toggleMusaDrawer()" style="background: #0a0c12; border: 1.5px solid var(--accent-lime); border-radius: 10px; height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; position: relative; overflow: hidden; box-shadow: 0 4px 14px rgba(0,0,0,0.4);">
-                    <div style="width: 32px; height: 32px; border-radius: 50%; overflow: hidden; border: 1px solid var(--accent-lime); background: #000;">
-                      <img id="imgMusaAvatarMini" src="${CREATOR_PLACEHOLDER}" alt="Avatar da Musa" style="width: 100%; height: 100%; object-fit: cover; display: block;">
-                    </div>
-                    <span id="lblActiveMusaName" style="font-size: 0.64rem; font-weight: 800; color: #fff; max-width: 90%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Musa</span>
-                    <span id="badgeMusaLoraActive" style="display: none; position: absolute; top: 4px; right: 4px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent-lime);"></span>
-                  </div>
-
-                  <div onclick="document.getElementById('creatorImportInput')?.click()" style="background: #0a0c12; border: 1px dashed rgba(255,255,255,0.14); border-radius: 10px; height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer; transition: 0.2s;">
+                  <div onclick="document.getElementById('creatorImportInput')?.click()" style="background: #0a0c12; border: 1px dashed rgba(255,255,255,0.14); border-radius: 10px; height: 75px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer;">
                     <span style="color: #64748b;">
                       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     </span>
-                    <span style="font-size: 0.66rem; font-weight: 700; color: #64748b;">Add</span>
+                    <span style="font-size: 0.66rem; font-weight: 700; color: #64748b;">Add Media</span>
                   </div>
                 </div>
 
@@ -8463,43 +8508,23 @@
                 <div id="boxReferencesVideo" style="display: none; grid-template-columns: repeat(3, 1fr); gap: 8px;">
                   <div onclick="document.getElementById('fileImg2VidStart')?.click()" style="background: #0a0c12; border: 1px dashed rgba(255,255,255,0.12); border-radius: 10px; height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer;">
                     <span style="color: #38bdf8;">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                     </span>
                     <span style="font-size: 0.64rem; font-weight: 700; color: #cbd5e1;">Start image</span>
                   </div>
                   <div onclick="document.getElementById('fileImg2VidEnd')?.click()" style="background: #0a0c12; border: 1px dashed rgba(255,255,255,0.12); border-radius: 10px; height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer;">
                     <span style="color: #38bdf8;">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                     </span>
                     <span style="font-size: 0.64rem; font-weight: 700; color: #cbd5e1;">End image</span>
                   </div>
                   <div onclick="document.getElementById('fileMotionGuide')?.click()" style="background: #0a0c12; border: 1px solid rgba(56,189,248,0.3); border-radius: 10px; height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; position: relative;">
                     <span style="position: absolute; top: 4px; right: 4px; background: #e11d48; color: #fff; font-size: 0.5rem; font-weight: 900; padding: 1px 4px; border-radius: 3px;">NEW</span>
                     <span style="color: #38bdf8;">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2"></rect></svg>
                     </span>
                     <span style="font-size: 0.62rem; font-weight: 800; color: #38bdf8;">Motion Transfer</span>
                   </div>
-                </div>
-              </div>
-
-              <!-- GAVETA COLAPSÁVEL DA MUSA (PERSONA, LORA E DNA) -->
-              <div id="boxMusaDrawer" style="display: none; background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px; flex-direction: column; gap: 8px;">
-                <div style="display: flex; gap: 6px; align-items: center;">
-                  <select id="selCreatorMusa" onchange="onCreatorMusaChange(this.value)" style="flex: 1; background: #12141c; border: 1px solid var(--border-subtle); color: #fff; padding: 6px 8px; border-radius: 6px; font-weight: 700; font-size: 0.74rem; outline: none;"></select>
-                  <button type="button" onclick="openGhostProfileModal()" title="Criar nova persona" style="width: 28px; height: 28px; background: #1a1c26; border: 1px solid rgba(255,255,255,0.08); color: var(--accent-lime); border-radius: 6px; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center;">＋</button>
-                </div>
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                  <span id="badgeMusaLoraDefault" style="font-size: 0.58rem; color: #94a3b8;">Status: LoRA Padrão</span>
-                  <button type="button" onclick="toggleDnaEditorDrawer()" style="background: transparent; border: none; color: var(--accent-lime); font-size: 0.62rem; font-weight: 700; cursor: pointer; padding: 0;">Editar DNA</button>
-                </div>
-                <div id="boxMusaLoraOffer" style="display: flex; align-items: center; justify-content: space-between; background: rgba(190,242,100,0.05); border: 1px dashed rgba(190,242,100,0.3); border-radius: 6px; padding: 6px 8px; gap: 6px;">
-                  <span style="font-size: 0.6rem; color: #cbd5e1;">Aumente a consistência facial</span>
-                  <button type="button" onclick="openOrderLoraModal()" style="background: var(--accent-lime); color: #000; font-weight: 900; font-size: 0.62rem; border: none; padding: 4px 8px; border-radius: 5px; cursor: pointer;">Calibrar LoRA</button>
-                </div>
-                <div id="boxDnaDrawer" style="display: none; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 6px; flex-direction: column; gap: 6px;">
-                  <textarea id="txtCreatorDna" rows="2" placeholder="DNA base da musa..." style="width: 100%; background: #12141c; border: 1px solid var(--border-subtle); color: #fff; padding: 6px; border-radius: 5px; font-size: 0.68rem; outline: none; resize: vertical;"></textarea>
-                  <button type="button" onclick="saveCreatorDnaFromStudio()" style="align-self: flex-end; background: #1e2230; border: 1px solid rgba(255,255,255,0.1); color: #fff; font-size: 0.6rem; font-weight: 700; padding: 3px 8px; border-radius: 4px; cursor: pointer;">Salvar DNA</button>
                 </div>
               </div>
 
@@ -8774,11 +8799,9 @@
         currentCreatorDna = data.dna || {};
         currentCreatorMediaUrl = currentCreatorRefs[0] || CREATOR_PLACEHOLDER;
 
-        // Atualiza avatar da musa na moldurinha
+        // Atualiza avatar no frame quadradinho da musa
         const avatarImg = document.getElementById('imgMusaAvatarMini');
-        if (avatarImg) {
-          avatarImg.src = currentCreatorMediaUrl;
-        }
+        if (avatarImg) avatarImg.src = currentCreatorMediaUrl;
 
         // Verifica se a musa tem LoRA calibrado
         const hasLora = Boolean(data.has_lora === true || p.has_lora === true || profileId === 'camila');
@@ -8789,11 +8812,11 @@
         if (hasLora) {
           if (badgeActive) badgeActive.style.display = 'inline-block';
           if (badgeDefault) badgeDefault.style.display = 'none';
-          if (offerBox) offerBox.style.display = 'none'; // Não exibe oferta quando tem LoRA!
+          if (offerBox) offerBox.style.display = 'none';
         } else {
           if (badgeActive) badgeActive.style.display = 'none';
           if (badgeDefault) badgeDefault.style.display = 'inline-block';
-          if (offerBox) offerBox.style.display = 'flex'; // Exibe apenas se não tiver LoRA
+          if (offerBox) offerBox.style.display = 'flex';
         }
 
         const dnaText = buildDnaPrompt(currentCreatorDna);
@@ -8801,534 +8824,6 @@
         if (dnaArea) dnaArea.value = currentCreatorDna.prompt || '';
         const status = document.getElementById('lblMusaDnaStatus');
         if (status) status.innerText = dnaText ? 'DNA ativo' : 'sem DNA';
-
-        const img = document.getElementById('imgCreatorMainPreview');
-        if (img) img.src = currentCreatorMediaUrl;
-        renderCreatorRefStrip();
-        renderCreatorHistory();
-        updateCreatorModelUI();
-      }
-
-      function saveCreatorDnaFromStudio() {
-        if (!currentCreatorProfileId) return;
-        const val = (document.getElementById('txtCreatorDna')?.value || '').trim();
-        currentCreatorDna = { ...currentCreatorDna, prompt: val };
-        saveCreatorDataForProfile(currentCreatorProfileId, { musa_nome: currentCreatorMusa, dna: currentCreatorDna, references: currentCreatorRefs });
-        const status = document.getElementById('lblMusaDnaStatus');
-        if (status) status.innerText = val ? 'DNA ativo' : 'sem DNA';
-        showToast('DNA da musa atualizado.', 2200);
-      }
-
-      function renderCreatorRefStrip() {
-        const strip = document.getElementById('creatorRefStrip');
-        const count = document.getElementById('creatorRefCount');
-        if (count) count.innerText = `${currentCreatorRefs.length}/3`;
-        if (!strip) return;
-        if (!currentCreatorRefs.length) {
-          strip.innerHTML = `<label for="creatorRefInput" style="grid-column: span 3; min-height: 116px; border: 1.5px dashed rgba(190,242,100,0.35); border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; cursor: pointer; color: #bef264; background: rgba(190,242,100,0.04);"><span style="font-size: 1.5rem; line-height: 1;">＋</span><span style="font-size: 0.68rem; font-weight: 800;">Adicionar foto de referência</span><span style="font-size: 0.58rem; color: #94a3b8;">Rosto limpo, boa luz, sem óculos escuros</span></label>`;
-          return;
-        }
-        const thumbs = currentCreatorRefs.map((src, i) => `
-          <div onclick="selectCreatorRef(${i})" style="position: relative; height: 104px; border-radius: 9px; overflow: hidden; border: 1.5px solid ${i === 0 ? 'rgba(190,242,100,0.65)' : 'rgba(255,255,255,0.08)'}; background: #080a0f; cursor: pointer;">
-            <img src="${src}" alt="Referência ${i + 1}" style="width: 100%; height: 100%; object-fit: cover; display: block;">
-            ${i === 0 ? '<span style="position:absolute;left:4px;bottom:4px;background:rgba(0,0,0,.72);color:#bef264;font-size:.5rem;font-weight:800;padding:1px 5px;border-radius:4px;">PRINCIPAL</span>' : ''}
-            <button type="button" onclick="event.stopPropagation(); removeCreatorRef(${i})" style="position:absolute;top:4px;right:4px;width:20px;height:20px;border:none;border-radius:50%;background:rgba(0,0,0,.72);color:#fff;font-size:.68rem;cursor:pointer;">✕</button>
-          </div>
-        `).join('');
-        const addTile = currentCreatorRefs.length < 3 ? `<label for="creatorRefInput" style="height: 104px; border: 1.5px dashed rgba(190,242,100,0.3); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; color: #bef264; background: rgba(190,242,100,0.03);"><span style="font-size: 1.2rem; line-height: 1;">＋</span><span style="font-size: 0.58rem; font-weight: 700;">Adicionar</span></label>` : '';
-        strip.innerHTML = thumbs + addTile;
-      }
-
-      async function handleCreatorRefFiles(files) {
-        if (!currentCreatorProfileId) {
-          showToast('Crie ou selecione uma persona primeiro.', 4000);
-          return;
-        }
-        const list = Array.from(files || []);
-        const room = 3 - currentCreatorRefs.length;
-        if (room <= 0) return;
-        for (const file of list.slice(0, room)) {
-          try {
-            const data = await ghostCompressImage(file, 768, 0.82);
-            currentCreatorRefs.push(data);
-          } catch (err) {
-            showToast(err.message || 'Não foi possível processar a imagem.', 4000);
-          }
-        }
-        const input = document.getElementById('creatorRefInput');
-        if (input) input.value = '';
-        saveCreatorDataForProfile(currentCreatorProfileId, { musa_nome: currentCreatorMusa, dna: currentCreatorDna, references: currentCreatorRefs });
-        if (currentCreatorMediaUrl === CREATOR_PLACEHOLDER && currentCreatorRefs[0]) {
-          currentCreatorMediaUrl = currentCreatorRefs[0];
-          const img = document.getElementById('imgCreatorMainPreview');
-          if (img) img.src = currentCreatorMediaUrl;
-        }
-        renderCreatorRefStrip();
-        renderCreatorHistory();
-      }
-
-      function removeCreatorRef(index) {
-        if (!currentCreatorProfileId) return;
-        currentCreatorRefs.splice(index, 1);
-        saveCreatorDataForProfile(currentCreatorProfileId, { musa_nome: currentCreatorMusa, dna: currentCreatorDna, references: currentCreatorRefs });
-        if (!currentCreatorRefs.length) currentCreatorMediaUrl = CREATOR_PLACEHOLDER;
-        const img = document.getElementById('imgCreatorMainPreview');
-        if (img) img.src = currentCreatorMediaUrl;
-        renderCreatorRefStrip();
-        renderCreatorHistory();
-      }
-
-      function selectCreatorRef(index) {
-        const src = currentCreatorRefs[index];
-        if (!src) return;
-        currentCreatorMediaUrl = src;
-        const img = document.getElementById('imgCreatorMainPreview');
-        if (img) img.src = src;
-      }
-
-      function renderCreatorHistory(extraUrl) {
-        const grid = document.getElementById('gridCreatorHistory');
-        const count = document.getElementById('creatorHistoryCount');
-        if (!grid) return;
-        const urls = [];
-        if (extraUrl && !currentCreatorRefs.includes(extraUrl)) urls.push(extraUrl);
-        currentCreatorRefs.forEach(u => { if (!urls.includes(u)) urls.push(u); });
-        if (count) count.innerText = `${urls.length} imagem${urls.length === 1 ? '' : 's'}`;
-        if (!urls.length) {
-          grid.innerHTML = '<div style="grid-column: 1 / -1; padding: 16px; text-align: center; color: #64748b; font-size: 0.7rem; border: 1px dashed rgba(255,255,255,0.1); border-radius: 8px;">As fotos de referência da persona aparecem aqui.</div>';
-          return;
-        }
-        grid.innerHTML = urls.map((src, i) => `<div onclick="selectCreatorHistoryThumb(this, '${src}')" style="height: 104px; border-radius: 8px; overflow: hidden; border: 1px solid ${i === 0 ? 'rgba(190,242,100,0.45)' : 'rgba(255,255,255,0.08)'}; cursor: pointer; background: #080a0f;"><img src="${src}" alt="Variação ${i + 1}" style="width: 100%; height: 100%; object-fit: cover; display: block;"></div>`).join('');
-      }
-
-      
-      const CREATOR_MODELS_CATALOG = {
-        image: {
-          featured: [
-            { id: 'eros_image_2k', name: 'Eros-Image 2K', provider: 'Eros Studio', tags: ['Refs', '~30s', '2K-4K', '100% Consistência'], cost: '50 - 100', badge: 'Eros-Image 2K', button: 'Gerar com Eros-Image' },
-            { id: 'seedream_5', name: 'Seedream 5 Pro', provider: 'ByteDance', tags: ['Refs', '~56s', '2K', 'Face & Look Swap'], cost: '75 - 100', badge: 'Seedream 5 Pro', button: 'Swap com Seedream' },
-            { id: 'kling_image', name: 'Kling Image Pro', provider: 'Kuaishou', tags: ['Refs', '~40s', '1080p HD', 'Fotorrealismo'], cost: '60 - 90', badge: 'Kling Image Pro', button: 'Gerar com Kling Image' },
-            { id: 'chatgpt_import', name: 'GPT 2.6 Image', provider: 'OpenAI', isNew: true, tags: ['Refs', '~47s', '2K-4K', 'Ctrl+V Import'], cost: '15 - 940', badge: 'GPT 2.6 Import', button: 'Importar Imagem GPT' },
-            { id: 'nanobanana_21', name: 'Google Nano Banana 2.1', provider: 'Google', tags: ['Refs', '~40s', '2K-4K', 'Ultra Rápido'], cost: '50 - 145', badge: 'Nano Banana 2.1', button: 'Gerar com Nano Banana' }
-          ],
-          allProviders: {
-            'Eros Studio': [
-              { id: 'eros_image_2k', name: 'Eros-Image 2K (LoRA da Musa)', tags: ['Consistência 100%', '2K-4K'], cost: '50 - 100' },
-              { id: 'krea_2', name: 'Krea 2 Raw Edit', tags: ['RAW Natural', 'Retoque'], cost: '80 - 160' },
-              { id: 'magnific_upscale', name: 'Magnific Upscaler 4K', tags: ['Upscale 4K-8K', 'Fidelidade Extrema'], cost: '100 - 300' }
-            ],
-            'ByteDance': [
-              { id: 'seedream_5', name: 'Seedream 5 Pro', tags: ['Face Swap', 'Troca de Roupa'], cost: '75 - 100' }
-            ],
-            'Kuaishou': [
-              { id: 'kling_image', name: 'Kling Image Pro', tags: ['1080p Nativo', 'Alta Nitidez'], cost: '60 - 90' }
-            ],
-            'Alibaba': [
-              { id: 'qwen_360', name: 'Qwen 2.5 360° Multi-Ângulo', tags: ['6 Poses Orbitais', 'Consistência'], cost: '45 - 80' }
-            ],
-            'OpenAI': [
-              { id: 'chatgpt_import', name: 'GPT 2.6 Image Direct', tags: ['ChatGPT Plus', 'Super-Prompt'], cost: '15 - 940' }
-            ],
-            'Google': [
-              { id: 'nanobanana_21', name: 'Google Nano Banana 2.1', tags: ['Latência Baixa', '2K'], cost: '50 - 145' }
-            ]
-          }
-        },
-        video: {
-          featured: [
-            { id: 'wan_3_prime', name: 'Wan 3.0 Prime', provider: 'Alibaba', tags: ['Refs', 'Multi', 'Start/End', '1080p'], cost: '164 - 15.3k', badge: 'Wan 3.0 Prime', button: 'Gerar com Wan 3.0' },
-            { id: 'minimax_h3', name: 'MiniMax H3 Max', provider: 'MiniMax', tags: ['Ultra Fast', 'Refs', 'Multi', 'Start/End', '768p'], cost: '250 - 4800', badge: 'MiniMax H3 Max', button: 'Gerar com MiniMax H3' },
-            { id: 'seedance_25', name: 'Seedance 2.5', provider: 'ByteDance', tags: ['Refs', 'Multi', 'Start/End', '1080p', 'Audio refs'], cost: '800 - 23.7k', badge: 'Seedance 2.5', button: 'Gerar com Seedance 2.5' },
-            { id: 'kling_4_video', name: 'Kling 4.0', provider: 'Kuaishou', isNew: true, tags: ['Start/End', '1080p', '3-30s'], cost: '570 - 8400', badge: 'Kling 4.0 Video', button: 'Gerar com Kling 4.0' },
-            { id: 'kling_4_motion', name: 'Kling 4.0 Motion Control', provider: 'Kuaishou', tags: ['Motion Guide', '1080p 60fps', 'Troca de Corpo'], cost: '600 - 8000', badge: 'Kling 4.0 Motion', button: 'Transferir Movimento Kling 4.0' }
-          ],
-          allProviders: {
-            'Kuaishou (Kling)': [
-              { id: 'kling_4_video', name: 'Kling 4.0 Video', tags: ['1080p', '3-30s'], cost: '570 - 8400' },
-              { id: 'kling_4_motion', name: 'Kling 4.0 Motion Control', tags: ['60 FPS', 'Motion Guide'], cost: '600 - 8000' },
-              { id: 'kling_3_motion', name: 'Kling 3.0 Motion Control', tags: ['Alta Precisão'], cost: '400 - 6500' },
-              { id: 'kling_26_motion', name: 'Kling 2.6 Motion Control', tags: ['Render Econômico'], cost: '300 - 4500' }
-            ],
-            'Alibaba': [
-              { id: 'wan_3_prime', name: 'Wan 3.0 Prime Video', tags: ['Refs', 'Start/End', '1080p'], cost: '164 - 15.3k' }
-            ],
-            'ByteDance': [
-              { id: 'seedance_25', name: 'Seedance 2.5 Ultra', tags: ['Ultra Real', 'Audio refs'], cost: '800 - 23.7k' },
-              { id: 'seedance_20', name: 'Seedance 2.0', tags: ['Econômico', '1080p'], cost: '400 - 12k' }
-            ],
-            'MiniMax': [
-              { id: 'minimax_h3', name: 'MiniMax H3 Max', tags: ['Ultra Fast', '768p'], cost: '250 - 4800' }
-            ],
-            'Eros Studio / Outros': [
-              { id: 'omni_flash_21', name: 'Omni Flash 2.1 Motion', tags: ['Render Rápido'], cost: '350 - 5000' },
-              { id: 'openjutsu_workflow', name: 'Genjutsu Ultra (Comfy Cloud)', tags: ['Workflow Pro'], cost: '500 - 6000' },
-              { id: 'ltx_25_video', name: 'LTX Video 2.5', tags: ['Cinemático'], cost: '200 - 3200' },
-              { id: 'grok_15_video', name: 'Grok 1.5 Video', tags: ['Movimento Fluido'], cost: '300 - 4500' },
-              { id: 'veo_31', name: 'Veo 3.1 Pro', tags: ['Google DeepMind'], cost: '500 - 7000' }
-            ]
-          }
-        },
-        audio: {
-          featured: [
-            { id: 'voice_clone_musa', name: 'Voice Generator (Clonagem)', provider: 'Eros Studio', tags: ['ErosChat', 'Áudio WhatsApp', 'Ultra Real'], cost: '30 - 80', badge: 'Voz da Musa', button: 'Clonar e Gerar Áudio' },
-            { id: 'voice_gen_sensual', name: 'Audio Generator (Sensual)', provider: 'Eros Studio', isNew: true, tags: ['ErosChat', 'Sussurro', 'VIP X1'], cost: '25 - 60', badge: 'Áudio ErosChat', button: 'Gerar Mensagem de Voz' },
-            { id: 'audio_isolation', name: 'Audio Isolation (Limpeza)', provider: 'Eros Studio', tags: ['Limpeza', 'Studio Quality'], cost: '15 - 40', badge: 'Isolamento Acústico', button: 'Limpar Áudio' }
-          ],
-          allProviders: {
-            'ErosChat Voice': [
-              { id: 'voice_clone_musa', name: 'Clonagem de Voz da Musa', tags: ['Fidelidade 100%'], cost: '30 - 80' },
-              { id: 'voice_gen_sensual', name: 'Gerador Sensual Sussurrado', tags: ['Sedução X1'], cost: '25 - 60' },
-              { id: 'audio_isolation', name: 'Isolador de Ruído', tags: ['Limpeza de Voz'], cost: '15 - 40' }
-            ]
-          }
-        }
-      };
-
-      const CREATOR_SUBTOOLS_CATALOG = {
-        image: [
-          { id: 'tool_img_gen', name: 'Image Generator', desc: 'Create images from text prompts', model: 'eros_image_2k', pinned: true },
-          { id: 'tool_img_editor', name: 'Image Editor', desc: 'Edit and modify existing images', model: 'krea_2', pinned: false },
-          { id: 'tool_img_upscaler', name: 'Image Upscaler', desc: 'Enhance resolution and detail', model: 'magnific_upscale', pinned: false },
-          { id: 'tool_img_cinematic', name: 'Cinematic Shot', desc: 'Generate cinematic compositions', model: 'eros_image_2k', pinned: false },
-          { id: 'tool_img_variations', name: 'Variations', desc: 'Create variations of an image', model: 'eros_image_2k', pinned: false },
-          { id: 'tool_img_skin', name: 'Skin Enhancer', desc: 'Retouch and enhance skin detail', model: 'eros_image_2k', pinned: false },
-          { id: 'tool_img_camera', name: 'Change Camera', desc: 'Adjust camera angle and lens (360°)', model: 'qwen_360', pinned: false },
-          { id: 'tool_img_swap', name: 'Face & Look Swap', desc: 'Swap face and clothing with Seedream', model: 'seedream_5', pinned: false },
-          { id: 'tool_img_rmbg', name: 'Remove Background', desc: 'Isolate subjects from background', model: 'krea_2', pinned: false },
-          { id: 'tool_img_relight', name: 'Relight', desc: 'Change lighting and atmosphere', model: 'eros_image_2k', pinned: false }
-        ],
-        video: [
-          { id: 'tool_vid_gen', name: 'Video Generator', desc: 'Create videos from text prompts', model: 'wan_3_prime', pinned: true },
-          { id: 'tool_vid_clip_editor', name: 'Clip Editor', desc: 'Trim, cut, and edit video clips', model: 'wan_3_prime', pinned: false },
-          { id: 'tool_vid_upscaler', name: 'Video Upscaler', desc: 'Enhance video resolution', model: 'wan_3_prime', pinned: false },
-          { id: 'tool_vid_motion', name: 'Motion Transfer', desc: 'Transfer motion to musa with Kling', model: 'kling_4_motion', pinned: false },
-          { id: 'tool_vid_project', name: 'Video Project ...', desc: 'Edit multi-clip video projects', model: 'wan_3_prime', isExperimental: true, pinned: false },
-          { id: 'tool_vid_speak', name: 'Speak', desc: 'Generate realistic talking videos', model: 'wan_3_prime', pinned: false },
-          { id: 'tool_vid_relight', name: 'Video Relight', desc: 'Change lighting and atmosphere', model: 'wan_3_prime', pinned: false },
-          { id: 'tool_vid_cinematic', name: 'Cinematic Video', desc: 'Generate cinematic video shots', model: 'kling_4_video', pinned: false }
-        ],
-        audio: [
-          { id: 'tool_aud_voice', name: 'Voice Generator', desc: 'Generate realistic voiceovers', model: 'voice_clone_musa', pinned: true },
-          { id: 'tool_aud_music', name: 'Music Generator', desc: 'Create music from text prompts', model: 'voice_gen_sensual', pinned: false },
-          { id: 'tool_aud_gen', name: 'Audio Generator', desc: 'Create audio from text prompts', model: 'voice_gen_sensual', isNew: true, pinned: false },
-          { id: 'tool_aud_sfx', name: 'Sound Effect Generator', desc: 'Create custom sound effects', model: 'voice_gen_sensual', pinned: false },
-          { id: 'tool_aud_clone', name: 'Voice Cloning', desc: 'Clone any voice with AI', model: 'voice_clone_musa', pinned: false },
-          { id: 'tool_aud_changer', name: 'Voice Changer', desc: 'Transform voice characteristics', model: 'voice_gen_sensual', pinned: false },
-          { id: 'tool_aud_isolation', name: 'Audio Isolation', desc: 'Remove background noise from audio', model: 'audio_isolation', pinned: false }
-        ]
-      };
-
-      let currentStudioMode = 'image';
-      let currentCreatorBatchCount = 1;
-      let currentCreatorQuality = '2K · High';
-
-      function scrollStudioNav(direction) {
-        const modes = ['image', 'video', 'audio'];
-        const curIdx = modes.indexOf(currentStudioMode);
-        if (direction === 'left' && curIdx > 0) setStudioMode(modes[curIdx - 1]);
-        else if (direction === 'right' && curIdx < modes.length - 1) setStudioMode(modes[curIdx + 1]);
-      }
-      window.scrollStudioNav = scrollStudioNav;
-
-      function toggleMusaDrawer() {
-        const d = document.getElementById('boxMusaDrawer');
-        if (d) d.style.display = d.style.display === 'none' ? 'flex' : 'none';
-      }
-      window.toggleMusaDrawer = toggleMusaDrawer;
-
-      function toggleDnaEditorDrawer() {
-        const drawer = document.getElementById('boxDnaDrawer');
-        if (!drawer) return;
-        drawer.style.display = drawer.style.display === 'none' ? 'flex' : 'none';
-      }
-      window.toggleDnaEditorDrawer = toggleDnaEditorDrawer;
-
-      function toggleFlyoutToolsDrawer() {
-        const d = document.getElementById('flyoutToolsDrawer');
-        if (!d) return;
-        const willOpen = d.style.display === 'none';
-        d.style.display = willOpen ? 'flex' : 'none';
-        if (willOpen) renderFlyoutToolsList();
-      }
-      window.toggleFlyoutToolsDrawer = toggleFlyoutToolsDrawer;
-
-      function renderFlyoutToolsList() {
-        const container = document.getElementById('listFlyoutTools');
-        const header = document.getElementById('lblFlyoutToolsHeader');
-        if (!container) return;
-        const mode = currentStudioMode || 'image';
-        if (header) {
-          header.innerText = mode === 'image' ? 'Ferramentas de Imagem' : (mode === 'video' ? 'Ferramentas de Vídeo' : 'Ferramentas de Áudio');
-        }
-        const tools = CREATOR_SUBTOOLS_CATALOG[mode] || [];
-        container.innerHTML = tools.map(t => `
-          <div onclick="selectStudioSubTool('${t.id}', '${ghostEsc(t.name)}', '${t.model}')" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 9px; cursor: pointer; background: #141720; border: 1px solid rgba(255,255,255,0.06); transition: 0.2s;">
-            <div style="display: flex; align-items: center; gap: 9px;">
-              <div style="width: 26px; height: 26px; border-radius: 6px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; color: var(--accent-lime);">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect></svg>
-              </div>
-              <div>
-                <div style="font-size: 0.74rem; font-weight: 800; color: #fff; line-height: 1.1;">
-                  ${ghostEsc(t.name)}
-                  ${t.isNew ? '<span style="font-size: 0.5rem; background: #e11d48; color: #fff; padding: 1px 4px; border-radius: 3px; margin-left: 4px;">New</span>' : ''}
-                  ${t.isExperimental ? '<span style="font-size: 0.5rem; background: #8b5cf6; color: #fff; padding: 1px 4px; border-radius: 3px; margin-left: 4px;">Experimental</span>' : ''}
-                </div>
-                <div style="font-size: 0.58rem; color: #94a3b8; margin-top: 1px;">${ghostEsc(t.desc)}</div>
-              </div>
-            </div>
-            ${t.pinned ? '<span style="color: #64748b; font-size: 0.75rem;">📌</span>' : ''}
-          </div>
-        `).join('');
-      }
-
-      function selectStudioSubTool(toolId, toolName, defaultModel) {
-        const titleEl = document.getElementById('lblActiveToolTitle');
-        if (titleEl) titleEl.innerText = toolName;
-        toggleFlyoutToolsDrawer();
-        if (defaultModel) {
-          selectModelFromPicker(defaultModel);
-        }
-      }
-      window.selectStudioSubTool = selectStudioSubTool;
-
-      function openCreatorModelPicker() {
-        const modal = document.getElementById('modalCreatorModelPicker');
-        if (!modal) return;
-        modal.style.display = 'flex';
-        renderModelPickerContent();
-      }
-      window.openCreatorModelPicker = openCreatorModelPicker;
-
-      function closeCreatorModelPicker() {
-        const modal = document.getElementById('modalCreatorModelPicker');
-        if (modal) modal.style.display = 'none';
-      }
-      window.closeCreatorModelPicker = closeCreatorModelPicker;
-
-      function renderModelPickerContent(filterTerm = '') {
-        const featuredList = document.getElementById('listPickerFeatured');
-        const providersList = document.getElementById('listPickerProviders');
-        if (!featuredList || !providersList) return;
-
-        const modeData = CREATOR_MODELS_CATALOG[currentStudioMode] || CREATOR_MODELS_CATALOG.image;
-        const term = (filterTerm || '').toLowerCase().trim();
-
-        // Render Featured
-        const filteredFeatured = modeData.featured.filter(m => !term || m.name.toLowerCase().includes(term) || m.tags.some(t => t.toLowerCase().includes(term)));
-        featuredList.innerHTML = filteredFeatured.map(m => `
-          <div onclick="selectModelFromPicker('${m.id}')" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 8px; cursor: pointer; background: #131620; border: 1px solid rgba(255,255,255,0.06); transition: 0.2s;">
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <div style="width: 22px; height: 22px; border-radius: 5px; background: rgba(190,242,100,0.12); color: var(--accent-lime); display: flex; align-items: center; justify-content: center;">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
-              </div>
-              <div>
-                <div style="font-size: 0.72rem; font-weight: 800; color: #fff; line-height: 1.1;">
-                  ${ghostEsc(m.name)}
-                  ${m.isNew ? '<span style="font-size: 0.48rem; background: #e11d48; color: #fff; padding: 1px 4px; border-radius: 3px; margin-left: 3px;">New</span>' : ''}
-                </div>
-                <div style="display: flex; gap: 4px; margin-top: 2px;">
-                  ${m.tags.slice(0, 3).map(tag => `<span style="font-size: 0.54rem; color: #94a3b8; background: rgba(255,255,255,0.04); padding: 1px 4px; border-radius: 3px;">${ghostEsc(tag)}</span>`).join('')}
-                </div>
-              </div>
-            </div>
-            <div style="text-align: right;">
-              <span style="font-size: 0.64rem; font-weight: 700; color: var(--accent-lime);">${ghostEsc(m.cost)}</span>
-            </div>
-          </div>
-        `).join('') || '<div style="font-size: 0.64rem; color: #64748b; padding: 8px;">Nenhum modelo encontrado.</div>';
-
-        // Render Providers
-        let provHtml = '';
-        for (const [providerName, list] of Object.entries(modeData.allProviders)) {
-          const matching = list.filter(m => !term || m.name.toLowerCase().includes(term) || (m.tags && m.tags.some(t => t.toLowerCase().includes(term))));
-          if (!matching.length) continue;
-          provHtml += `
-            <div style="border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; overflow: hidden; background: #0a0c12;">
-              <div style="font-size: 0.66rem; font-weight: 800; color: #cbd5e1; padding: 7px 10px; background: #12151e; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between;">
-                <span>${ghostEsc(providerName)}</span>
-                <span style="color: #64748b; font-size: 0.58rem;">${matching.length} modelos</span>
-              </div>
-              <div style="display: flex; flex-direction: column;">
-                ${matching.map(m => `
-                  <div onclick="selectModelFromPicker('${m.id}')" style="display: flex; justify-content: space-between; align-items: center; padding: 7px 10px; border-bottom: 1px solid rgba(255,255,255,0.03); cursor: pointer;">
-                    <div>
-                      <span style="font-size: 0.7rem; font-weight: 700; color: #cbd5e1;">${ghostEsc(m.name)}</span>
-                      <div style="font-size: 0.54rem; color: #64748b; margin-top: 1px;">${m.tags ? m.tags.join(' • ') : ''}</div>
-                    </div>
-                    <span style="font-size: 0.62rem; color: var(--accent-lime); font-weight: 700;">${ghostEsc(m.cost)}</span>
-                  </div>
-                `).join('')}
-              </div>
-            </div>
-          `;
-        }
-        providersList.innerHTML = provHtml;
-      }
-
-      function filterCreatorModels(term) {
-        renderModelPickerContent(term);
-      }
-      window.filterCreatorModels = filterCreatorModels;
-
-      function applyModelPickerFilter(type, btn) {
-        document.querySelectorAll('.btn-picker-filter').forEach(b => {
-          b.style.background = '#12141c';
-          b.style.color = '#94a3b8';
-        });
-        if (btn) {
-          btn.style.background = '#1e2330';
-          btn.style.color = '#fff';
-        }
-        if (type === 'all') renderModelPickerContent('');
-        else if (type === 'fast') renderModelPickerContent('Rápido');
-        else if (type === 'photoreal') renderModelPickerContent('Fotorrealismo');
-        else if (type === 'swap') renderModelPickerContent('Swap');
-      }
-      window.applyModelPickerFilter = applyModelPickerFilter;
-
-      function selectModelFromPicker(modelId) {
-        currentCreatorModel = modelId;
-        const sel = document.getElementById('selCreatorModel');
-        if (sel) {
-          let opt = sel.querySelector(`option[value="${modelId}"]`);
-          if (!opt) {
-            opt = document.createElement('option');
-            opt.value = modelId;
-            opt.innerText = modelId;
-            sel.appendChild(opt);
-          }
-          sel.value = modelId;
-        }
-
-        // Update trigger display
-        const meta = creatorModelMeta(modelId);
-        const nameEl = document.getElementById('lblSelectedModelName');
-        const tagEl = document.getElementById('lblSelectedModelTag');
-        if (nameEl) nameEl.innerText = meta.badge || modelId;
-        if (tagEl) tagEl.innerText = meta.cost || 'Alta Fidelidade';
-
-        onCreatorModelChange(modelId);
-        closeCreatorModelPicker();
-      }
-      window.selectModelFromPicker = selectModelFromPicker;
-
-      function cycleCreatorRatio() {
-        const ratios = ['9:16', '1:1', '4:5', '16:9'];
-        const curIdx = ratios.indexOf(currentCreatorAspectRatio);
-        const next = ratios[(curIdx + 1) % ratios.length];
-        currentCreatorAspectRatio = next;
-        const lbl = document.getElementById('lblCurrentRatio');
-        if (lbl) lbl.innerText = next;
-        setCreatorRatio(next, null);
-      }
-      window.cycleCreatorRatio = cycleCreatorRatio;
-
-      function cycleCreatorQuality() {
-        const quals = ['1080p', '2K · High', '4K Ultra'];
-        const curIdx = quals.indexOf(currentCreatorQuality);
-        const next = quals[(curIdx + 1) % quals.length];
-        currentCreatorQuality = next;
-        const lbl = document.getElementById('lblCurrentQuality');
-        if (lbl) lbl.innerText = next;
-        const spec = document.getElementById('lblCanvasSpec');
-        if (spec) spec.innerText = `${next} • ${currentCreatorAspectRatio}`;
-      }
-      window.cycleCreatorQuality = cycleCreatorQuality;
-
-      function adjustBatchCount(delta) {
-        currentCreatorBatchCount = Math.max(1, Math.min(4, currentCreatorBatchCount + delta));
-        const lbl = document.getElementById('lblBatchCount');
-        if (lbl) lbl.innerText = currentCreatorBatchCount;
-      }
-      window.adjustBatchCount = adjustBatchCount;
-
-      function setStudioMode(mode) {
-        currentStudioMode = mode;
-        const tabImage = document.getElementById('tabModeImage');
-        const tabVideo = document.getElementById('tabModeVideo');
-        const tabAudio = document.getElementById('tabModeAudio');
-
-        [tabImage, tabVideo, tabAudio].forEach(t => {
-          if (t) {
-            t.style.background = 'transparent';
-            t.style.color = '#94a3b8';
-            t.style.fontWeight = '700';
-          }
-        });
-
-        const activeTab = mode === 'image' ? tabImage : (mode === 'video' ? tabVideo : tabAudio);
-        if (activeTab) {
-          activeTab.style.background = '#272a30';
-          activeTab.style.color = '#fff';
-          activeTab.style.fontWeight = '800';
-        }
-
-        const boxRefsImg = document.getElementById('boxReferencesImage');
-        const boxRefsVid = document.getElementById('boxReferencesVideo');
-        const boxPrompt = document.getElementById('boxPromptContainer');
-        const boxBottom = document.getElementById('boxBottomControlsRow');
-        const titleEl = document.getElementById('lblActiveToolTitle');
-
-        if (mode === 'image') {
-          if (boxRefsImg) boxRefsImg.style.display = 'grid';
-          if (boxRefsVid) boxRefsVid.style.display = 'none';
-          if (boxPrompt) boxPrompt.style.display = 'block';
-          if (boxBottom) boxBottom.style.display = 'flex';
-          if (titleEl) titleEl.innerText = 'Image Generator';
-          selectModelFromPicker('eros_image_2k');
-        } else if (mode === 'video') {
-          if (boxRefsImg) boxRefsImg.style.display = 'none';
-          if (boxRefsVid) boxRefsVid.style.display = 'grid';
-          if (boxPrompt) boxPrompt.style.display = 'block';
-          if (boxBottom) boxBottom.style.display = 'flex';
-          if (titleEl) titleEl.innerText = 'Video Generator';
-          selectModelFromPicker('wan_3_prime');
-        } else if (mode === 'audio') {
-          if (boxRefsImg) boxRefsImg.style.display = 'none';
-          if (boxRefsVid) boxRefsVid.style.display = 'none';
-          if (boxPrompt) boxPrompt.style.display = 'none';
-          if (boxBottom) boxBottom.style.display = 'none';
-          if (titleEl) titleEl.innerText = 'Voice Generator';
-          selectModelFromPicker('voice_clone_musa');
-        }
-      }
-      window.setStudioMode = setStudioMode;
-
-      function onCreatorMusaChange(profileId) {
-        const profiles = getCreatorProfilesSync();
-        const p = profiles.find(x => String(x.id) === String(profileId)) || { id: profileId, musa_nome: profileId };
-        currentCreatorProfileId = p.id;
-        currentCreatorMusa = p.musa_nome || 'Musa';
-        const data = getCreatorDataForProfile(p.id) || {};
-        currentCreatorRefs = Array.isArray(data.references) ? data.references.slice(0, 3) : [];
-        currentCreatorDna = data.dna || {};
-        currentCreatorMediaUrl = currentCreatorRefs[0] || CREATOR_PLACEHOLDER;
-
-        // Atualiza avatar e nome da musa
-        const avatarImg = document.getElementById('imgMusaAvatarMini');
-        if (avatarImg) avatarImg.src = currentCreatorMediaUrl;
-        const nameEl = document.getElementById('lblActiveMusaName');
-        if (nameEl) nameEl.innerText = currentCreatorMusa;
-
-        // Verifica se a musa tem LoRA calibrado
-        const hasLora = Boolean(data.has_lora === true || p.has_lora === true || profileId === 'camila');
-        const badgeActive = document.getElementById('badgeMusaLoraActive');
-        const badgeDefault = document.getElementById('badgeMusaLoraDefault');
-        const offerBox = document.getElementById('boxMusaLoraOffer');
-
-        if (hasLora) {
-          if (badgeActive) badgeActive.style.display = 'block';
-          if (badgeDefault) badgeDefault.innerText = 'Status: LoRA Calibrado (100% Consistência)';
-          if (offerBox) offerBox.style.display = 'none';
-        } else {
-          if (badgeActive) badgeActive.style.display = 'none';
-          if (badgeDefault) badgeDefault.innerText = 'Status: LoRA Padrão';
-          if (offerBox) offerBox.style.display = 'flex';
-        }
-
-        const dnaText = buildDnaPrompt(currentCreatorDna);
-        const dnaArea = document.getElementById('txtCreatorDna');
-        if (dnaArea) dnaArea.value = currentCreatorDna.prompt || '';
 
         const img = document.getElementById('imgCreatorMainPreview');
         if (img) img.src = currentCreatorMediaUrl;
@@ -9357,18 +8852,45 @@
           if (el) el.style.display = 'none';
         });
 
-        const isMotion = ['kling_4_motion', 'kling_3_motion', 'kling_26_motion', 'omni_flash_21', 'openjutsu_workflow'].includes(model);
-        const isImg2Vid = ['wan_3_prime', 'minimax_h3', 'seedance_25', 'seedance_20', 'kling_4_video', 'kling_3_video', 'grok_15_video', 'ltx_25_video', 'flux_3_video', 'veo_31', 'veo_31_lite'].includes(model);
-        const isAudio = ['voice_clone_musa', 'voice_gen_sensual', 'audio_isolation'].includes(model);
+        // Alternância específica para o Eros-Image: mostra apenas o frame quadradinho da musa com LoRA!
+        const boxErosFrame = document.getElementById('boxErosMusaFrame');
+        const boxGeneralRefs = document.getElementById('boxGeneralReferencesSection');
+        const boxRefsImg = document.getElementById('boxReferencesImage');
+        const boxRefsVid = document.getElementById('boxReferencesVideo');
 
-        if (model === 'eros_image_2k') document.getElementById('boxErosImageControls')?.style.setProperty('display', 'flex');
-        else if (model === 'kling_image') document.getElementById('boxKlingImageControls')?.style.setProperty('display', 'flex');
-        else if (model === 'seedream_5') document.getElementById('boxSeedreamControls')?.style.setProperty('display', 'flex');
-        else if (model === 'chatgpt_import') document.getElementById('boxChatGptControls')?.style.setProperty('display', 'flex');
-        else if (model === 'qwen_360') document.getElementById('boxQwenControls')?.style.setProperty('display', 'flex');
-        else if (isMotion) document.getElementById('boxMotionControls')?.style.setProperty('display', 'flex');
-        else if (isImg2Vid) document.getElementById('boxImageToVideoControls')?.style.setProperty('display', 'flex');
-        else if (isAudio) document.getElementById('boxAudioControls')?.style.setProperty('display', 'flex');
+        if (model === 'eros_image_2k') {
+          if (boxErosFrame) boxErosFrame.style.display = 'flex';
+          if (boxGeneralRefs) boxGeneralRefs.style.display = 'none';
+          if (boxRefsImg) boxRefsImg.style.display = 'none';
+          if (boxRefsVid) boxRefsVid.style.display = 'none';
+          document.getElementById('boxErosImageControls')?.style.setProperty('display', 'flex');
+        } else {
+          if (boxErosFrame) boxErosFrame.style.display = 'none';
+
+          if (currentStudioMode === 'video') {
+            if (boxGeneralRefs) boxGeneralRefs.style.display = 'block';
+            if (boxRefsVid) boxRefsVid.style.display = 'grid';
+            if (boxRefsImg) boxRefsImg.style.display = 'none';
+          } else if (currentStudioMode === 'image' && ['kling_image', 'nanobanana_21', 'krea_2'].includes(model)) {
+            if (boxGeneralRefs) boxGeneralRefs.style.display = 'block';
+            if (boxRefsImg) boxRefsImg.style.display = 'grid';
+            if (boxRefsVid) boxRefsVid.style.display = 'none';
+          } else {
+            if (boxGeneralRefs) boxGeneralRefs.style.display = 'none';
+          }
+
+          const isMotion = ['kling_4_motion', 'kling_3_motion', 'kling_26_motion', 'omni_flash_21', 'openjutsu_workflow'].includes(model);
+          const isImg2Vid = ['wan_3_prime', 'minimax_h3', 'seedance_25', 'seedance_20', 'kling_4_video', 'kling_3_video', 'grok_15_video', 'ltx_25_video', 'flux_3_video', 'veo_31', 'veo_31_lite'].includes(model);
+          const isAudio = ['voice_clone_musa', 'voice_gen_sensual', 'audio_isolation'].includes(model);
+
+          if (model === 'kling_image') document.getElementById('boxKlingImageControls')?.style.setProperty('display', 'flex');
+          else if (model === 'seedream_5') document.getElementById('boxSeedreamControls')?.style.setProperty('display', 'flex');
+          else if (model === 'chatgpt_import') document.getElementById('boxChatGptControls')?.style.setProperty('display', 'flex');
+          else if (model === 'qwen_360') document.getElementById('boxQwenControls')?.style.setProperty('display', 'flex');
+          else if (isMotion) document.getElementById('boxMotionControls')?.style.setProperty('display', 'flex');
+          else if (isImg2Vid) document.getElementById('boxImageToVideoControls')?.style.setProperty('display', 'flex');
+          else if (isAudio) document.getElementById('boxAudioControls')?.style.setProperty('display', 'flex');
+        }
 
         const btnGen = document.getElementById('lblBtnGenText');
         const btnExecute = document.getElementById('btnExecuteCreatorGen');
