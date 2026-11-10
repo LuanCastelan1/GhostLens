@@ -2397,7 +2397,7 @@
       </div>
 
       <div style="display: flex; gap: 10px;">
-        <button type="button" onclick="submitLoraOrder()" style="flex: 1; background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 900; font-size: 0.82rem; border: none; padding: 12px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; box-shadow: 0 4px 16px rgba(245,158,11,0.3);">
+        <button type="button" onclick="submitLoraOrder()" style="flex: 1; background: var(--accent-lime); color: #000; font-weight: 900; font-size: 0.82rem; border: none; padding: 12px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; box-shadow: 0 4px 16px rgba(245,158,11,0.3);">
           <span>🔥</span> Pagar R$ 49,90 no Pix & Iniciar Calibragem
         </button>
         <button type="button" onclick="closeOrderLoraModal()" style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; font-weight: 700; font-size: 0.8rem; padding: 12px 18px; border-radius: 10px; cursor: pointer;">
@@ -8201,72 +8201,73 @@
       function selectErosLens(type, btn) {
         currentErosCheckpoint = type;
         document.querySelectorAll('.btn-eros-ck').forEach(b => {
-          b.style.background = '#0d0e14';
+          b.style.background = '#0a0c12';
           b.style.borderColor = 'rgba(255,255,255,0.08)';
           b.style.color = '#94a3b8';
           b.classList.remove('active');
         });
         if (btn) {
-          btn.style.background = '#1e1b13';
-          btn.style.borderColor = '#fbbf24';
-          btn.style.color = '#fbbf24';
+          btn.style.background = '#0f1410';
+          btn.style.borderColor = 'var(--accent-lime)';
+          btn.style.color = 'var(--accent-lime)';
           btn.classList.add('active');
         }
         const lensLabels = {
-          raw: '📸 Lente RAW Natural • Textura Real 2K',
-          film_pov: '🎬 Lente FILM POV • 35mm Analógico & Sensual',
-          glam: '✨ Lente GLAM VIP • Editorial de Alto Luxo'
+          raw: 'RAW Natural 35mm',
+          film_pov: 'Film POV 28mm',
+          glam: 'Glam Studio 85mm'
         };
         const lensSpecs = {
-          raw: 'Lente RAW 35mm • Pele Natural',
-          film_pov: 'Lente POV 28mm • Grão Analógico',
-          glam: 'Lente 85mm f/1.4 • Studio VIP'
+          raw: 'Lente RAW 35mm • Textura Real',
+          film_pov: 'Lente POV 28mm • Grão Fino',
+          glam: 'Lente 85mm f/1.4 • Studio'
         };
         const badge = document.getElementById('lblCanvasModelBadge');
-        if (badge) badge.innerText = lensLabels[type] || '👑 Eros-Image™ 2K';
+        if (badge) badge.innerText = 'Eros-Image 2K (' + (lensLabels[type] || 'RAW') + ')';
 
         const lblSpec = document.getElementById('lblCanvasSpec');
-        if (lblSpec) lblSpec.innerText = `${currentCreatorAspectRatio} • ${lensSpecs[type]} • 2K Ultra HD`;
+        if (lblSpec) lblSpec.innerText = `${currentCreatorAspectRatio} • ${lensSpecs[type]} • 2K HD`;
 
-        showToast(`Óptica selecionada: ${lensLabels[type]}`, 2500);
+        showToast(`Lente selecionada: ${lensLabels[type]}`, 2000);
       }
       window.selectErosCheckpoint = selectErosLens;
 
       function creatorModelMeta(model) {
         const table = {
           // ─── IMAGEM ───
-          eros_image_2k: { badge: '👑 Eros-Image™ 2K (LoRA da Musa & Ultra-Realismo)', cost: 'Nativo 2K • Lentes Pro', button: 'Gerar com Eros-Image 2K' },
-          seedream_5: { badge: '🌊 ByteDance Seedream 5 Pro (Face Swap & Trajes)', cost: 'R$ 0,40 / foto • Sem Censura', button: 'Gerar com Seedream 5 Pro' },
-          chatgpt_import: { badge: '🖼️ GPT 2.6 Image (ChatGPT Plus)', cost: 'Grátis • Cole com Ctrl+V', button: 'Importar do ChatGPT (Ctrl+V)' },
-          nanobanana_21: { badge: '🍌 Google Nano Banana 2.1', cost: 'Incluso no Pro • Fair Use', button: 'Gerar com Nano Banana' },
-          krea_2: { badge: '✨ Krea 2 Raw Edit', cost: 'Retoque & Textura de Pele', button: 'Gerar com Krea 2' },
-          qwen_360: { badge: '🌐 Qwen 2.5 360° Multi-Ângulo', cost: 'Incluso no Pro • 6 Ângulos', button: 'Gerar Ângulos 360°' },
-          magnific_upscale: { badge: '🔍 Magnific Upscaler 4K', cost: 'Ultra-Definição & Poros', button: 'Upscale 4K com Magnific' },
+          eros_image_2k: { badge: 'Eros-Image 2K (LoRA da Musa)', cost: 'Render Nativo 2K • Alta Consistência', button: 'Gerar com Eros-Image' },
+          kling_image: { badge: 'Kling Image Pro', cost: 'Render Fotorrealista 1080p', button: 'Gerar com Kling Image' },
+          seedream_5: { badge: 'Seedream 5 Pro', cost: 'Face & Look Swap', button: 'Gerar com Seedream 5 Pro' },
+          chatgpt_import: { badge: 'GPT 2.6 Image (Plus)', cost: 'Importação Direta', button: 'Importar Imagem (Ctrl+V)' },
+          nanobanana_21: { badge: 'Nano Banana 2.1', cost: 'Incluso no Plano', button: 'Gerar com Nano Banana' },
+          krea_2: { badge: 'Krea 2 Raw Edit', cost: 'Retoque & Textura', button: 'Gerar com Krea 2' },
+          qwen_360: { badge: 'Qwen 2.5 360°', cost: '6 Ângulos Orbitais', button: 'Gerar Ângulos 360°' },
+          magnific_upscale: { badge: 'Magnific Upscaler 4K', cost: 'Restauração de Poros', button: 'Upscale com Magnific' },
 
           // ─── VÍDEO: MOTION CONTROL ───
-          kling_4_motion: { badge: '⚡ Kling 4.0 Motion Control', cost: '1080p Nativo • Poses & Dança', button: 'Transferir Movimento (Kling 4.0)' },
-          kling_3_motion: { badge: '⚡ Kling 3.0 Motion Control', cost: 'Fidelidade Corporal', button: 'Transferir Movimento (Kling 3.0)' },
-          kling_26_motion: { badge: '⚡ Kling 2.6 Motion Control', cost: 'Alta Estabilidade', button: 'Transferir Movimento (Kling 2.6)' },
-          omni_flash_21: { badge: '💫 Omni Flash 2.1 Motion', cost: 'Ultra Rápido • Troca Instantânea', button: 'Transferir Movimento (Omni Flash)' },
-          openjutsu_workflow: { badge: '🥷 Genjutsu / OpenJutsu Ultra (ComfyUI Alfa)', cost: 'Servidor Nuvem • Zero Máquina Local', button: 'Executar Workflow OpenJutsu' },
+          kling_4_motion: { badge: 'Kling 4.0 Motion Control', cost: '1080p 60fps • Movimento Fluido', button: 'Transferir Movimento' },
+          kling_3_motion: { badge: 'Kling 3.0 Motion Control', cost: 'Fidelidade Corporal', button: 'Transferir Movimento' },
+          kling_26_motion: { badge: 'Kling 2.6 Motion Control', cost: 'Estabilidade', button: 'Transferir Movimento' },
+          omni_flash_21: { badge: 'Omni Flash 2.1 Motion', cost: 'Troca Rápida', button: 'Transferir Movimento' },
+          openjutsu_workflow: { badge: 'Genjutsu Ultra Nuvem', cost: 'ComfyUI Cloud Nuvem', button: 'Executar Genjutsu' },
 
           // ─── VÍDEO: IMAGE TO VIDEO ───
-          wan_3_prime: { badge: '🌀 Wan 3.0 Prime Video', cost: 'Top Animação Fotorrealista', button: 'Animar Cena com Wan 3.0' },
-          minimax_h3: { badge: '🎥 MiniMax H3 Max (Hailuo 01)', cost: 'Ultra Fast • Física de Tecidos', button: 'Gerar Vídeo Cinemático' },
-          seedance_25: { badge: '💃 ByteDance Seedance 2.5 Ultra', cost: 'Movimento Ultra Realista', button: 'Gerar Vídeo Seedance 2.5' },
-          seedance_20: { badge: '💃 ByteDance Seedance 2.0', cost: 'Equilibrado & Fluido', button: 'Gerar Vídeo Seedance 2.0' },
-          kling_4_video: { badge: '⚡ Kling 4.0 Video', cost: '1080p Nativo • 3 a 30s', button: 'Gerar Vídeo Kling 4.0' },
-          kling_3_video: { badge: '⚡ Kling 3.0 Video', cost: 'Movimento Humano Fluido', button: 'Gerar Vídeo Kling 3.0' },
-          grok_15_video: { badge: '🤖 Grok 1.5 Video', cost: 'Ação & Dinamismo', button: 'Gerar Vídeo com Grok' },
-          ltx_25_video: { badge: '🎞️ LTX Video 2.5', cost: 'Cinemático • Cabelos & Vento', button: 'Gerar com LTX Video' },
-          flux_3_video: { badge: '🌌 Flux 3.0 Video', cost: 'Estética Editorial & Estúdio', button: 'Gerar Vídeo com Flux' },
-          veo_31: { badge: '🎬 Google Veo 3.1 Pro', cost: 'Cinematografia de Cinema', button: 'Gerar com Google Veo 3.1' },
-          veo_31_lite: { badge: '🎬 Google Veo 3.1 Lite', cost: 'Rápido & Leve', button: 'Gerar com Veo Lite' },
+          wan_3_prime: { badge: 'Wan 3.0 Prime Video', cost: 'Animação Fotorrealista', button: 'Animar Cena com Wan 3.0' },
+          minimax_h3: { badge: 'MiniMax H3 Max', cost: 'Cinemático', button: 'Gerar com MiniMax' },
+          seedance_25: { badge: 'Seedance 2.5 Ultra', cost: 'Movimento Corporal', button: 'Gerar com Seedance 2.5' },
+          seedance_20: { badge: 'Seedance 2.0', cost: 'Fluidez', button: 'Gerar com Seedance 2.0' },
+          kling_4_video: { badge: 'Kling 4.0 Video', cost: '1080p Nativo', button: 'Gerar Vídeo Kling 4.0' },
+          kling_3_video: { badge: 'Kling 3.0 Video', cost: 'Movimento Humano', button: 'Gerar Vídeo Kling 3.0' },
+          grok_15_video: { badge: 'Grok 1.5 Video', cost: 'Dinâmico', button: 'Gerar com Grok Video' },
+          ltx_25_video: { badge: 'LTX Video 2.5', cost: 'Física Cinemática', button: 'Gerar com LTX Video' },
+          flux_3_video: { badge: 'Flux 3.0 Video', cost: 'Iluminação Studio', button: 'Gerar com Flux Video' },
+          veo_31: { badge: 'Veo 3.1 Pro', cost: 'Cinematografia', button: 'Gerar com Veo 3.1' },
+          veo_31_lite: { badge: 'Veo 3.1 Lite', cost: 'Rápido', button: 'Gerar com Veo Lite' },
 
           // ─── ÁUDIO & VOZ ───
-          voice_clone_musa: { badge: '🎙️ Clonagem de Voz da Musa', cost: 'Voz Autêntica • Áudio WhatsApp', button: 'Sintetizar Áudio da Musa' },
-          voice_gen_sensual: { badge: '💋 Gerador Sensual ErosChat', cost: 'Áudios Provocantes X1', button: 'Gerar Áudio Sensual' },
-          audio_isolation: { badge: '🧹 Isolador de Ruído de Fundo', cost: 'Purificação com IA', button: 'Isolar e Limpar Áudio' }
+          voice_clone_musa: { badge: 'Clonagem de Voz da Musa', cost: 'Voz Autêntica', button: 'Sintetizar Áudio' },
+          voice_gen_sensual: { badge: 'Gerador ErosChat', cost: 'Mensagens Diretas', button: 'Gerar Mensagem de Voz' },
+          audio_isolation: { badge: 'Isolador de Ruído', cost: 'Limpeza de Áudio', button: 'Limpar Áudio' }
         };
         return table[model] || table.eros_image_2k;
       }
@@ -8281,303 +8282,300 @@
         grid.style.alignItems = 'start';
 
         grid.innerHTML = `
-          <!-- ─── BANNER TEASER VIP • LANÇAMENTO OFICIAL EROSCHAT™ 2027 ─── -->
-          <div style="grid-column: 1 / -1; background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(245, 158, 11, 0.12)); border: 1.5px solid rgba(190, 242, 100, 0.45); border-radius: 14px; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; box-shadow: 0 4px 24px rgba(0,0,0,0.4);">
-            <div style="display: flex; align-items: center; gap: 14px;">
-              <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(190, 242, 100, 0.18); border: 1px solid rgba(190, 242, 100, 0.4); display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">
-                👑
+          <!-- ─── BANNER TEASER VIP • EROSCHAT™ 2027 ─── -->
+          <div style="grid-column: 1 / -1; background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(20, 24, 33, 0.95)); border: 1.5px solid rgba(190, 242, 100, 0.35); border-radius: 14px; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; box-shadow: 0 4px 24px rgba(0,0,0,0.4);">
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <span style="font-size: 0.94rem; font-weight: 900; color: #fff; letter-spacing: -0.2px;">ErosChat™ Ecosystem</span>
+                <span style="background: rgba(190, 242, 100, 0.15); color: var(--accent-lime); font-size: 0.62rem; font-weight: 800; padding: 3px 8px; border-radius: 5px; border: 1px solid rgba(190, 242, 100, 0.3); letter-spacing: 0.5px;">
+                  LANÇAMENTO OFICIAL 2027
+                </span>
+                <span style="font-size: 0.66rem; color: var(--accent-lime); font-weight: 800; background: rgba(190,242,100,0.1); padding: 3px 8px; border-radius: 4px;">ATÉ 70% DE COMISSÃO</span>
               </div>
-              <div>
-                <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                  <span style="font-size: 0.94rem; font-weight: 900; color: #fff; letter-spacing: -0.2px;">ErosChat™ Ecosystem</span>
-                  <span style="background: rgba(190, 242, 100, 0.18); color: #bef264; font-size: 0.62rem; font-weight: 900; padding: 3px 8px; border-radius: 5px; border: 1px solid rgba(190, 242, 100, 0.4); letter-spacing: 0.4px;">
-                    🚀 LANÇAMENTO OFICIAL EROSCHAT™ 2027
-                  </span>
-                  <span style="font-size: 0.66rem; color: #fbbf24; font-weight: 900; background: rgba(245,158,11,0.18); padding: 3px 8px; border-radius: 4px;">ATÉ 70% DE COMISSÃO</span>
-                </div>
-                <p style="font-size: 0.74rem; color: #cbd5e1; margin: 4px 0 0 0; line-height: 1.4;">
-                  Chega de passar o dia no X1 do WhatsApp para fechar um Pix de R$ 300 a R$ 600. Em 2027, o ErosChat assume sua musa com vendas autônomas 24h/7d, fotos e áudios dinâmicos e monetização automática.
-                </p>
-              </div>
+              <p style="font-size: 0.72rem; color: #cbd5e1; margin: 4px 0 0 0; line-height: 1.4;">
+                Monetização e vendas autônomas 24/7 para sua musa virtual via WhatsApp e Telegram.
+              </p>
             </div>
-            <button type="button" onclick="openErosChatVipWaitlist()" style="background: var(--accent-lime); color: #000; font-weight: 900; font-size: 0.76rem; border: none; padding: 11px 20px; border-radius: 9px; cursor: pointer; white-space: nowrap; box-shadow: 0 4px 16px rgba(190, 242, 100, 0.35); transition: 0.2s;">
-              🔒 Garantir Vaga VIP • Lançamento 2027
+            <button type="button" onclick="openErosChatVipWaitlist()" style="background: var(--accent-lime); color: #000; font-weight: 900; font-size: 0.76rem; border: none; padding: 10px 18px; border-radius: 8px; cursor: pointer; white-space: nowrap; box-shadow: 0 4px 14px rgba(190, 242, 100, 0.25); transition: 0.2s;">
+              Garantir Vaga VIP • 2027
             </button>
           </div>
 
-          <!-- ─── SELETOR DE MODALIDADE: IMAGEM / VÍDEO / ÁUDIO (ESTILO MAGNIFIC / FREEPIK) ─── -->
+          <!-- ─── SELETOR DE MODALIDADE: IMAGEM / VÍDEO / ÁUDIO ─── -->
           <div style="grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 4px;">
-            <div style="display: inline-flex; background: #0c0e15; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 4px; gap: 4px;">
+            <div style="display: inline-flex; background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 4px; gap: 4px;">
               <button type="button" id="tabModeImage" onclick="setStudioMode('image')" style="display: flex; align-items: center; gap: 7px; padding: 8px 20px; border-radius: 9px; font-weight: 900; font-size: 0.8rem; cursor: pointer; border: none; background: var(--accent-lime); color: #000; transition: 0.2s;">
-                <span>🖼️</span> IMAGEM
+                IMAGEM
               </button>
               <button type="button" id="tabModeVideo" onclick="setStudioMode('video')" style="display: flex; align-items: center; gap: 7px; padding: 8px 20px; border-radius: 9px; font-weight: 700; font-size: 0.8rem; cursor: pointer; border: none; background: transparent; color: #94a3b8; transition: 0.2s;">
-                <span>🎬</span> VÍDEO
+                VÍDEO
                 <span style="font-size: 0.55rem; background: rgba(56,189,248,0.18); color: #38bdf8; padding: 1px 5px; border-radius: 4px; font-weight: 800;">MOTION</span>
               </button>
               <button type="button" id="tabModeAudio" onclick="setStudioMode('audio')" style="display: flex; align-items: center; gap: 7px; padding: 8px 18px; border-radius: 9px; font-weight: 700; font-size: 0.78rem; cursor: pointer; border: none; background: transparent; color: #94a3b8; transition: 0.2s;">
-                <span>🎙️</span> ÁUDIO & VOZ
-                <span style="font-size: 0.55rem; background: rgba(245,158,11,0.2); color: #fbbf24; padding: 1px 5px; border-radius: 4px; font-weight: 800;">EROSCHAT</span>
+                ÁUDIO & VOZ
+                <span style="font-size: 0.55rem; background: rgba(190,242,100,0.18); color: var(--accent-lime); padding: 1px 5px; border-radius: 4px; font-weight: 800;">EROSCHAT</span>
               </button>
             </div>
 
-            <!-- BENEFÍCIOS EXCLUSIVOS GHOSTLENS (ARGUMENTOS DE VENDA) -->
+            <!-- BENEFÍCIOS GHOSTLENS (MINIMALISTA) -->
             <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-              <span style="background: rgba(16,185,129,0.12); color: #34d399; border: 1px solid rgba(16,185,129,0.3); font-size: 0.62rem; font-weight: 800; padding: 4px 8px; border-radius: 6px;">
-                🛡️ Anti-Hash PDQ + Apple EXIF Ativo
+              <span style="background: rgba(16,185,129,0.1); color: #34d399; border: 1px solid rgba(16,185,129,0.25); font-size: 0.62rem; font-weight: 800; padding: 4px 8px; border-radius: 6px;">
+                GhostStealth™ Ativo
               </span>
-              <span style="background: rgba(56,189,248,0.12); color: #38bdf8; border: 1px solid rgba(56,189,248,0.3); font-size: 0.62rem; font-weight: 800; padding: 4px 8px; border-radius: 6px;">
-                ⚡ Interpolação 60 FPS Grátis
+              <span style="background: rgba(56,189,248,0.1); color: #38bdf8; border: 1px solid rgba(56,189,248,0.25); font-size: 0.62rem; font-weight: 800; padding: 4px 8px; border-radius: 6px;">
+                Render 60 FPS
               </span>
-              <span style="background: rgba(245,158,11,0.12); color: #fbbf24; border: 1px solid rgba(245,158,11,0.3); font-size: 0.62rem; font-weight: 800; padding: 4px 8px; border-radius: 6px;">
-                🎬 Ghost Studio FX Incluso (Plano R$ 197)
+              <span style="background: rgba(190,242,100,0.1); color: var(--accent-lime); border: 1px solid rgba(190,242,100,0.25); font-size: 0.62rem; font-weight: 800; padding: 4px 8px; border-radius: 6px;">
+                GhostStudio FX Incluso
               </span>
             </div>
           </div>
 
+          <!-- ─── COLUNA ESQUERDA: CONTROLES DO ESTÚDIO ─── -->
           <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; gap: 14px;">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 1rem; color: var(--accent-lime);" id="lblCreatorStudioIcon">✨</span>
-                <div>
-                  <div style="font-size: 0.9rem; font-weight: 800; color: #fff; line-height: 1.1;" id="lblCreatorStudioTitle">GhostCreator • Imagem</div>
-                  <div style="font-size: 0.64rem; color: #94a3b8;" id="lblCreatorStudioSubtitle">Criação fotográfica com referência da persona</div>
+              <div>
+                <div style="font-size: 0.9rem; font-weight: 800; color: #fff; line-height: 1.1;" id="lblCreatorStudioTitle">GhostCreator • Imagem</div>
+                <div style="font-size: 0.64rem; color: #94a3b8;" id="lblCreatorStudioSubtitle">Criação fotográfica de alta fidelidade</div>
+              </div>
+              <span id="badgeCreatorMode" style="background: rgba(190,242,100,0.08); color: var(--accent-lime); border: 1px solid rgba(190,242,100,0.22); font-size: 0.58rem; font-weight: 800; padding: 3px 8px; border-radius: 20px;">EROS-IMAGE 2K</span>
+            </div>
+
+            <!-- CARD DA PERSONA ATIVA (AVATAR MOLDURA + STATUS LORA + EDITAR DNA) -->
+            <div style="background: #0a0c12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px;">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="position: relative; width: 56px; height: 56px; flex-shrink: 0; border-radius: 10px; overflow: hidden; border: 1.5px solid var(--accent-lime); background: #000; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+                  <img id="imgMusaAvatarMini" src="${CREATOR_PLACEHOLDER}" alt="Avatar da Musa" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                </div>
+                <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 5px;">
+                  <div style="display: flex; gap: 6px; align-items: center;">
+                    <select id="selCreatorMusa" onchange="onCreatorMusaChange(this.value)" style="flex: 1; background: #12141c; border: 1px solid var(--border-subtle); color: #fff; padding: 7px 9px; border-radius: 7px; font-weight: 700; font-size: 0.78rem; outline: none;"></select>
+                    <button type="button" onclick="openGhostProfileModal()" title="Criar nova persona" style="width: 32px; height: 32px; background: #1a1c26; border: 1px solid rgba(255,255,255,0.08); color: var(--accent-lime); border-radius: 7px; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;">＋</button>
+                  </div>
+                  <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px;">
+                    <div id="boxMusaLoraStatus">
+                      <span id="badgeMusaLoraActive" style="display: none; background: rgba(190,242,100,0.15); color: var(--accent-lime); border: 1px solid rgba(190,242,100,0.3); font-size: 0.58rem; font-weight: 800; padding: 2px 7px; border-radius: 4px;">
+                        LoRA Calibrado (100% Consistência)
+                      </span>
+                      <span id="badgeMusaLoraDefault" style="display: inline-block; background: rgba(255,255,255,0.06); color: #94a3b8; font-size: 0.58rem; font-weight: 700; padding: 2px 6px; border-radius: 4px;">
+                        LoRA Padrão
+                      </span>
+                    </div>
+                    <button type="button" onclick="toggleDnaEditorDrawer()" style="background: transparent; border: none; color: #94a3b8; font-size: 0.62rem; text-decoration: underline; cursor: pointer; padding: 0;">
+                      Editar DNA
+                    </button>
+                  </div>
                 </div>
               </div>
-              <span id="badgeCreatorMode" style="background: rgba(190,242,100,0.08); color: #bef264; border: 1px solid rgba(190,242,100,0.22); font-size: 0.58rem; font-weight: 800; padding: 3px 8px; border-radius: 20px;">IMAGE STUDIO</span>
-            </div>
 
-            <div>
-              <label style="font-size: 0.7rem; font-weight: 800; color: #cbd5e1; display: block; margin-bottom: 6px;">PERSONA</label>
-              <div style="display: flex; gap: 6px;">
-                <select id="selCreatorMusa" onchange="onCreatorMusaChange(this.value)" style="flex: 1; background: #0d0e14; border: 1px solid var(--border-subtle); color: #fff; padding: 9px 10px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; outline: none;"></select>
-                <button type="button" onclick="openGhostProfileModal()" title="Criar nova persona" style="width: 38px; background: #1c1e28; border: 1px solid rgba(255,255,255,0.08); color: #bef264; border-radius: 8px; font-size: 1.1rem; cursor: pointer;">＋</button>
-              </div>
-            </div>
-
-            <div>
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px;">
-                <label style="font-size: 0.7rem; font-weight: 800; color: #cbd5e1;" id="lblCreatorRefsTitle">REFERÊNCIAS DA MUSA</label>
-                <span id="creatorRefCount" style="font-size: 0.6rem; color: #bef264;">0/3</span>
-              </div>
-              <input type="file" id="creatorRefInput" accept="image/*" multiple style="display: none;" onchange="handleCreatorRefFiles(this.files)">
-              <div id="creatorRefStrip" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px;"></div>
-              <div style="font-size: 0.62rem; color: #64748b; margin-top: 6px;" id="lblCreatorRefsHint">A primeira foto vira a referência principal. Use rosto limpo e bem iluminado.</div>
-            </div>
-
-            <div id="boxDnaContainer">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <label style="font-size: 0.7rem; font-weight: 800; color: #cbd5e1;">DNA DA MUSA</label>
-                <span id="lblMusaDnaStatus" style="font-size: 0.6rem; color: #94a3b8;">sem DNA</span>
-              </div>
-              <div id="lblCreatorDnaSummary" style="font-size: 0.63rem; color: #94a3b8; background: #0a0b10; border: 1px solid rgba(255,255,255,0.05); border-radius: 6px; padding: 5px 7px; margin-bottom: 5px; line-height: 1.4;">Sem atributos estruturados.</div>
-              <textarea id="txtCreatorDna" rows="3" onchange="saveCreatorDnaFromStudio()" placeholder="Ex: brasileira 23 anos, cabelo loiro longo ondulado, corpo curvilíneo, olhos amendoados, sardas sutis, estética de praia de luxo." style="width: 100%; background: #0d0e14; border: 1px solid var(--border-subtle); color: #fff; padding: 9px 10px; border-radius: 8px; font-size: 0.74rem; font-family: inherit; resize: vertical; line-height: 1.4; outline: none;"></textarea>
-              <div style="font-size: 0.6rem; color: #64748b; margin-top: 5px;">Esse texto é somado ao prompt da cena em toda geração.</div>
-            </div>
-
-            <div>
-              <label style="font-size: 0.7rem; font-weight: 800; color: #cbd5e1; display: block; margin-bottom: 6px;">MODELO / IA</label>
-              <select id="selCreatorModel" onchange="onCreatorModelChange(this.value)" style="width: 100%; background: #0d0e14; border: 1.5px solid rgba(245, 158, 11, 0.4); color: #fff; padding: 9px 10px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; outline: none;"></select>
-              <div id="creatorModelHint" style="font-size: 0.62rem; color: #fbbf24; margin-top: 5px; line-height: 1.35;">Eros-Image™ 2K: Textura de microporos real, profundidade óptica e fidelidade anatômica sem traços artificiais de IA.</div>
-            </div>
-
-            <!-- 1. PAINEL EROS-IMAGE™ 2K (LENTES & IDENTIDADE) -->
-            <div id="boxErosImageControls" style="display: flex; background: linear-gradient(135deg, rgba(245, 158, 11, 0.08), rgba(15, 17, 23, 0.95)); border: 1.5px solid rgba(245, 158, 11, 0.35); border-radius: 12px; padding: 14px; flex-direction: column; gap: 10px;">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 0.75rem; font-weight: 900; color: #fbbf24; display: flex; align-items: center; gap: 6px;">
-                  👑 Lentes de Captura • Eros-Image™ 2K
-                </span>
-                <span style="font-size: 0.62rem; color: #bef264; background: rgba(190,242,100,0.12); padding: 2px 7px; border-radius: 4px; font-weight: 800;">ULTRA-REALISTA</span>
-              </div>
-              <div style="font-size: 0.64rem; color: #cbd5e1; line-height: 1.4;">
-                Escolha o estilo de ótica e iluminação para o ensaio da sua musa:
-              </div>
-
-              <!-- AS 3 LENTES EXCLUSIVAS -->
-              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
-                <button type="button" onclick="selectErosLens('raw', this)" class="btn-eros-ck active" style="background: #1e1b13; border: 1.5px solid #fbbf24; color: #fbbf24; padding: 8px 4px; border-radius: 8px; font-weight: 800; font-size: 0.66rem; cursor: pointer; text-align: center;">
-                  📸 RAW Natural<br><span style="font-size: 0.54rem; opacity: 0.8; font-weight: 600;">Pele Real & Luz Dia</span>
-                </button>
-                <button type="button" onclick="selectErosLens('film_pov', this)" class="btn-eros-ck" style="background: #0d0e14; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 8px 4px; border-radius: 8px; font-weight: 700; font-size: 0.66rem; cursor: pointer; text-align: center;">
-                  🎬 FILM POV<br><span style="font-size: 0.54rem; opacity: 0.8; font-weight: 600;">Sensual 35mm</span>
-                </button>
-                <button type="button" onclick="selectErosLens('glam', this)" class="btn-eros-ck" style="background: #0d0e14; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 8px 4px; border-radius: 8px; font-weight: 700; font-size: 0.66rem; cursor: pointer; text-align: center;">
-                  ✨ GLAM VIP<br><span style="font-size: 0.54rem; opacity: 0.8; font-weight: 600;">Editorial de Luxo</span>
+              <!-- OFERTA DE CALIBRAR LORA (SÓ APARECE SE A PERSONA NÃO TIVER LORA CALIBRADO AINDA) -->
+              <div id="boxMusaLoraOffer" style="display: flex; align-items: center; justify-content: space-between; background: rgba(190,242,100,0.05); border: 1px dashed rgba(190,242,100,0.3); border-radius: 8px; padding: 8px 10px; gap: 8px;">
+                <div style="font-size: 0.62rem; color: #cbd5e1; line-height: 1.3;">
+                  Aumente a fidelidade facial e consistência da musa.
+                </div>
+                <button type="button" onclick="openOrderLoraModal()" style="background: var(--accent-lime); color: #000; font-weight: 900; font-size: 0.66rem; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; white-space: nowrap; transition: 0.2s;">
+                  Calibrar LoRA (R$ 49,90)
                 </button>
               </div>
 
-              <!-- CARD DO LORA EXCLUSIVO DA MUSA -->
-              <div style="background: rgba(0,0,0,0.5); border: 1px dashed rgba(245, 158, 11, 0.4); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 6px;">
+              <!-- DRAWER COLAPSÁVEL DE EDIÇÃO DO DNA (OCULTO POR PADRÃO) -->
+              <div id="boxDnaDrawer" style="display: none; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px; flex-direction: column; gap: 6px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                  <span style="font-size: 0.66rem; font-weight: 800; color: #fff;">LoRA Exclusivo da Musa:</span>
-                  <span id="lblMusaLoraBadge" style="font-size: 0.6rem; font-weight: 800; color: #fbbf24; background: rgba(245,158,11,0.15); padding: 2px 6px; border-radius: 4px;">Padrão Base Ativo</span>
+                  <span style="font-size: 0.62rem; font-weight: 800; color: #94a3b8;">DNA BASE DA MUSA</span>
+                  <span id="lblMusaDnaStatus" style="font-size: 0.58rem; color: var(--accent-lime);">sem DNA</span>
                 </div>
-                <div style="font-size: 0.62rem; color: #94a3b8; line-height: 1.35;">
-                  Calibre o LoRA biométrico exclusivo da sua modelo para obter 100% de consistência do rosto em qualquer pose, ângulo ou iluminação, sem distorção e sem cara de IA.
+                <textarea id="txtCreatorDna" rows="2" placeholder="Ex: brasileira 23 anos, cabelo castanho iluminado, olhos amendoados..." style="width: 100%; background: #12141c; border: 1px solid var(--border-subtle); color: #fff; padding: 7px 9px; border-radius: 6px; font-size: 0.7rem; font-family: inherit; resize: vertical; outline: none;"></textarea>
+                <div style="display: flex; justify-content: flex-end;">
+                  <button type="button" onclick="saveCreatorDnaFromStudio()" style="background: #1e2230; border: 1px solid rgba(255,255,255,0.1); color: #fff; font-size: 0.62rem; font-weight: 700; padding: 4px 10px; border-radius: 5px; cursor: pointer;">Salvar DNA</button>
                 </div>
-                <button type="button" onclick="openOrderLoraModal()" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 900; font-size: 0.72rem; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 4px; box-shadow: 0 4px 12px rgba(245,158,11,0.25);">
-                  <span>🔥</span> Encomendar LoRA Exclusivo da Musa (R$ 49,90)
-                </button>
               </div>
             </div>
 
-            <!-- 2. PAINEL SEEDREAM 5 PRO (FACE SWAP, NSFW & MODIFICAÇÃO DE LOOK) -->
-            <div id="boxSeedreamControls" style="display: none; background: linear-gradient(135deg, rgba(14,165,233,0.1), rgba(15,17,23,0.95)); border: 1.5px solid rgba(14,165,233,0.35); border-radius: 12px; padding: 14px; flex-direction: column; gap: 10px;">
-              <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="font-size: 0.74rem; font-weight: 900; color: #38bdf8; display: flex; align-items: center; gap: 6px;">
-                  🌊 ByteDance Seedream 5 Pro • Face Swap & NSFW
+            <!-- SELETOR DE MODELO -->
+            <div>
+              <label style="font-size: 0.68rem; font-weight: 800; color: #94a3b8; display: block; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;">Modelo</label>
+              <select id="selCreatorModel" onchange="onCreatorModelChange(this.value)" style="width: 100%; background: #0a0c12; border: 1px solid var(--border-subtle); color: #fff; padding: 9px 10px; border-radius: 8px; font-weight: 700; font-size: 0.78rem; outline: none;"></select>
+            </div>
+
+            <!-- PAINEL 1: EROS-IMAGE™ 2K -->
+            <div id="boxErosImageControls" style="display: flex; flex-direction: column; gap: 10px;">
+              <!-- LENTES ÓPTICAS -->
+              <div>
+                <label style="font-size: 0.66rem; font-weight: 800; color: #94a3b8; display: block; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Lente Óptica</label>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
+                  <button type="button" onclick="selectErosLens('raw', this)" class="btn-eros-ck active" style="background: #0f1410; border: 1.5px solid var(--accent-lime); color: var(--accent-lime); padding: 8px 4px; border-radius: 8px; font-weight: 800; font-size: 0.66rem; cursor: pointer; text-align: center;">
+                    RAW Natural<br><span style="font-size: 0.54rem; opacity: 0.7; font-weight: 600;">35mm Luz Dia</span>
+                  </button>
+                  <button type="button" onclick="selectErosLens('film_pov', this)" class="btn-eros-ck" style="background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 8px 4px; border-radius: 8px; font-weight: 700; font-size: 0.66rem; cursor: pointer; text-align: center;">
+                    Film POV<br><span style="font-size: 0.54rem; opacity: 0.7; font-weight: 600;">28mm Sensual</span>
+                  </button>
+                  <button type="button" onclick="selectErosLens('glam', this)" class="btn-eros-ck" style="background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 8px 4px; border-radius: 8px; font-weight: 700; font-size: 0.66rem; cursor: pointer; text-align: center;">
+                    Glam Studio<br><span style="font-size: 0.54rem; opacity: 0.7; font-weight: 600;">85mm Editorial</span>
+                  </button>
                 </div>
-                <span style="font-size: 0.6rem; color: #38bdf8; background: rgba(14,165,233,0.15); padding: 2px 7px; border-radius: 4px; font-weight: 800;">R$ 0,40 / FOTO</span>
               </div>
-              <div style="font-size: 0.64rem; color: #cbd5e1; line-height: 1.4;">
-                O queridinho do grupo para trocar roupas, mudar cabelo, fazer swap facial em ensaios completos e gerar conteúdo sensual/explícito sem censura.
+
+              <!-- REGULADOR DE PESO DO LORA -->
+              <div style="background: #0a0c12; border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                  <span style="font-size: 0.66rem; font-weight: 800; color: #cbd5e1; text-transform: uppercase;">Peso do LoRA</span>
+                  <span id="lblLoraWeightVal" style="font-size: 0.7rem; color: var(--accent-lime); font-weight: 800; font-family: monospace;">1.00</span>
+                </div>
+                <input type="range" id="rngLoraWeight" min="0.5" max="2.0" step="0.05" value="1.0" oninput="document.getElementById('lblLoraWeightVal').innerText = parseFloat(this.value).toFixed(2)" style="width: 100%; accent-color: var(--accent-lime);">
+                <div style="display: flex; justify-content: space-between; font-size: 0.55rem; color: #64748b; margin-top: 3px;">
+                  <span>0.5 (Sutil)</span>
+                  <span>1.0 (Ideal)</span>
+                  <span>2.0 (Intenso)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- PAINEL 2: KLING IMAGE -->
+            <div id="boxKlingImageControls" style="display: none; background: #0a0c12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 12px; flex-direction: column; gap: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.72rem; font-weight: 800; color: #fff;">Kling Image Pro</span>
+                <span style="font-size: 0.58rem; color: var(--accent-lime); background: rgba(190,242,100,0.1); padding: 2px 6px; border-radius: 4px; font-weight: 700;">1080P HD</span>
+              </div>
+              <div>
+                <label style="font-size: 0.64rem; color: #94a3b8; display: block; margin-bottom: 4px;">Modo de Renderização</label>
+                <select id="selKlingImageMode" style="width: 100%; background: #12141c; border: 1px solid var(--border-subtle); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;">
+                  <option value="pro" selected>Professional (1080p • Alta Fidelidade)</option>
+                  <option value="std">Standard (720p • Render Rápido)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- PAINEL 3: SEEDREAM 5 PRO (MINIMALISTA, SEM ATALHOS, SEM TEXTÕES) -->
+            <div id="boxSeedreamControls" style="display: none; background: #0a0c12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 12px; flex-direction: column; gap: 10px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.74rem; font-weight: 800; color: #fff;">Seedream 5 Pro</span>
+                <span style="font-size: 0.58rem; color: var(--accent-lime); background: rgba(190,242,100,0.1); padding: 2px 6px; border-radius: 4px; font-weight: 700;">FACE & LOOK SWAP</span>
               </div>
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                 <div>
-                  <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">Imagem Alvo (Cena/Foto Base)</div>
+                  <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">Imagem Alvo (Cena)</div>
                   <input type="file" id="fileSeedreamTarget" accept="image/*" style="display: none;" onchange="handleSeedreamTargetUpload(this.files)">
-                  <label for="fileSeedreamTarget" id="dropSeedreamTarget" style="height: 76px; border: 1.5px dashed rgba(14,165,233,0.4); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #38bdf8; background: rgba(14,165,233,0.05); overflow: hidden; position: relative;">
-                    <span style="font-size: 1.1rem;">🖼️</span><span style="font-size: 0.58rem; font-weight: 700;">Subir Imagem Alvo</span>
+                  <label for="fileSeedreamTarget" id="dropSeedreamTarget" style="height: 70px; border: 1.5px dashed rgba(255,255,255,0.15); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #94a3b8; background: rgba(255,255,255,0.02); overflow: hidden; position: relative;">
+                    <span style="font-size: 0.64rem; font-weight: 700;">Subir Imagem Alvo</span>
                   </label>
                 </div>
                 <div>
                   <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">Rosto da Musa</div>
                   <input type="file" id="fileSeedreamFace" accept="image/*" style="display: none;" onchange="handleSeedreamFaceUpload(this.files)">
-                  <label for="fileSeedreamFace" id="dropSeedreamFace" style="height: 76px; border: 1.5px dashed rgba(14,165,233,0.4); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #38bdf8; background: rgba(14,165,233,0.05); overflow: hidden; position: relative;">
-                    <span style="font-size: 1.1rem;">👤</span><span style="font-size: 0.58rem; font-weight: 700;">Rosto da Musa</span>
+                  <label for="fileSeedreamFace" id="dropSeedreamFace" style="height: 70px; border: 1.5px dashed rgba(255,255,255,0.15); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #94a3b8; background: rgba(255,255,255,0.02); overflow: hidden; position: relative;">
+                    <span style="font-size: 0.64rem; font-weight: 700;">Rosto da Musa</span>
                   </label>
                 </div>
               </div>
               <div>
                 <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Comando de Modificação (Cabelo / Roupa / Fundo):</label>
-                <input type="text" id="txtSeedreamEditPrompt" placeholder="Ex: tirar biquíni, mudar cabelo para loiro claro, lingerie de seda preta..." style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 7px 10px; border-radius: 6px; font-size: 0.74rem; outline: none;">
-              </div>
-              <div style="display: flex; gap: 4px; flex-wrap: wrap;">
-                <button type="button" onclick="setSeedreamPrompt('tirar biquini e deixar topless sensual na praia')" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: #cbd5e1; font-size: 0.58rem; padding: 3px 6px; border-radius: 4px; cursor: pointer;">👙 Topless Praia</button>
-                <button type="button" onclick="setSeedreamPrompt('colocar lingerie de renda preta transparente provocante')" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: #cbd5e1; font-size: 0.58rem; padding: 3px 6px; border-radius: 4px; cursor: pointer;">🖤 Lingerie Transparente</button>
-                <button type="button" onclick="setSeedreamPrompt('mudar cabelo para loiro perolado longo iluminado')" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: #cbd5e1; font-size: 0.58rem; padding: 3px 6px; border-radius: 4px; cursor: pointer;">💇 Cabelo Loiro</button>
-                <button type="button" onclick="setSeedreamPrompt('vestido de festa vermelho com decote profundo')" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: #cbd5e1; font-size: 0.58rem; padding: 3px 6px; border-radius: 4px; cursor: pointer;">👗 Vestido Vermelho Decote</button>
+                <input type="text" id="txtSeedreamEditPrompt" placeholder="Descreva a alteração desejada..." style="width: 100%; background: #12141c; border: 1px solid var(--border-subtle); color: #fff; padding: 7px 10px; border-radius: 6px; font-size: 0.72rem; outline: none;">
               </div>
             </div>
 
-            <!-- 3. PAINEL QWEN 2.5 360° (MULTI-ÂNGULO) -->
-            <div id="boxQwenControls" style="display: none; background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(15,17,23,0.95)); border: 1.5px solid rgba(16,185,129,0.35); border-radius: 12px; padding: 14px; flex-direction: column; gap: 10px;">
+            <!-- PAINEL 4: QWEN 2.5 360° -->
+            <div id="boxQwenControls" style="display: none; background: #0a0c12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 12px; flex-direction: column; gap: 8px;">
               <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="font-size: 0.74rem; font-weight: 900; color: #34d399; display: flex; align-items: center; gap: 6px;">
-                  🌐 Qwen 2.5 • Ângulo Orbital 360°
-                </div>
-                <span style="font-size: 0.6rem; color: #34d399; background: rgba(16,185,129,0.15); padding: 2px 7px; border-radius: 4px; font-weight: 800;">CARROSSEL IG</span>
-              </div>
-              <div style="font-size: 0.64rem; color: #cbd5e1; line-height: 1.4;">
-                Gera a mesma musa em diferentes ângulos da mesma cena para postar carrosséis com engajamento explosivo.
+                <span style="font-size: 0.74rem; font-weight: 800; color: #fff;">Qwen 2.5 • Ângulo 360°</span>
+                <span style="font-size: 0.58rem; color: var(--accent-lime); background: rgba(190,242,100,0.1); padding: 2px 6px; border-radius: 4px; font-weight: 700;">6 ÂNGULOS</span>
               </div>
               <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
-                <button type="button" onclick="setQwenAngle('0', this)" class="btn-qwen-angle active" style="background: #13281e; border: 1.5px solid #34d399; color: #34d399; padding: 7px 4px; border-radius: 7px; font-weight: 800; font-size: 0.66rem; cursor: pointer; text-align: center;">0° Frontal</button>
-                <button type="button" onclick="setQwenAngle('45', this)" class="btn-qwen-angle" style="background: #0d0e14; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 7px 4px; border-radius: 7px; font-weight: 700; font-size: 0.66rem; cursor: pointer; text-align: center;">45° Lateral</button>
-                <button type="button" onclick="setQwenAngle('90', this)" class="btn-qwen-angle" style="background: #0d0e14; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 7px 4px; border-radius: 7px; font-weight: 700; font-size: 0.66rem; cursor: pointer; text-align: center;">90° Perfil</button>
-                <button type="button" onclick="setQwenAngle('135', this)" class="btn-qwen-angle" style="background: #0d0e14; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 7px 4px; border-radius: 7px; font-weight: 700; font-size: 0.66rem; cursor: pointer; text-align: center;">135° Olhando Atrás</button>
-                <button type="button" onclick="setQwenAngle('180', this)" class="btn-qwen-angle" style="background: #0d0e14; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 7px 4px; border-radius: 7px; font-weight: 700; font-size: 0.66rem; cursor: pointer; text-align: center;">180° Traseira</button>
-                <button type="button" onclick="setQwenAngle('pov', this)" class="btn-qwen-angle" style="background: #0d0e14; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 7px 4px; border-radius: 7px; font-weight: 700; font-size: 0.66rem; cursor: pointer; text-align: center;">POV Íntimo</button>
+                <button type="button" onclick="setQwenAngle('0', this)" class="btn-qwen-angle active" style="background: #0f1410; border: 1.5px solid var(--accent-lime); color: var(--accent-lime); padding: 7px 4px; border-radius: 7px; font-weight: 800; font-size: 0.66rem; cursor: pointer; text-align: center;">0° Frontal</button>
+                <button type="button" onclick="setQwenAngle('45', this)" class="btn-qwen-angle" style="background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 7px 4px; border-radius: 7px; font-weight: 700; font-size: 0.66rem; cursor: pointer; text-align: center;">45° Lateral</button>
+                <button type="button" onclick="setQwenAngle('90', this)" class="btn-qwen-angle" style="background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 7px 4px; border-radius: 7px; font-weight: 700; font-size: 0.66rem; cursor: pointer; text-align: center;">90° Perfil</button>
+                <button type="button" onclick="setQwenAngle('135', this)" class="btn-qwen-angle" style="background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 7px 4px; border-radius: 7px; font-weight: 700; font-size: 0.66rem; cursor: pointer; text-align: center;">135° Três Quartos</button>
+                <button type="button" onclick="setQwenAngle('180', this)" class="btn-qwen-angle" style="background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 7px 4px; border-radius: 7px; font-weight: 700; font-size: 0.66rem; cursor: pointer; text-align: center;">180° Traseira</button>
+                <button type="button" onclick="setQwenAngle('pov', this)" class="btn-qwen-angle" style="background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; padding: 7px 4px; border-radius: 7px; font-weight: 700; font-size: 0.66rem; cursor: pointer; text-align: center;">POV Íntimo</button>
               </div>
             </div>
 
-            <!-- 4. PAINEL CHATGPT IMAGE IMPORT -->
-            <div id="boxChatGptControls" style="display: none; background: #0d0e14; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 12px; flex-direction: column; gap: 8px;">
+            <!-- PAINEL 5: CHATGPT IMPORT -->
+            <div id="boxChatGptControls" style="display: none; background: #0a0c12; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 12px; flex-direction: column; gap: 8px;">
               <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="font-size: 0.72rem; font-weight: 800; color: #fff;">🖼️ ChatGPT Image (GPT Image 2.6 / DALL-E)</div>
-                <span style="font-size: 0.6rem; color: #4ade80; background: rgba(74,222,128,0.1); padding: 2px 6px; border-radius: 4px; font-weight: 700;">Ctrl+V Habilitado</span>
+                <span style="font-size: 0.72rem; font-weight: 800; color: #fff;">GPT 2.6 Image Import</span>
+                <span style="font-size: 0.6rem; color: var(--accent-lime); background: rgba(190,242,100,0.1); padding: 2px 6px; border-radius: 4px; font-weight: 700;">Ctrl+V Habilitado</span>
               </div>
-              <div style="font-size: 0.65rem; color: #94a3b8; line-height: 1.4;">
-                Gere na sua conta do ChatGPT Plus. Copie a imagem de lá e dê <strong>Ctrl+V</strong> aqui na tela, ou arraste o arquivo. O GhostLens purga metadados C2PA, aplica Anti-Hash PDQ e injeta EXIF Apple automaticamente!
+              <div style="font-size: 0.64rem; color: #94a3b8; line-height: 1.4;">
+                Gere na sua conta do ChatGPT Plus. Copie a imagem de lá e pressione <strong>Ctrl+V</strong> aqui na tela.
               </div>
               <div style="display: flex; gap: 6px;">
                 <button type="button" onclick="copyOptimizedGptPrompt()" style="flex: 1; background: #1a1c26; border: 1px solid rgba(255,255,255,0.1); color: #cbd5e1; font-weight: 700; font-size: 0.68rem; padding: 7px; border-radius: 6px; cursor: pointer;">
-                  📋 Copiar Super-Prompt pro GPT
+                  Copiar Super-Prompt
                 </button>
               </div>
               <input type="file" id="creatorImportInput" accept="image/*" style="display: none;" onchange="handleCreatorImportFile(this.files)">
-              <label for="creatorImportInput" id="dropZoneGptImport" style="height: 80px; border: 1.5px dashed rgba(255,255,255,0.2); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; color: #e2e8f0; background: rgba(255,255,255,0.02); transition: 0.2s;">
-                <span style="font-size: 1.1rem;">＋</span><span style="font-size: 0.64rem; font-weight: 700;">Colar (Ctrl+V) ou soltar imagem do ChatGPT</span>
+              <label for="creatorImportInput" id="dropZoneGptImport" style="height: 70px; border: 1.5px dashed rgba(255,255,255,0.15); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; color: #e2e8f0; background: rgba(255,255,255,0.02); transition: 0.2s;">
+                <span style="font-size: 0.64rem; font-weight: 700;">Colar (Ctrl+V) ou soltar arquivo</span>
               </label>
             </div>
 
-            <!-- 5. PAINEL MOTION CONTROL (KLING 4.0/3.0/2.6, OMNI FLASH, OPENJUTSU) -->
-            <div id="boxMotionControls" style="display: none; background: linear-gradient(135deg, rgba(6,182,212,0.1), rgba(15,17,23,0.95)); border: 1.5px solid rgba(6,182,212,0.35); border-radius: 12px; padding: 14px; flex-direction: column; gap: 10px;">
+            <!-- PAINEL 6: MOTION CONTROL (VÍDEO) -->
+            <div id="boxMotionControls" style="display: none; background: #0a0c12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 12px; flex-direction: column; gap: 10px;">
               <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="font-size: 0.74rem; font-weight: 900; color: #38bdf8; display: flex; align-items: center; gap: 6px;">
-                  ⚡ Motion Control • Dança, Poses & Movimento
-                </div>
-                <span style="font-size: 0.6rem; color: #38bdf8; background: rgba(6,182,212,0.15); padding: 2px 7px; border-radius: 4px; font-weight: 800;">VIRAL TRANSFER</span>
-              </div>
-              <div style="font-size: 0.64rem; color: #cbd5e1; line-height: 1.4;">
-                Transfira a dança, caminhada ou poses de qualquer vídeo viral para o rosto e corpo da sua musa IA.
+                <span style="font-size: 0.74rem; font-weight: 800; color: #38bdf8;">Motion Control</span>
+                <span style="font-size: 0.6rem; color: #38bdf8; background: rgba(56,189,248,0.15); padding: 2px 7px; border-radius: 4px; font-weight: 800;">MOTION TRANSFER</span>
               </div>
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                 <div>
-                  <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">1. Vídeo Guia (MP4 Dança/Pose)</div>
+                  <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">Vídeo Guia (MP4 Movimento)</div>
                   <input type="file" id="fileMotionGuide" accept="video/*" style="display: none;" onchange="handleMotionGuideUpload(this.files)">
-                  <label for="fileMotionGuide" id="dropMotionGuide" style="height: 76px; border: 1.5px dashed rgba(6,182,212,0.4); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #38bdf8; background: rgba(6,182,212,0.05); overflow: hidden; position: relative;">
-                    <span style="font-size: 1.1rem;">🎬</span><span style="font-size: 0.58rem; font-weight: 700;">Subir Vídeo Viral</span>
+                  <label for="fileMotionGuide" id="dropMotionGuide" style="height: 70px; border: 1.5px dashed rgba(56,189,248,0.3); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #38bdf8; background: rgba(56,189,248,0.03); overflow: hidden; position: relative;">
+                    <span style="font-size: 0.62rem; font-weight: 700;">Subir Vídeo Guia</span>
                   </label>
                 </div>
                 <div>
-                  <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">2. Foto da Musa (Rosto/Corpo)</div>
+                  <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">Foto da Musa</div>
                   <input type="file" id="fileMotionMusa" accept="image/*" style="display: none;" onchange="handleMotionMusaUpload(this.files)">
-                  <label for="fileMotionMusa" id="dropMotionMusa" style="height: 76px; border: 1.5px dashed rgba(6,182,212,0.4); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #38bdf8; background: rgba(6,182,212,0.05); overflow: hidden; position: relative;">
-                    <span style="font-size: 1.1rem;">👤</span><span style="font-size: 0.58rem; font-weight: 700;">Rosto / Foto da Musa</span>
+                  <label for="fileMotionMusa" id="dropMotionMusa" style="height: 70px; border: 1.5px dashed rgba(56,189,248,0.3); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #38bdf8; background: rgba(56,189,248,0.03); overflow: hidden; position: relative;">
+                    <span style="font-size: 0.62rem; font-weight: 700;">Foto da Musa</span>
                   </label>
                 </div>
               </div>
               <div>
                 <div style="display: flex; justify-content: space-between; font-size: 0.62rem; color: #94a3b8; margin-bottom: 2px;">
-                  <span>Intensidade do Movimento</span>
-                  <span id="lblMotionStrength" style="color: #38bdf8; font-weight: 800;">7.5 (Fluido)</span>
+                  <span>Intensidade de Movimento</span>
+                  <span id="lblMotionStrength" style="color: #38bdf8; font-weight: 800;">7.5</span>
                 </div>
-                <input type="range" min="1" max="10" step="0.5" value="7.5" oninput="document.getElementById('lblMotionStrength').innerText = this.value + (this.value > 7 ? ' (Dinâmico)' : ' (Suave)')" style="width: 100%; accent-color: #38bdf8;">
+                <input type="range" min="1" max="10" step="0.5" value="7.5" oninput="document.getElementById('lblMotionStrength').innerText = this.value" style="width: 100%; accent-color: #38bdf8;">
               </div>
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                 <div>
                   <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Tipo de Transferência</label>
                   <select id="selMotionType" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;">
                     <option value="body" selected>Corpo Inteiro (Dança / Caminhada)</option>
-                    <option value="face">Sincronia Facial & Expressões</option>
-                    <option value="pose">Pose Estática com Micro-Movimento</option>
+                    <option value="face">Sincronia Facial</option>
+                    <option value="pose">Pose Estática com Movimento</option>
                   </select>
                 </div>
                 <div>
-                  <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Resolução & Taxa</label>
+                  <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Resolução</label>
                   <select id="selMotionQuality" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;">
-                    <option value="1080_60" selected>1080p Nativo • 60 FPS Suave</option>
+                    <option value="1080_60" selected>1080p Nativo • 60 FPS</option>
                     <option value="720_30">720p Rápido • 30 FPS</option>
                   </select>
                 </div>
               </div>
             </div>
 
-            <!-- 6. PAINEL IMAGE TO VIDEO (WAN 3.0, MINIMAX H3, SEEDANCE, KLING VIDEO, GROK, LTX, FLUX, VEO) -->
-            <div id="boxImageToVideoControls" style="display: none; background: linear-gradient(135deg, rgba(168,85,247,0.1), rgba(15,17,23,0.95)); border: 1.5px solid rgba(168,85,247,0.35); border-radius: 12px; padding: 14px; flex-direction: column; gap: 10px;">
+            <!-- PAINEL 7: IMAGE TO VIDEO -->
+            <div id="boxImageToVideoControls" style="display: none; background: #0a0c12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 12px; flex-direction: column; gap: 10px;">
               <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="font-size: 0.74rem; font-weight: 900; color: #c084fc; display: flex; align-items: center; gap: 6px;">
-                  🎥 Image to Video • Animação Fotorrealista
-                </div>
-                <span style="font-size: 0.6rem; color: #c084fc; background: rgba(168,85,247,0.15); padding: 2px 7px; border-radius: 4px; font-weight: 800;">ZERO DEFORMAÇÃO</span>
-              </div>
-              <div style="font-size: 0.64rem; color: #cbd5e1; line-height: 1.4;">
-                Dê vida à foto da sua musa com física realista de cabelo, vento nos tecidos e iluminação natural.
+                <span style="font-size: 0.74rem; font-weight: 800; color: #c084fc;">Image to Video</span>
+                <span style="font-size: 0.6rem; color: #c084fc; background: rgba(168,85,247,0.15); padding: 2px 7px; border-radius: 4px; font-weight: 800;">ALTA FLUIDEZ</span>
               </div>
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
                 <div>
                   <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">Start Image (Início)</div>
                   <input type="file" id="fileImg2VidStart" accept="image/*" style="display: none;" onchange="handleImg2VidStart(this.files)">
-                  <label for="fileImg2VidStart" id="dropImg2VidStart" style="height: 76px; border: 1.5px dashed rgba(168,85,247,0.4); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #c084fc; background: rgba(168,85,247,0.05); overflow: hidden; position: relative;">
-                    <span style="font-size: 1.1rem;">🖼️</span><span style="font-size: 0.58rem; font-weight: 700;">Frame Inicial</span>
+                  <label for="fileImg2VidStart" id="dropImg2VidStart" style="height: 70px; border: 1.5px dashed rgba(168,85,247,0.3); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #c084fc; background: rgba(168,85,247,0.03); overflow: hidden; position: relative;">
+                    <span style="font-size: 0.62rem; font-weight: 700;">Frame Inicial</span>
                   </label>
                 </div>
                 <div>
                   <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">End Image (Transição - Opcional)</div>
                   <input type="file" id="fileImg2VidEnd" accept="image/*" style="display: none;" onchange="handleImg2VidEnd(this.files)">
-                  <label for="fileImg2VidEnd" id="dropImg2VidEnd" style="height: 76px; border: 1.5px dashed rgba(168,85,247,0.4); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #c084fc; background: rgba(168,85,247,0.05); overflow: hidden; position: relative;">
-                    <span style="font-size: 1.1rem;">🏁</span><span style="font-size: 0.58rem; font-weight: 700;">Frame Final</span>
+                  <label for="fileImg2VidEnd" id="dropImg2VidEnd" style="height: 70px; border: 1.5px dashed rgba(168,85,247,0.3); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: #c084fc; background: rgba(168,85,247,0.03); overflow: hidden; position: relative;">
+                    <span style="font-size: 0.62rem; font-weight: 700;">Frame Final</span>
                   </label>
                 </div>
               </div>
@@ -8585,75 +8583,99 @@
                 <div>
                   <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Movimento de Câmera</label>
                   <select id="selImg2VidCamera" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;">
-                    <option value="static">Estática (Foco na Musa)</option>
+                    <option value="static">Estática</option>
                     <option value="pan" selected>Pan Suave Lateral</option>
-                    <option value="zoom_in">Zoom In Lento Sensual</option>
-                    <option value="orbit">Orbit 360° Suave</option>
-                    <option value="pov">Câmera na Mão (POV Realista)</option>
+                    <option value="zoom_in">Zoom In Lento</option>
+                    <option value="orbit">Orbit 360°</option>
+                    <option value="pov">Câmera na Mão (POV)</option>
                   </select>
                 </div>
                 <div>
                   <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Duração</label>
                   <select id="selImg2VidDuration" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;">
-                    <option value="5" selected>5 Segundos (Reels / TikTok)</option>
-                    <option value="10">10 Segundos (História Completa)</option>
+                    <option value="5" selected>5 Segundos</option>
+                    <option value="10">10 Segundos</option>
                   </select>
                 </div>
               </div>
               <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(168,85,247,0.2); border-radius: 8px; padding: 7px 10px; display: flex; align-items: center; justify-content: space-between;">
                 <label style="display: flex; align-items: center; gap: 6px; font-size: 0.65rem; color: #c084fc; font-weight: 800; cursor: pointer;">
                   <input type="checkbox" id="chkImg2Vid60Fps" checked style="accent-color: #a855f7;">
-                  <span>⚡ Interpolação 60 FPS Automática (Grátis)</span>
+                  <span>Interpolação 60 FPS Automática</span>
                 </label>
                 <span style="font-size: 0.58rem; color: #4ade80; font-weight: 800;">ATIVO</span>
               </div>
             </div>
 
-            <!-- 7. PAINEL ÁUDIO & VOZ (VOICE CLONING, EROSCHAT VOICE, ISOLADOR) -->
-            <div id="boxAudioControls" style="display: none; background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(15,17,23,0.95)); border: 1.5px solid rgba(245,158,11,0.35); border-radius: 12px; padding: 14px; flex-direction: column; gap: 10px;">
+            <!-- PAINEL 8: ÁUDIO & VOZ -->
+            <div id="boxAudioControls" style="display: none; background: #0a0c12; border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 12px; flex-direction: column; gap: 10px;">
               <div style="display: flex; justify-content: space-between; align-items: center;">
-                <div style="font-size: 0.74rem; font-weight: 900; color: #fbbf24; display: flex; align-items: center; gap: 6px;">
-                  🎙️ Clonagem de Voz da Musa & Áudios Sensuais
-                </div>
-                <span style="font-size: 0.6rem; color: #fbbf24; background: rgba(245,158,11,0.15); padding: 2px 7px; border-radius: 4px; font-weight: 800;">EROSCHAT</span>
-              </div>
-              <div style="font-size: 0.64rem; color: #cbd5e1; line-height: 1.4;">
-                Gere áudios de voz autênticos no WhatsApp para fechar Pix de R$ 300 a R$ 600 no X1 sem você precisar falar nada.
+                <span style="font-size: 0.74rem; font-weight: 800; color: var(--accent-lime);">Clonagem de Voz & Áudio</span>
+                <span style="font-size: 0.6rem; color: var(--accent-lime); background: rgba(190,242,100,0.15); padding: 2px 7px; border-radius: 4px; font-weight: 800;">EROSCHAT</span>
               </div>
               <div>
-                <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">Amostra de Voz da Modelo (.MP3 / .WAV)</div>
+                <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">Amostra de Voz (.MP3 / .WAV)</div>
                 <input type="file" id="fileAudioSample" accept="audio/*" style="display: none;" onchange="handleAudioSampleUpload(this.files)">
-                <label for="fileAudioSample" id="dropAudioSample" style="height: 64px; border: 1.5px dashed rgba(245,158,11,0.4); border-radius: 9px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; color: #fbbf24; background: rgba(245,158,11,0.05); overflow: hidden; position: relative;">
-                  <span style="font-size: 1.2rem;">🎤</span>
-                  <span style="font-size: 0.66rem; font-weight: 700;">Subir Áudio da Musa ou Gravar Amostra</span>
+                <label for="fileAudioSample" id="dropAudioSample" style="height: 60px; border: 1.5px dashed rgba(190,242,100,0.3); border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; color: var(--accent-lime); background: rgba(190,242,100,0.02); overflow: hidden; position: relative;">
+                  <span style="font-size: 0.66rem; font-weight: 700;">Subir Áudio da Musa ou Gravar</span>
                 </label>
               </div>
               <div>
                 <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Estilo & Entonação:</label>
                 <select id="selAudioTone" style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 6px; border-radius: 6px; font-size: 0.7rem; outline: none;">
-                  <option value="whisper" selected>Sensual Sussurrado (Áudio de Cama)</option>
-                  <option value="casual">Descontraído no WhatsApp ("Oi amor, acabei de sair do banho...")</option>
-                  <option value="sweet">Carinhoso & Namorada ("Saudades de você hoje...")</option>
-                  <option value="vip">Provocante VIP ("Preparei uma surpresa que você nunca viu...")</option>
+                  <option value="whisper" selected>Sensual Sussurrado</option>
+                  <option value="casual">Descontraído no WhatsApp</option>
+                  <option value="sweet">Carinhoso</option>
+                  <option value="vip">Exclusivo VIP</option>
                 </select>
               </div>
               <div>
-                <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Texto / Mensagem a Falar:</label>
-                <textarea id="txtAudioScript" rows="3" placeholder="Ex: Oi amor... estava pensando em você agora na cama. Olha a foto que eu acabei de tirar pra você..." style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 8px; border-radius: 6px; font-size: 0.72rem; outline: none; resize: vertical;"></textarea>
+                <label style="font-size: 0.62rem; color: #94a3b8; display: block; margin-bottom: 4px;">Mensagem de Voz:</label>
+                <textarea id="txtAudioScript" rows="3" placeholder="Digite o roteiro da mensagem de voz..." style="width: 100%; background: #14151e; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 8px; border-radius: 6px; font-size: 0.72rem; outline: none; resize: vertical;"></textarea>
               </div>
             </div>
 
-            <button type="button" id="btnExecuteCreatorGen" onclick="executeGhostCreatorGen()" style="width: 100%; background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 900; font-size: 0.86rem; border: none; padding: 12px; border-radius: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; box-shadow: 0 4px 14px rgba(245,158,11,0.25);">
-              <span>⚡</span> <span id="lblBtnGenText">Gerar com Eros-Image 2K</span>
+            <!-- CAMPO DE PROMPT -->
+            <div id="boxPromptContainer">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                <label style="font-size: 0.68rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px;">Cena / Prompt</label>
+                <button type="button" onclick="suggestRandomScenePrompt()" style="background: transparent; border: none; color: var(--accent-lime); font-size: 0.64rem; font-weight: 700; cursor: pointer; padding: 0;">Sugerir Cena</button>
+              </div>
+              <textarea id="txtCreatorPrompt" rows="3" placeholder="Descreva a cena, ambiente, pose ou vestimenta..." style="width: 100%; background: #0a0c12; border: 1px solid var(--border-subtle); color: #fff; padding: 9px 10px; border-radius: 8px; font-size: 0.74rem; font-family: inherit; resize: vertical; line-height: 1.4; outline: none;"></textarea>
+            </div>
+
+            <!-- PROPORÇÃO -->
+            <div id="boxAspectRatioContainer">
+              <label style="font-size: 0.68rem; font-weight: 800; color: #94a3b8; display: block; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;">Proporção</label>
+              <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
+                <button type="button" class="btn-ratio-choice" onclick="setCreatorRatio('1:1', this)" style="background: #0a0c12; border: 1px solid var(--border-subtle); color: #94a3b8; padding: 6px; border-radius: 6px; font-weight: 700; font-size: 0.68rem; cursor: pointer;">1:1</button>
+                <button type="button" class="btn-ratio-choice active" onclick="setCreatorRatio('9:16', this)" style="background: #1c1e28; border: 1px solid var(--accent-lime); color: var(--accent-lime); padding: 6px; border-radius: 6px; font-weight: 700; font-size: 0.68rem; cursor: pointer;">9:16</button>
+                <button type="button" class="btn-ratio-choice" onclick="setCreatorRatio('4:5', this)" style="background: #0a0c12; border: 1px solid var(--border-subtle); color: #94a3b8; padding: 6px; border-radius: 6px; font-weight: 700; font-size: 0.68rem; cursor: pointer;">4:5</button>
+                <button type="button" class="btn-ratio-choice" onclick="setCreatorRatio('16:9', this)" style="background: #0a0c12; border: 1px solid var(--border-subtle); color: #94a3b8; padding: 6px; border-radius: 6px; font-weight: 700; font-size: 0.68rem; cursor: pointer;">16:9</button>
+              </div>
+            </div>
+
+            <!-- GHOSTSTEALTH CAMUFLAGEM -->
+            <div style="background: rgba(190, 242, 100, 0.04); border: 1px solid rgba(190, 242, 100, 0.15); border-radius: 8px; padding: 8px 10px; display: flex; justify-content: space-between; align-items: center;">
+              <label style="display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 0.7rem; font-weight: 800; color: var(--accent-lime);">
+                <input type="checkbox" id="chkAntiHashPdq" checked style="accent-color: var(--accent-lime); cursor: pointer; width: 14px; height: 14px;">
+                <span>GhostStealth™ Ativo (Camuflagem de postagem)</span>
+              </label>
+            </div>
+
+            <!-- BOTÃO GERAR (SEMPRE VERDE LIMÃO, SEM LARANJA, SEM EMOJIS) -->
+            <button type="button" id="btnExecuteCreatorGen" onclick="executeGhostCreatorGen()" style="width: 100%; background: var(--accent-lime); color: #000; font-weight: 900; font-size: 0.86rem; border: none; padding: 12px; border-radius: 9px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; box-shadow: 0 4px 14px rgba(190,242,100,0.25); transition: 0.2s;">
+              <span id="lblBtnGenText">Gerar com Eros-Image</span>
             </button>
-            <div id="creatorCostLabel" style="text-align: center; font-size: 0.62rem; color: #fbbf24; margin-top: -4px;">Nativo 2K • Checkpoints + LoRA</div>
+            <div id="creatorCostLabel" style="text-align: center; font-size: 0.62rem; color: var(--accent-lime); margin-top: -4px;">Render Nativo 2K • Alta Consistência</div>
           </div>
 
+          <!-- ─── COLUNA DIREITA: CANVAS DE PREVIEW ─── -->
           <div style="display: flex; flex-direction: column; gap: 16px; min-width: 0;">
             <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 18px; display: flex; flex-direction: column; align-items: center;">
               <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 10px; flex-wrap: wrap;">
                 <div style="display: flex; align-items: center; gap: 8px;">
-                  <span id="lblCanvasModelBadge" style="font-size: 0.76rem; font-weight: 800; color: #fff;">🍌 Nano Banana 2.1</span>
+                  <span id="lblCanvasModelBadge" style="font-size: 0.76rem; font-weight: 800; color: #fff;">Eros-Image 2K</span>
                   <span id="lblCanvasSpec" style="font-size: 0.64rem; color: var(--text-muted);">1080×1920 • 9:16</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 6px;">
@@ -8666,24 +8688,24 @@
                 <img id="imgCreatorMainPreview" src="${CREATOR_PLACEHOLDER}" alt="Preview da Musa" style="width: 100%; height: 100%; min-height: 520px; object-fit: contain; display: block;">
                 <div id="creatorLoadingOverlay" style="display: none; position: absolute; inset: 0; background: rgba(9,10,14,0.86); backdrop-filter: blur(8px); flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 10;">
                   <div style="width: 38px; height: 38px; border: 3px solid rgba(190,242,100,0.2); border-top-color: var(--accent-lime); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
-                  <div id="lblCreatorLoadingStatus" style="font-size: 0.8rem; font-weight: 800; color: #fff;">Gerando com a referência da musa...</div>
-                  <div style="font-size: 0.64rem; color: #94a3b8;">Isso pode levar de 10 a 30 segundos</div>
+                  <div id="lblCreatorLoadingStatus" style="font-size: 0.8rem; font-weight: 800; color: #fff;">Renderizando...</div>
+                  <div style="font-size: 0.64rem; color: #94a3b8;">Aguarde o processamento em alta resolução</div>
                 </div>
               </div>
 
-              <div style="width: 100%; margin-top: 14px; background: rgba(190, 242, 100, 0.05); border: 1px solid rgba(190, 242, 100, 0.2); border-radius: 8px; padding: 7px 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
-                <label style="display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 0.72rem; font-weight: 800; color: #bef264;">
-                  <input type="checkbox" id="chkAntiHashPdq" checked style="accent-color: var(--accent-lime); cursor: pointer; width: 14px; height: 14px;">
-                  <span>🛡️ Anti-Hash Meta PDQ (Micro-Crop & Ruído Zero-Rastro)</span>
+              <div style="width: 100%; margin-top: 14px; background: rgba(190, 242, 100, 0.04); border: 1px solid rgba(190, 242, 100, 0.15); border-radius: 8px; padding: 7px 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+                <label style="display: flex; align-items: center; gap: 7px; cursor: pointer; font-size: 0.72rem; font-weight: 800; color: var(--accent-lime);">
+                  <input type="checkbox" id="chkAntiHashPdqSecondary" checked style="accent-color: var(--accent-lime); cursor: pointer; width: 14px; height: 14px;">
+                  <span>GhostStealth™ Ativo (Camuflagem de postagem)</span>
                 </label>
-                <span style="font-size: 0.62rem; color: #94a3b8; font-weight: 600;">Blindagem contra flag cruzado</span>
+                <span style="font-size: 0.62rem; color: #94a3b8; font-weight: 600;">Proteção contra flags</span>
               </div>
 
               <div style="width: 100%; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border-subtle); display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
-                <button type="button" onclick="applyAppleExifToCreatorMedia()" style="background: #1a1c26; border: 1px solid rgba(255,255,255,0.09); color: #fff; font-weight: 700; font-size: 0.72rem; padding: 9px 13px; border-radius: 8px; cursor: pointer;">🛡️ Metadados Apple</button>
-                <button type="button" onclick="injectMediaToPhoneGallery()" style="background: linear-gradient(135deg, #0284c7, #38bdf8); border: none; color: #fff; font-weight: 800; font-size: 0.72rem; padding: 9px 14px; border-radius: 8px; cursor: pointer;">📱 Galeria da Musa</button>
-                <button type="button" onclick="sendToVideoEditor()" style="background: #1a1c26; border: 1px solid rgba(255,255,255,0.09); color: #cbd5e1; font-weight: 600; font-size: 0.72rem; padding: 9px 12px; border-radius: 8px; cursor: pointer;">🎬 Editor</button>
-                <button type="button" onclick="downloadCreatorMedia()" style="background: #1a1c26; border: 1px solid rgba(255,255,255,0.09); color: #cbd5e1; font-weight: 600; font-size: 0.72rem; padding: 9px 12px; border-radius: 8px; cursor: pointer;">📥 Baixar</button>
+                <button type="button" onclick="applyAppleExifToCreatorMedia()" style="background: #1a1c26; border: 1px solid rgba(255,255,255,0.09); color: #fff; font-weight: 700; font-size: 0.72rem; padding: 9px 13px; border-radius: 8px; cursor: pointer;">Metadados Apple</button>
+                <button type="button" onclick="injectMediaToPhoneGallery()" style="background: linear-gradient(135deg, #0284c7, #38bdf8); border: none; color: #fff; font-weight: 800; font-size: 0.72rem; padding: 9px 14px; border-radius: 8px; cursor: pointer;">Galeria da Musa</button>
+                <button type="button" onclick="sendToVideoEditor()" style="background: #1a1c26; border: 1px solid rgba(255,255,255,0.09); color: #cbd5e1; font-weight: 600; font-size: 0.72rem; padding: 9px 12px; border-radius: 8px; cursor: pointer;">Editor de Vídeo</button>
+                <button type="button" onclick="downloadCreatorMedia()" style="background: #1a1c26; border: 1px solid rgba(255,255,255,0.09); color: #cbd5e1; font-weight: 600; font-size: 0.72rem; padding: 9px 12px; border-radius: 8px; cursor: pointer;">Baixar</button>
               </div>
 
               <div id="boxInjectionFeedback" style="display: none; width: 100%; margin-top: 12px; background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; padding: 9px 14px; font-size: 0.72rem; color: #4ade80; align-items: center; justify-content: space-between; gap: 10px;">
@@ -8695,8 +8717,8 @@
             <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: 14px; padding: 16px;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 10px;">
                 <div>
-                  <div style="font-size: 0.78rem; font-weight: 800; color: #fff;">Referências & Variações</div>
-                  <div style="font-size: 0.64rem; color: var(--text-muted);">Clique para usar como preview</div>
+                  <div style="font-size: 0.78rem; font-weight: 800; color: #fff;">Variações Recentes</div>
+                  <div style="font-size: 0.64rem; color: var(--text-muted);">Clique para carregar no canvas</div>
                 </div>
                 <span id="creatorHistoryCount" style="font-size: 0.62rem; color: #64748b;">0 imagens</span>
               </div>
@@ -8734,6 +8756,13 @@
         setStudioMode('image');
       }
 
+      function toggleDnaEditorDrawer() {
+        const drawer = document.getElementById('boxDnaDrawer');
+        if (!drawer) return;
+        drawer.style.display = drawer.style.display === 'none' ? 'flex' : 'none';
+      }
+      window.toggleDnaEditorDrawer = toggleDnaEditorDrawer;
+
       function onCreatorMusaChange(profileId) {
         const profiles = getCreatorProfilesSync();
         const p = profiles.find(x => String(x.id) === String(profileId)) || { id: profileId, musa_nome: profileId };
@@ -8744,16 +8773,34 @@
         currentCreatorDna = data.dna || {};
         currentCreatorMediaUrl = currentCreatorRefs[0] || CREATOR_PLACEHOLDER;
 
+        // Atualiza avatar da musa na moldurinha
+        const avatarImg = document.getElementById('imgMusaAvatarMini');
+        if (avatarImg) {
+          avatarImg.src = currentCreatorMediaUrl;
+        }
+
+        // Verifica se a musa tem LoRA calibrado
+        const hasLora = Boolean(data.has_lora === true || p.has_lora === true || profileId === 'camila');
+        const badgeActive = document.getElementById('badgeMusaLoraActive');
+        const badgeDefault = document.getElementById('badgeMusaLoraDefault');
+        const offerBox = document.getElementById('boxMusaLoraOffer');
+
+        if (hasLora) {
+          if (badgeActive) badgeActive.style.display = 'inline-block';
+          if (badgeDefault) badgeDefault.style.display = 'none';
+          if (offerBox) offerBox.style.display = 'none'; // Não exibe oferta quando tem LoRA!
+        } else {
+          if (badgeActive) badgeActive.style.display = 'none';
+          if (badgeDefault) badgeDefault.style.display = 'inline-block';
+          if (offerBox) offerBox.style.display = 'flex'; // Exibe apenas se não tiver LoRA
+        }
+
         const dnaText = buildDnaPrompt(currentCreatorDna);
-        const dnaSummary = getStructuredDnaSummary(currentCreatorDna);
-        const summaryEl = document.getElementById('lblCreatorDnaSummary');
-        if (summaryEl) summaryEl.innerText = dnaSummary || 'Sem atributos estruturados.';
         const dnaArea = document.getElementById('txtCreatorDna');
         if (dnaArea) dnaArea.value = currentCreatorDna.prompt || '';
         const status = document.getElementById('lblMusaDnaStatus');
         if (status) status.innerText = dnaText ? 'DNA ativo' : 'sem DNA';
-        const lblDesc = document.getElementById('lblMusaDnaDesc');
-        if (lblDesc) lblDesc.innerText = dnaText || 'Sem DNA definido. Edite o campo acima.';
+
         const img = document.getElementById('imgCreatorMainPreview');
         if (img) img.src = currentCreatorMediaUrl;
         renderCreatorRefStrip();
@@ -8878,80 +8925,69 @@
 
         const lblTitle = document.getElementById('lblCreatorStudioTitle');
         const lblSub = document.getElementById('lblCreatorStudioSubtitle');
-        const lblIcon = document.getElementById('lblCreatorStudioIcon');
         const badgeMode = document.getElementById('badgeCreatorMode');
         const selModel = document.getElementById('selCreatorModel');
-        const dnaBox = document.getElementById('boxDnaContainer');
         const ratioBox = document.getElementById('boxAspectRatioContainer');
         const promptBox = document.getElementById('boxPromptContainer');
-        const refsTitle = document.getElementById('lblCreatorRefsTitle');
-        const refsHint = document.getElementById('lblCreatorRefsHint');
 
         if (mode === 'image') {
-          if (lblTitle) lblTitle.innerText = 'GhostCreator • Image Studio';
-          if (lblSub) lblSub.innerText = 'Criação fotográfica com referência da persona e Face Swap';
-          if (lblIcon) lblIcon.innerText = '🖼️';
+          if (lblTitle) lblTitle.innerText = 'GhostCreator • Imagem';
+          if (lblSub) lblSub.innerText = 'Criação fotográfica de alta fidelidade';
           if (badgeMode) {
-            badgeMode.innerText = 'IMAGE ENGINE';
-            badgeMode.style.color = '#bef264';
+            badgeMode.innerText = 'EROS-IMAGE 2K';
+            badgeMode.style.color = 'var(--accent-lime)';
             badgeMode.style.borderColor = 'rgba(190,242,100,0.3)';
           }
-          if (dnaBox) dnaBox.style.display = 'block';
           if (ratioBox) ratioBox.style.display = 'block';
           if (promptBox) promptBox.style.display = 'block';
-          if (refsTitle) refsTitle.innerText = 'REFERÊNCIAS DA MUSA (FACE & ESTILO)';
-          if (refsHint) refsHint.innerText = 'A primeira foto vira a referência facial principal. Rosto limpo e boa luz.';
 
           if (selModel) {
             selModel.innerHTML = `
-              <option value="eros_image_2k" selected>👑 Eros-Image™ 2K • LoRA da Musa & Ultra-Realismo (Zero Cara de IA)</option>
-              <option value="seedream_5">🌊 ByteDance Seedream 5 Pro • Face Swap, Trajes, Cabelo & Explícito</option>
-              <option value="chatgpt_import">🖼️ GPT 2.6 Image (ChatGPT Plus) • Importar Ctrl+V</option>
-              <option value="nanobanana_21">🍌 Google Nano Banana 2.1 • Incluso no Plano</option>
-              <option value="krea_2">✨ Krea 2 Raw Edit • Retoque & Textura de Pele</option>
-              <option value="qwen_360">🌐 Qwen 2.5 360° Multi-Ângulo • Carrossel do Instagram</option>
-              <option value="magnific_upscale">🔍 Magnific Upscaler 4K • Restauração de Poros</option>
+              <option value="eros_image_2k" selected>Eros-Image™ 2K (LoRA da Musa)</option>
+              <option value="kling_image">Kling Image Pro (Ultra Realismo)</option>
+              <option value="seedream_5">Seedream 5 Pro (Face & Look Swap)</option>
+              <option value="chatgpt_import">GPT 2.6 Image (Ctrl+V)</option>
+              <option value="nanobanana_21">Nano Banana 2.1 (Incluso)</option>
+              <option value="krea_2">Krea 2 Raw Edit</option>
+              <option value="qwen_360">Qwen 2.5 360° Multi-Ângulo</option>
+              <option value="magnific_upscale">Magnific Upscaler 4K</option>
             `;
             selModel.value = 'eros_image_2k';
             onCreatorModelChange('eros_image_2k');
           }
 
         } else if (mode === 'video') {
-          if (lblTitle) lblTitle.innerText = 'GhostCreator • Video & Motion Studio';
-          if (lblSub) lblSub.innerText = 'Motion Control, Dança, Poses e Animação Cinemática';
-          if (lblIcon) lblIcon.innerText = '🎬';
+          if (lblTitle) lblTitle.innerText = 'GhostCreator • Vídeo & Motion';
+          if (lblSub) lblSub.innerText = 'Motion Transfer e Animação Cinemática';
           if (badgeMode) {
             badgeMode.innerText = 'VIDEO & MOTION';
             badgeMode.style.color = '#38bdf8';
             badgeMode.style.borderColor = 'rgba(56,189,248,0.3)';
           }
-          if (dnaBox) dnaBox.style.display = 'none';
           if (ratioBox) ratioBox.style.display = 'block';
           if (promptBox) promptBox.style.display = 'block';
-          if (refsTitle) refsTitle.innerText = 'REFERÊNCIAS DE VÍDEO (START / END / MOTION)';
-          if (refsHint) refsHint.innerText = 'Start frame = musa. Motion Transfer = vídeo com passos/poses virais.';
 
           if (selModel) {
             selModel.innerHTML = `
-              <optgroup label="⚡ MOTION CONTROL (Troca de Movimento & Viral Swap)">
-                <option value="kling_4_motion" selected>⚡ Kling 4.0 Motion Control • Dança, Poses & Caminhada</option>
-                <option value="kling_3_motion">⚡ Kling 3.0 Motion Control • Fidelidade Corporal</option>
-                <option value="kling_26_motion">⚡ Kling 2.6 Motion Control • Alta Estabilidade</option>
-                <option value="omni_flash_21">💫 Omni Flash 2.1 • Troca Instantânea de Movimento</option>
-                <option value="openjutsu_workflow">🥷 Genjutsu / OpenJutsu Ultra • ComfyUI VIP Alfa Nuvem</option>
+              <optgroup label="MOTION CONTROL (Troca de Movimento)">
+                <option value="kling_4_motion" selected>Kling 4.0 Motion Control</option>
+                <option value="kling_3_motion">Kling 3.0 Motion Control</option>
+                <option value="kling_26_motion">Kling 2.6 Motion Control</option>
+                <option value="omni_flash_21">Omni Flash 2.1</option>
+                <option value="openjutsu_workflow">Genjutsu Ultra (ComfyUI Cloud)</option>
               </optgroup>
-              <optgroup label="🎥 IMAGE TO VIDEO (Animação de Imagem)">
-                <option value="wan_3_prime">🌀 Wan 3.0 Prime • Top Animação Fotorrealista</option>
-                <option value="minimax_h3">🎥 MiniMax H3 Max • Ultra Fast & Cinemático</option>
-                <option value="seedance_25">💃 Seedance 2.5 Ultra • Movimento Ultra Realista</option>
-                <option value="seedance_20">💃 Seedance 2.0 • Equilibrado</option>
-                <option value="kling_4_video">⚡ Kling 4.0 Video • 1080p Nativo</option>
-                <option value="kling_3_video">⚡ Kling 3.0 Video • Movimento Fluido</option>
-                <option value="grok_15_video">🤖 Grok 1.5 Video • Dinamismo & Ação</option>
-                <option value="ltx_25_video">🎞️ LTX Video 2.5 • Física de Tecidos e Cabelo</option>
-                <option value="flux_3_video">🌌 Flux 3.0 Video • Iluminação de Estúdio</option>
-                <option value="veo_31">🎬 Google Veo 3.1 • Cinematografia Pro</option>
-                <option value="veo_31_lite">🎬 Google Veo 3.1 Lite • Rápido</option>
+              <optgroup label="IMAGE TO VIDEO (Animação)">
+                <option value="wan_3_prime">Wan 3.0 Prime Video</option>
+                <option value="minimax_h3">MiniMax H3 Max</option>
+                <option value="seedance_25">Seedance 2.5 Ultra</option>
+                <option value="seedance_20">Seedance 2.0</option>
+                <option value="kling_4_video">Kling 4.0 Video</option>
+                <option value="kling_3_video">Kling 3.0 Video</option>
+                <option value="grok_15_video">Grok 1.5 Video</option>
+                <option value="ltx_25_video">LTX Video 2.5</option>
+                <option value="flux_3_video">Flux 3.0 Video</option>
+                <option value="veo_31">Veo 3.1 Pro</option>
+                <option value="veo_31_lite">Veo 3.1 Lite</option>
               </optgroup>
             `;
             selModel.value = 'kling_4_motion';
@@ -8959,25 +8995,21 @@
           }
 
         } else if (mode === 'audio') {
-          if (lblTitle) lblTitle.innerText = 'GhostCreator • Audio & Voice Studio';
-          if (lblSub) lblSub.innerText = 'Voz da Musa, Áudios Sensuais ErosChat & Isolamento';
-          if (lblIcon) lblIcon.innerText = '🎙️';
+          if (lblTitle) lblTitle.innerText = 'GhostCreator • Áudio & Voz';
+          if (lblSub) lblSub.innerText = 'Clonagem de Voz e Mensagens ErosChat';
           if (badgeMode) {
             badgeMode.innerText = 'EROSCHAT VOICE';
-            badgeMode.style.color = '#fbbf24';
-            badgeMode.style.borderColor = 'rgba(245,158,11,0.3)';
+            badgeMode.style.color = 'var(--accent-lime)';
+            badgeMode.style.borderColor = 'rgba(190,242,100,0.3)';
           }
-          if (dnaBox) dnaBox.style.display = 'none';
           if (ratioBox) ratioBox.style.display = 'none';
           if (promptBox) promptBox.style.display = 'none';
-          if (refsTitle) refsTitle.innerText = 'AMOSTRA DE VOZ DA MUSA (.MP3 / GRAVAÇÃO)';
-          if (refsHint) refsHint.innerText = 'Suba um áudio de 10 a 30 segundos da modelo falando naturalmente.';
 
           if (selModel) {
             selModel.innerHTML = `
-              <option value="voice_clone_musa" selected>🎙️ Clonagem de Voz da Musa (Áudios WhatsApp X1)</option>
-              <option value="voice_gen_sensual">💋 Gerador de Áudios Provocantes ErosChat</option>
-              <option value="audio_isolation">🧹 Isolador de Ruído de Fundo (Purificador)</option>
+              <option value="voice_clone_musa" selected>Clonagem de Voz da Musa</option>
+              <option value="voice_gen_sensual">Gerador de Mensagens ErosChat</option>
+              <option value="audio_isolation">Isolador de Ruído de Fundo</option>
             `;
             selModel.value = 'voice_clone_musa';
             onCreatorModelChange('voice_clone_musa');
@@ -8990,9 +9022,9 @@
         currentCreatorModel = model;
         const meta = creatorModelMeta(model);
 
-        // Esconde todos os painéis para exibir apenas o do modelo selecionado
         const allBoxes = [
           'boxErosImageControls',
+          'boxKlingImageControls',
           'boxSeedreamControls',
           'boxChatGptControls',
           'boxQwenControls',
@@ -9005,12 +9037,12 @@
           if (el) el.style.display = 'none';
         });
 
-        // Mostra o painel exclusivo da IA ativa
         const isMotion = ['kling_4_motion', 'kling_3_motion', 'kling_26_motion', 'omni_flash_21', 'openjutsu_workflow'].includes(model);
         const isImg2Vid = ['wan_3_prime', 'minimax_h3', 'seedance_25', 'seedance_20', 'kling_4_video', 'kling_3_video', 'grok_15_video', 'ltx_25_video', 'flux_3_video', 'veo_31', 'veo_31_lite'].includes(model);
         const isAudio = ['voice_clone_musa', 'voice_gen_sensual', 'audio_isolation'].includes(model);
 
         if (model === 'eros_image_2k') document.getElementById('boxErosImageControls')?.style.setProperty('display', 'flex');
+        else if (model === 'kling_image') document.getElementById('boxKlingImageControls')?.style.setProperty('display', 'flex');
         else if (model === 'seedream_5') document.getElementById('boxSeedreamControls')?.style.setProperty('display', 'flex');
         else if (model === 'chatgpt_import') document.getElementById('boxChatGptControls')?.style.setProperty('display', 'flex');
         else if (model === 'qwen_360') document.getElementById('boxQwenControls')?.style.setProperty('display', 'flex');
@@ -9022,69 +9054,16 @@
         const btnExecute = document.getElementById('btnExecuteCreatorGen');
         const badge = document.getElementById('lblCanvasModelBadge');
         const cost = document.getElementById('creatorCostLabel');
-        const hint = document.getElementById('creatorModelHint');
 
         if (btnGen) btnGen.innerText = meta.button;
         if (badge) badge.innerText = meta.badge;
         if (cost) cost.innerText = meta.cost;
 
+        // Botão SEMPRE no verde limão do site, sem laranja!
         if (btnExecute) {
-          if (model === 'eros_image_2k') {
-            btnExecute.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
-            btnExecute.style.color = '#000';
-            btnExecute.style.boxShadow = '0 4px 14px rgba(245,158,11,0.25)';
-          } else if (isMotion) {
-            btnExecute.style.background = 'linear-gradient(135deg, #06b6d4, #0284c7)';
-            btnExecute.style.color = '#fff';
-            btnExecute.style.boxShadow = '0 4px 14px rgba(6,182,212,0.35)';
-          } else if (isImg2Vid) {
-            btnExecute.style.background = 'linear-gradient(135deg, #a855f7, #7e22ce)';
-            btnExecute.style.color = '#fff';
-            btnExecute.style.boxShadow = '0 4px 14px rgba(168,85,247,0.35)';
-          } else if (isAudio) {
-            btnExecute.style.background = 'linear-gradient(135deg, #f59e0b, #d97706)';
-            btnExecute.style.color = '#000';
-            btnExecute.style.boxShadow = '0 4px 14px rgba(245,158,11,0.25)';
-          } else {
-            btnExecute.style.background = 'var(--accent-lime)';
-            btnExecute.style.color = '#000';
-            btnExecute.style.boxShadow = '0 4px 14px rgba(190,242,100,0.25)';
-          }
-        }
-
-        if (hint) {
-          const hints = {
-            eros_image_2k: 'Eros-Image™ 2K: Textura de microporos real, profundidade de campo e fidelidade anatômica sem traços de IA.',
-            seedream_5: 'ByteDance Seedream 5 Pro: Face Swap de alta precisão, troca de cabelo/roupa e geração NSFW explícita sem censura.',
-            chatgpt_import: 'Gere no seu ChatGPT Plus e dê Ctrl+V aqui. O GhostLens purga metadados C2PA e injeta Apple EXIF.',
-            nanobanana_21: 'Google Nano Banana 2.1: Geração ultra rápida inclusa no plano sem custo extra por imagem.',
-            krea_2: 'Krea 2 Raw Edit: Textura analógica de pele, ajuste fino de iluminação e retoque estético.',
-            qwen_360: 'Qwen 2.5 360°: Variação multi-ângulo (0°, 45°, 90°, 180°, POV) para carrosséis virais do Instagram.',
-            magnific_upscale: 'Magnific Upscaler 4K: Restauração de poros, ultra-resolução e nitidez cristalina.',
-
-            kling_4_motion: 'Kling 4.0 Motion Control: Transfere movimentos, passos de dança e poses de vídeos virais para a sua musa em 1080p.',
-            kling_3_motion: 'Kling 3.0 Motion Control: Alta fidelidade de proporção corporal e sincronia em vídeos curtos.',
-            kling_26_motion: 'Kling 2.6 Motion Control: Motor com estabilidade sólida e menor consumo de créditos.',
-            omni_flash_21: 'Omni Flash 2.1: Troca de movimento em tempo recorde com física fluida.',
-            openjutsu_workflow: 'Genjutsu / OpenJutsu: O workflow mais utilizado por grandes agências no ComfyUI, rodando na nossa nuvem sem travar seu PC.',
-
-            wan_3_prime: 'Wan 3.0 Prime: O novo queridinho do grupo para animar fotos em movimento hiper-realista sem deformação.',
-            minimax_h3: 'MiniMax H3 Max: Renderização cinemática com física de tecidos, cabelos ao vento e iluminação de estúdio.',
-            seedance_25: 'ByteDance Seedance 2.5 Ultra: Movimento ultra realista com fluidez corporal extrema.',
-            seedance_20: 'ByteDance Seedance 2.0: Animação rápida com transição suave de frames.',
-            kling_4_video: 'Kling 4.0 Video: Geração de vídeo em 1080p com movimentos naturais de 3 a 30 segundos.',
-            kling_3_video: 'Kling 3.0 Video: Movimento humano realista para Reels e TikTok.',
-            grok_15_video: 'Grok 1.5 Video: Dinamismo e física ágil para cenas de ação e movimento.',
-            ltx_25_video: 'LTX Video 2.5: Fluidez cinemática e fidelidade visual.',
-            flux_3_video: 'Flux 3.0 Video: Estética editorial com iluminação volumétrica.',
-            veo_31: 'Google Veo 3.1: Qualidade de cinematografia de cinema em alta definição.',
-            veo_31_lite: 'Google Veo 3.1 Lite: Geração leve e rápida para testes de cena.',
-
-            voice_clone_musa: 'Clonagem de Voz da Musa: Clone o timbre sensual da modelo para enviar áudios irresistíveis no WhatsApp X1.',
-            voice_gen_sensual: 'Gerador Sensual ErosChat: Dispare mensagens de voz carinhosas e provocantes de forma autônoma.',
-            audio_isolation: 'Isolador de Ruído: Remove ruídos de fundo e deixa a voz limpa e intimista como áudio de celular.'
-          };
-          hint.innerText = hints[model] || 'Motor de IA calibrado para criadores de influencers e nicho sensual.';
+          btnExecute.style.background = 'var(--accent-lime)';
+          btnExecute.style.color = '#000';
+          btnExecute.style.boxShadow = '0 4px 14px rgba(190,242,100,0.25)';
         }
 
         if (model === 'eros_image_2k') {
@@ -9348,10 +9327,14 @@
       function submitLoraOrder() {
         const musaName = document.getElementById('txtLoraOrderMusaName')?.value || 'Musa';
         closeOrderLoraModal();
-        showToast(`🎉 Encomenda de LoRA da ${musaName} recebida! Abrindo pagamento Pix (R$ 49,90)...`, 4000);
+        if (currentCreatorProfileId) {
+          saveCreatorDataForProfile(currentCreatorProfileId, { musa_nome: currentCreatorMusa, dna: currentCreatorDna, references: currentCreatorRefs, has_lora: true });
+          onCreatorMusaChange(currentCreatorProfileId);
+        }
+        showToast(`LoRA da musa ${musaName} calibrado com sucesso!`, 3500);
         setTimeout(() => {
           openStudioPixModal(49.90);
-        }, 1200);
+        }, 1000);
       }
 
       function openErosChatVipWaitlist() {
