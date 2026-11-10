@@ -1503,6 +1503,7 @@
       display: none;
     }
     #ghostTutorialSpotlight {
+      pointer-events: none;
       position: fixed;
       z-index: 10091;
       border: 2px solid var(--accent-lime);
@@ -2514,13 +2515,7 @@
           <span id="txtSubmitAuth">🚀 Entrar no GhostLens Studio</span>
         </button>
 
-        <!-- 👑 ACESSO MASTER ADMIN DIRETO (LUAN) -->
-        <button type="button" onclick="loginMasterAdminDirectly()"
-          style="background: rgba(190, 242, 100, 0.12); border: 1px dashed var(--accent-lime); color: var(--accent-lime); padding: 11px; border-radius: 12px; font-weight: 800; font-size: 0.82rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px; transition: 0.2s;"
-          onmouseover="this.style.background='rgba(190, 242, 100, 0.22)'"
-          onmouseout="this.style.background='rgba(190, 242, 100, 0.12)'">
-          <span>👑</span> Acesso Direto Master Admin (Luan)
-        </button>
+        <!-- Admin: somente via Supabase (app_metadata.role=admin) ou token validado do daemon. -->
 
         <div style="text-align: center; margin-top: 10px;">
           <a href="#" onclick="forgotGhostPassword(event)"
@@ -5232,7 +5227,7 @@
     }
 
     function isGhostAdminSession() {
-      return Boolean(getGhostAdminToken());
+      return Boolean(getGhostAdminToken()) && sessionStorage.getItem('ghostlens_admin_verified') === 'true';
     }
 
     function isSupabaseAdmin() {
@@ -6002,6 +5997,7 @@
         return false;
       }
       sessionStorage.setItem('ghostlens_admin_token', clean);
+      sessionStorage.setItem('ghostlens_admin_verified', 'true');
       return true;
     }
 
@@ -6019,24 +6015,22 @@
       if (fb) fb.style.display = 'none';
     }
 
-    function loginMasterAdminDirectly(msg) {
+    function loginLocalAdminWithToken(token, msg) {
+      if (!token) return false;
+      sessionStorage.setItem('ghostlens_admin_token', token);
+      sessionStorage.setItem('ghostlens_admin_verified', 'true');
       currentUser = {
         id: 'admin_local',
-        email: 'luan@ghostlens.ai',
-        user_metadata: { role: 'master_admin', name: 'Luan Castellan' },
-        app_metadata: { role: 'admin' }
+        email: 'admin@ghostlens.local',
+        user_metadata: { role: 'master_admin', name: 'Admin Local' }
       };
-      sessionStorage.setItem('ghostlens_admin_token', 'GHOST-MASTER-LUAN-2026');
-      localStorage.setItem('ghostlens_master_admin', 'true');
       localStorage.setItem('ghostlens_session_user', JSON.stringify(currentUser));
       userBalance = 999.00;
-      supabaseAdminVerified = true;
       closeGhostAuthModal();
       updateAuthUI();
       updateWalletDisplay();
-      if (msg !== false) {
-        showToast(typeof msg === 'string' ? msg : '👑 Bem-vindo, Luan! Acesso Master Admin liberado.', 4000);
-      }
+      if (msg !== false) showToast(typeof msg === 'string' ? msg : '👑 Acesso Master Admin local liberado.', 4000);
+      return true;
     }
 
     async function forgotGhostPassword(event) {
@@ -6100,14 +6094,11 @@
       btn.disabled = true;
       btn.style.opacity = '0.7';
 
-      // 👑 Master Admin: Aceita credencial do Luan ou token do daemon
+      // Admin local: só aceita o token real do daemon, validado na hora.
       const adminTokenCandidate = password ? password.trim() : '';
       const looksLikeAdminToken = adminTokenCandidate.length >= 32 && !/\s/.test(adminTokenCandidate);
-      const isLuanPass = adminTokenCandidate === 'Luan@2026!' || adminTokenCandidate === 'GHOST-MASTER-LUAN-2026';
-      const isLuanEmail = email && email.toLowerCase().includes('luan');
-
-      if (isLuanPass || isLuanEmail || (looksLikeAdminToken && await validateGhostAdminToken(adminTokenCandidate))) {
-        loginMasterAdminDirectly('👑 Acesso Master Admin liberado com sucesso!');
+      if (looksLikeAdminToken && await validateGhostAdminToken(adminTokenCandidate)) {
+        loginLocalAdminWithToken(adminTokenCandidate, '👑 Acesso Master Admin local liberado.');
         btn.disabled = false;
         btn.style.opacity = '1';
         return;
@@ -6169,6 +6160,7 @@
         localStorage.removeItem('ghostlens_session_user');
         localStorage.removeItem('ghostlens_master_admin');
         sessionStorage.removeItem('ghostlens_admin_token');
+        sessionStorage.removeItem('ghostlens_admin_verified');
         supabaseAdminVerified = false;
         currentUser = null;
         userBalance = 0.00;
@@ -6222,22 +6214,15 @@
     async function initGhostAuth() {
       supabaseAdminVerified = false;
 
-      // 👑 Auto-login Master Admin se passado via URL (?admin, ?master, ?luan) ou se já estava ativo
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.has('admin') || urlParams.has('master') || urlParams.has('luan') || localStorage.getItem('ghostlens_master_admin') === 'true') {
-        loginMasterAdminDirectly(false);
-        return;
-      }
-
       // 1. Restaura sessão salva se existir no navegador
       const savedUser = localStorage.getItem('ghostlens_session_user');
 
       if (savedUser) {
         try {
           currentUser = JSON.parse(savedUser);
-          if (currentUser && currentUser.id === 'admin_local') {
-            loginMasterAdminDirectly(false);
-            return;
+          // Sessão admin local só vale com token validado do daemon nesta aba.
+          if (currentUser && currentUser.id === 'admin_local' && !isGhostAdminSession()) {
+            currentUser = null;
           }
         } catch(e) {
           currentUser = null;
@@ -6248,11 +6233,17 @@
 
       // Se não houver usuário logado salvo, o visitante começa deslogado
       if (!currentUser) {
+        localStorage.removeItem('ghostlens_master_admin');
         userBalance = 0.00;
       }
 
       updateAuthUI();
       updateWalletDisplay();
+
+      if (isGhostAdminSession() && currentUser && currentUser.id === 'admin_local') {
+        userBalance = 999.00;
+        updateWalletDisplay();
+      }
 
       if (!supabaseClient) return;
 
@@ -6269,7 +6260,7 @@
           subscribeWalletChanges();
         } else {
           supabaseAdminVerified = false;
-          if (currentUser && currentUser.id !== 'admin_local') {
+          if (currentUser && !isGhostAdminSession()) {
             currentUser = null;
             localStorage.removeItem('ghostlens_session_user');
           }
@@ -8230,6 +8221,7 @@
 
         showToast(`Lente selecionada: ${lensLabels[type]}`, 2000);
       }
+      window.selectErosLens = selectErosLens;
       window.selectErosCheckpoint = selectErosLens;
 
       function creatorModelMeta(model) {
@@ -8283,6 +8275,9 @@
         grid.style.position = 'relative';
 
         grid.innerHTML = `
+          <!-- ─── BACKDROP GLOBAL PARA FECHAR MODAIS AO CLICAR FORA ─── -->
+          <div id="modalCreatorModelPickerBackdrop" onclick="closeCreatorModelPicker(); closeFlyoutToolsDrawer();" style="display: none; position: fixed; inset: 0; z-index: 55; background: rgba(0,0,0,0.55); backdrop-filter: blur(2px);"></div>
+
           <!-- ─── BANNER TEASER VIP • EROSCHAT™ 2027 ─── -->
           <div style="grid-column: 1 / -1; background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(20, 24, 33, 0.95)); border: 1.5px solid rgba(190, 242, 100, 0.35); border-radius: 14px; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; box-shadow: 0 4px 24px rgba(0,0,0,0.4);">
             <div>
@@ -8343,16 +8338,16 @@
           <div style="display: flex; flex-direction: column; gap: 14px; position: relative;">
 
             <!-- GAVETA FLUTUANTE DE SUB-FERRAMENTAS (FLYOUT DRAWER - SCREENSHOT 1, 2, 3) -->
-            <div id="flyoutToolsDrawer" style="display: none; position: absolute; top: 0; left: 0; width: 330px; background: #0e1117; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.85); padding: 14px; z-index: 60; flex-direction: column; gap: 10px; max-height: 580px; overflow-y: auto;">
+            <div id="flyoutToolsDrawer" style="display: none; position: absolute; top: 0; left: 0; width: 330px; background: #0e1117; border: 1px solid rgba(255,255,255,0.12); border-radius: 16px; box-shadow: 0 20px 50px rgba(0,0,0,0.9); padding: 14px; z-index: 60; flex-direction: column; gap: 10px; max-height: 580px; overflow-y: auto;">
               <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px;">
                 <span id="lblFlyoutToolsHeader" style="font-size: 0.78rem; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.5px;">Ferramentas de Imagem</span>
-                <button type="button" onclick="toggleFlyoutToolsDrawer()" style="background: transparent; border: none; color: #94a3b8; font-size: 1rem; cursor: pointer;">✕</button>
+                <button type="button" onclick="closeFlyoutToolsDrawer()" style="background: transparent; border: none; color: #94a3b8; font-size: 1rem; cursor: pointer;">✕</button>
               </div>
               <div id="listFlyoutTools" style="display: flex; flex-direction: column; gap: 6px;"></div>
             </div>
 
             <!-- MODAL / DRAWER FLUTUANTE DE SELEÇÃO DE IAs (SCREENSHOT 4 & 5) -->
-            <div id="modalCreatorModelPicker" style="display: none; position: absolute; top: 0; left: 0; width: 100%; min-width: 370px; background: #0c0e15; border: 1.5px solid rgba(255,255,255,0.12); border-radius: 16px; box-shadow: 0 24px 60px rgba(0,0,0,0.9); padding: 16px; z-index: 70; flex-direction: column; gap: 14px; max-height: 620px; overflow-y: auto;">
+            <div id="modalCreatorModelPicker" style="display: none; position: absolute; top: 0; left: 0; width: 100%; min-width: 370px; background: #0c0e15; border: 1.5px solid rgba(255,255,255,0.12); border-radius: 16px; box-shadow: 0 24px 60px rgba(0,0,0,0.95); padding: 16px; z-index: 70; flex-direction: column; gap: 14px; max-height: 620px; overflow-y: auto;">
               <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
                 <div style="position: relative; flex: 1;">
                   <span style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: #64748b; display: flex;">
@@ -8402,7 +8397,7 @@
                   </div>
                 </div>
                 <button type="button" onclick="suggestRandomScenePrompt()" style="background: #141720; border: 1px solid rgba(255,255,255,0.08); color: #94a3b8; font-size: 0.66rem; font-weight: 700; padding: 5px 10px; border-radius: 7px; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
                   <span>Templates</span>
                 </button>
               </div>
@@ -8424,11 +8419,10 @@
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
                   </div>
                 </div>
-                <!-- select oculto para sincronia de formulário -->
                 <select id="selCreatorModel" style="display: none;" onchange="onCreatorModelChange(this.value)"></select>
               </div>
 
-              <!-- ─── PAINEL DA MUSA PARA EROS-IMAGE (APENAS O FRAME QUADRADINHO DA MUSA + LORA) ─── -->
+              <!-- ─── PAINEL DA MUSA PARA EROS-IMAGE (O FRAME QUADRADINHO DA MUSA + ANÚNCIO DE LORA) ─── -->
               <div id="boxErosMusaFrame" style="background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px;">
                 <div style="display: flex; align-items: center; gap: 12px;">
                   <!-- O frame quadradinho com a foto da musa selecionada -->
@@ -8458,12 +8452,13 @@
                   </div>
                 </div>
 
-                <!-- OFERTA DE CALIBRAR LORA (SÓ APARECE SE A PERSONA NÃO TIVER LORA CALIBRADO AINDA) -->
-                <div id="boxMusaLoraOffer" style="display: flex; align-items: center; justify-content: space-between; background: rgba(190,242,100,0.05); border: 1px dashed rgba(190,242,100,0.3); border-radius: 8px; padding: 8px 10px; gap: 8px;">
-                  <div style="font-size: 0.62rem; color: #cbd5e1; line-height: 1.3;">
-                    Consistência facial fotográfica de 100%.
+                <!-- ─── ANÚNCIO / OFERTA DE CALIBRAR LORA (VISÍVEL ENQUANTO A MUSA NÃO TIVER LORA) ─── -->
+                <div id="boxMusaLoraOffer" style="display: flex; align-items: center; justify-content: space-between; background: rgba(190,242,100,0.06); border: 1.5px dashed rgba(190,242,100,0.35); border-radius: 10px; padding: 10px 12px; gap: 10px;">
+                  <div>
+                    <div style="font-size: 0.74rem; font-weight: 800; color: #fff;">Calibrar LoRA da Musa</div>
+                    <div style="font-size: 0.62rem; color: #cbd5e1; margin-top: 2px;">Fidelidade facial e consistência fotográfica de 100%.</div>
                   </div>
-                  <button type="button" onclick="openOrderLoraModal()" style="background: var(--accent-lime); color: #000; font-weight: 900; font-size: 0.64rem; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; white-space: nowrap;">
+                  <button type="button" onclick="openOrderLoraModal()" style="background: var(--accent-lime); color: #000; font-weight: 900; font-size: 0.68rem; border: none; padding: 7px 12px; border-radius: 6px; cursor: pointer; white-space: nowrap; box-shadow: 0 2px 10px rgba(190,242,100,0.25); transition: 0.2s;">
                     Calibrar LoRA (R$ 49,90)
                   </button>
                 </div>
@@ -8770,8 +8765,6 @@
         }
         if (!profiles.length) {
           sel.innerHTML = '<option value="">Nenhuma persona criada</option>';
-          const strip = document.getElementById('creatorRefStrip');
-          if (strip) strip.innerHTML = '<div style="grid-column: span 3; padding: 18px; text-align: center; color: #94a3b8; font-size: 0.72rem; border: 1px dashed rgba(255,255,255,0.12); border-radius: 8px;">Crie uma persona em Minhas Personas para começar.</div>';
           document.getElementById('lblMusaDnaStatus').innerText = 'sem persona';
           return;
         }
@@ -8781,6 +8774,210 @@
         onCreatorMusaChange(firstId);
         setStudioMode('image');
       }
+      window.hydrateCreatorStudio = hydrateCreatorStudio;
+
+      function saveCreatorDnaFromStudio() {
+        if (!currentCreatorProfileId) return;
+        const val = (document.getElementById('txtCreatorDna')?.value || '').trim();
+        currentCreatorDna = { ...currentCreatorDna, prompt: val };
+        saveCreatorDataForProfile(currentCreatorProfileId, { musa_nome: currentCreatorMusa, dna: currentCreatorDna, references: currentCreatorRefs });
+        const status = document.getElementById('lblMusaDnaStatus');
+        if (status) status.innerText = val ? 'DNA ativo' : 'sem DNA';
+        showToast('DNA da musa atualizado.', 2200);
+      }
+      window.saveCreatorDnaFromStudio = saveCreatorDnaFromStudio;
+
+      function renderCreatorRefStrip() {
+        const strip = document.getElementById('creatorRefStrip');
+        const count = document.getElementById('creatorRefCount');
+        if (count) count.innerText = `${currentCreatorRefs.length}/3`;
+        if (!strip) return;
+        if (!currentCreatorRefs.length) {
+          strip.innerHTML = '<div style="grid-column: span 3; padding: 18px; text-align: center; color: #94a3b8; font-size: 0.72rem; border: 1px dashed rgba(255,255,255,0.12); border-radius: 8px;">Sem referências adicionadas.</div>';
+          return;
+        }
+        strip.innerHTML = currentCreatorRefs.map((src, i) => `
+          <div style="position: relative; width: 60px; height: 60px; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);">
+            <img src="${ghostEsc(src)}" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+        `).join('');
+      }
+
+      async function handleCreatorRefFiles(files) {
+        const list = Array.from(files || []);
+        if (!list.length) return;
+        for (const file of list.slice(0, 3)) {
+          const data = await ghostCompressImage(file, 768, 0.82);
+          currentCreatorRefs.push(data);
+        }
+        currentCreatorRefs = currentCreatorRefs.slice(0, 3);
+        if (currentCreatorRefs[0]) {
+          const img = document.getElementById('imgCreatorMainPreview');
+          if (img) img.src = currentCreatorRefs[0];
+        }
+        renderCreatorRefStrip();
+      }
+      window.handleCreatorRefFiles = handleCreatorRefFiles;
+
+      function removeCreatorRef(index) {
+        currentCreatorRefs.splice(index, 1);
+        renderCreatorRefStrip();
+      }
+      window.removeCreatorRef = removeCreatorRef;
+
+      function selectCreatorRef(index) {
+        const src = currentCreatorRefs[index];
+        if (src) {
+          const img = document.getElementById('imgCreatorMainPreview');
+          if (img) img.src = src;
+        }
+      }
+      window.selectCreatorRef = selectCreatorRef;
+
+      function renderCreatorHistory(extraUrl) {
+        const grid = document.getElementById('gridCreatorHistory');
+        const count = document.getElementById('creatorHistoryCount');
+        if (!grid) return;
+        const urls = [];
+        if (extraUrl) urls.push(extraUrl);
+        if (currentCreatorMediaUrl && !urls.includes(currentCreatorMediaUrl)) urls.push(currentCreatorMediaUrl);
+        currentCreatorRefs.forEach(u => { if (!urls.includes(u)) urls.push(u); });
+        if (count) count.innerText = `${urls.length} variações`;
+        grid.innerHTML = urls.map(u => `
+          <div onclick="selectCreatorHistoryThumb('${ghostEsc(u)}')" style="height: 72px; border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); cursor: pointer; background: #000;">
+            <img src="${ghostEsc(u)}" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
+        `).join('');
+      }
+      window.renderCreatorHistory = renderCreatorHistory;
+
+      const CREATOR_MODELS_CATALOG = {
+        image: {
+          featured: [
+            { id: 'eros_image_2k', name: 'Eros-Image 2K', provider: 'Eros Studio', tags: ['Refs', '~30s', '2K-4K', '100% Consistência'], cost: '50 - 100', badge: 'Eros-Image 2K', button: 'Gerar com Eros-Image' },
+            { id: 'seedream_5', name: 'Seedream 5 Pro', provider: 'ByteDance', tags: ['Refs', '~56s', '2K', 'Face & Look Swap'], cost: '75 - 100', badge: 'Seedream 5 Pro', button: 'Swap com Seedream' },
+            { id: 'kling_image', name: 'Kling Image Pro', provider: 'Kuaishou', tags: ['Refs', '~40s', '1080p HD', 'Fotorrealismo'], cost: '60 - 90', badge: 'Kling Image Pro', button: 'Gerar com Kling Image' },
+            { id: 'chatgpt_import', name: 'GPT 2.6 Image', provider: 'OpenAI', isNew: true, tags: ['Refs', '~47s', '2K-4K', 'Ctrl+V Import'], cost: '15 - 940', badge: 'GPT 2.6 Import', button: 'Importar Imagem GPT' },
+            { id: 'nanobanana_21', name: 'Google Nano Banana 2.1', provider: 'Google', tags: ['Refs', '~40s', '2K-4K', 'Ultra Rápido'], cost: '50 - 145', badge: 'Nano Banana 2.1', button: 'Gerar com Nano Banana' }
+          ],
+          allProviders: {
+            'Eros Studio': [
+              { id: 'eros_image_2k', name: 'Eros-Image 2K (LoRA da Musa)', tags: ['Consistência 100%', '2K-4K'], cost: '50 - 100' },
+              { id: 'krea_2', name: 'Krea 2 Raw Edit', tags: ['RAW Natural', 'Retoque'], cost: '80 - 160' },
+              { id: 'magnific_upscale', name: 'Magnific Upscaler 4K', tags: ['Upscale 4K-8K', 'Fidelidade Extrema'], cost: '100 - 300' }
+            ],
+            'ByteDance': [
+              { id: 'seedream_5', name: 'Seedream 5 Pro', tags: ['Face Swap', 'Troca de Roupa'], cost: '75 - 100' }
+            ],
+            'Kuaishou': [
+              { id: 'kling_image', name: 'Kling Image Pro', tags: ['1080p Nativo', 'Alta Nitidez'], cost: '60 - 90' }
+            ],
+            'Alibaba': [
+              { id: 'qwen_360', name: 'Qwen 2.5 360° Multi-Ângulo', tags: ['6 Poses Orbitais', 'Consistência'], cost: '45 - 80' }
+            ],
+            'OpenAI': [
+              { id: 'chatgpt_import', name: 'GPT 2.6 Image Direct', tags: ['ChatGPT Plus', 'Super-Prompt'], cost: '15 - 940' }
+            ],
+            'Google': [
+              { id: 'nanobanana_21', name: 'Google Nano Banana 2.1', tags: ['Latência Baixa', '2K'], cost: '50 - 145' }
+            ]
+          }
+        },
+        video: {
+          featured: [
+            { id: 'wan_3_prime', name: 'Wan 3.0 Prime', provider: 'Alibaba', tags: ['Refs', 'Multi', 'Start/End', '1080p'], cost: '164 - 15.3k', badge: 'Wan 3.0 Prime', button: 'Gerar com Wan 3.0' },
+            { id: 'minimax_h3', name: 'MiniMax H3 Max', provider: 'MiniMax', tags: ['Ultra Fast', 'Refs', 'Multi', 'Start/End', '768p'], cost: '250 - 4800', badge: 'MiniMax H3 Max', button: 'Gerar com MiniMax H3' },
+            { id: 'seedance_25', name: 'Seedance 2.5', provider: 'ByteDance', tags: ['Refs', 'Multi', 'Start/End', '1080p', 'Audio refs'], cost: '800 - 23.7k', badge: 'Seedance 2.5', button: 'Gerar com Seedance 2.5' },
+            { id: 'kling_4_video', name: 'Kling 4.0', provider: 'Kuaishou', isNew: true, tags: ['Start/End', '1080p', '3-30s'], cost: '570 - 8400', badge: 'Kling 4.0 Video', button: 'Gerar com Kling 4.0' },
+            { id: 'kling_4_motion', name: 'Kling 4.0 Motion Control', provider: 'Kuaishou', tags: ['Motion Guide', '1080p 60fps', 'Troca de Corpo'], cost: '600 - 8000', badge: 'Kling 4.0 Motion', button: 'Transferir Movimento Kling 4.0' }
+          ],
+          allProviders: {
+            'Kuaishou (Kling)': [
+              { id: 'kling_4_video', name: 'Kling 4.0 Video', tags: ['1080p', '3-30s'], cost: '570 - 8400' },
+              { id: 'kling_4_motion', name: 'Kling 4.0 Motion Control', tags: ['60 FPS', 'Motion Guide'], cost: '600 - 8000' },
+              { id: 'kling_3_motion', name: 'Kling 3.0 Motion Control', tags: ['Alta Precisão'], cost: '400 - 6500' },
+              { id: 'kling_26_motion', name: 'Kling 2.6 Motion Control', tags: ['Render Econômico'], cost: '300 - 4500' }
+            ],
+            'Alibaba': [
+              { id: 'wan_3_prime', name: 'Wan 3.0 Prime Video', tags: ['Refs', 'Start/End', '1080p'], cost: '164 - 15.3k' }
+            ],
+            'ByteDance': [
+              { id: 'seedance_25', name: 'Seedance 2.5 Ultra', tags: ['Ultra Real', 'Audio refs'], cost: '800 - 23.7k' },
+              { id: 'seedance_20', name: 'Seedance 2.0', tags: ['Econômico', '1080p'], cost: '400 - 12k' }
+            ],
+            'MiniMax': [
+              { id: 'minimax_h3', name: 'MiniMax H3 Max', tags: ['Ultra Fast', '768p'], cost: '250 - 4800' }
+            ],
+            'Eros Studio / Outros': [
+              { id: 'omni_flash_21', name: 'Omni Flash 2.1 Motion', tags: ['Render Rápido'], cost: '350 - 5000' },
+              { id: 'openjutsu_workflow', name: 'Genjutsu Ultra (Comfy Cloud)', tags: ['Workflow Pro'], cost: '500 - 6000' },
+              { id: 'ltx_25_video', name: 'LTX Video 2.5', tags: ['Cinemático'], cost: '200 - 3200' },
+              { id: 'grok_15_video', name: 'Grok 1.5 Video', tags: ['Movimento Fluido'], cost: '300 - 4500' },
+              { id: 'veo_31', name: 'Veo 3.1 Pro', tags: ['Google DeepMind'], cost: '500 - 7000' }
+            ]
+          }
+        },
+        audio: {
+          featured: [
+            { id: 'voice_clone_musa', name: 'Voice Generator (Clonagem)', provider: 'Eros Studio', tags: ['ErosChat', 'Áudio WhatsApp', 'Ultra Real'], cost: '30 - 80', badge: 'Voz da Musa', button: 'Clonar e Gerar Áudio' },
+            { id: 'voice_gen_sensual', name: 'Audio Generator (Sensual)', provider: 'Eros Studio', isNew: true, tags: ['ErosChat', 'Sussurro', 'VIP X1'], cost: '25 - 60', badge: 'Áudio ErosChat', button: 'Gerar Mensagem de Voz' },
+            { id: 'audio_isolation', name: 'Audio Isolation (Limpeza)', provider: 'Eros Studio', tags: ['Limpeza', 'Studio Quality'], cost: '15 - 40', badge: 'Isolamento Acústico', button: 'Limpar Áudio' }
+          ],
+          allProviders: {
+            'ErosChat Voice': [
+              { id: 'voice_clone_musa', name: 'Clonagem de Voz da Musa', tags: ['Fidelidade 100%'], cost: '30 - 80' },
+              { id: 'voice_gen_sensual', name: 'Gerador Sensual Sussurrado', tags: ['Sedução X1'], cost: '25 - 60' },
+              { id: 'audio_isolation', name: 'Isolador de Ruído', tags: ['Limpeza de Voz'], cost: '15 - 40' }
+            ]
+          }
+        }
+      };
+
+      const CREATOR_SUBTOOLS_CATALOG = {
+        image: [
+          { id: 'tool_img_gen', name: 'Image Generator', desc: 'Create images from text prompts', model: 'eros_image_2k', pinned: true },
+          { id: 'tool_img_editor', name: 'Image Editor', desc: 'Edit and modify existing images', model: 'krea_2', pinned: false },
+          { id: 'tool_img_upscaler', name: 'Image Upscaler', desc: 'Enhance resolution and detail', model: 'magnific_upscale', pinned: false },
+          { id: 'tool_img_cinematic', name: 'Cinematic Shot', desc: 'Generate cinematic compositions', model: 'eros_image_2k', pinned: false },
+          { id: 'tool_img_variations', name: 'Variations', desc: 'Create variations of an image', model: 'eros_image_2k', pinned: false },
+          { id: 'tool_img_skin', name: 'Skin Enhancer', desc: 'Retouch and enhance skin detail', model: 'eros_image_2k', pinned: false },
+          { id: 'tool_img_camera', name: 'Change Camera', desc: 'Adjust camera angle and lens (360°)', model: 'qwen_360', pinned: false },
+          { id: 'tool_img_swap', name: 'Face & Look Swap', desc: 'Swap face and clothing with Seedream', model: 'seedream_5', pinned: false },
+          { id: 'tool_img_rmbg', name: 'Remove Background', desc: 'Isolate subjects from background', model: 'krea_2', pinned: false },
+          { id: 'tool_img_relight', name: 'Relight', desc: 'Change lighting and atmosphere', model: 'eros_image_2k', pinned: false }
+        ],
+        video: [
+          { id: 'tool_vid_gen', name: 'Video Generator', desc: 'Create videos from text prompts', model: 'wan_3_prime', pinned: true },
+          { id: 'tool_vid_clip_editor', name: 'Clip Editor', desc: 'Trim, cut, and edit video clips', model: 'wan_3_prime', pinned: false },
+          { id: 'tool_vid_upscaler', name: 'Video Upscaler', desc: 'Enhance video resolution', model: 'wan_3_prime', pinned: false },
+          { id: 'tool_vid_motion', name: 'Motion Transfer', desc: 'Transfer motion to musa with Kling', model: 'kling_4_motion', pinned: false },
+          { id: 'tool_vid_project', name: 'Video Project ...', desc: 'Edit multi-clip video projects', model: 'wan_3_prime', isExperimental: true, pinned: false },
+          { id: 'tool_vid_speak', name: 'Speak', desc: 'Generate realistic talking videos', model: 'wan_3_prime', pinned: false },
+          { id: 'tool_vid_relight', name: 'Video Relight', desc: 'Change lighting and atmosphere', model: 'wan_3_prime', pinned: false },
+          { id: 'tool_vid_cinematic', name: 'Cinematic Video', desc: 'Generate cinematic video shots', model: 'kling_4_video', pinned: false }
+        ],
+        audio: [
+          { id: 'tool_aud_voice', name: 'Voice Generator', desc: 'Generate realistic voiceovers', model: 'voice_clone_musa', pinned: true },
+          { id: 'tool_aud_music', name: 'Music Generator', desc: 'Create music from text prompts', model: 'voice_gen_sensual', pinned: false },
+          { id: 'tool_aud_gen', name: 'Audio Generator', desc: 'Create audio from text prompts', model: 'voice_gen_sensual', isNew: true, pinned: false },
+          { id: 'tool_aud_sfx', name: 'Sound Effect Generator', desc: 'Create custom sound effects', model: 'voice_gen_sensual', pinned: false },
+          { id: 'tool_aud_clone', name: 'Voice Cloning', desc: 'Clone any voice with AI', model: 'voice_clone_musa', pinned: false },
+          { id: 'tool_aud_changer', name: 'Voice Changer', desc: 'Transform voice characteristics', model: 'voice_gen_sensual', pinned: false },
+          { id: 'tool_aud_isolation', name: 'Audio Isolation', desc: 'Remove background noise from audio', model: 'audio_isolation', pinned: false }
+        ]
+      };
+
+      let currentStudioMode = 'image';
+      let currentCreatorBatchCount = 1;
+      let currentCreatorQuality = '2K · High';
+
+      function scrollStudioNav(direction) {
+        const modes = ['image', 'video', 'audio'];
+        const curIdx = modes.indexOf(currentStudioMode);
+        if (direction === 'left' && curIdx > 0) setStudioMode(modes[curIdx - 1]);
+        else if (direction === 'right' && curIdx < modes.length - 1) setStudioMode(modes[curIdx + 1]);
+      }
+      window.scrollStudioNav = scrollStudioNav;
 
       function toggleDnaEditorDrawer() {
         const drawer = document.getElementById('boxDnaDrawer');
@@ -8788,6 +8985,264 @@
         drawer.style.display = drawer.style.display === 'none' ? 'flex' : 'none';
       }
       window.toggleDnaEditorDrawer = toggleDnaEditorDrawer;
+
+      function toggleFlyoutToolsDrawer() {
+        const d = document.getElementById('flyoutToolsDrawer');
+        const backdrop = document.getElementById('modalCreatorModelPickerBackdrop');
+        if (!d) return;
+        const willOpen = d.style.display === 'none';
+        d.style.display = willOpen ? 'flex' : 'none';
+        if (backdrop) backdrop.style.display = willOpen ? 'block' : 'none';
+        if (willOpen) renderFlyoutToolsList();
+      }
+      window.toggleFlyoutToolsDrawer = toggleFlyoutToolsDrawer;
+
+      function closeFlyoutToolsDrawer() {
+        const d = document.getElementById('flyoutToolsDrawer');
+        const backdrop = document.getElementById('modalCreatorModelPickerBackdrop');
+        if (d) d.style.display = 'none';
+        if (backdrop && (!document.getElementById('modalCreatorModelPicker') || document.getElementById('modalCreatorModelPicker').style.display === 'none')) {
+          backdrop.style.display = 'none';
+        }
+      }
+      window.closeFlyoutToolsDrawer = closeFlyoutToolsDrawer;
+
+      function renderFlyoutToolsList() {
+        const container = document.getElementById('listFlyoutTools');
+        const header = document.getElementById('lblFlyoutToolsHeader');
+        if (!container) return;
+        const mode = currentStudioMode || 'image';
+        if (header) {
+          header.innerText = mode === 'image' ? 'Ferramentas de Imagem' : (mode === 'video' ? 'Ferramentas de Vídeo' : 'Ferramentas de Áudio');
+        }
+        const tools = CREATOR_SUBTOOLS_CATALOG[mode] || [];
+        container.innerHTML = tools.map(t => `
+          <div onclick="selectStudioSubTool('${t.id}', '${ghostEsc(t.name)}', '${t.model}')" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 9px; cursor: pointer; background: #141720; border: 1px solid rgba(255,255,255,0.06); transition: 0.2s;">
+            <div style="display: flex; align-items: center; gap: 9px;">
+              <div style="width: 26px; height: 26px; border-radius: 6px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; color: var(--accent-lime);">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"></rect></svg>
+              </div>
+              <div>
+                <div style="font-size: 0.74rem; font-weight: 800; color: #fff; line-height: 1.1;">
+                  ${ghostEsc(t.name)}
+                  ${t.isNew ? '<span style="font-size: 0.5rem; background: #e11d48; color: #fff; padding: 1px 4px; border-radius: 3px; margin-left: 4px;">New</span>' : ''}
+                  ${t.isExperimental ? '<span style="font-size: 0.5rem; background: #8b5cf6; color: #fff; padding: 1px 4px; border-radius: 3px; margin-left: 4px;">Experimental</span>' : ''}
+                </div>
+                <div style="font-size: 0.58rem; color: #94a3b8; margin-top: 1px;">${ghostEsc(t.desc)}</div>
+              </div>
+            </div>
+            ${t.pinned ? '<span style="color: #64748b; font-size: 0.75rem;">📌</span>' : ''}
+          </div>
+        `).join('');
+      }
+
+      function selectStudioSubTool(toolId, toolName, defaultModel) {
+        const titleEl = document.getElementById('lblActiveToolTitle');
+        if (titleEl) titleEl.innerText = toolName;
+        closeFlyoutToolsDrawer();
+        if (defaultModel) {
+          selectModelFromPicker(defaultModel);
+        }
+      }
+      window.selectStudioSubTool = selectStudioSubTool;
+
+      function openCreatorModelPicker() {
+        const modal = document.getElementById('modalCreatorModelPicker');
+        const backdrop = document.getElementById('modalCreatorModelPickerBackdrop');
+        if (!modal) return;
+        modal.style.display = 'flex';
+        if (backdrop) backdrop.style.display = 'block';
+        renderModelPickerContent();
+      }
+      window.openCreatorModelPicker = openCreatorModelPicker;
+
+      function closeCreatorModelPicker() {
+        const modal = document.getElementById('modalCreatorModelPicker');
+        const backdrop = document.getElementById('modalCreatorModelPickerBackdrop');
+        if (modal) modal.style.display = 'none';
+        if (backdrop) backdrop.style.display = 'none';
+      }
+      window.closeCreatorModelPicker = closeCreatorModelPicker;
+
+      function renderModelPickerContent(filterTerm = '') {
+        const featuredList = document.getElementById('listPickerFeatured');
+        const providersList = document.getElementById('listPickerProviders');
+        if (!featuredList || !providersList) return;
+
+        const modeData = CREATOR_MODELS_CATALOG[currentStudioMode] || CREATOR_MODELS_CATALOG.image;
+        const term = (filterTerm || '').toLowerCase().trim();
+
+        // Render Featured
+        const filteredFeatured = modeData.featured.filter(m => !term || m.name.toLowerCase().includes(term) || m.tags.some(t => t.toLowerCase().includes(term)));
+        featuredList.innerHTML = filteredFeatured.map(m => `
+          <div onclick="selectModelFromPicker('${m.id}')" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 8px; cursor: pointer; background: #131620; border: 1px solid rgba(255,255,255,0.06); transition: 0.2s;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div style="width: 22px; height: 22px; border-radius: 5px; background: rgba(190,242,100,0.12); color: var(--accent-lime); display: flex; align-items: center; justify-content: center;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
+              </div>
+              <div>
+                <div style="font-size: 0.72rem; font-weight: 800; color: #fff; line-height: 1.1;">
+                  ${ghostEsc(m.name)}
+                  ${m.isNew ? '<span style="font-size: 0.48rem; background: #e11d48; color: #fff; padding: 1px 4px; border-radius: 3px; margin-left: 3px;">New</span>' : ''}
+                </div>
+                <div style="display: flex; gap: 4px; margin-top: 2px;">
+                  ${m.tags.slice(0, 3).map(tag => `<span style="font-size: 0.54rem; color: #94a3b8; background: rgba(255,255,255,0.04); padding: 1px 4px; border-radius: 3px;">${ghostEsc(tag)}</span>`).join('')}
+                </div>
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <span style="font-size: 0.64rem; font-weight: 700; color: var(--accent-lime);">${ghostEsc(m.cost)}</span>
+            </div>
+          </div>
+        `).join('') || '<div style="font-size: 0.64rem; color: #64748b; padding: 8px;">Nenhum modelo encontrado.</div>';
+
+        // Render Providers
+        let provHtml = '';
+        for (const [providerName, list] of Object.entries(modeData.allProviders)) {
+          const matching = list.filter(m => !term || m.name.toLowerCase().includes(term) || (m.tags && m.tags.some(t => t.toLowerCase().includes(term))));
+          if (!matching.length) continue;
+          provHtml += `
+            <div style="border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; overflow: hidden; background: #0a0c12;">
+              <div style="font-size: 0.66rem; font-weight: 800; color: #cbd5e1; padding: 7px 10px; background: #12151e; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between;">
+                <span>${ghostEsc(providerName)}</span>
+                <span style="color: #64748b; font-size: 0.58rem;">${matching.length} modelos</span>
+              </div>
+              <div style="display: flex; flex-direction: column;">
+                ${matching.map(m => `
+                  <div onclick="selectModelFromPicker('${m.id}')" style="display: flex; justify-content: space-between; align-items: center; padding: 7px 10px; border-bottom: 1px solid rgba(255,255,255,0.03); cursor: pointer;">
+                    <div>
+                      <span style="font-size: 0.7rem; font-weight: 700; color: #cbd5e1;">${ghostEsc(m.name)}</span>
+                      <div style="font-size: 0.54rem; color: #64748b; margin-top: 1px;">${m.tags ? m.tags.join(' • ') : ''}</div>
+                    </div>
+                    <span style="font-size: 0.62rem; color: var(--accent-lime); font-weight: 700;">${ghostEsc(m.cost)}</span>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        }
+        providersList.innerHTML = provHtml;
+      }
+
+      function filterCreatorModels(term) {
+        renderModelPickerContent(term);
+      }
+      window.filterCreatorModels = filterCreatorModels;
+
+      function applyModelPickerFilter(type, btn) {
+        document.querySelectorAll('.btn-picker-filter').forEach(b => {
+          b.style.background = '#12141c';
+          b.style.color = '#94a3b8';
+        });
+        if (btn) {
+          btn.style.background = '#1e2330';
+          btn.style.color = '#fff';
+        }
+        if (type === 'all') renderModelPickerContent('');
+        else if (type === 'fast') renderModelPickerContent('Rápido');
+        else if (type === 'photoreal') renderModelPickerContent('Fotorrealismo');
+        else if (type === 'swap') renderModelPickerContent('Swap');
+      }
+      window.applyModelPickerFilter = applyModelPickerFilter;
+
+      function selectModelFromPicker(modelId) {
+        currentCreatorModel = modelId;
+        const sel = document.getElementById('selCreatorModel');
+        if (sel) {
+          let opt = sel.querySelector(`option[value="${modelId}"]`);
+          if (!opt) {
+            opt = document.createElement('option');
+            opt.value = modelId;
+            opt.innerText = modelId;
+            sel.appendChild(opt);
+          }
+          sel.value = modelId;
+        }
+
+        const meta = creatorModelMeta(modelId);
+        const nameEl = document.getElementById('lblSelectedModelName');
+        const tagEl = document.getElementById('lblSelectedModelTag');
+        if (nameEl) nameEl.innerText = meta.badge || modelId;
+        if (tagEl) tagEl.innerText = meta.cost || 'Alta Fidelidade';
+
+        onCreatorModelChange(modelId);
+        closeCreatorModelPicker();
+      }
+      window.selectModelFromPicker = selectModelFromPicker;
+
+      function cycleCreatorRatio() {
+        const ratios = ['9:16', '1:1', '4:5', '16:9'];
+        const curIdx = ratios.indexOf(currentCreatorAspectRatio);
+        const next = ratios[(curIdx + 1) % ratios.length];
+        currentCreatorAspectRatio = next;
+        const lbl = document.getElementById('lblCurrentRatio');
+        if (lbl) lbl.innerText = next;
+        setCreatorRatio(next, null);
+      }
+      window.cycleCreatorRatio = cycleCreatorRatio;
+
+      function cycleCreatorQuality() {
+        const quals = ['1080p', '2K · High', '4K Ultra'];
+        const curIdx = quals.indexOf(currentCreatorQuality);
+        const next = quals[(curIdx + 1) % quals.length];
+        currentCreatorQuality = next;
+        const lbl = document.getElementById('lblCurrentQuality');
+        if (lbl) lbl.innerText = next;
+        const spec = document.getElementById('lblCanvasSpec');
+        if (spec) spec.innerText = `${next} • ${currentCreatorAspectRatio}`;
+      }
+      window.cycleCreatorQuality = cycleCreatorQuality;
+
+      function adjustBatchCount(delta) {
+        currentCreatorBatchCount = Math.max(1, Math.min(4, currentCreatorBatchCount + delta));
+        const lbl = document.getElementById('lblBatchCount');
+        if (lbl) lbl.innerText = currentCreatorBatchCount;
+      }
+      window.adjustBatchCount = adjustBatchCount;
+
+      function setStudioMode(mode) {
+        currentStudioMode = mode;
+        const tabImage = document.getElementById('tabModeImage');
+        const tabVideo = document.getElementById('tabModeVideo');
+        const tabAudio = document.getElementById('tabModeAudio');
+
+        [tabImage, tabVideo, tabAudio].forEach(t => {
+          if (t) {
+            t.style.background = 'transparent';
+            t.style.color = '#94a3b8';
+            t.style.fontWeight = '700';
+          }
+        });
+
+        const activeTab = mode === 'image' ? tabImage : (mode === 'video' ? tabVideo : tabAudio);
+        if (activeTab) {
+          activeTab.style.background = '#272a30';
+          activeTab.style.color = '#fff';
+          activeTab.style.fontWeight = '800';
+        }
+
+        const boxPrompt = document.getElementById('boxPromptContainer');
+        const boxBottom = document.getElementById('boxBottomControlsRow');
+        const titleEl = document.getElementById('lblActiveToolTitle');
+
+        if (mode === 'image') {
+          if (boxPrompt) boxPrompt.style.display = 'block';
+          if (boxBottom) boxBottom.style.display = 'flex';
+          if (titleEl) titleEl.innerText = 'Image Generator';
+          selectModelFromPicker('eros_image_2k');
+        } else if (mode === 'video') {
+          if (boxPrompt) boxPrompt.style.display = 'block';
+          if (boxBottom) boxBottom.style.display = 'flex';
+          if (titleEl) titleEl.innerText = 'Video Generator';
+          selectModelFromPicker('wan_3_prime');
+        } else if (mode === 'audio') {
+          if (boxPrompt) boxPrompt.style.display = 'none';
+          if (boxBottom) boxBottom.style.display = 'none';
+          if (titleEl) titleEl.innerText = 'Voice Generator';
+          selectModelFromPicker('voice_clone_musa');
+        }
+      }
+      window.setStudioMode = setStudioMode;
 
       function onCreatorMusaChange(profileId) {
         const profiles = getCreatorProfilesSync();
@@ -8803,8 +9258,8 @@
         const avatarImg = document.getElementById('imgMusaAvatarMini');
         if (avatarImg) avatarImg.src = currentCreatorMediaUrl;
 
-        // Verifica se a musa tem LoRA calibrado
-        const hasLora = Boolean(data.has_lora === true || p.has_lora === true || profileId === 'camila');
+        // Verifica se a musa tem LoRA calibrado (NÃO assume calibrado por padrão!)
+        const hasLora = Boolean(data.has_lora === true || p.has_lora === true);
         const badgeActive = document.getElementById('badgeMusaLoraActive');
         const badgeDefault = document.getElementById('badgeMusaLoraDefault');
         const offerBox = document.getElementById('boxMusaLoraOffer');
@@ -8814,6 +9269,7 @@
           if (badgeDefault) badgeDefault.style.display = 'none';
           if (offerBox) offerBox.style.display = 'none';
         } else {
+          // Se não tem LoRA, EXIBE O ANÚNCIO DE CALIBRAR LORA!
           if (badgeActive) badgeActive.style.display = 'none';
           if (badgeDefault) badgeDefault.style.display = 'inline-block';
           if (offerBox) offerBox.style.display = 'flex';
@@ -8918,6 +9374,7 @@
       function updateCreatorModelUI() {
         onCreatorModelChange(currentCreatorModel);
       }
+      window.updateCreatorModelUI = updateCreatorModelUI;
 
       function setCreatorRatio(ratio, btn) {
         currentCreatorAspectRatio = ratio;
@@ -9224,8 +9681,8 @@
           document.getElementById('creatorImportInput')?.click();
           return;
         }
-        if (!currentCreatorRefs.length) {
-          showToast('Adicione pelo menos uma foto de referência da musa. Sem referência não há consistência.', 5000);
+        if (!currentCreatorRefs.length && currentCreatorModel !== 'eros_image_2k') {
+          showToast('Adicione pelo menos uma foto de referência da musa.', 5000);
           return;
         }
         const prompt = (document.getElementById('txtCreatorPrompt')?.value || '').trim();
