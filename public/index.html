@@ -8175,25 +8175,45 @@
           name: 'GhostGenjutsu Shinjutsu Pro (MiniMax H3)',
           badge: 'Shinjutsu MiniMax H3',
           button: 'Gerar Motion com Shinjutsu',
-          desc: 'Recomendado para danças com mãos limpas e detalhes faciais.',
-          credits: { ghostflash: 120, ghostlite: 70 }
+          desc: 'Character swap avançado com Control LoRA e depth interno.',
+          credits: { ghostflash: 120, ghostlite: 70 },
+          mode: 'swap'
         },
         motion_scail2_12gb: {
-          name: 'GhostGenjutsu SCAIL-2 Lite (12GB)',
-          badge: 'SCAIL-2 12GB Lite',
-          button: 'Gerar Motion com SCAIL-2',
-          desc: 'Modo econômico para vídeos dinâmicos de corpo inteiro.',
-          credits: { ghostflash: 80, ghostlite: 40 }
+          name: 'GhostGenjutsu SCAIL-2 Long (12GB)',
+          badge: 'SCAIL-2 Long 12GB',
+          button: 'Clonar Vídeo com SCAIL-2',
+          desc: 'Character swap leve para danças longas sem degradação.',
+          credits: { ghostflash: 80, ghostlite: 40 },
+          mode: 'swap'
         },
         controlmotion_wan: {
-          name: 'GhostGenjutsu Wan 2.2 + SAM 2 (Capivara)',
+          name: 'GhostGenjutsu Wan 2.2 + SAM 2 (+18)',
           badge: 'ControlMotion Wan 2.2',
-          button: 'Gerar Motion Wan',
-          desc: 'Modo padrão para poses e vídeos com segmentação complexa.',
-          credits: { ghostflash: 100, ghostlite: 60 }
+          button: 'Clonar Vídeo com Wan 2.2',
+          desc: 'Character swap com segmentação corporal avançada.',
+          credits: { ghostflash: 100, ghostlite: 60 },
+          mode: 'swap'
+        },
+        motion_minimax_action: {
+          name: 'GhostGenjutsu MiniMax H3 Action',
+          badge: 'MiniMax H3 Action',
+          button: 'Gerar Ação com MiniMax H3',
+          desc: 'Ação livre a partir da foto da musa e do prompt.',
+          credits: { ghostflash: 120, ghostlite: 70 },
+          mode: 'action'
+        },
+        video_wan_prompt: {
+          name: 'GhostGenjutsu Wan 2.2 por Prompt',
+          badge: 'Wan 2.2 Prompt',
+          button: 'Gerar Vídeo com Wan 2.2',
+          desc: 'Vídeo a partir da foto e do prompt, sem vídeo guia.',
+          credits: { ghostflash: 80, ghostlite: 40 },
+          mode: 'action'
         }
       };
-      let currentMotionEngine = 'motion_shinjutsu_h3';
+      let currentMotionEngine = 'motion_scail2_12gb';
+      let currentMotionMode = 'swap';
       let currentMotionSpeedMode = 'ghostflash';
       let currentMotionVideo = null;
       let currentMotionReference = null;
@@ -8582,13 +8602,21 @@
                 <!-- MODO VÍDEO: START IMAGE / END IMAGE / MOTION TRANSFER (SCREENSHOT 4) -->
                 <div id="boxReferencesVideo" style="display: none; flex-direction: column; gap: 8px;">
                 <div>
-                  <label style="font-size: 0.6rem; font-weight: 800; color: #64748b; display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px;">Motor de transferência</label>
+                  <label style="font-size: 0.6rem; font-weight: 800; color: #64748b; display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px;">Tipo de criação</label>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                    <button type="button" id="btnMotionModeSwap" onclick="setMotionMode('swap')" style="background: #1e2230; border: 1px solid var(--accent-lime); color: #fff; font-size: 0.62rem; font-weight: 800; padding: 6px 4px; border-radius: 6px; cursor: pointer;">Clonar Vídeo</button>
+                    <button type="button" id="btnMotionModeAction" onclick="setMotionMode('action')" style="background: #12141c; border: 1px solid rgba(255,255,255,0.06); color: #94a3b8; font-size: 0.62rem; font-weight: 700; padding: 6px 4px; border-radius: 6px; cursor: pointer;">Ação Livre</button>
+                  </div>
+                  <div id="lblMotionModeDesc" style="font-size: 0.58rem; color: #94a3b8; line-height: 1.35; margin-top: 4px;">Clone o movimento de um vídeo guia na sua musa (Character Swap).</div>
+                </div>
+
+                <div>
+                  <label style="font-size: 0.6rem; font-weight: 800; color: #64748b; display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px;">Motor</label>
                   <select id="selMotionEngine" onchange="onMotionEngineChange(this.value)" style="width: 100%; background: #12141c; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 7px 8px; border-radius: 7px; font-size: 0.72rem; font-weight: 700; outline: none;">
-                    <option value="motion_shinjutsu_h3">GhostGenjutsu Shinjutsu Pro (MiniMax H3)</option>
-                    <option value="motion_scail2_12gb">GhostGenjutsu SCAIL-2 Lite (12GB)</option>
-                    <option value="controlmotion_wan">GhostGenjutsu Wan 2.2 + SAM 2 (Capivara)</option>
+                    <option value="motion_scail2_12gb">GhostGenjutsu SCAIL-2 Long (12GB)</option>
+                    <option value="controlmotion_wan">GhostGenjutsu Wan 2.2 + SAM 2 (+18)</option>
                   </select>
-                  <div id="lblMotionEngineDesc" style="font-size: 0.6rem; color: #94a3b8; line-height: 1.35; margin-top: 4px;">Recomendado para danças com mãos limpas e detalhes faciais.</div>
+                  <div id="lblMotionEngineDesc" style="font-size: 0.6rem; color: #94a3b8; line-height: 1.35; margin-top: 4px;">Character swap leve para danças longas sem degradação.</div>
                 </div>
 
                   <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
@@ -9711,6 +9739,46 @@
       }
       window.onCreatorMusaChange = onCreatorMusaChange;
 
+      function applyMotionModeUI(mode, selected) {
+        currentMotionMode = mode === 'action' ? 'action' : 'swap';
+        const list = currentMotionMode === 'action'
+          ? ['motion_minimax_action', 'video_wan_prompt']
+          : ['motion_scail2_12gb', 'controlmotion_wan'];
+        const sel = document.getElementById('selMotionEngine');
+        if (sel) {
+          sel.innerHTML = list.map((id) => `<option value="${id}">${MOTION_ENGINES[id].name}</option>`).join('');
+          sel.value = (selected && list.includes(selected)) ? selected : list[0];
+        }
+        const swap = document.getElementById('btnMotionModeSwap');
+        const action = document.getElementById('btnMotionModeAction');
+        if (swap) {
+          const active = currentMotionMode === 'swap';
+          swap.style.background = active ? '#1e2230' : '#12141c';
+          swap.style.borderColor = active ? 'var(--accent-lime)' : 'rgba(255,255,255,0.06)';
+          swap.style.color = active ? '#fff' : '#94a3b8';
+        }
+        if (action) {
+          const active = currentMotionMode === 'action';
+          action.style.background = active ? '#1e2230' : '#12141c';
+          action.style.borderColor = active ? 'var(--accent-lime)' : 'rgba(255,255,255,0.06)';
+          action.style.color = active ? '#fff' : '#94a3b8';
+        }
+        const desc = document.getElementById('lblMotionModeDesc');
+        if (desc) desc.innerText = currentMotionMode === 'swap'
+          ? 'Clone o movimento de um vídeo guia na sua musa (Character Swap).'
+          : 'Gere uma ação livre a partir da foto da musa e do prompt.';
+        const engineDesc = document.getElementById('lblMotionEngineDesc');
+        const engineId = sel ? sel.value : list[0];
+        if (engineDesc && MOTION_ENGINES[engineId]) engineDesc.innerText = MOTION_ENGINES[engineId].desc;
+        return engineId;
+      }
+
+      function setMotionMode(mode) {
+        const selected = applyMotionModeUI(mode);
+        onMotionEngineChange(selected);
+      }
+      window.setMotionMode = setMotionMode;
+
       function onMotionEngineChange(engine) {
         if (!MOTION_ENGINES[engine]) return;
         currentMotionEngine = engine;
@@ -9953,10 +10021,7 @@
         const motionMeta = MOTION_ENGINES[model];
         if (motionMeta) {
           currentMotionEngine = model;
-          const selEngine = document.getElementById('selMotionEngine');
-          if (selEngine) selEngine.value = model;
-          const descEl = document.getElementById('lblMotionEngineDesc');
-          if (descEl) descEl.innerText = motionMeta.desc;
+          applyMotionModeUI(motionMeta.mode || 'swap', model);
           const scailExtra = document.getElementById('boxMotionScailExtra');
           if (scailExtra) scailExtra.style.display = model === 'motion_scail2_12gb' ? 'flex' : 'none';
           const depthBox = document.getElementById('boxMotionDepth');
@@ -10031,7 +10096,7 @@
             if (boxGeneralRefs) boxGeneralRefs.style.display = 'none';
           }
 
-          const isMotion = ['kling_4_motion', 'kling_3_motion', 'kling_26_motion', 'omni_flash_21', 'openjutsu_workflow', 'motion_shinjutsu_h3', 'motion_scail2_12gb', 'controlmotion_wan', 'controlmotion_scail'].includes(model);
+          const isMotion = ['kling_4_motion', 'kling_3_motion', 'kling_26_motion', 'omni_flash_21', 'openjutsu_workflow', 'motion_shinjutsu_h3', 'motion_scail2_12gb', 'controlmotion_wan', 'controlmotion_scail', 'motion_minimax_action', 'video_wan_prompt'].includes(model);
           const isImg2Vid = ['wan_3_prime', 'minimax_h3', 'minimax_h3_max', 'seedance_25', 'seedance_20', 'kling_4_video', 'kling_3_video', 'grok_15_video', 'ltx_25_video', 'flux_3_video', 'veo_31', 'veo_31_lite', 'auto_video'].includes(model);
           const isAudio = ['voice_clone_musa', 'music_generator', 'audio_gen_new', 'audio_isolation'].includes(model);
 
@@ -10427,8 +10492,9 @@
           return;
         }
         if (motionEngine) {
-          if (!currentMotionVideo) {
-            showToast('Envie o vídeo de movimento no slot Motion Transfer.', 5000);
+          const motionMode = motionEngine.mode || 'swap';
+          if (motionMode === 'swap' && !currentMotionVideo) {
+            showToast('Envie o vídeo guia no slot Motion Transfer.', 5000);
             return;
           }
           if (!currentMotionReference && !currentCreatorRefs.length) {
@@ -10460,6 +10526,10 @@
         const prompt = (document.getElementById('txtCreatorPrompt')?.value || '').trim();
         if (!prompt && !motionEngine && currentCreatorModel !== 'upscale_capivara_mass') {
           showToast('Escreva o prompt da cena.', 4000);
+          return;
+        }
+        if (motionEngine && (motionEngine.mode || 'swap') === 'action' && !prompt) {
+          showToast('Escreva o prompt de ação para o modo Ação Livre.', 4000);
           return;
         }
         const overlay = document.getElementById('creatorLoadingOverlay');
@@ -10519,7 +10589,7 @@
             persona_name: currentCreatorMusa,
             speed_mode: motionEngine ? currentMotionSpeedMode : (liveModel.default_speed_mode || 'ghostflash'),
             reference_image: motionEngine ? (currentMotionReference || currentCreatorRefs[0]) : undefined,
-            motion_video: motionEngine ? currentMotionVideo : undefined,
+            motion_video: motionEngine && (motionEngine.mode || 'swap') === 'swap' ? currentMotionVideo : undefined,
             depth_video: currentMotionDepthVideo || undefined,
             control_strength: Number(document.getElementById('rngMotionControlStrength')?.value || 0.85),
             negative_prompt: document.getElementById('txtCreatorNegativePrompt')?.value || undefined,

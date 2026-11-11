@@ -326,7 +326,7 @@
     ],
     "assets": {
       "start_image": {
-        "bodyKey": "start_image",
+        "bodyKey": "reference_image",
         "type": "image"
       }
     },
@@ -774,6 +774,95 @@
     },
     "outputNodeIds": [
       "353"
+    ]
+  },
+  "motion_minimax_action": {
+    "name": "GhostGenjutsu MiniMax H3 Action",
+    "mode": "video",
+    "control": "motion",
+    "workflowId": "",
+    "instanceType": "plus",
+    "credits": 120,
+    "defaultSpeedMode": "ghostflash",
+    "speedModes": [
+      "ghostflash",
+      "ghostlite"
+    ],
+    "speedModeCredits": {
+      "ghostflash": 120,
+      "ghostlite": 70
+    },
+    "speedInstanceTypes": {
+      "ghostflash": "plus",
+      "ghostlite": "default"
+    },
+    "tags": [
+      "Motion",
+      "MiniMax H3",
+      "Ação Livre"
+    ],
+    "badge": "MiniMax H3 Action",
+    "button": "Gerar Ação com MiniMax H3",
+    "resultMode": "video",
+    "requiredAssets": [
+      "character_image"
+    ],
+    "assets": {
+      "character_image": {
+        "bodyKey": "reference_image",
+        "type": "image"
+      }
+    },
+    "inputs": {
+      "character_image": {
+        "nodeId": "51",
+        "fieldName": "image",
+        "assetKey": "character_image",
+        "assetValue": "fileName"
+      },
+      "prompt": {
+        "nodeId": "263",
+        "fieldName": "text",
+        "source": "prompt"
+      },
+      "seconds": {
+        "nodeId": "259",
+        "fieldName": "value",
+        "type": "number",
+        "default": 5
+      },
+      "seed": {
+        "nodeId": "397",
+        "fieldName": "seed",
+        "type": "number"
+      },
+      "steps": {
+        "nodeId": "261",
+        "fieldName": "steps",
+        "type": "number",
+        "default": 12
+      },
+      "width": {
+        "nodeId": "265",
+        "fieldName": "width",
+        "type": "number",
+        "default": 1344
+      },
+      "height": {
+        "nodeId": "265",
+        "fieldName": "height",
+        "type": "number",
+        "default": 768
+      },
+      "length": {
+        "nodeId": "265",
+        "fieldName": "length",
+        "type": "number",
+        "default": 124
+      }
+    },
+    "outputNodeIds": [
+      "404"
     ]
   }
 }
