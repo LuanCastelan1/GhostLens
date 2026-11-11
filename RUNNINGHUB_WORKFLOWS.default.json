@@ -591,15 +591,15 @@
     "inputs": {
       "checkpoint": {
         "nodeId": "55",
-        "fieldName": "unet_name",
+        "fieldName": "ckpt_name",
         "presets": {
-          "raw": "krea2_turbo_raw_35mm.safetensors",
+          "raw": "krea2_nsfw-aio-2.safetensors",
           "film": "krea2_analog_film_28mm.safetensors",
           "glam": "krea2_glamour_85mm.safetensors",
           "intimate": "krea2_intimate_raw_v1.safetensors"
         },
         "presetKey": "lens",
-        "default": "krea2_turbo_fp8_scaled.safetensors"
+        "default": "krea2_nsfw-aio-2.safetensors"
       },
       "lora_base": {
         "nodeId": "100",
