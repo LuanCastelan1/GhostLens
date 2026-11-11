@@ -8170,6 +8170,33 @@
       let currentCreatorRefs = [];
       let currentCreatorHistory = [];
       let currentCreatorDna = {};
+      const MOTION_ENGINES = {
+        motion_shinjutsu_h3: {
+          name: 'GhostGenjutsu Shinjutsu Pro (MiniMax H3)',
+          badge: 'Shinjutsu MiniMax H3',
+          button: 'Gerar Motion com Shinjutsu',
+          desc: 'Recomendado para danças com mãos limpas e detalhes faciais.',
+          credits: { ghostflash: 120, ghostlite: 70 }
+        },
+        motion_scail2_12gb: {
+          name: 'GhostGenjutsu SCAIL-2 Lite (12GB)',
+          badge: 'SCAIL-2 12GB Lite',
+          button: 'Gerar Motion com SCAIL-2',
+          desc: 'Modo econômico para vídeos dinâmicos de corpo inteiro.',
+          credits: { ghostflash: 80, ghostlite: 40 }
+        },
+        controlmotion_wan: {
+          name: 'GhostGenjutsu Wan 2.2 + SAM 2 (Capivara)',
+          badge: 'ControlMotion Wan 2.2',
+          button: 'Gerar Motion Wan',
+          desc: 'Modo padrão para poses e vídeos com segmentação complexa.',
+          credits: { ghostflash: 100, ghostlite: 60 }
+        }
+      };
+      let currentMotionEngine = 'motion_shinjutsu_h3';
+      let currentMotionSpeedMode = 'ghostflash';
+      let currentMotionVideo = null;
+      let currentMotionReference = null;
       let currentCreatorHiggsFirst = null;
       let currentCreatorHiggsEnd = null;
 
@@ -8234,6 +8261,11 @@
             cost: live.cost_label || `${live.credits || 0} créditos`,
             button: live.button || 'Gerar'
           };
+        }
+        const motion = MOTION_ENGINES[model];
+        if (motion) {
+          const credits = motion.credits[currentMotionSpeedMode] || motion.credits.ghostflash;
+          return { badge: motion.badge, cost: `${credits} créditos`, button: motion.button };
         }
         const table = {
           // ─── IMAGEM ───
@@ -8537,6 +8569,16 @@
 
                 <!-- MODO VÍDEO: START IMAGE / END IMAGE / MOTION TRANSFER (SCREENSHOT 4) -->
                 <div id="boxReferencesVideo" style="display: none; flex-direction: column; gap: 8px;">
+                <div>
+                  <label style="font-size: 0.6rem; font-weight: 800; color: #64748b; display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px;">Motor de transferência</label>
+                  <select id="selMotionEngine" onchange="onMotionEngineChange(this.value)" style="width: 100%; background: #12141c; border: 1px solid rgba(255,255,255,0.08); color: #fff; padding: 7px 8px; border-radius: 7px; font-size: 0.72rem; font-weight: 700; outline: none;">
+                    <option value="motion_shinjutsu_h3">GhostGenjutsu Shinjutsu Pro (MiniMax H3)</option>
+                    <option value="motion_scail2_12gb">GhostGenjutsu SCAIL-2 Lite (12GB)</option>
+                    <option value="controlmotion_wan">GhostGenjutsu Wan 2.2 + SAM 2 (Capivara)</option>
+                  </select>
+                  <div id="lblMotionEngineDesc" style="font-size: 0.6rem; color: #94a3b8; line-height: 1.35; margin-top: 4px;">Recomendado para danças com mãos limpas e detalhes faciais.</div>
+                </div>
+
                   <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
                     <div onclick="document.getElementById('fileImg2VidStart')?.click()" style="background: #0a0c12; border: 1px dashed rgba(255,255,255,0.12); border-radius: 10px; height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; cursor: pointer;">
                       <span style="color: #38bdf8;">
@@ -8634,11 +8676,28 @@
               </div>
 
               <!-- CONTROLES DO MOTION CONTROL -->
-              <div id="boxMotionControls" style="display: none; flex-direction: column; gap: 8px; background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px;">
+              <div id="boxMotionControls" style="display: none; flex-direction: column; gap: 9px; background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 10px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                  <span style="font-size: 0.68rem; font-weight: 800; color: #fff;">Motion Control 60 FPS</span>
+                  <span style="font-size: 0.68rem; font-weight: 800; color: #fff;">GhostGenjutsu Motion</span>
                   <span style="font-size: 0.58rem; background: rgba(190,242,100,0.15); color: var(--accent-lime); padding: 2px 6px; border-radius: 4px; font-weight: 800;">Pose Lock</span>
                 </div>
+
+                <div style="display: flex; gap: 6px;">
+                  <button type="button" id="btnMotionGhostFlash" onclick="setMotionSpeedMode('ghostflash')" style="flex: 1; background: #1e2230; border: 1px solid var(--accent-lime); color: #fff; font-size: 0.62rem; font-weight: 800; padding: 6px 4px; border-radius: 6px; cursor: pointer;">GhostFlash</button>
+                  <button type="button" id="btnMotionGhostLite" onclick="setMotionSpeedMode('ghostlite')" style="flex: 1; background: #12141c; border: 1px solid rgba(255,255,255,0.06); color: #94a3b8; font-size: 0.62rem; font-weight: 700; padding: 6px 4px; border-radius: 6px; cursor: pointer;">GhostLite</button>
+                </div>
+                <div id="lblMotionEngineCost" style="font-size: 0.6rem; color: var(--accent-lime); font-weight: 700;">120 créditos GhostFlash • 70 créditos GhostLite</div>
+
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.6rem; color: #94a3b8; margin-bottom: 3px;">
+                    <span>Controle de movimento</span>
+                    <span id="lblMotionControlStrength" style="color: var(--accent-lime); font-weight: 800;">0.85</span>
+                  </div>
+                  <input type="range" id="rngMotionControlStrength" min="0.5" max="1" step="0.05" value="0.85" oninput="document.getElementById('lblMotionControlStrength').innerText = parseFloat(this.value).toFixed(2)" style="width: 100%; accent-color: var(--accent-lime); cursor: pointer;">
+                </div>
+
+                <input type="text" id="txtCreatorNegativePrompt" placeholder="Negative prompt (opcional)" style="width: 100%; background: #12141c; border: 1px solid rgba(255,255,255,0.07); color: #fff; padding: 6px 8px; border-radius: 6px; font-size: 0.68rem; outline: none;">
+                <div style="font-size: 0.58rem; color: #64748b; line-height: 1.35;">Envie o vídeo guia no slot Motion Transfer e a foto da musa no slot Character.</div>
               </div>
 
               <!-- CONTROLES DO IMAGE TO VIDEO -->
@@ -8751,6 +8810,7 @@
 
               <div id="creatorPreviewCanvas" style="width: 100%; min-height: 520px; background: #000; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; overflow: hidden; display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 16px 40px rgba(0,0,0,0.6);">
                 <img id="imgCreatorMainPreview" src="${CREATOR_PLACEHOLDER}" alt="Preview da Musa" style="width: 100%; height: 100%; min-height: 520px; object-fit: contain; display: block;">
+                <video id="videoCreatorMainPreview" controls playsinline style="display: none; width: 100%; height: 100%; min-height: 520px; object-fit: contain; background: #08090d;"></video>
                 <div id="creatorLoadingOverlay" style="display: none; position: absolute; inset: 0; background: rgba(9,10,14,0.86); backdrop-filter: blur(8px); flex-direction: column; align-items: center; justify-content: center; gap: 12px; z-index: 10;">
                   <div style="width: 38px; height: 38px; border: 3px solid rgba(190,242,100,0.2); border-top-color: var(--accent-lime); border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
                   <div id="lblCreatorLoadingStatus" style="font-size: 0.8rem; font-weight: 800; color: #fff;">Renderizando...</div>
@@ -8893,13 +8953,15 @@
           const tagEl = document.getElementById('lblSelectedModelTag');
           if (tagEl) tagEl.innerText = 'Configure USEAPI ou RunningHub';
         }
+        const hasMotionEngine = Object.keys(MOTION_ENGINES).length > 0;
+        const canGenerate = liveModels.length > 0 || hasMotionEngine;
         const genBtn = document.getElementById('btnExecuteCreatorGen');
         if (genBtn) {
-          genBtn.disabled = !liveModels.length;
-          genBtn.style.opacity = liveModels.length ? '1' : '0.5';
-          genBtn.style.cursor = liveModels.length ? 'pointer' : 'not-allowed';
+          genBtn.disabled = !canGenerate;
+          genBtn.style.opacity = canGenerate ? '1' : '0.5';
+          genBtn.style.cursor = canGenerate ? 'pointer' : 'not-allowed';
         }
-        if (!liveModels.length) {
+        if (!canGenerate) {
           const costEl = document.getElementById('creatorCostLabel');
           if (costEl) costEl.innerText = 'Nenhum provedor conectado. Configure USEAPI_TOKEN ou RUNNINGHUB_API_KEY.';
         }
@@ -9071,6 +9133,11 @@
             cost: live.cost_label || `${live.credits || 0} créditos`,
             button: live.button || 'Gerar'
           };
+        }
+        const motion = MOTION_ENGINES[model];
+        if (motion) {
+          const credits = motion.credits[currentMotionSpeedMode] || motion.credits.ghostflash;
+          return { badge: motion.badge, cost: `${credits} créditos`, button: motion.button };
         }
         const table = {
           eros_image_2k: { badge: 'Eros-Image™ 2K', cost: '100% Consistência • LoRA', button: 'Generate' },
@@ -9543,11 +9610,103 @@
       }
       window.onCreatorMusaChange = onCreatorMusaChange;
 
+      function onMotionEngineChange(engine) {
+        if (!MOTION_ENGINES[engine]) return;
+        currentMotionEngine = engine;
+        currentCreatorModel = engine;
+        const sel = document.getElementById('selCreatorModel');
+        if (sel) {
+          let opt = sel.querySelector(`option[value="${engine}"]`);
+          if (!opt) {
+            opt = document.createElement('option');
+            opt.value = engine;
+            opt.innerText = engine;
+            sel.appendChild(opt);
+          }
+          sel.value = engine;
+        }
+        const meta = MOTION_ENGINES[engine];
+        const descEl = document.getElementById('lblMotionEngineDesc');
+        if (descEl) descEl.innerText = meta.desc;
+        onCreatorModelChange(engine);
+        setMotionSpeedMode(currentMotionSpeedMode);
+        const genBtn = document.getElementById('btnExecuteCreatorGen');
+        if (genBtn) {
+          genBtn.disabled = false;
+          genBtn.style.opacity = '1';
+          genBtn.style.cursor = 'pointer';
+        }
+      }
+      window.onMotionEngineChange = onMotionEngineChange;
+
+      function setMotionSpeedMode(mode) {
+        currentMotionSpeedMode = mode === 'ghostlite' ? 'ghostlite' : 'ghostflash';
+        const flash = document.getElementById('btnMotionGhostFlash');
+        const lite = document.getElementById('btnMotionGhostLite');
+        if (flash) {
+          const active = currentMotionSpeedMode === 'ghostflash';
+          flash.style.background = active ? '#1e2230' : '#12141c';
+          flash.style.borderColor = active ? 'var(--accent-lime)' : 'rgba(255,255,255,0.06)';
+          flash.style.color = active ? '#fff' : '#94a3b8';
+        }
+        if (lite) {
+          const active = currentMotionSpeedMode === 'ghostlite';
+          lite.style.background = active ? '#1e2230' : '#12141c';
+          lite.style.borderColor = active ? 'var(--accent-lime)' : 'rgba(255,255,255,0.06)';
+          lite.style.color = active ? '#fff' : '#94a3b8';
+        }
+        const meta = MOTION_ENGINES[currentMotionEngine];
+        if (!meta) return;
+        const credits = meta.credits[currentMotionSpeedMode] || meta.credits.ghostflash;
+        const costEl = document.getElementById('creatorCostLabel');
+        if (costEl) costEl.innerText = `${credits} créditos`;
+        const tagEl = document.getElementById('lblSelectedModelTag');
+        if (tagEl) tagEl.innerText = `${credits} créditos`;
+        const motionCost = document.getElementById('lblMotionEngineCost');
+        if (motionCost) motionCost.innerText = `${meta.credits.ghostflash} créditos GhostFlash • ${meta.credits.ghostlite} créditos GhostLite`;
+      }
+      window.setMotionSpeedMode = setMotionSpeedMode;
+
+      function setCreatorPreviewMedia(url, type = 'image') {
+        if (!url) return;
+        currentCreatorMediaUrl = url;
+        const img = document.getElementById('imgCreatorMainPreview');
+        const video = document.getElementById('videoCreatorMainPreview');
+        if (type === 'video') {
+          if (img) img.style.display = 'none';
+          if (video) {
+            video.src = url;
+            video.style.display = 'block';
+            video.play().catch(() => {});
+          }
+        } else {
+          if (video) {
+            video.pause();
+            video.removeAttribute('src');
+            video.style.display = 'none';
+          }
+          if (img) {
+            img.src = url;
+            img.style.display = 'block';
+          }
+        }
+        renderCreatorHistory(url);
+      }
+      window.setCreatorPreviewMedia = setCreatorPreviewMedia;
+
       function onCreatorModelChange(model) {
         currentCreatorModel = model;
         const meta = creatorModelMeta(model);
         const live = getLiveCreatorModel(model);
         const liveControl = live && live.control;
+        const motionMeta = MOTION_ENGINES[model];
+        if (motionMeta) {
+          currentMotionEngine = model;
+          const selEngine = document.getElementById('selMotionEngine');
+          if (selEngine) selEngine.value = model;
+          const descEl = document.getElementById('lblMotionEngineDesc');
+          if (descEl) descEl.innerText = motionMeta.desc;
+        }
         const headerName = document.getElementById('lblSelectedModelName');
         if (headerName) headerName.innerText = meta.badge || model;
         const headerTag = document.getElementById('lblSelectedModelTag');
@@ -9595,7 +9754,7 @@
             if (boxGeneralRefs) boxGeneralRefs.style.display = 'none';
           }
 
-          const isMotion = ['kling_4_motion', 'kling_3_motion', 'kling_26_motion', 'omni_flash_21', 'openjutsu_workflow'].includes(model);
+          const isMotion = ['kling_4_motion', 'kling_3_motion', 'kling_26_motion', 'omni_flash_21', 'openjutsu_workflow', 'motion_shinjutsu_h3', 'motion_scail2_12gb', 'controlmotion_wan', 'controlmotion_scail'].includes(model);
           const isImg2Vid = ['wan_3_prime', 'minimax_h3', 'minimax_h3_max', 'seedance_25', 'seedance_20', 'kling_4_video', 'kling_3_video', 'grok_15_video', 'ltx_25_video', 'flux_3_video', 'veo_31', 'veo_31_lite', 'auto_video'].includes(model);
           const isAudio = ['voice_clone_musa', 'music_generator', 'audio_gen_new', 'audio_isolation'].includes(model);
 
@@ -9732,14 +9891,29 @@
       async function handleMotionGuideUpload(files) {
         const file = (files || [])[0];
         if (!file) return;
-        showToast(`Vídeo guia de movimento: ${file.name}`, 3000);
+        if (file.size > 4 * 1024 * 1024) {
+          showToast('Vídeo acima de 4 MB. Por enquanto use um clipe curto; o upload assinado entra na próxima etapa.', 5000);
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+          currentMotionVideo = reader.result;
+          showToast('Vídeo de movimento carregado.', 2500);
+        };
+        reader.onerror = () => showToast('Não foi possível ler o vídeo.', 4000);
+        reader.readAsDataURL(file);
       }
       window.handleMotionGuideUpload = handleMotionGuideUpload;
 
       async function handleMotionMusaUpload(files) {
         const file = (files || [])[0];
         if (!file) return;
-        showToast('Foto da musa carregada para o Motion Control!', 2500);
+        try {
+          currentMotionReference = await ghostCompressImage(file, 768, 0.85);
+          showToast('Foto da musa carregada para o Motion Control.', 2500);
+        } catch (e) {
+          showToast('Não foi possível processar a foto da musa.', 4000);
+        }
       }
       window.handleMotionMusaUpload = handleMotionMusaUpload;
 
@@ -9924,16 +10098,27 @@
           document.getElementById('creatorImportInput')?.click();
           return;
         }
-        if (!getLiveCreatorModel(currentCreatorModel)) {
+        const motionEngine = MOTION_ENGINES[currentCreatorModel] || null;
+        if (!getLiveCreatorModel(currentCreatorModel) && !motionEngine) {
           showToast('Este modelo ainda não está conectado. Configure USEAPI_TOKEN ou RunningHub.', 5000);
           return;
         }
-        if (!currentCreatorRefs.length && currentCreatorModel !== 'eros_image_2k') {
+        if (!motionEngine && !currentCreatorRefs.length && currentCreatorModel !== 'eros_image_2k') {
           showToast('Adicione pelo menos uma foto de referência da musa.', 5000);
           return;
         }
+        if (motionEngine) {
+          if (!currentMotionVideo) {
+            showToast('Envie o vídeo de movimento no slot Motion Transfer.', 5000);
+            return;
+          }
+          if (!currentMotionReference && !currentCreatorRefs.length) {
+            showToast('Envie a foto da musa para o Motion Transfer.', 5000);
+            return;
+          }
+        }
         const prompt = (document.getElementById('txtCreatorPrompt')?.value || '').trim();
-        if (!prompt) {
+        if (!prompt && !motionEngine) {
           showToast('Escreva o prompt da cena.', 4000);
           return;
         }
@@ -9945,7 +10130,9 @@
         if (overlay) overlay.style.display = 'flex';
         
         if (statusLbl) {
-          if (currentCreatorModel === 'eros_image_2k') {
+          if (motionEngine) {
+            statusLbl.innerText = `Renderizando motion com ${motionEngine.badge}...`;
+          } else if (currentCreatorModel === 'eros_image_2k') {
             statusLbl.innerText = `Renderizando no motor Eros-Image™ 2K (${currentErosCheckpoint.toUpperCase()})...`;
           } else if (currentCreatorModel === 'seedream_5') {
             statusLbl.innerText = 'Renderizando Face Swap no Seedream 5 Pro...';
@@ -9966,7 +10153,7 @@
           const fullPrompt = [dnaText, prompt].filter(Boolean).join('. ');
           const token = await getSupabaseAccessToken();
           const liveModel = getLiveCreatorModel(currentCreatorModel) || {};
-          const isRunningHub = liveModel.provider === 'runninghub' || Boolean(liveModel.workflow_key);
+          const isRunningHub = liveModel.provider === 'runninghub' || Boolean(liveModel.workflow_key) || Boolean(motionEngine);
           const personaCreator = getCreatorDataForProfile(currentCreatorProfileId) || {};
           const payload = {
             action: 'creator_generate',
@@ -9981,6 +10168,11 @@
             aspect_ratio: currentCreatorAspectRatio,
             references: currentCreatorRefs,
             persona_name: currentCreatorMusa,
+            speed_mode: motionEngine ? currentMotionSpeedMode : (liveModel.default_speed_mode || 'ghostflash'),
+            reference_image: motionEngine ? (currentMotionReference || currentCreatorRefs[0]) : undefined,
+            motion_video: motionEngine ? currentMotionVideo : undefined,
+            control_strength: Number(document.getElementById('rngMotionControlStrength')?.value || 0.85),
+            negative_prompt: document.getElementById('txtCreatorNegativePrompt')?.value || undefined,
             seedream_prompt: document.getElementById('txtSeedreamEditPrompt')?.value || '',
             motion_strength: document.getElementById('lblMotionStrength')?.innerText || '7.5',
             camera_movement: document.getElementById('selImg2VidCamera')?.value || 'pan',
@@ -10001,24 +10193,19 @@
           if (data.status === 'processing' && data.task_id) {
             if (statusLbl) statusLbl.innerText = 'Workflow enviado. Aguardando o RunningHub...';
             const final = await pollCreatorTask(data.task_id);
-            const finalUrl = final.image_url || '';
-            if (!finalUrl) throw new Error('O workflow não retornou imagem.');
-            currentCreatorMediaUrl = finalUrl;
-            const img = document.getElementById('imgCreatorMainPreview');
-            if (img) img.src = finalUrl;
+            const finalUrl = final.image_url || final.video_url || (final.media_urls && final.media_urls[0]) || '';
+            if (!finalUrl) throw new Error('O workflow não retornou mídia.');
+            const isVideo = final.media_type === 'video' || Boolean(final.video_url);
+            setCreatorPreviewMedia(finalUrl, isVideo ? 'video' : 'image');
             if (timeLbl) timeLbl.innerText = `Render: ${((Date.now() - start) / 1000).toFixed(1)}s`;
-            renderCreatorHistory(finalUrl);
-            showToast('✨ Imagem gerada com sucesso!', 4000);
+            showToast(isVideo ? 'Vídeo gerado com sucesso!' : 'Imagem gerada com sucesso!', 4000);
             return;
           }
           const url = data.image_url || (data.image_base64 ? `data:image/jpeg;base64,${data.image_base64}` : '');
           if (!url) throw new Error('A API não retornou uma imagem.');
-          currentCreatorMediaUrl = url;
-          const img = document.getElementById('imgCreatorMainPreview');
-          if (img) img.src = url;
+          setCreatorPreviewMedia(url, 'image');
           if (timeLbl) timeLbl.innerText = `Render: ${((Date.now() - start) / 1000).toFixed(1)}s`;
-          renderCreatorHistory(url);
-          showToast('✨ Imagem gerada com sucesso!', 4000);
+          showToast('Imagem gerada com sucesso!', 4000);
         } catch (err) {
           showToast('⚠️ ' + (err.message || 'Falha ao gerar.'), 6500);
         } finally {
@@ -10056,7 +10243,11 @@
 
       async function applyAppleExifToCreatorMedia() {
         if (!currentCreatorMediaUrl || currentCreatorMediaUrl === CREATOR_PLACEHOLDER) {
-          showToast('Gere ou importe uma imagem primeiro.', 3500);
+          showToast('Gere ou importe uma mídia primeiro.', 3500);
+          return;
+        }
+        if (/\.(mp4|webm|mov)(\?|$)/i.test(currentCreatorMediaUrl)) {
+          showToast('Metadados Apple são aplicados em imagens. Para vídeo, use o fluxo do editor.', 4000);
           return;
         }
         showToast('⏳ Injetando metadados nativos Apple iPhone 16 Pro Max...', 2000);
@@ -10215,7 +10406,16 @@
 
       function downloadCreatorMedia() {
         if (!currentCreatorMediaUrl || currentCreatorMediaUrl === CREATOR_PLACEHOLDER) {
-          showToast('Gere ou importe uma imagem primeiro.', 3500);
+          showToast('Gere ou importe uma mídia primeiro.', 3500);
+          return;
+        }
+        if (/\.(mp4|webm|mov)(\?|$)/i.test(currentCreatorMediaUrl)) {
+          const videoLink = document.createElement('a');
+          videoLink.href = currentCreatorMediaUrl;
+          videoLink.download = `GhostCreator_${currentCreatorMusa}_${Date.now()}.mp4`;
+          document.body.appendChild(videoLink);
+          videoLink.click();
+          document.body.removeChild(videoLink);
           return;
         }
         const useAntiHash = document.getElementById('chkAntiHashPdq')?.checked ?? true;

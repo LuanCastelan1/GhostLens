@@ -244,5 +244,180 @@
       "ghostflash",
       "ghostlite"
     ]
+  },
+  "motion_shinjutsu_h3": {
+    "name": "GhostGenjutsu Shinjutsu Pro (MiniMax H3)",
+    "mode": "video",
+    "control": "motion",
+    "workflowId": "",
+    "instanceType": "plus",
+    "credits": 120,
+    "defaultSpeedMode": "ghostflash",
+    "speedModes": [
+      "ghostflash",
+      "ghostlite"
+    ],
+    "speedModeCredits": {
+      "ghostflash": 120,
+      "ghostlite": 70
+    },
+    "speedInstanceTypes": {
+      "ghostflash": "plus",
+      "ghostlite": "default"
+    },
+    "tags": [
+      "Motion",
+      "MiniMax H3",
+      "Anti-Hand Distortion",
+      "BiRefNet"
+    ],
+    "badge": "Shinjutsu MiniMax H3",
+    "button": "Gerar Motion com Shinjutsu",
+    "resultMode": "video",
+    "requiredAssets": [
+      "reference_image",
+      "motion_video"
+    ],
+    "assets": {
+      "reference_image": {
+        "bodyKey": "reference_image",
+        "type": "image"
+      },
+      "motion_video": {
+        "bodyKey": "motion_video",
+        "type": "video"
+      }
+    },
+    "inputs": {
+      "reference_image": {
+        "nodeId": "10",
+        "fieldName": "image",
+        "assetKey": "reference_image",
+        "assetValue": "fileName"
+      },
+      "motion_video": {
+        "nodeId": "12",
+        "fieldName": "video",
+        "assetKey": "motion_video",
+        "assetValue": "fileName"
+      },
+      "prompt": {
+        "nodeId": "6",
+        "fieldName": "text",
+        "source": "prompt"
+      },
+      "negative_prompt": {
+        "nodeId": "7",
+        "fieldName": "text",
+        "source": "negative_prompt"
+      },
+      "control_strength": {
+        "nodeId": "25",
+        "fieldName": "strength",
+        "type": "number",
+        "default": 0.85
+      },
+      "steps": {
+        "nodeId": "30",
+        "fieldName": "steps",
+        "type": "number",
+        "default": 25
+      },
+      "seed": {
+        "nodeId": "30",
+        "fieldName": "seed",
+        "type": "number"
+      }
+    },
+    "outputNodeIds": [
+      "99",
+      "105"
+    ]
+  },
+  "motion_scail2_12gb": {
+    "name": "GhostGenjutsu SCAIL-2 Lite (12GB)",
+    "mode": "video",
+    "control": "motion",
+    "workflowId": "",
+    "instanceType": "default",
+    "credits": 80,
+    "defaultSpeedMode": "ghostflash",
+    "speedModes": [
+      "ghostflash",
+      "ghostlite"
+    ],
+    "speedModeCredits": {
+      "ghostflash": 80,
+      "ghostlite": 40
+    },
+    "speedInstanceTypes": {
+      "ghostflash": "default",
+      "ghostlite": "default"
+    },
+    "tags": [
+      "Motion",
+      "SCAIL-2",
+      "Low-VRAM",
+      "12GB"
+    ],
+    "badge": "SCAIL-2 12GB Lite",
+    "button": "Gerar Motion com SCAIL-2",
+    "resultMode": "video",
+    "requiredAssets": [
+      "reference_image",
+      "motion_video"
+    ],
+    "assets": {
+      "reference_image": {
+        "bodyKey": "reference_image",
+        "type": "image"
+      },
+      "motion_video": {
+        "bodyKey": "motion_video",
+        "type": "video"
+      }
+    },
+    "inputs": {
+      "reference_image": {
+        "nodeId": "338",
+        "fieldName": "image",
+        "assetKey": "reference_image",
+        "assetValue": "fileName"
+      },
+      "motion_video": {
+        "nodeId": "336",
+        "fieldName": "video",
+        "assetKey": "motion_video",
+        "assetValue": "fileName"
+      },
+      "prompt": {
+        "nodeId": "3",
+        "fieldName": "text",
+        "source": "prompt"
+      },
+      "width": {
+        "nodeId": "215",
+        "fieldName": "width",
+        "type": "number",
+        "default": 512
+      },
+      "height": {
+        "nodeId": "215",
+        "fieldName": "height",
+        "type": "number",
+        "default": 768
+      },
+      "length": {
+        "nodeId": "215",
+        "fieldName": "length",
+        "type": "number",
+        "default": 81
+      }
+    },
+    "outputNodeIds": [
+      "320",
+      "313",
+      "315"
+    ]
   }
 }
