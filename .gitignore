@@ -25,3 +25,7 @@ temp_media/
 .env*
 
 !.env.example
+
+# Workflows privados e registry real do RunningHub
+/workflows/
+/RUNNINGHUB_WORKFLOWS.json

@@ -19,6 +19,7 @@ const {
   supabaseRest
 } = require('../lib/ghostlens-backend');
 const { generateCreatorImage, generateCreatorFromVision, queryCreatorTask, getCreatorCatalog, creatorConfigured, visionConfigured } = require('../lib/creator');
+const { getRunningHubCatalog } = require('../lib/runninghub');
 
 const WAVESPEED_API_KEY = process.env.WAVESPEED_API_KEY || '';
 const WAVESPEED_API = (process.env.WAVESPEED_API_BASE || 'https://api.wavespeed.ai/api/v3').replace(/\/+$/, '');
@@ -135,6 +136,7 @@ module.exports = async (req, res) => {
       wavespeed: WAVESPEED_API_KEY ? 'configured' : 'not_configured',
       creator: creatorConfigured ? 'configured' : 'not_configured',
       runninghub: process.env.RUNNINGHUB_API_KEY ? 'configured' : 'not_configured',
+      workflows_loaded: getRunningHubCatalog().length,
       vision: visionConfigured ? 'configured' : 'not_configured'
     });
   }

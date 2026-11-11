@@ -18,3 +18,6 @@ __pycache__
 /.env.local
 /DEPLOY_SEGURANCA.md
 /INSTALL_GHOSTLENS_LICENSES.sql
+
+# Workflows privados do RunningHub (não vão para o deploy)
+/workflows

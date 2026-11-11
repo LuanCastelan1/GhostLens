@@ -1,12 +1,19 @@
 {
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/studio", "destination": "/studio.html" },
-    { "source": "/index", "destination": "/studio.html" }
+    {
+      "source": "/studio",
+      "destination": "/studio.html"
+    },
+    {
+      "source": "/index",
+      "destination": "/studio.html"
+    }
   ],
   "functions": {
     "api/wavespeed_proxy.js": {
-      "maxDuration": 60
+      "maxDuration": 60,
+      "includeFiles": "RUNNINGHUB_WORKFLOWS.json"
     }
   },
   "headers": [
