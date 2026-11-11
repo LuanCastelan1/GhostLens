@@ -1,4 +1,4 @@
-// registry-include-v2
+// registry-include-v3
 // ============================================================================
 // GhostLens • Proxy WaveSpeed (4K/8K)
 // Rota: /api/wavespeed_proxy

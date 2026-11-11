@@ -8198,6 +8198,11 @@
       let currentMotionVideo = null;
       let currentMotionReference = null;
       let currentMotionDepthVideo = null;
+      let currentComposerScene = null;
+      let currentComposerCharacter = null;
+      let currentUpscaleMode = 'single';
+      let currentUpscaleSingle = null;
+      let currentUpscaleZip = null;
       let currentCreatorHiggsFirst = null;
       let currentCreatorHiggsEnd = null;
 
@@ -8267,6 +8272,12 @@
         if (motion) {
           const credits = motion.credits[currentMotionSpeedMode] || motion.credits.ghostflash;
           return { badge: motion.badge, cost: `${credits} créditos`, button: motion.button };
+        }
+        if (model === 'image_edit_ph3') {
+          return { badge: 'GhostComposer P-H3', cost: '10 créditos', button: 'Compor Cena com GhostComposer' };
+        }
+        if (model === 'upscale_capivara_mass') {
+          return { badge: 'GhostEnhancer Pro', cost: '15 créditos', button: 'Restaurar em 4K' };
         }
         const table = {
           // ─── IMAGEM ───
@@ -8657,6 +8668,63 @@
                   </div>
                   <input type="range" id="rngLoraBaseWeight" min="0" max="1.5" step="0.05" value="0.6" oninput="document.getElementById('lblLoraBaseWeightVal').innerText = parseFloat(this.value).toFixed(2)" style="width: 100%; accent-color: var(--accent-lime); cursor: pointer;">
                 </div>
+              </div>
+
+              <!-- CONTROLES DO GHOSTCOMPOSER (P-H3) -->
+              <div id="boxImageEditControls" style="display: none; flex-direction: column; gap: 10px; background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-size: 0.72rem; font-weight: 800; color: #fff;">GhostComposer</span>
+                  <span style="font-size: 0.58rem; background: rgba(190,242,100,0.15); color: var(--accent-lime); padding: 2px 6px; border-radius: 4px; font-weight: 800;">P-H3 • 8 Steps</span>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                  <div>
+                    <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">Cenário</div>
+                    <input type="file" id="fileComposerScene" accept="image/*" style="display: none;" onchange="handleComposerSceneUpload(this.files)">
+                    <label for="fileComposerScene" id="composerSceneDrop" style="height: 96px; border: 1.5px dashed rgba(190,242,100,0.3); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; color: #bef264; background: rgba(190,242,100,0.03); overflow: hidden; position: relative;">
+                      <span style="font-size: 1.2rem; line-height: 1;">＋</span>
+                      <span style="font-size: 0.6rem; font-weight: 700;">Adicionar cenário</span>
+                    </label>
+                  </div>
+                  <div>
+                    <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">Musa / Personagem</div>
+                    <input type="file" id="fileComposerCharacter" accept="image/*" style="display: none;" onchange="handleComposerCharacterUpload(this.files)">
+                    <label for="fileComposerCharacter" id="composerCharacterDrop" style="height: 96px; border: 1.5px dashed rgba(56,189,248,0.3); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; color: #38bdf8; background: rgba(56,189,248,0.03); overflow: hidden; position: relative;">
+                      <span style="font-size: 1.2rem; line-height: 1;">＋</span>
+                      <span style="font-size: 0.6rem; font-weight: 700;">Foto da musa</span>
+                    </label>
+                  </div>
+                </div>
+                <div style="font-size: 0.58rem; color: #64748b; line-height: 1.35;">A musa ativa é usada automaticamente; você pode trocar a foto. Descreva a ação no campo Prompt.</div>
+              </div>
+
+              <!-- CONTROLES DO GHOSTENHANCER -->
+              <div id="boxUpscaleControls" style="display: none; flex-direction: column; gap: 10px; background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-size: 0.72rem; font-weight: 800; color: #fff;">GhostEnhancer</span>
+                  <span style="font-size: 0.58rem; background: rgba(190,242,100,0.15); color: var(--accent-lime); padding: 2px 6px; border-radius: 4px; font-weight: 800;">SAM 3 + SeedVR2</span>
+                </div>
+                <div style="display: flex; gap: 6px;">
+                  <button type="button" id="btnUpscaleModeSingle" onclick="setUpscaleMode('single')" style="flex: 1; background: #1e2230; border: 1px solid var(--accent-lime); color: #fff; font-size: 0.62rem; font-weight: 800; padding: 6px 4px; border-radius: 6px; cursor: pointer;">Foto Única</button>
+                  <button type="button" id="btnUpscaleModeZip" onclick="setUpscaleMode('zip')" style="flex: 1; background: #12141c; border: 1px solid rgba(255,255,255,0.06); color: #94a3b8; font-size: 0.62rem; font-weight: 700; padding: 6px 4px; border-radius: 6px; cursor: pointer;">Lote VIP (ZIP)</button>
+                </div>
+                <div id="boxUpscaleSingle">
+                  <input type="file" id="fileUpscaleSingle" accept="image/*" style="display: none;" onchange="handleUpscaleSingleUpload(this.files)">
+                  <label for="fileUpscaleSingle" style="height: 88px; border: 1.5px dashed rgba(190,242,100,0.3); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; color: #bef264; background: rgba(190,242,100,0.03); overflow: hidden; position: relative;">
+                    <span style="font-size: 1.2rem; line-height: 1;">＋</span>
+                    <span style="font-size: 0.6rem; font-weight: 700;">Adicionar foto</span>
+                  </label>
+                  <div id="lblUpscaleSingleStatus" style="font-size: 0.58rem; color: #64748b; margin-top: 4px;">Nenhuma foto selecionada.</div>
+                </div>
+                <div id="boxUpscaleZip" style="display: none;">
+                  <input type="file" id="fileUpscaleZip" accept=".zip,application/zip" style="display: none;" onchange="handleUpscaleZipUpload(this.files)">
+                  <label for="fileUpscaleZip" style="height: 88px; border: 1.5px dashed rgba(56,189,248,0.3); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; color: #38bdf8; background: rgba(56,189,248,0.03); overflow: hidden; position: relative;">
+                    <span style="font-size: 1.2rem; line-height: 1;">＋</span>
+                    <span style="font-size: 0.6rem; font-weight: 700;">Adicionar ZIP com fotos</span>
+                  </label>
+                  <div id="lblUpscaleZipStatus" style="font-size: 0.58rem; color: #64748b; margin-top: 4px;">Nenhum ZIP selecionado.</div>
+                </div>
+                <div id="gridEnhancerResults" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;"></div>
+                <div style="font-size: 0.58rem; color: #64748b; line-height: 1.35;">O lote é processado de uma vez; o resultado volta no canvas e na grade.</div>
               </div>
 
               <!-- CONTROLES ESPECÍFICOS DO KLING IMAGE -->
@@ -9166,6 +9234,12 @@
           const credits = motion.credits[currentMotionSpeedMode] || motion.credits.ghostflash;
           return { badge: motion.badge, cost: `${credits} créditos`, button: motion.button };
         }
+        if (model === 'image_edit_ph3') {
+          return { badge: 'GhostComposer P-H3', cost: '10 créditos', button: 'Compor Cena com GhostComposer' };
+        }
+        if (model === 'upscale_capivara_mass') {
+          return { badge: 'GhostEnhancer Pro', cost: '15 créditos', button: 'Restaurar em 4K' };
+        }
         const table = {
           eros_image_2k: { badge: 'Eros-Image™ 2K', cost: '100% Consistência • LoRA', button: 'Generate' },
           auto_image: { badge: 'Auto Mode', cost: 'Multi-Engine Inteligente', button: 'Generate Auto' },
@@ -9196,8 +9270,8 @@
       const CREATOR_SUBTOOLS_CATALOG = {
         image: [
           { id: 'tool_img_gen', name: 'Image Generator', desc: 'Create images from text prompts', model: 'eros_image_2k', pinned: true, icon: 'img_gen' },
-          { id: 'tool_img_editor', name: 'Image Editor', desc: 'Edit and modify existing images', model: 'krea_2', pinned: false, icon: 'img_edit' },
-          { id: 'tool_img_upscaler', name: 'Image Upscaler', desc: 'Enhance resolution and detail', model: 'magnific_one', pinned: false, icon: 'upscale' },
+          { id: 'tool_img_composer', name: 'GhostComposer', desc: 'Inserir a musa em um cenário real', model: 'image_edit_ph3', pinned: false, icon: 'img_edit' },
+          { id: 'tool_img_enhancer', name: 'GhostEnhancer', desc: 'Upscale 4K em massa com SAM 3 + SeedVR2', model: 'upscale_capivara_mass', pinned: false, icon: 'upscale' },
           { id: 'tool_img_cinematic', name: 'Cinematic Shot', desc: 'Generate cinematic compositions', model: 'cinematic_img', pinned: false, icon: 'cinematic' },
           { id: 'tool_img_variations', name: 'Variations', desc: 'Create variations of an image', model: 'eros_image_2k', pinned: false, icon: 'variations' },
           { id: 'tool_img_skin', name: 'Skin Enhancer', desc: 'Retouch and enhance skin detail', model: 'eros_image_2k', pinned: false, icon: 'skin' },
@@ -9721,6 +9795,156 @@
       }
       window.setCreatorPreviewMedia = setCreatorPreviewMedia;
 
+      function composerDropPreview(dropId, dataUrl) {
+        const el = document.getElementById(dropId);
+        if (!el) return;
+        el.innerHTML = `<img src="${dataUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.9;"><span style="position:relative;z-index:1;background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;padding:2px 6px;border-radius:4px;">Trocar</span>`;
+      }
+
+      async function handleComposerSceneUpload(files) {
+        const file = (files || [])[0];
+        if (!file) return;
+        try {
+          currentComposerScene = await ghostCompressImage(file, 1280, 0.9);
+          composerDropPreview('composerSceneDrop', currentComposerScene);
+          showToast('Cenário carregado.', 2500);
+        } catch (e) {
+          showToast('Não foi possível processar o cenário.', 4000);
+        }
+      }
+      window.handleComposerSceneUpload = handleComposerSceneUpload;
+
+      async function handleComposerCharacterUpload(files) {
+        const file = (files || [])[0];
+        if (!file) return;
+        try {
+          currentComposerCharacter = await ghostCompressImage(file, 768, 0.85);
+          composerDropPreview('composerCharacterDrop', currentComposerCharacter);
+          showToast('Foto da musa carregada.', 2500);
+        } catch (e) {
+          showToast('Não foi possível processar a foto da musa.', 4000);
+        }
+      }
+      window.handleComposerCharacterUpload = handleComposerCharacterUpload;
+
+      function setUpscaleMode(mode) {
+        currentUpscaleMode = mode === 'zip' ? 'zip' : 'single';
+        const single = document.getElementById('boxUpscaleSingle');
+        const zip = document.getElementById('boxUpscaleZip');
+        const btnSingle = document.getElementById('btnUpscaleModeSingle');
+        const btnZip = document.getElementById('btnUpscaleModeZip');
+        if (single) single.style.display = currentUpscaleMode === 'single' ? 'block' : 'none';
+        if (zip) zip.style.display = currentUpscaleMode === 'zip' ? 'block' : 'none';
+        if (btnSingle) {
+          const active = currentUpscaleMode === 'single';
+          btnSingle.style.background = active ? '#1e2230' : '#12141c';
+          btnSingle.style.borderColor = active ? 'var(--accent-lime)' : 'rgba(255,255,255,0.06)';
+          btnSingle.style.color = active ? '#fff' : '#94a3b8';
+        }
+        if (btnZip) {
+          const active = currentUpscaleMode === 'zip';
+          btnZip.style.background = active ? '#1e2230' : '#12141c';
+          btnZip.style.borderColor = active ? 'var(--accent-lime)' : 'rgba(255,255,255,0.06)';
+          btnZip.style.color = active ? '#fff' : '#94a3b8';
+        }
+      }
+      window.setUpscaleMode = setUpscaleMode;
+
+      async function handleUpscaleSingleUpload(files) {
+        const file = (files || [])[0];
+        if (!file) return;
+        try {
+          currentUpscaleSingle = await ghostCompressImage(file, 1536, 0.92);
+          const status = document.getElementById('lblUpscaleSingleStatus');
+          if (status) status.innerText = `${file.name} • ${(file.size / 1024).toFixed(0)} KB`;
+          showToast('Foto carregada para upscale.', 2500);
+        } catch (e) {
+          showToast('Não foi possível processar a foto.', 4000);
+        }
+      }
+      window.handleUpscaleSingleUpload = handleUpscaleSingleUpload;
+
+      function readFileAsDataUrl(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject(new Error('read_failed'));
+          reader.readAsDataURL(file);
+        });
+      }
+
+      function handleUpscaleZipUpload(files) {
+        const file = (files || [])[0];
+        if (!file) return;
+        if (file.size > 4 * 1024 * 1024) {
+          showToast('ZIP acima de 4 MB. Por enquanto use um lote menor; o upload assinado entra na próxima etapa.', 5000);
+          return;
+        }
+        readFileAsDataUrl(file).then((dataUrl) => {
+          currentUpscaleZip = dataUrl;
+          const status = document.getElementById('lblUpscaleZipStatus');
+          if (status) status.innerText = `${file.name} • ${(file.size / 1024).toFixed(0)} KB`;
+          showToast('ZIP carregado para upscale.', 2500);
+        }).catch(() => showToast('Não foi possível ler o ZIP.', 4000));
+      }
+      window.handleUpscaleZipUpload = handleUpscaleZipUpload;
+
+      function zipCrc32(bytes) {
+        let crc = 0xFFFFFFFF;
+        for (let i = 0; i < bytes.length; i += 1) {
+          crc ^= bytes[i];
+          for (let j = 0; j < 8; j += 1) {
+            crc = (crc >>> 1) ^ (0xEDB88320 & -(crc & 1));
+          }
+        }
+        return (crc ^ 0xFFFFFFFF) >>> 0;
+      }
+
+      async function createZipFromDataUrl(dataUrl, filename) {
+        const match = /^data:([^;]+);base64,(.+)$/.exec(String(dataUrl || ''));
+        if (!match) throw new Error('invalid_image');
+        const mime = match[1];
+        const binary = atob(match[2]);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+        const nameBytes = new TextEncoder().encode(filename);
+        const crc = zipCrc32(bytes);
+        const size = bytes.length;
+        const out = [];
+        const u16 = (v) => { out.push(v & 255, (v >>> 8) & 255); };
+        const u32 = (v) => { out.push(v & 255, (v >>> 8) & 255, (v >>> 16) & 255, (v >>> 24) & 255); };
+        const dosDate = ((2026 - 1980) << 9) | (1 << 5) | 1;
+        // Local file header
+        u32(0x04034b50); u16(20); u16(0); u16(0); u16(0); u16(dosDate);
+        u32(crc); u32(size); u32(size); u16(nameBytes.length); u16(0);
+        nameBytes.forEach((b) => out.push(b));
+        bytes.forEach((b) => out.push(b));
+        const localSize = out.length;
+        // Central directory
+        u32(0x02014b50); u16(20); u16(20); u16(0); u16(0); u16(0); u16(dosDate);
+        u32(crc); u32(size); u32(size); u16(nameBytes.length); u16(0); u16(0);
+        u16(0); u16(0); u32(0); u32(0);
+        nameBytes.forEach((b) => out.push(b));
+        const centralSize = out.length - localSize;
+        // End of central directory
+        u32(0x06054b50); u16(0); u16(0); u16(1); u16(1); u32(centralSize); u32(localSize); u16(0);
+        const zipBytes = new Uint8Array(out);
+        const blob = new Blob([zipBytes], { type: 'application/zip' });
+        return await readFileAsDataUrl(blob);
+      }
+
+      function renderEnhancerResults(media) {
+        const grid = document.getElementById('gridEnhancerResults');
+        if (!grid) return;
+        const images = (media || []).filter((m) => m && m.url && m.media_type !== 'video');
+        grid.innerHTML = images.map((m) => `
+          <div onclick="setCreatorPreviewMedia('${m.url}', 'image')" style="height: 82px; border-radius: 7px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); cursor: pointer; background: #08090d;">
+            <img src="${m.url}" alt="Resultado" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+          </div>
+        `).join('');
+      }
+      window.renderEnhancerResults = renderEnhancerResults;
+
       function onCreatorModelChange(model) {
         currentCreatorModel = model;
         const meta = creatorModelMeta(model);
@@ -9751,7 +9975,9 @@
           'boxQwenControls',
           'boxMotionControls',
           'boxImageToVideoControls',
-          'boxAudioControls'
+          'boxAudioControls',
+          'boxImageEditControls',
+          'boxUpscaleControls'
         ];
         allBoxes.forEach(id => {
           const el = document.getElementById(id);
@@ -9764,7 +9990,27 @@
         const boxRefsImg = document.getElementById('boxReferencesImage');
         const boxRefsVid = document.getElementById('boxReferencesVideo');
 
-        if (model === 'eros_image_2k' || liveControl === 'eros') {
+        if (model === 'image_edit_ph3') {
+          if (boxErosFrame) boxErosFrame.style.display = 'none';
+          if (boxGeneralRefs) boxGeneralRefs.style.display = 'none';
+          if (boxRefsImg) boxRefsImg.style.display = 'none';
+          if (boxRefsVid) boxRefsVid.style.display = 'none';
+          document.getElementById('boxImageEditControls')?.style.setProperty('display', 'flex');
+          if (!currentComposerCharacter) {
+            const personaCreator = getCreatorDataForProfile(currentCreatorProfileId) || {};
+            const ref = (personaCreator.references && personaCreator.references[0]) || currentCreatorRefs[0];
+            if (ref) {
+              currentComposerCharacter = ref;
+              composerDropPreview('composerCharacterDrop', ref);
+            }
+          }
+        } else if (model === 'upscale_capivara_mass') {
+          if (boxErosFrame) boxErosFrame.style.display = 'none';
+          if (boxGeneralRefs) boxGeneralRefs.style.display = 'none';
+          if (boxRefsImg) boxRefsImg.style.display = 'none';
+          if (boxRefsVid) boxRefsVid.style.display = 'none';
+          document.getElementById('boxUpscaleControls')?.style.setProperty('display', 'flex');
+        } else if (model === 'eros_image_2k' || liveControl === 'eros') {
           if (boxErosFrame) boxErosFrame.style.display = 'flex';
           if (boxGeneralRefs) boxGeneralRefs.style.display = 'none';
           if (boxRefsImg) boxRefsImg.style.display = 'none';
@@ -9798,6 +10044,10 @@
           else if (isAudio || liveControl === 'audio') document.getElementById('boxAudioControls')?.style.setProperty('display', 'flex');
         }
 
+        const promptContainer = document.getElementById('boxPromptContainer');
+        if (promptContainer) promptContainer.style.display = model === 'upscale_capivara_mass' ? 'none' : 'block';
+        const bottomRow = document.getElementById('boxBottomControlsRow');
+        if (bottomRow) bottomRow.style.display = model === 'upscale_capivara_mass' ? 'none' : 'flex';
         const btnGen = document.getElementById('lblBtnGenText');
         if (btnGen) btnGen.innerText = meta.button || 'Generate';
         const costLbl = document.getElementById('creatorCostLabel');
@@ -10167,17 +10417,17 @@
           return;
         }
         const motionEngine = MOTION_ENGINES[currentCreatorModel] || null;
-        if (!getLiveCreatorModel(currentCreatorModel) && !motionEngine) {
+        const staticImageTool = ['image_edit_ph3', 'upscale_capivara_mass'].includes(currentCreatorModel);
+        if (!getLiveCreatorModel(currentCreatorModel) && !motionEngine && !staticImageTool) {
           showToast('Este modelo ainda não está conectado. Configure USEAPI_TOKEN ou RunningHub.', 5000);
           return;
         }
-        if (!motionEngine && !currentCreatorRefs.length && !['eros_image_2k', 'eros_image_krea2'].includes(currentCreatorModel)) {
+        if (!motionEngine && !staticImageTool && !currentCreatorRefs.length && !['eros_image_2k', 'eros_image_krea2'].includes(currentCreatorModel)) {
           showToast('Adicione pelo menos uma foto de referência da musa.', 5000);
           return;
         }
         if (motionEngine) {
-          const needsMotionVideo = currentCreatorModel !== 'motion_shinjutsu_h3';
-          if (needsMotionVideo && !currentMotionVideo) {
+          if (!currentMotionVideo) {
             showToast('Envie o vídeo de movimento no slot Motion Transfer.', 5000);
             return;
           }
@@ -10186,8 +10436,29 @@
             return;
           }
         }
+        if (currentCreatorModel === 'image_edit_ph3') {
+          if (!currentComposerScene) {
+            showToast('Envie a foto do cenário para o GhostComposer.', 5000);
+            return;
+          }
+          if (!currentComposerCharacter && currentCreatorRefs[0]) currentComposerCharacter = currentCreatorRefs[0];
+          if (!currentComposerCharacter) {
+            showToast('Envie a foto da musa para o GhostComposer.', 5000);
+            return;
+          }
+        }
+        if (currentCreatorModel === 'upscale_capivara_mass') {
+          if (currentUpscaleMode === 'single' && !currentUpscaleSingle) {
+            showToast('Envie uma foto para o GhostEnhancer.', 5000);
+            return;
+          }
+          if (currentUpscaleMode === 'zip' && !currentUpscaleZip) {
+            showToast('Envie um ZIP para o GhostEnhancer.', 5000);
+            return;
+          }
+        }
         const prompt = (document.getElementById('txtCreatorPrompt')?.value || '').trim();
-        if (!prompt && !motionEngine) {
+        if (!prompt && !motionEngine && currentCreatorModel !== 'upscale_capivara_mass') {
           showToast('Escreva o prompt da cena.', 4000);
           return;
         }
@@ -10199,7 +10470,11 @@
         if (overlay) overlay.style.display = 'flex';
         
         if (statusLbl) {
-          if (motionEngine) {
+          if (currentCreatorModel === 'image_edit_ph3') {
+            statusLbl.innerText = 'Compondo cena no GhostComposer...';
+          } else if (currentCreatorModel === 'upscale_capivara_mass') {
+            statusLbl.innerText = 'Restaurando e upscalando no GhostEnhancer...';
+          } else if (motionEngine) {
             statusLbl.innerText = `Renderizando motion com ${motionEngine.badge}...`;
           } else if (currentCreatorModel === 'eros_image_2k') {
             statusLbl.innerText = `Renderizando no motor Eros-Image™ 2K (${currentErosCheckpoint.toUpperCase()})...`;
@@ -10222,7 +10497,7 @@
           const fullPrompt = [dnaText, prompt].filter(Boolean).join('. ');
           const token = await getSupabaseAccessToken();
           const liveModel = getLiveCreatorModel(currentCreatorModel) || {};
-          const isRunningHub = liveModel.provider === 'runninghub' || Boolean(liveModel.workflow_key) || Boolean(motionEngine);
+          const isRunningHub = liveModel.provider === 'runninghub' || Boolean(liveModel.workflow_key) || Boolean(motionEngine) || staticImageTool;
           const personaCreator = getCreatorDataForProfile(currentCreatorProfileId) || {};
           const payload = {
             action: 'creator_generate',
@@ -10244,7 +10519,7 @@
             persona_name: currentCreatorMusa,
             speed_mode: motionEngine ? currentMotionSpeedMode : (liveModel.default_speed_mode || 'ghostflash'),
             reference_image: motionEngine ? (currentMotionReference || currentCreatorRefs[0]) : undefined,
-            motion_video: motionEngine && currentCreatorModel !== 'motion_shinjutsu_h3' ? currentMotionVideo : undefined,
+            motion_video: motionEngine ? currentMotionVideo : undefined,
             depth_video: currentMotionDepthVideo || undefined,
             control_strength: Number(document.getElementById('rngMotionControlStrength')?.value || 0.85),
             negative_prompt: document.getElementById('txtCreatorNegativePrompt')?.value || undefined,
@@ -10257,6 +10532,15 @@
             camera_movement: document.getElementById('selImg2VidCamera')?.value || 'pan',
             duration: document.getElementById('selImg2VidDuration')?.value || '5'
           };
+          if (currentCreatorModel === 'image_edit_ph3') {
+            payload.scene_image = currentComposerScene;
+            payload.character_image = currentComposerCharacter;
+          }
+          if (currentCreatorModel === 'upscale_capivara_mass') {
+            payload.zip_file = currentUpscaleMode === 'zip'
+              ? currentUpscaleZip
+              : await createZipFromDataUrl(currentUpscaleSingle, 'ghostlens-upscale.jpg');
+          }
           const res = await fetch('https://www.ghostlens.cloud/api/wavespeed_proxy', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
@@ -10276,8 +10560,16 @@
             if (!finalUrl) throw new Error('O workflow não retornou mídia.');
             const isVideo = final.media_type === 'video' || Boolean(final.video_url);
             setCreatorPreviewMedia(finalUrl, isVideo ? 'video' : 'image');
+            if (currentCreatorModel === 'upscale_capivara_mass' && final.media) {
+              renderEnhancerResults(final.media);
+            }
             if (timeLbl) timeLbl.innerText = `Render: ${((Date.now() - start) / 1000).toFixed(1)}s`;
-            showToast(isVideo ? 'Vídeo gerado com sucesso!' : 'Imagem gerada com sucesso!', 4000);
+            const successMsg = currentCreatorModel === 'image_edit_ph3'
+              ? 'Cena composta com sucesso!'
+              : currentCreatorModel === 'upscale_capivara_mass'
+                ? 'Upscale concluído!'
+                : (isVideo ? 'Vídeo gerado com sucesso!' : 'Imagem gerada com sucesso!');
+            showToast(successMsg, 4000);
             return;
           }
           const url = data.image_url || (data.image_base64 ? `data:image/jpeg;base64,${data.image_base64}` : '');

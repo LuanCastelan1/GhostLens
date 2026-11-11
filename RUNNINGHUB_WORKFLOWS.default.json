@@ -1,0 +1,779 @@
+{
+  "faceswap_turbo": {
+    "name": "Face Swap Turbo",
+    "mode": "image",
+    "control": "faceswap",
+    "workflowId": "",
+    "instanceType": "plus",
+    "credits": 10,
+    "defaultSpeedMode": "ghostflash",
+    "speedModes": [
+      "ghostflash",
+      "ghostlite"
+    ],
+    "speedModeCredits": {
+      "ghostflash": 10,
+      "ghostlite": 4
+    },
+    "tags": [
+      "Face Swap",
+      "ZIP",
+      "Lote"
+    ],
+    "badge": "Face Swap Turbo",
+    "button": "Gerar Face Swap",
+    "resultMode": "all",
+    "requiredAssets": [
+      "face_image",
+      "zip"
+    ],
+    "assets": {
+      "face_image": {
+        "bodyKey": "face_image",
+        "type": "image"
+      },
+      "zip": {
+        "bodyKey": "zip_file",
+        "type": "zip"
+      }
+    },
+    "inputs": {
+      "face_image": {
+        "nodeId": "23",
+        "fieldName": "image",
+        "assetKey": "face_image",
+        "assetValue": "fileName"
+      },
+      "zip": {
+        "nodeId": "17",
+        "fieldName": "upload",
+        "assetKey": "zip",
+        "assetValue": "fileName"
+      }
+    },
+    "outputNodeIds": [
+      "240",
+      "46"
+    ]
+  },
+  "faceswap_duhot": {
+    "name": "Face Swap Duhot",
+    "mode": "image",
+    "control": "faceswap",
+    "workflowId": "",
+    "instanceType": "plus",
+    "credits": 20,
+    "defaultSpeedMode": "ghostflash",
+    "speedModes": [
+      "ghostflash",
+      "ghostlite"
+    ],
+    "speedModeCredits": {
+      "ghostflash": 20,
+      "ghostlite": 10
+    },
+    "tags": [
+      "Face Swap",
+      "ControlNet",
+      "Alta Fidelidade"
+    ],
+    "badge": "Face Swap Duhot",
+    "button": "Gerar Face Swap Duhot",
+    "resultMode": "all",
+    "requiredAssets": [
+      "model_image",
+      "target_image",
+      "reference_image"
+    ],
+    "assets": {
+      "model_image": {
+        "bodyKey": "model_image",
+        "type": "image"
+      },
+      "target_image": {
+        "bodyKey": "target_image",
+        "type": "image"
+      },
+      "reference_image": {
+        "bodyKey": "reference_image",
+        "type": "image"
+      }
+    },
+    "inputs": {
+      "model_image": {
+        "nodeId": "314",
+        "fieldName": "image",
+        "assetKey": "model_image",
+        "assetValue": "fileName"
+      },
+      "target_image": {
+        "nodeId": "23",
+        "fieldName": "image",
+        "assetKey": "target_image",
+        "assetValue": "fileName"
+      },
+      "reference_image": {
+        "nodeId": "17",
+        "fieldName": "image",
+        "assetKey": "reference_image",
+        "assetValue": "fileName"
+      }
+    },
+    "outputNodeIds": [
+      "273",
+      "240",
+      "46"
+    ]
+  },
+  "controlmotion_wan": {
+    "name": "ControlMotion Wan 2.2",
+    "mode": "video",
+    "control": "motion",
+    "workflowId": "",
+    "instanceType": "plus",
+    "credits": 100,
+    "defaultSpeedMode": "ghostflash",
+    "speedModes": [
+      "ghostflash",
+      "ghostlite"
+    ],
+    "speedModeCredits": {
+      "ghostflash": 100,
+      "ghostlite": 60
+    },
+    "tags": [
+      "Motion",
+      "SAM 2",
+      "Wan 2.2",
+      "Vídeo"
+    ],
+    "badge": "ControlMotion Wan 2.2",
+    "button": "Gerar Motion Wan",
+    "resultMode": "video",
+    "requiredAssets": [
+      "reference_image",
+      "motion_video"
+    ],
+    "assets": {
+      "reference_image": {
+        "bodyKey": "reference_image",
+        "type": "image"
+      },
+      "motion_video": {
+        "bodyKey": "motion_video",
+        "type": "video"
+      }
+    },
+    "inputs": {
+      "reference_image": {
+        "nodeId": "167",
+        "fieldName": "image",
+        "assetKey": "reference_image",
+        "assetValue": "fileName"
+      },
+      "motion_video": {
+        "nodeId": "52",
+        "fieldName": "video",
+        "assetKey": "motion_video",
+        "assetValue": "fileName"
+      },
+      "prompt": {
+        "nodeId": "336",
+        "fieldName": "text",
+        "source": "prompt"
+      },
+      "width": {
+        "nodeId": "361",
+        "fieldName": "width",
+        "type": "number"
+      },
+      "height": {
+        "nodeId": "361",
+        "fieldName": "height",
+        "type": "number"
+      },
+      "length": {
+        "nodeId": "361",
+        "fieldName": "length",
+        "type": "number"
+      },
+      "seed": {
+        "nodeId": "353",
+        "fieldName": "seed",
+        "type": "number"
+      }
+    },
+    "outputNodeIds": [
+      "303",
+      "301",
+      "300",
+      "226",
+      "304"
+    ],
+    "speedInstanceTypes": {
+      "ghostflash": "plus",
+      "ghostlite": "default"
+    }
+  },
+  "controlmotion_scail": {
+    "name": "ControlMotion SCAIL-2",
+    "mode": "video",
+    "control": "motion",
+    "workflowId": "",
+    "instanceType": "plus",
+    "credits": 100,
+    "defaultSpeedMode": "ghostflash",
+    "speedModes": [
+      "ghostflash",
+      "ghostlite"
+    ],
+    "speedModeCredits": {
+      "ghostflash": 100,
+      "ghostlite": 60
+    },
+    "tags": [
+      "Motion",
+      "SCAIL-2",
+      "Vídeo"
+    ],
+    "badge": "ControlMotion SCAIL-2",
+    "button": "Gerar Motion SCAIL",
+    "resultMode": "video",
+    "requiredAssets": [
+      "reference_image",
+      "motion_video"
+    ],
+    "assets": {
+      "reference_image": {
+        "bodyKey": "reference_image",
+        "type": "image"
+      },
+      "motion_video": {
+        "bodyKey": "motion_video",
+        "type": "video"
+      }
+    },
+    "inputs": {
+      "reference_image": {
+        "nodeId": "338",
+        "fieldName": "image",
+        "assetKey": "reference_image",
+        "assetValue": "fileName"
+      },
+      "motion_video": {
+        "nodeId": "336",
+        "fieldName": "video",
+        "assetKey": "motion_video",
+        "assetValue": "fileName"
+      },
+      "prompt": {
+        "nodeId": "3",
+        "fieldName": "text",
+        "source": "prompt"
+      },
+      "width": {
+        "nodeId": "215",
+        "fieldName": "width",
+        "type": "number"
+      },
+      "height": {
+        "nodeId": "215",
+        "fieldName": "height",
+        "type": "number"
+      },
+      "length": {
+        "nodeId": "215",
+        "fieldName": "length",
+        "type": "number"
+      }
+    },
+    "outputNodeIds": [
+      "320",
+      "313",
+      "315"
+    ],
+    "speedInstanceTypes": {
+      "ghostflash": "default",
+      "ghostlite": "default"
+    }
+  },
+  "video_wan_prompt": {
+    "name": "Vídeo Wan por Prompt",
+    "mode": "video",
+    "control": "video",
+    "workflowId": "",
+    "instanceType": "plus",
+    "credits": 80,
+    "defaultSpeedMode": "ghostflash",
+    "speedModes": [
+      "ghostflash",
+      "ghostlite"
+    ],
+    "speedModeCredits": {
+      "ghostflash": 80,
+      "ghostlite": 40
+    },
+    "tags": [
+      "Wan",
+      "Texto + Imagem",
+      "Vídeo"
+    ],
+    "badge": "Vídeo Wan por Prompt",
+    "button": "Gerar Vídeo Wan",
+    "resultMode": "video",
+    "requiredAssets": [
+      "start_image"
+    ],
+    "assets": {
+      "start_image": {
+        "bodyKey": "start_image",
+        "type": "image"
+      }
+    },
+    "inputs": {
+      "start_image": {
+        "nodeId": "320",
+        "fieldName": "image",
+        "assetKey": "start_image",
+        "assetValue": "fileName"
+      },
+      "prompt": {
+        "nodeId": "293",
+        "fieldName": "text",
+        "source": "prompt"
+      },
+      "negative_prompt": {
+        "nodeId": "299",
+        "fieldName": "text",
+        "source": "negative_prompt"
+      },
+      "width": {
+        "nodeId": "300",
+        "fieldName": "width",
+        "type": "number"
+      },
+      "height": {
+        "nodeId": "300",
+        "fieldName": "height",
+        "type": "number"
+      },
+      "length": {
+        "nodeId": "300",
+        "fieldName": "length",
+        "type": "number"
+      },
+      "seed": {
+        "nodeId": "313",
+        "fieldName": "noise_seed",
+        "type": "number"
+      }
+    },
+    "outputNodeIds": [
+      "497",
+      "498"
+    ]
+  },
+  "motion_shinjutsu_h3": {
+    "name": "GhostGenjutsu Shinjutsu Pro (MiniMax H3)",
+    "mode": "video",
+    "control": "motion",
+    "workflowId": "",
+    "instanceType": "plus",
+    "credits": 120,
+    "defaultSpeedMode": "ghostflash",
+    "speedModes": [
+      "ghostflash",
+      "ghostlite"
+    ],
+    "speedModeCredits": {
+      "ghostflash": 120,
+      "ghostlite": 70
+    },
+    "speedInstanceTypes": {
+      "ghostflash": "plus",
+      "ghostlite": "default"
+    },
+    "tags": [
+      "Motion",
+      "MiniMax H3",
+      "Control LoRA",
+      "Character Swap"
+    ],
+    "badge": "Shinjutsu MiniMax H3",
+    "button": "Gerar Motion com Shinjutsu",
+    "resultMode": "video",
+    "requiredAssets": [
+      "character_image",
+      "motion_video"
+    ],
+    "assets": {
+      "character_image": {
+        "bodyKey": "reference_image",
+        "type": "image"
+      },
+      "motion_video": {
+        "bodyKey": "motion_video",
+        "type": "video"
+      }
+    },
+    "inputs": {
+      "character_image": {
+        "nodeId": "200",
+        "fieldName": "image",
+        "assetKey": "character_image",
+        "assetValue": "fileName"
+      },
+      "motion_video": {
+        "nodeId": "300",
+        "fieldName": "file",
+        "assetKey": "motion_video",
+        "assetValue": "fileName"
+      },
+      "prompt": {
+        "nodeId": "106",
+        "fieldName": "prompt",
+        "source": "prompt"
+      },
+      "control_strength": {
+        "nodeId": "172",
+        "fieldName": "strength",
+        "type": "number",
+        "default": 0.85
+      },
+      "steps": {
+        "nodeId": "48",
+        "fieldName": "steps",
+        "type": "number",
+        "default": 20
+      },
+      "seed": {
+        "nodeId": "6",
+        "fieldName": "noise_seed",
+        "type": "number"
+      },
+      "width": {
+        "nodeId": "106",
+        "fieldName": "width",
+        "type": "number",
+        "default": 640
+      },
+      "height": {
+        "nodeId": "106",
+        "fieldName": "height",
+        "type": "number",
+        "default": 864
+      },
+      "length": {
+        "nodeId": "106",
+        "fieldName": "length",
+        "type": "number",
+        "default": 192
+      }
+    },
+    "outputNodeIds": [
+      "81"
+    ],
+    "notes": "Workflow SHINJUTSU-UI. O depth do nó 174 deve ser gerado internamente no RunningHub (DepthAnything/BiRefNet), sem upload do cliente."
+  },
+  "motion_scail2_12gb": {
+    "name": "GhostGenjutsu SCAIL-2 Long Video (12GB)",
+    "mode": "video",
+    "control": "motion",
+    "workflowId": "",
+    "instanceType": "default",
+    "credits": 80,
+    "defaultSpeedMode": "ghostflash",
+    "speedModes": [
+      "ghostflash",
+      "ghostlite"
+    ],
+    "speedModeCredits": {
+      "ghostflash": 80,
+      "ghostlite": 40
+    },
+    "speedInstanceTypes": {
+      "ghostflash": "default",
+      "ghostlite": "default"
+    },
+    "tags": [
+      "Motion",
+      "SCAIL-2",
+      "Long Video",
+      "12GB"
+    ],
+    "badge": "SCAIL-2 Long 12GB",
+    "button": "Gerar Motion SCAIL-2",
+    "resultMode": "video",
+    "requiredAssets": [
+      "reference_image",
+      "motion_video"
+    ],
+    "assets": {
+      "reference_image": {
+        "bodyKey": "reference_image",
+        "type": "image"
+      },
+      "motion_video": {
+        "bodyKey": "motion_video",
+        "type": "video"
+      }
+    },
+    "inputs": {
+      "reference_image": {
+        "nodeId": "99",
+        "fieldName": "image",
+        "assetKey": "reference_image",
+        "assetValue": "fileName"
+      },
+      "motion_video": {
+        "nodeId": "12",
+        "fieldName": "video",
+        "assetKey": "motion_video",
+        "assetValue": "fileName"
+      },
+      "prompt": {
+        "nodeId": "21",
+        "fieldName": "segment_1_prompt",
+        "source": "prompt"
+      },
+      "negative_prompt": {
+        "nodeId": "21",
+        "fieldName": "segment_1_negative",
+        "source": "negative_prompt"
+      },
+      "who_is_in_clip": {
+        "nodeId": "29",
+        "fieldName": "text"
+      },
+      "which_person": {
+        "nodeId": "65",
+        "fieldName": "object_indices"
+      },
+      "seed": {
+        "nodeId": "65",
+        "fieldName": "seed",
+        "type": "number"
+      }
+    },
+    "outputNodeIds": [
+      "9"
+    ]
+  },
+  "eros_image_krea2": {
+    "name": "Eros-Image Krea 2 RAW (Dual LoRA)",
+    "mode": "image",
+    "control": "eros",
+    "workflowId": "",
+    "workflowFile": "KREA2_DUAL_LORA.json",
+    "instanceType": "plus",
+    "credits": 10,
+    "defaultSpeedMode": "ghostflash",
+    "speedModes": [
+      "ghostflash",
+      "ghostlite"
+    ],
+    "speedModeCredits": {
+      "ghostflash": 10,
+      "ghostlite": 4
+    },
+    "speedInstanceTypes": {
+      "ghostflash": "plus",
+      "ghostlite": "default"
+    },
+    "tags": [
+      "Krea 2",
+      "Dual LoRA",
+      "Fotorrealismo"
+    ],
+    "badge": "Eros-Image Krea 2",
+    "button": "Gerar com Eros-Image Krea 2",
+    "resultMode": "image",
+    "inputs": {
+      "checkpoint": {
+        "nodeId": "55",
+        "fieldName": "unet_name",
+        "presets": {
+          "raw": "krea2_turbo_raw_35mm.safetensors",
+          "film": "krea2_analog_film_28mm.safetensors",
+          "glam": "krea2_glamour_85mm.safetensors",
+          "intimate": "krea2_intimate_raw_v1.safetensors"
+        },
+        "presetKey": "lens",
+        "default": "krea2_turbo_fp8_scaled.safetensors"
+      },
+      "lora_base": {
+        "nodeId": "100",
+        "fieldName": "lora_name",
+        "weightField": "strength_model",
+        "default": "instagram_realism_v1.safetensors",
+        "defaultWeight": 0.6
+      },
+      "lora_musa": {
+        "nodeId": "101",
+        "fieldName": "lora_name",
+        "weightField": "strength_model",
+        "source": "persona_lora",
+        "defaultWeight": 0.85
+      },
+      "prompt": {
+        "nodeId": "51",
+        "fieldName": "text",
+        "source": "prompt"
+      },
+      "seed": {
+        "nodeId": "53",
+        "fieldName": "seed",
+        "type": "number"
+      },
+      "steps": {
+        "nodeId": "53",
+        "fieldName": "steps",
+        "type": "number",
+        "default": 10
+      },
+      "cfg": {
+        "nodeId": "53",
+        "fieldName": "cfg",
+        "type": "number",
+        "default": 1
+      },
+      "width": {
+        "nodeId": "52",
+        "fieldName": "width",
+        "type": "number",
+        "default": 1024
+      },
+      "height": {
+        "nodeId": "52",
+        "fieldName": "height",
+        "type": "number",
+        "default": 1536
+      }
+    },
+    "outputNodeIds": [
+      "29"
+    ],
+    "requiresReference": false
+  },
+  "image_edit_ph3": {
+    "name": "GhostComposer (P-H3 Scene Placement)",
+    "mode": "image",
+    "control": "edit",
+    "workflowId": "",
+    "instanceType": "plus",
+    "credits": 10,
+    "defaultSpeedMode": "ghostflash",
+    "speedModes": [
+      "ghostflash",
+      "ghostlite"
+    ],
+    "speedModeCredits": {
+      "ghostflash": 10,
+      "ghostlite": 4
+    },
+    "speedInstanceTypes": {
+      "ghostflash": "plus",
+      "ghostlite": "default"
+    },
+    "tags": [
+      "P-H3",
+      "MiniMax H3",
+      "8 Steps",
+      "Composição de Cenário"
+    ],
+    "badge": "GhostComposer P-H3",
+    "button": "Inserir Musa no Cenário",
+    "resultMode": "image",
+    "requiredAssets": [
+      "scene_image",
+      "character_image"
+    ],
+    "assets": {
+      "scene_image": {
+        "bodyKey": "scene_image",
+        "type": "image"
+      },
+      "character_image": {
+        "bodyKey": "character_image",
+        "type": "image"
+      }
+    },
+    "inputs": {
+      "scene_image": {
+        "nodeId": "4",
+        "fieldName": "image",
+        "assetKey": "scene_image",
+        "assetValue": "fileName"
+      },
+      "character_image": {
+        "nodeId": "5",
+        "fieldName": "image",
+        "assetKey": "character_image",
+        "assetValue": "fileName"
+      },
+      "prompt": {
+        "nodeId": "19",
+        "fieldName": "value",
+        "source": "prompt"
+      },
+      "seed": {
+        "nodeId": "10",
+        "fieldName": "noise_seed",
+        "type": "number"
+      }
+    },
+    "outputNodeIds": [
+      "13"
+    ]
+  },
+  "upscale_capivara_mass": {
+    "name": "GhostEnhancer 4K (Upscale em Massa)",
+    "mode": "image",
+    "control": "upscale",
+    "workflowId": "",
+    "instanceType": "plus",
+    "credits": 15,
+    "defaultSpeedMode": "ghostflash",
+    "speedModes": [
+      "ghostflash",
+      "ghostlite"
+    ],
+    "speedModeCredits": {
+      "ghostflash": 15,
+      "ghostlite": 8
+    },
+    "speedInstanceTypes": {
+      "ghostflash": "plus",
+      "ghostlite": "default"
+    },
+    "tags": [
+      "SAM 3",
+      "SeedVR2",
+      "Lote ZIP",
+      "Pele Real"
+    ],
+    "badge": "GhostEnhancer Pro",
+    "button": "Restaurar e Upscalar",
+    "resultMode": "all",
+    "requiredAssets": [
+      "zip_file"
+    ],
+    "assets": {
+      "zip_file": {
+        "bodyKey": "zip_file",
+        "type": "zip"
+      }
+    },
+    "inputs": {
+      "upload_zip": {
+        "nodeId": "350",
+        "fieldName": "upload",
+        "assetKey": "zip_file",
+        "assetValue": "fileName"
+      }
+    },
+    "outputNodeIds": [
+      "353"
+    ]
+  }
+}

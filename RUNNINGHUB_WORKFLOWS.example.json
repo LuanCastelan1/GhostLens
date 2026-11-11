@@ -246,7 +246,7 @@
     ]
   },
   "motion_shinjutsu_h3": {
-    "name": "GhostGenjutsu MiniMax H3 Action",
+    "name": "GhostGenjutsu Shinjutsu Pro (MiniMax H3)",
     "mode": "video",
     "control": "motion",
     "workflowId": "",
@@ -268,66 +268,84 @@
     "tags": [
       "Motion",
       "MiniMax H3",
-      "Action",
-      "Prompt Mastery"
+      "Control LoRA",
+      "Character Swap"
     ],
-    "badge": "MiniMax H3 Action",
-    "button": "Gerar Motion com MiniMax H3",
+    "badge": "Shinjutsu MiniMax H3",
+    "button": "Gerar Motion com Shinjutsu",
     "resultMode": "video",
     "requiredAssets": [
-      "character_image"
+      "character_image",
+      "motion_video"
     ],
     "assets": {
       "character_image": {
         "bodyKey": "reference_image",
         "type": "image"
+      },
+      "motion_video": {
+        "bodyKey": "motion_video",
+        "type": "video"
       }
     },
     "inputs": {
       "character_image": {
-        "nodeId": "51",
+        "nodeId": "200",
         "fieldName": "image",
         "assetKey": "character_image",
         "assetValue": "fileName"
       },
+      "motion_video": {
+        "nodeId": "300",
+        "fieldName": "file",
+        "assetKey": "motion_video",
+        "assetValue": "fileName"
+      },
       "prompt": {
-        "nodeId": "263",
-        "fieldName": "text",
+        "nodeId": "106",
+        "fieldName": "prompt",
         "source": "prompt"
       },
-      "seed": {
-        "nodeId": "397",
-        "fieldName": "seed",
-        "type": "number"
+      "control_strength": {
+        "nodeId": "172",
+        "fieldName": "strength",
+        "type": "number",
+        "default": 0.85
       },
       "steps": {
-        "nodeId": "261",
+        "nodeId": "48",
         "fieldName": "steps",
         "type": "number",
-        "default": 12
+        "default": 20
+      },
+      "seed": {
+        "nodeId": "6",
+        "fieldName": "noise_seed",
+        "type": "number"
       },
       "width": {
-        "nodeId": "265",
+        "nodeId": "106",
         "fieldName": "width",
         "type": "number",
-        "default": 1344
+        "default": 640
       },
       "height": {
-        "nodeId": "265",
+        "nodeId": "106",
         "fieldName": "height",
         "type": "number",
-        "default": 768
+        "default": 864
       },
       "length": {
-        "nodeId": "265",
+        "nodeId": "106",
         "fieldName": "length",
         "type": "number",
-        "default": 124
+        "default": 192
       }
     },
     "outputNodeIds": [
-      "404"
-    ]
+      "81"
+    ],
+    "notes": "Workflow SHINJUTSU-UI. O depth do nó 174 deve ser gerado internamente no RunningHub (DepthAnything/BiRefNet), sem upload do cliente."
   },
   "motion_scail2_12gb": {
     "name": "GhostGenjutsu SCAIL-2 Long Video (12GB)",
