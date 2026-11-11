@@ -8197,6 +8197,7 @@
       let currentMotionSpeedMode = 'ghostflash';
       let currentMotionVideo = null;
       let currentMotionReference = null;
+      let currentMotionDepthVideo = null;
       let currentCreatorHiggsFirst = null;
       let currentCreatorHiggsEnd = null;
 
@@ -8697,6 +8698,23 @@
                 </div>
 
                 <input type="text" id="txtCreatorNegativePrompt" placeholder="Negative prompt (opcional)" style="width: 100%; background: #12141c; border: 1px solid rgba(255,255,255,0.07); color: #fff; padding: 6px 8px; border-radius: 6px; font-size: 0.68rem; outline: none;">
+
+                <div id="boxMotionScailExtra" style="display: none; flex-direction: column; gap: 6px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px;">
+                  <div style="font-size: 0.58rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.4px;">SCAIL-2 Options</div>
+                  <input type="text" id="txtMotionWhoInClip" placeholder="Quem está no clipe (ex: homem de camiseta vermelha)" style="width: 100%; background: #12141c; border: 1px solid rgba(255,255,255,0.07); color: #fff; padding: 6px 8px; border-radius: 6px; font-size: 0.66rem; outline: none;">
+                  <input type="text" id="txtMotionWhatCharacter" placeholder="O que é seu personagem (ex: mulher)" style="width: 100%; background: #12141c; border: 1px solid rgba(255,255,255,0.07); color: #fff; padding: 6px 8px; border-radius: 6px; font-size: 0.66rem; outline: none;">
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                    <input type="text" id="txtMotionWhichPerson" placeholder="Pessoa: 0, 1 ou vazio" style="width: 100%; background: #12141c; border: 1px solid rgba(255,255,255,0.07); color: #fff; padding: 6px 8px; border-radius: 6px; font-size: 0.66rem; outline: none;">
+                    <input type="number" id="txtMotionSeconds" min="0" step="1" value="0" placeholder="Segundos (0 = tudo)" style="width: 100%; background: #12141c; border: 1px solid rgba(255,255,255,0.07); color: #fff; padding: 6px 8px; border-radius: 6px; font-size: 0.66rem; outline: none;">
+                  </div>
+                </div>
+
+                <div id="boxMotionDepth" style="display: none; align-items: center; gap: 6px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 8px;">
+                  <input type="file" id="fileMotionDepth" accept="video/mp4" style="display: none;" onchange="handleMotionDepthUpload(this.files)">
+                  <button type="button" onclick="document.getElementById('fileMotionDepth')?.click()" style="background: #12141c; border: 1px solid rgba(255,255,255,0.08); color: #cbd5e1; font-size: 0.6rem; font-weight: 700; padding: 5px 8px; border-radius: 6px; cursor: pointer;">Depth video (opcional)</button>
+                  <span id="lblMotionDepthStatus" style="font-size: 0.58rem; color: #64748b;">Não enviado</span>
+                </div>
+
                 <div style="font-size: 0.58rem; color: #64748b; line-height: 1.35;">Envie o vídeo guia no slot Motion Transfer e a foto da musa no slot Character.</div>
               </div>
 
@@ -9706,6 +9724,10 @@
           if (selEngine) selEngine.value = model;
           const descEl = document.getElementById('lblMotionEngineDesc');
           if (descEl) descEl.innerText = motionMeta.desc;
+          const scailExtra = document.getElementById('boxMotionScailExtra');
+          if (scailExtra) scailExtra.style.display = model === 'motion_scail2_12gb' ? 'flex' : 'none';
+          const depthBox = document.getElementById('boxMotionDepth');
+          if (depthBox) depthBox.style.display = model === 'motion_shinjutsu_h3' ? 'flex' : 'none';
         }
         const headerName = document.getElementById('lblSelectedModelName');
         if (headerName) headerName.innerText = meta.badge || model;
@@ -9904,6 +9926,25 @@
         reader.readAsDataURL(file);
       }
       window.handleMotionGuideUpload = handleMotionGuideUpload;
+
+      async function handleMotionDepthUpload(files) {
+        const file = (files || [])[0];
+        if (!file) return;
+        if (file.size > 4 * 1024 * 1024) {
+          showToast('Depth video acima de 4 MB. Use um clipe curto por enquanto.', 5000);
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+          currentMotionDepthVideo = reader.result;
+          const status = document.getElementById('lblMotionDepthStatus');
+          if (status) status.innerText = 'Carregado';
+          showToast('Depth video carregado.', 2500);
+        };
+        reader.onerror = () => showToast('Não foi possível ler o depth video.', 4000);
+        reader.readAsDataURL(file);
+      }
+      window.handleMotionDepthUpload = handleMotionDepthUpload;
 
       async function handleMotionMusaUpload(files) {
         const file = (files || [])[0];
@@ -10171,8 +10212,13 @@
             speed_mode: motionEngine ? currentMotionSpeedMode : (liveModel.default_speed_mode || 'ghostflash'),
             reference_image: motionEngine ? (currentMotionReference || currentCreatorRefs[0]) : undefined,
             motion_video: motionEngine ? currentMotionVideo : undefined,
+            depth_video: currentMotionDepthVideo || undefined,
             control_strength: Number(document.getElementById('rngMotionControlStrength')?.value || 0.85),
             negative_prompt: document.getElementById('txtCreatorNegativePrompt')?.value || undefined,
+            who_is_in_clip: document.getElementById('txtMotionWhoInClip')?.value || undefined,
+            what_character_is: document.getElementById('txtMotionWhatCharacter')?.value || undefined,
+            which_person: document.getElementById('txtMotionWhichPerson')?.value || undefined,
+            seconds: document.getElementById('txtMotionSeconds')?.value !== '' ? Number(document.getElementById('txtMotionSeconds').value) : undefined,
             seedream_prompt: document.getElementById('txtSeedreamEditPrompt')?.value || '',
             motion_strength: document.getElementById('lblMotionStrength')?.innerText || '7.5',
             camera_movement: document.getElementById('selImg2VidCamera')?.value || 'pan',

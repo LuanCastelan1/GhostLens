@@ -275,64 +275,87 @@
     "button": "Gerar Motion com Shinjutsu",
     "resultMode": "video",
     "requiredAssets": [
-      "reference_image",
+      "character_image",
       "motion_video"
     ],
     "assets": {
-      "reference_image": {
+      "character_image": {
         "bodyKey": "reference_image",
         "type": "image"
       },
       "motion_video": {
         "bodyKey": "motion_video",
         "type": "video"
+      },
+      "depth_video": {
+        "bodyKey": "depth_video",
+        "type": "video"
       }
     },
     "inputs": {
-      "reference_image": {
-        "nodeId": "10",
+      "character_image": {
+        "nodeId": "200",
         "fieldName": "image",
-        "assetKey": "reference_image",
+        "assetKey": "character_image",
         "assetValue": "fileName"
       },
       "motion_video": {
-        "nodeId": "12",
-        "fieldName": "video",
+        "nodeId": "300",
+        "fieldName": "file",
         "assetKey": "motion_video",
         "assetValue": "fileName"
       },
+      "depth_video": {
+        "nodeId": "174",
+        "fieldName": "file",
+        "assetKey": "depth_video",
+        "assetValue": "fileName"
+      },
       "prompt": {
-        "nodeId": "6",
-        "fieldName": "text",
+        "nodeId": "106",
+        "fieldName": "prompt",
         "source": "prompt"
       },
-      "negative_prompt": {
-        "nodeId": "7",
-        "fieldName": "text",
-        "source": "negative_prompt"
-      },
       "control_strength": {
-        "nodeId": "25",
+        "nodeId": "172",
         "fieldName": "strength",
         "type": "number",
         "default": 0.85
       },
       "steps": {
-        "nodeId": "30",
+        "nodeId": "48",
         "fieldName": "steps",
         "type": "number",
-        "default": 25
+        "default": 20
       },
       "seed": {
-        "nodeId": "30",
-        "fieldName": "seed",
+        "nodeId": "6",
+        "fieldName": "noise_seed",
         "type": "number"
+      },
+      "width": {
+        "nodeId": "106",
+        "fieldName": "width",
+        "type": "number",
+        "default": 640
+      },
+      "height": {
+        "nodeId": "106",
+        "fieldName": "height",
+        "type": "number",
+        "default": 864
+      },
+      "length": {
+        "nodeId": "106",
+        "fieldName": "length",
+        "type": "number",
+        "default": 192
       }
     },
     "outputNodeIds": [
-      "99",
-      "105"
-    ]
+      "81"
+    ],
+    "notes": "O workflow do GitHub espera depth_video pré-processado (BiRefNet + Depth Anything V2). Sem ele, usa o depth de exemplo."
   },
   "motion_scail2_12gb": {
     "name": "GhostGenjutsu SCAIL-2 Lite (12GB)",
@@ -364,11 +387,11 @@
     "button": "Gerar Motion com SCAIL-2",
     "resultMode": "video",
     "requiredAssets": [
-      "reference_image",
+      "character_image",
       "motion_video"
     ],
     "assets": {
-      "reference_image": {
+      "character_image": {
         "bodyKey": "reference_image",
         "type": "image"
       },
@@ -378,46 +401,49 @@
       }
     },
     "inputs": {
-      "reference_image": {
-        "nodeId": "338",
+      "character_image": {
+        "nodeId": "2",
         "fieldName": "image",
-        "assetKey": "reference_image",
+        "assetKey": "character_image",
         "assetValue": "fileName"
       },
       "motion_video": {
-        "nodeId": "336",
-        "fieldName": "video",
+        "nodeId": "1",
+        "fieldName": "file",
         "assetKey": "motion_video",
         "assetValue": "fileName"
       },
       "prompt": {
         "nodeId": "3",
-        "fieldName": "text",
+        "fieldName": "value",
         "source": "prompt"
       },
-      "width": {
-        "nodeId": "215",
-        "fieldName": "width",
-        "type": "number",
-        "default": 512
+      "negative_prompt": {
+        "nodeId": "53",
+        "fieldName": "text",
+        "source": "negative_prompt"
       },
-      "height": {
-        "nodeId": "215",
-        "fieldName": "height",
-        "type": "number",
-        "default": 768
+      "who_is_in_clip": {
+        "nodeId": "4",
+        "fieldName": "value"
       },
-      "length": {
-        "nodeId": "215",
-        "fieldName": "length",
+      "what_character_is": {
+        "nodeId": "5",
+        "fieldName": "value"
+      },
+      "which_person": {
+        "nodeId": "12",
+        "fieldName": "value"
+      },
+      "seconds": {
+        "nodeId": "6",
+        "fieldName": "value",
         "type": "number",
-        "default": 81
+        "default": 0
       }
     },
     "outputNodeIds": [
-      "320",
-      "313",
-      "315"
+      "86"
     ]
   }
 }
