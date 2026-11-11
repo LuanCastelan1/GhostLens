@@ -29,3 +29,6 @@ temp_media/
 # Workflows privados e registry real do RunningHub
 /workflows/
 /RUNNINGHUB_WORKFLOWS.json
+
+# Workflows organizados para importar no RunningHub
+/workflows_runninghub/

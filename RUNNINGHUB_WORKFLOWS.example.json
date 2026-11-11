@@ -246,7 +246,7 @@
     ]
   },
   "motion_shinjutsu_h3": {
-    "name": "GhostGenjutsu Shinjutsu Pro (MiniMax H3)",
+    "name": "GhostGenjutsu MiniMax H3 Action",
     "mode": "video",
     "control": "motion",
     "workflowId": "",
@@ -268,97 +268,69 @@
     "tags": [
       "Motion",
       "MiniMax H3",
-      "Anti-Hand Distortion",
-      "BiRefNet"
+      "Action",
+      "Prompt Mastery"
     ],
-    "badge": "Shinjutsu MiniMax H3",
-    "button": "Gerar Motion com Shinjutsu",
+    "badge": "MiniMax H3 Action",
+    "button": "Gerar Motion com MiniMax H3",
     "resultMode": "video",
     "requiredAssets": [
-      "character_image",
-      "motion_video"
+      "character_image"
     ],
     "assets": {
       "character_image": {
         "bodyKey": "reference_image",
         "type": "image"
-      },
-      "motion_video": {
-        "bodyKey": "motion_video",
-        "type": "video"
-      },
-      "depth_video": {
-        "bodyKey": "depth_video",
-        "type": "video"
       }
     },
     "inputs": {
       "character_image": {
-        "nodeId": "200",
+        "nodeId": "51",
         "fieldName": "image",
         "assetKey": "character_image",
         "assetValue": "fileName"
       },
-      "motion_video": {
-        "nodeId": "300",
-        "fieldName": "file",
-        "assetKey": "motion_video",
-        "assetValue": "fileName"
-      },
-      "depth_video": {
-        "nodeId": "174",
-        "fieldName": "file",
-        "assetKey": "depth_video",
-        "assetValue": "fileName"
-      },
       "prompt": {
-        "nodeId": "106",
-        "fieldName": "prompt",
+        "nodeId": "263",
+        "fieldName": "text",
         "source": "prompt"
       },
-      "control_strength": {
-        "nodeId": "172",
-        "fieldName": "strength",
-        "type": "number",
-        "default": 0.85
-      },
-      "steps": {
-        "nodeId": "48",
-        "fieldName": "steps",
-        "type": "number",
-        "default": 20
-      },
       "seed": {
-        "nodeId": "6",
-        "fieldName": "noise_seed",
+        "nodeId": "397",
+        "fieldName": "seed",
         "type": "number"
       },
+      "steps": {
+        "nodeId": "261",
+        "fieldName": "steps",
+        "type": "number",
+        "default": 12
+      },
       "width": {
-        "nodeId": "106",
+        "nodeId": "265",
         "fieldName": "width",
         "type": "number",
-        "default": 640
+        "default": 1344
       },
       "height": {
-        "nodeId": "106",
+        "nodeId": "265",
         "fieldName": "height",
         "type": "number",
-        "default": 864
+        "default": 768
       },
       "length": {
-        "nodeId": "106",
+        "nodeId": "265",
         "fieldName": "length",
         "type": "number",
-        "default": 192
+        "default": 124
       }
     },
     "outputNodeIds": [
-      "81"
-    ],
-    "notes": "O workflow do GitHub espera depth_video pré-processado (BiRefNet + Depth Anything V2). Sem ele, usa o depth de exemplo."
+      "404"
+    ]
   },
   "motion_scail2_12gb": {
-    "name": "GhostGenjutsu SCAIL-2 Lite (12GB)",
+    "name": "GhostGenjutsu SCAIL-2 Long Video (12GB)",
     "mode": "video",
     "control": "motion",
     "workflowId": "",
@@ -380,18 +352,18 @@
     "tags": [
       "Motion",
       "SCAIL-2",
-      "Low-VRAM",
+      "Long Video",
       "12GB"
     ],
-    "badge": "SCAIL-2 12GB Lite",
-    "button": "Gerar Motion com SCAIL-2",
+    "badge": "SCAIL-2 Long 12GB",
+    "button": "Gerar Motion SCAIL-2",
     "resultMode": "video",
     "requiredAssets": [
-      "character_image",
+      "reference_image",
       "motion_video"
     ],
     "assets": {
-      "character_image": {
+      "reference_image": {
         "bodyKey": "reference_image",
         "type": "image"
       },
@@ -401,49 +373,261 @@
       }
     },
     "inputs": {
-      "character_image": {
-        "nodeId": "2",
+      "reference_image": {
+        "nodeId": "99",
         "fieldName": "image",
-        "assetKey": "character_image",
+        "assetKey": "reference_image",
         "assetValue": "fileName"
       },
       "motion_video": {
-        "nodeId": "1",
-        "fieldName": "file",
+        "nodeId": "12",
+        "fieldName": "video",
         "assetKey": "motion_video",
         "assetValue": "fileName"
       },
       "prompt": {
-        "nodeId": "3",
-        "fieldName": "value",
+        "nodeId": "21",
+        "fieldName": "segment_1_prompt",
         "source": "prompt"
       },
       "negative_prompt": {
-        "nodeId": "53",
-        "fieldName": "text",
+        "nodeId": "21",
+        "fieldName": "segment_1_negative",
         "source": "negative_prompt"
       },
       "who_is_in_clip": {
-        "nodeId": "4",
-        "fieldName": "value"
-      },
-      "what_character_is": {
-        "nodeId": "5",
-        "fieldName": "value"
+        "nodeId": "29",
+        "fieldName": "text"
       },
       "which_person": {
-        "nodeId": "12",
-        "fieldName": "value"
+        "nodeId": "65",
+        "fieldName": "object_indices"
       },
-      "seconds": {
-        "nodeId": "6",
-        "fieldName": "value",
-        "type": "number",
-        "default": 0
+      "seed": {
+        "nodeId": "65",
+        "fieldName": "seed",
+        "type": "number"
       }
     },
     "outputNodeIds": [
-      "86"
+      "9"
+    ]
+  },
+  "eros_image_krea2": {
+    "name": "Eros-Image Krea 2 RAW (Dual LoRA)",
+    "mode": "image",
+    "control": "eros",
+    "workflowId": "",
+    "workflowFile": "KREA2_DUAL_LORA.json",
+    "instanceType": "plus",
+    "credits": 10,
+    "defaultSpeedMode": "ghostflash",
+    "speedModes": [
+      "ghostflash",
+      "ghostlite"
+    ],
+    "speedModeCredits": {
+      "ghostflash": 10,
+      "ghostlite": 4
+    },
+    "speedInstanceTypes": {
+      "ghostflash": "plus",
+      "ghostlite": "default"
+    },
+    "tags": [
+      "Krea 2",
+      "Dual LoRA",
+      "Fotorrealismo"
+    ],
+    "badge": "Eros-Image Krea 2",
+    "button": "Gerar com Eros-Image Krea 2",
+    "resultMode": "image",
+    "inputs": {
+      "checkpoint": {
+        "nodeId": "55",
+        "fieldName": "unet_name",
+        "presets": {
+          "raw": "krea2_turbo_raw_35mm.safetensors",
+          "film": "krea2_analog_film_28mm.safetensors",
+          "glam": "krea2_glamour_85mm.safetensors",
+          "intimate": "krea2_intimate_raw_v1.safetensors"
+        },
+        "presetKey": "lens",
+        "default": "krea2_turbo_fp8_scaled.safetensors"
+      },
+      "lora_base": {
+        "nodeId": "100",
+        "fieldName": "lora_name",
+        "weightField": "strength_model",
+        "default": "instagram_realism_v1.safetensors",
+        "defaultWeight": 0.6
+      },
+      "lora_musa": {
+        "nodeId": "101",
+        "fieldName": "lora_name",
+        "weightField": "strength_model",
+        "source": "persona_lora",
+        "defaultWeight": 0.85
+      },
+      "prompt": {
+        "nodeId": "51",
+        "fieldName": "text",
+        "source": "prompt"
+      },
+      "seed": {
+        "nodeId": "53",
+        "fieldName": "seed",
+        "type": "number"
+      },
+      "steps": {
+        "nodeId": "53",
+        "fieldName": "steps",
+        "type": "number",
+        "default": 10
+      },
+      "cfg": {
+        "nodeId": "53",
+        "fieldName": "cfg",
+        "type": "number",
+        "default": 1
+      },
+      "width": {
+        "nodeId": "52",
+        "fieldName": "width",
+        "type": "number",
+        "default": 1024
+      },
+      "height": {
+        "nodeId": "52",
+        "fieldName": "height",
+        "type": "number",
+        "default": 1536
+      }
+    },
+    "outputNodeIds": [
+      "29"
+    ],
+    "requiresReference": false
+  },
+  "image_edit_ph3": {
+    "name": "GhostComposer (P-H3 Scene Placement)",
+    "mode": "image",
+    "control": "edit",
+    "workflowId": "",
+    "instanceType": "plus",
+    "credits": 10,
+    "defaultSpeedMode": "ghostflash",
+    "speedModes": [
+      "ghostflash",
+      "ghostlite"
+    ],
+    "speedModeCredits": {
+      "ghostflash": 10,
+      "ghostlite": 4
+    },
+    "speedInstanceTypes": {
+      "ghostflash": "plus",
+      "ghostlite": "default"
+    },
+    "tags": [
+      "P-H3",
+      "MiniMax H3",
+      "8 Steps",
+      "Composição de Cenário"
+    ],
+    "badge": "GhostComposer P-H3",
+    "button": "Inserir Musa no Cenário",
+    "resultMode": "image",
+    "requiredAssets": [
+      "scene_image",
+      "character_image"
+    ],
+    "assets": {
+      "scene_image": {
+        "bodyKey": "scene_image",
+        "type": "image"
+      },
+      "character_image": {
+        "bodyKey": "character_image",
+        "type": "image"
+      }
+    },
+    "inputs": {
+      "scene_image": {
+        "nodeId": "4",
+        "fieldName": "image",
+        "assetKey": "scene_image",
+        "assetValue": "fileName"
+      },
+      "character_image": {
+        "nodeId": "5",
+        "fieldName": "image",
+        "assetKey": "character_image",
+        "assetValue": "fileName"
+      },
+      "prompt": {
+        "nodeId": "19",
+        "fieldName": "value",
+        "source": "prompt"
+      },
+      "seed": {
+        "nodeId": "10",
+        "fieldName": "noise_seed",
+        "type": "number"
+      }
+    },
+    "outputNodeIds": [
+      "13"
+    ]
+  },
+  "upscale_capivara_mass": {
+    "name": "GhostEnhancer 4K (Upscale em Massa)",
+    "mode": "image",
+    "control": "upscale",
+    "workflowId": "",
+    "instanceType": "plus",
+    "credits": 15,
+    "defaultSpeedMode": "ghostflash",
+    "speedModes": [
+      "ghostflash",
+      "ghostlite"
+    ],
+    "speedModeCredits": {
+      "ghostflash": 15,
+      "ghostlite": 8
+    },
+    "speedInstanceTypes": {
+      "ghostflash": "plus",
+      "ghostlite": "default"
+    },
+    "tags": [
+      "SAM 3",
+      "SeedVR2",
+      "Lote ZIP",
+      "Pele Real"
+    ],
+    "badge": "GhostEnhancer Pro",
+    "button": "Restaurar e Upscalar",
+    "resultMode": "all",
+    "requiredAssets": [
+      "zip_file"
+    ],
+    "assets": {
+      "zip_file": {
+        "bodyKey": "zip_file",
+        "type": "zip"
+      }
+    },
+    "inputs": {
+      "upload_zip": {
+        "nodeId": "350",
+        "fieldName": "upload",
+        "assetKey": "zip_file",
+        "assetValue": "fileName"
+      }
+    },
+    "outputNodeIds": [
+      "353"
     ]
   }
 }

@@ -8634,19 +8634,28 @@
               <div id="boxErosImageControls" style="display: flex; flex-direction: column; gap: 10px;">
                 <div>
                   <label style="font-size: 0.62rem; font-weight: 800; color: #64748b; display: block; margin-bottom: 5px; text-transform: uppercase;">Lentes Ópticas (Preservação Fotográfica)</label>
-                  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
-                    <button type="button" class="btn-lens active" onclick="selectErosLens('raw', this)" style="background: #1e2230; border: 1.5px solid var(--accent-lime); color: #fff; font-size: 0.66rem; font-weight: 800; padding: 7px 4px; border-radius: 8px; cursor: pointer;">RAW 35mm</button>
-                    <button type="button" class="btn-lens" onclick="selectErosLens('film', this)" style="background: #12141c; border: 1px solid rgba(255,255,255,0.06); color: #94a3b8; font-size: 0.66rem; font-weight: 700; padding: 7px 4px; border-radius: 8px; cursor: pointer;">Film POV 28mm</button>
-                    <button type="button" class="btn-lens" onclick="selectErosLens('glam', this)" style="background: #12141c; border: 1px solid rgba(255,255,255,0.06); color: #94a3b8; font-size: 0.66rem; font-weight: 700; padding: 7px 4px; border-radius: 8px; cursor: pointer;">Glam 85mm</button>
+                  <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;">
+                    <button type="button" class="btn-lens active" onclick="selectErosLens('raw', this)" style="background: #1e2230; border: 1.5px solid var(--accent-lime); color: #fff; font-size: 0.64rem; font-weight: 800; padding: 7px 3px; border-radius: 8px; cursor: pointer;">RAW 35mm</button>
+                    <button type="button" class="btn-lens" onclick="selectErosLens('film', this)" style="background: #12141c; border: 1px solid rgba(255,255,255,0.06); color: #94a3b8; font-size: 0.64rem; font-weight: 700; padding: 7px 3px; border-radius: 8px; cursor: pointer;">Film 28mm</button>
+                    <button type="button" class="btn-lens" onclick="selectErosLens('glam', this)" style="background: #12141c; border: 1px solid rgba(255,255,255,0.06); color: #94a3b8; font-size: 0.64rem; font-weight: 700; padding: 7px 3px; border-radius: 8px; cursor: pointer;">Glam 85mm</button>
+                    <button type="button" class="btn-lens" onclick="selectErosLens('intimate', this)" style="background: #12141c; border: 1px solid rgba(255,255,255,0.06); color: #94a3b8; font-size: 0.64rem; font-weight: 700; padding: 7px 3px; border-radius: 8px; cursor: pointer;">Intimate</button>
                   </div>
                 </div>
 
                 <div>
                   <div style="display: flex; justify-content: space-between; font-size: 0.62rem; font-weight: 800; color: #64748b; margin-bottom: 4px;">
-                    <span>PESO DA CONSISTÊNCIA FACIAL</span>
-                    <span id="lblLoraWeightVal" style="color: var(--accent-lime);">1.00</span>
+                    <span>INTENSIDADE DA MUSA (LORA)</span>
+                    <span id="lblLoraWeightVal" style="color: var(--accent-lime);">0.85</span>
                   </div>
-                  <input type="range" id="rngLoraWeight" min="0.5" max="2.0" step="0.05" value="1.0" oninput="document.getElementById('lblLoraWeightVal').innerText = parseFloat(this.value).toFixed(2)" style="width: 100%; accent-color: var(--accent-lime); cursor: pointer;">
+                  <input type="range" id="rngLoraWeight" min="0.5" max="2.0" step="0.05" value="0.85" oninput="document.getElementById('lblLoraWeightVal').innerText = parseFloat(this.value).toFixed(2)" style="width: 100%; accent-color: var(--accent-lime); cursor: pointer;">
+                </div>
+
+                <div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.62rem; font-weight: 800; color: #64748b; margin-bottom: 4px;">
+                    <span>REALISMO BASE (LORA)</span>
+                    <span id="lblLoraBaseWeightVal" style="color: var(--accent-lime);">0.60</span>
+                  </div>
+                  <input type="range" id="rngLoraBaseWeight" min="0" max="1.5" step="0.05" value="0.6" oninput="document.getElementById('lblLoraBaseWeightVal').innerText = parseFloat(this.value).toFixed(2)" style="width: 100%; accent-color: var(--accent-lime); cursor: pointer;">
                 </div>
               </div>
 
@@ -9727,7 +9736,7 @@
           const scailExtra = document.getElementById('boxMotionScailExtra');
           if (scailExtra) scailExtra.style.display = model === 'motion_scail2_12gb' ? 'flex' : 'none';
           const depthBox = document.getElementById('boxMotionDepth');
-          if (depthBox) depthBox.style.display = model === 'motion_shinjutsu_h3' ? 'flex' : 'none';
+          if (depthBox) depthBox.style.display = 'none';
         }
         const headerName = document.getElementById('lblSelectedModelName');
         if (headerName) headerName.innerText = meta.badge || model;
@@ -9829,6 +9838,7 @@
 
       function selectErosLens(lensType, btn) {
         currentErosLens = lensType;
+        currentErosCheckpoint = lensType;
         document.querySelectorAll('.btn-lens').forEach(b => {
           b.classList.remove('active');
           b.style.background = '#12141c';
@@ -9841,6 +9851,23 @@
           btn.style.color = '#fff';
           btn.style.border = '1.5px solid var(--accent-lime)';
         }
+        const lensLabels = {
+          raw: 'RAW Natural 35mm',
+          film: 'Film POV 28mm',
+          glam: 'Glam Studio 85mm',
+          intimate: 'Intimate RAW'
+        };
+        const lensSpecs = {
+          raw: 'Lente RAW 35mm • Textura Real',
+          film: 'Lente POV 28mm • Grão Fino',
+          glam: 'Lente 85mm f/1.4 • Studio',
+          intimate: 'Lente Intimate • Luz Baixa'
+        };
+        const badge = document.getElementById('lblCanvasModelBadge');
+        if (badge) badge.innerText = 'Eros-Image Krea 2 (' + (lensLabels[lensType] || 'RAW') + ')';
+        const lblSpec = document.getElementById('lblCanvasSpec');
+        if (lblSpec) lblSpec.innerText = `${currentCreatorAspectRatio} • ${lensSpecs[lensType] || ''} • 2K HD`;
+        showToast(`Lente selecionada: ${lensLabels[lensType] || lensType}`, 2000);
       }
       window.selectErosLens = selectErosLens;
 
@@ -10144,12 +10171,13 @@
           showToast('Este modelo ainda não está conectado. Configure USEAPI_TOKEN ou RunningHub.', 5000);
           return;
         }
-        if (!motionEngine && !currentCreatorRefs.length && currentCreatorModel !== 'eros_image_2k') {
+        if (!motionEngine && !currentCreatorRefs.length && !['eros_image_2k', 'eros_image_krea2'].includes(currentCreatorModel)) {
           showToast('Adicione pelo menos uma foto de referência da musa.', 5000);
           return;
         }
         if (motionEngine) {
-          if (!currentMotionVideo) {
+          const needsMotionVideo = currentCreatorModel !== 'motion_shinjutsu_h3';
+          if (needsMotionVideo && !currentMotionVideo) {
             showToast('Envie o vídeo de movimento no slot Motion Transfer.', 5000);
             return;
           }
@@ -10202,16 +10230,21 @@
             workflow_key: isRunningHub ? (liveModel.workflow_key || currentCreatorModel) : undefined,
             model: isRunningHub ? currentCreatorModel : (currentCreatorModel === 'eros_image_2k' ? 'nanobanana_pro' : currentCreatorModel),
             lora_file: personaCreator.lora_file || personaCreator.lora_url || undefined,
-            lora_weight: Number(document.getElementById('rngLoraWeight')?.value || 1),
+            lora_weight: Number(document.getElementById('rngLoraWeight')?.value || 0.85),
+            lens: currentErosCheckpoint,
+            lora_base: 'instagram_realism_v1.safetensors',
+            lora_base_weight: Number(document.getElementById('rngLoraBaseWeight')?.value || 0.6),
+            lora_musa: personaCreator.lora_file || personaCreator.lora_name || personaCreator.lora_url || undefined,
+            lora_musa_weight: Number(document.getElementById('rngLoraWeight')?.value || 0.85),
             studio_mode: currentStudioMode,
-            eros_checkpoint: currentCreatorModel === 'eros_image_2k' ? currentErosCheckpoint : undefined,
+            eros_checkpoint: currentErosCheckpoint,
             prompt: fullPrompt,
             aspect_ratio: currentCreatorAspectRatio,
             references: currentCreatorRefs,
             persona_name: currentCreatorMusa,
             speed_mode: motionEngine ? currentMotionSpeedMode : (liveModel.default_speed_mode || 'ghostflash'),
             reference_image: motionEngine ? (currentMotionReference || currentCreatorRefs[0]) : undefined,
-            motion_video: motionEngine ? currentMotionVideo : undefined,
+            motion_video: motionEngine && currentCreatorModel !== 'motion_shinjutsu_h3' ? currentMotionVideo : undefined,
             depth_video: currentMotionDepthVideo || undefined,
             control_strength: Number(document.getElementById('rngMotionControlStrength')?.value || 0.85),
             negative_prompt: document.getElementById('txtCreatorNegativePrompt')?.value || undefined,

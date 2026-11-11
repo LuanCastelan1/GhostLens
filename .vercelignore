@@ -21,3 +21,6 @@ __pycache__
 
 # Workflows privados do RunningHub (não vão para o deploy)
 /workflows
+
+# Workflows privados organizados (não vão para o deploy)
+/workflows_runninghub
