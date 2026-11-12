@@ -591,21 +591,21 @@
     "inputs": {
       "checkpoint": {
         "nodeId": "55",
-        "fieldName": "ckpt_name",
+        "fieldName": "unet_name",
         "presets": {
-          "raw": "krea2_nsfw-aio-2.safetensors",
+          "raw": "Krea2-TurboNSWAIO_v10_fp8.safetensors",
           "film": "krea2_analog_film_28mm.safetensors",
-          "glam": "krea2_glamour_85mm.safetensors",
+          "glam": "gonzalomoKrea2_v40.safetensors",
           "intimate": "krea2_intimate_raw_v1.safetensors"
         },
         "presetKey": "lens",
-        "default": "krea2_nsfw-aio-2.safetensors"
+        "default": "Krea2-TurboNSWAIO_v10_fp8.safetensors"
       },
       "lora_base": {
         "nodeId": "100",
         "fieldName": "lora_name",
         "weightField": "strength_model",
-        "default": "instagram_realism_v1.safetensors",
+        "default": "phone_photography_2025_krea2.safetensors",
         "defaultWeight": 0.6
       },
       "lora_musa": {
