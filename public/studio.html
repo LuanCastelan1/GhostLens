@@ -8165,7 +8165,7 @@
       let currentStudioMode = 'image';
       let currentCreatorMusa = '';
       let currentCreatorProfileId = '';
-      let currentCreatorAspectRatio = '9:16';
+      let currentCreatorAspectRatio = '3:4';
       let currentCreatorMediaUrl = CREATOR_PLACEHOLDER;
       let currentCreatorRefs = [];
       let currentCreatorHistory = [];
@@ -8692,9 +8692,9 @@
                 <div>
                   <div style="display: flex; justify-content: space-between; font-size: 0.62rem; font-weight: 800; color: #64748b; margin-bottom: 4px;">
                     <span>REALISMO BASE (LORA)</span>
-                    <span id="lblLoraBaseWeightVal" style="color: var(--accent-lime);">0.60</span>
+                    <span id="lblLoraBaseWeightVal" style="color: var(--accent-lime);">0.30</span>
                   </div>
-                  <input type="range" id="rngLoraBaseWeight" min="0" max="1.5" step="0.05" value="0.6" oninput="document.getElementById('lblLoraBaseWeightVal').innerText = parseFloat(this.value).toFixed(2)" style="width: 100%; accent-color: var(--accent-lime); cursor: pointer;">
+                  <input type="range" id="rngLoraBaseWeight" min="0" max="1.5" step="0.05" value="0.3" oninput="document.getElementById('lblLoraBaseWeightVal').innerText = parseFloat(this.value).toFixed(2)" style="width: 100%; accent-color: var(--accent-lime); cursor: pointer;">
                 </div>
               </div>
 
@@ -8881,7 +8881,7 @@
                   <!-- Seletor de Aspect Ratio -->
                   <button type="button" onclick="cycleCreatorRatio()" id="btnRatioCycler" style="background: #0c0e14; border: 1px solid rgba(255,255,255,0.08); border-radius: 7px; padding: 5px 8px; font-size: 0.66rem; font-weight: 700; color: #cbd5e1; cursor: pointer; display: flex; align-items: center; gap: 4px;">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"></rect></svg>
-                    <span id="lblCurrentRatio">16:9</span>
+                    <span id="lblCurrentRatio">3:4</span>
                   </button>
 
                   <!-- Seletor de Resolução / Qualidade -->
@@ -9610,7 +9610,7 @@
       window.selectModelFromPicker = selectModelFromPicker;
 
       function cycleCreatorRatio() {
-        const ratios = ['16:9', '9:16', '1:1', '4:5'];
+        const ratios = ['16:9', '9:16', '3:4', '1:1', '4:5'];
         const curIdx = ratios.indexOf(currentCreatorAspectRatio);
         const next = ratios[(curIdx + 1) % ratios.length];
         currentCreatorAspectRatio = next;
@@ -10577,7 +10577,7 @@
             lora_file: personaCreator.lora_file || personaCreator.lora_url || undefined,
             lora_weight: Number(document.getElementById('rngLoraWeight')?.value || 0.85),
             lens: currentErosCheckpoint,
-            lora_base_weight: Number(document.getElementById('rngLoraBaseWeight')?.value || 0.6),
+            lora_base_weight: Number(document.getElementById('rngLoraBaseWeight')?.value || 0.3),
             lora_musa: personaCreator.lora_file || personaCreator.lora_name || personaCreator.lora_url || undefined,
             lora_musa_weight: Number(document.getElementById('rngLoraWeight')?.value || 0.85),
             studio_mode: currentStudioMode,
@@ -10586,7 +10586,7 @@
             aspect_ratio: currentCreatorAspectRatio,
             references: currentCreatorRefs,
             persona_name: currentCreatorMusa,
-            speed_mode: motionEngine ? currentMotionSpeedMode : (liveModel.default_speed_mode || 'ghostflash'),
+            speed_mode: motionEngine ? currentMotionSpeedMode : undefined,
             reference_image: motionEngine ? (currentMotionReference || currentCreatorRefs[0]) : undefined,
             motion_video: motionEngine && (motionEngine.mode || 'swap') === 'swap' ? currentMotionVideo : undefined,
             depth_video: currentMotionDepthVideo || undefined,

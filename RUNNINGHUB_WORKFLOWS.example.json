@@ -439,7 +439,7 @@
     "workflowFile": "KREA2_DUAL_LORA.json",
     "instanceType": "plus",
     "credits": 10,
-    "defaultSpeedMode": "ghostflash",
+    "defaultSpeedMode": "ghostlite",
     "speedModes": [
       "ghostflash",
       "ghostlite"
@@ -478,7 +478,7 @@
         "fieldName": "lora_name",
         "weightField": "strength_model",
         "default": "phone_photography_2025_krea2.safetensors",
-        "defaultWeight": 0.6
+        "defaultWeight": 0.3
       },
       "lora_musa": {
         "nodeId": "101",
@@ -501,7 +501,7 @@
         "nodeId": "53",
         "fieldName": "steps",
         "type": "number",
-        "default": 10
+        "default": 8
       },
       "cfg": {
         "nodeId": "53",
@@ -513,19 +513,20 @@
         "nodeId": "52",
         "fieldName": "width",
         "type": "number",
-        "default": 1024
+        "default": 896
       },
       "height": {
         "nodeId": "52",
         "fieldName": "height",
         "type": "number",
-        "default": 1536
+        "default": 1152
       }
     },
     "outputNodeIds": [
       "29"
     ],
-    "requiresReference": false
+    "requiresReference": false,
+    "cost_label": "4 créditos • GhostLite"
   },
   "image_edit_ph3": {
     "name": "GhostComposer (P-H3 Scene Placement)",
