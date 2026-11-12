@@ -8879,10 +8879,14 @@
                   </div>
 
                   <!-- Seletor de Aspect Ratio -->
-                  <button type="button" onclick="cycleCreatorRatio()" id="btnRatioCycler" style="background: #0c0e14; border: 1px solid rgba(255,255,255,0.08); border-radius: 7px; padding: 5px 8px; font-size: 0.66rem; font-weight: 700; color: #cbd5e1; cursor: pointer; display: flex; align-items: center; gap: 4px;">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"></rect></svg>
-                    <span id="lblCurrentRatio">3:4</span>
-                  </button>
+                  <select id="selCreatorAspectRatio" onchange="setCreatorRatio(this.value)" style="background: #0c0e14; border: 1px solid rgba(255,255,255,0.08); border-radius: 7px; padding: 5px 8px; font-size: 0.66rem; font-weight: 700; color: #cbd5e1; cursor: pointer; outline: none;">
+                    <option value="3:4" selected>3:4 Retrato</option>
+                    <option value="4:5">4:5 Feed</option>
+                    <option value="9:16">9:16 Stories</option>
+                    <option value="1:1">1:1 Quadrado</option>
+                    <option value="4:3">4:3 Paisagem</option>
+                    <option value="16:9">16:9 Cinema</option>
+                  </select>
 
                   <!-- Seletor de Resolução / Qualidade -->
                   <button type="button" onclick="cycleCreatorQuality()" id="btnQualityCycler" style="background: #0c0e14; border: 1px solid rgba(255,255,255,0.08); border-radius: 7px; padding: 5px 8px; font-size: 0.66rem; font-weight: 700; color: #cbd5e1; cursor: pointer; display: flex; align-items: center; gap: 4px;">
@@ -8924,7 +8928,7 @@
                   <span id="lblCanvasModelBadge" style="background: rgba(190, 242, 100, 0.12); color: var(--accent-lime); font-size: 0.58rem; font-weight: 800; padding: 2px 7px; border-radius: 5px; border: 1px solid rgba(190, 242, 100, 0.25);">Eros-Image™ 2K</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 6px;">
-                  <span id="lblCanvasSpec" style="font-size: 0.62rem; color: #94a3b8; font-weight: 600;">2K · High • 16:9</span>
+                  <span id="lblCanvasSpec" style="font-size: 0.62rem; color: #94a3b8; font-weight: 600;">896×1152 • 3:4</span>
                   <button type="button" onclick="openCreatorFullscreen()" title="Tela cheia" style="background: #141720; border: 1px solid rgba(255,255,255,0.08); color: #cbd5e1; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg>
                   </button>
@@ -10129,8 +10133,18 @@
 
       function setCreatorRatio(ratio, btn) {
         currentCreatorAspectRatio = ratio;
+        const resolutions = {
+          '1:1': '1024×1024',
+          '3:4': '896×1152',
+          '4:5': '896×1120',
+          '9:16': '768×1344',
+          '4:3': '1152×896',
+          '16:9': '1344×768'
+        };
         const spec = document.getElementById('lblCanvasSpec');
-        if (spec) spec.innerText = `${currentCreatorQuality} • ${ratio}`;
+        if (spec) spec.innerText = `${resolutions[ratio] || ''} • ${ratio}`;
+        const sel = document.getElementById('selCreatorAspectRatio');
+        if (sel && sel.value !== ratio) sel.value = ratio;
       }
       window.setCreatorRatio = setCreatorRatio;
 
