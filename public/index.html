@@ -8223,6 +8223,7 @@
       let currentUpscaleMode = 'single';
       let currentUpscaleSingle = null;
       let currentUpscaleZip = null;
+      let currentGenerationInstance = null;
       let currentCreatorHiggsFirst = null;
       let currentCreatorHiggsEnd = null;
 
@@ -8927,7 +8928,9 @@
                   <span style="font-size: 0.78rem; font-weight: 800; color: #fff;">Preview do Render</span>
                   <span id="lblCanvasModelBadge" style="background: rgba(190, 242, 100, 0.12); color: var(--accent-lime); font-size: 0.58rem; font-weight: 800; padding: 2px 7px; border-radius: 5px; border: 1px solid rgba(190, 242, 100, 0.25);">Eros-Image™ 2K</span>
                 </div>
-                <div style="display: flex; align-items: center; gap: 6px;">
+                <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end;">
+                  <span id="lblRunningHubUsage" style="font-size: 0.6rem; color: #64748b; white-space: nowrap;"></span>
+                  <span id="lblGenerationCost" style="font-size: 0.6rem; color: var(--accent-lime); white-space: nowrap;"></span>
                   <span id="lblCanvasSpec" style="font-size: 0.62rem; color: #94a3b8; font-weight: 600;">896×1152 • 3:4</span>
                   <button type="button" onclick="openCreatorFullscreen()" title="Tela cheia" style="background: #141720; border: 1px solid rgba(255,255,255,0.08); color: #cbd5e1; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center;">
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"></path></svg>
@@ -9047,8 +9050,29 @@
         }
       }
 
+      async function loadCreatorUsage() {
+        try {
+          const token = await getSupabaseAccessToken();
+          if (!token) return;
+          const res = await fetch('https://www.ghostlens.cloud/api/wavespeed_proxy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ action: 'creator_usage' })
+          });
+          if (!res.ok) return;
+          const data = await res.json().catch(() => ({}));
+          const el = document.getElementById('lblRunningHubUsage');
+          if (el && data.remain_coins !== undefined && data.remain_coins !== null) {
+            const coins = Number(data.remain_coins);
+            el.innerText = `RunningHub: ${Number.isFinite(coins) ? coins.toLocaleString('pt-BR') : data.remain_coins} coins • ${data.current_tasks || 0} tarefas`;
+          }
+        } catch (e) {}
+      }
+      window.loadCreatorUsage = loadCreatorUsage;
+
       async function hydrateCreatorStudio() {
         const liveModels = await loadCreatorCatalog();
+        loadCreatorUsage();
         const selMusa = document.getElementById('selCreatorMusa');
         if (selMusa) {
           selMusa.innerHTML = '';
@@ -10546,6 +10570,7 @@
           showToast('Escreva o prompt de ação para o modo Ação Livre.', 4000);
           return;
         }
+        currentGenerationInstance = null;
         const overlay = document.getElementById('creatorLoadingOverlay');
         const statusLbl = document.getElementById('lblCreatorLoadingStatus');
         const timeLbl = document.getElementById('lblRenderTime');
@@ -10637,6 +10662,7 @@
             throw new Error(data.message || data.error || 'Falha ao gerar a imagem.');
           }
           if (data.status === 'processing' && data.task_id) {
+            if (data.instance_type) currentGenerationInstance = data.instance_type;
             if (statusLbl) statusLbl.innerText = 'Workflow enviado. Aguardando o RunningHub...';
             const final = await pollCreatorTask(data.task_id);
             const finalUrl = final.image_url || final.video_url || (final.media_urls && final.media_urls[0]) || '';
@@ -10646,6 +10672,15 @@
             if (currentCreatorModel === 'upscale_capivara_mass' && final.media) {
               renderEnhancerResults(final.media);
             }
+            const costEl = document.getElementById('lblGenerationCost');
+            const coins = final.consume_coins !== undefined && final.consume_coins !== null ? final.consume_coins : final.provider_cost;
+            const costSecs = final.task_cost_time;
+            if (costEl) {
+              costEl.innerText = (coins !== undefined && coins !== null)
+                ? `Gasto: ${coins} coins${costSecs ? ' • ' + costSecs + 's' : ''}${currentGenerationInstance ? ' • ' + currentGenerationInstance : ''}`
+                : '';
+            }
+            setTimeout(loadCreatorUsage, 1200);
             if (timeLbl) timeLbl.innerText = `Render: ${((Date.now() - start) / 1000).toFixed(1)}s`;
             const successMsg = currentCreatorModel === 'image_edit_ph3'
               ? 'Cena composta com sucesso!'

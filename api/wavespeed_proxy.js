@@ -19,7 +19,7 @@ const {
   enforceRateLimit,
   supabaseRest
 } = require('../lib/ghostlens-backend');
-const { generateCreatorImage, generateCreatorFromVision, queryCreatorTask, getCreatorCatalog, creatorConfigured, visionConfigured } = require('../lib/creator');
+const { generateCreatorImage, generateCreatorFromVision, queryCreatorTask, getCreatorCatalog, getCreatorUsage, creatorConfigured, visionConfigured } = require('../lib/creator');
 const { getRunningHubCatalog } = require('../lib/runninghub');
 
 const WAVESPEED_API_KEY = process.env.WAVESPEED_API_KEY || '';
@@ -177,6 +177,14 @@ module.exports = async (req, res) => {
 
     const body = req.body || {};
     const action = String(body.action || '').trim();
+
+    if (action === 'creator_usage') {
+      const email = String(user.email || '').toLowerCase();
+      const isAdmin = (user.app_metadata && user.app_metadata.role === 'admin') || OWNER_EMAILS.includes(email);
+      if (!isAdmin) return res.status(403).json({ error: 'admin_required' });
+      const usage = await getCreatorUsage();
+      return res.status(usage.configured === false ? 503 : 200).json(usage);
+    }
 
     if (action === 'creator_generate') {
       const result = await generateCreatorImage(body, user);

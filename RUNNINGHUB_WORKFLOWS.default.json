@@ -637,17 +637,27 @@
         "type": "number",
         "default": 1
       },
-      "width": {
-        "nodeId": "52",
-        "fieldName": "width",
-        "type": "number",
-        "default": 896
+      "aspect_ratio": {
+        "nodeId": "102",
+        "fieldName": "aspect_ratio",
+        "presetKey": "aspect_ratio",
+        "presets": {
+          "9:16": "9:16 (Vertical)",
+          "16:9": "16:9 (Widescreen)",
+          "1:1": "1:1 (Square)",
+          "3:4": "3:4 (Portrait)",
+          "4:5": "4:5 (Instagram Portrait)",
+          "4:3": "4:3 (Landscape)",
+          "2:3": "2:3 (Photo Portrait)",
+          "3:2": "3:2 (Photo Landscape)"
+        },
+        "default": "3:4 (Portrait)"
       },
-      "height": {
-        "nodeId": "52",
-        "fieldName": "height",
+      "megapixels": {
+        "nodeId": "102",
+        "fieldName": "megapixels",
         "type": "number",
-        "default": 1152
+        "default": 1.0
       }
     },
     "outputNodeIds": [
