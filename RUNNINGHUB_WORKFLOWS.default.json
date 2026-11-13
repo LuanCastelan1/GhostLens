@@ -1170,10 +1170,10 @@
     "cost_label": "15 créditos • Editor NSFW"
   },
   "eros_image_lora_pose": {
-    "name": "Eros-Image Pose (LoRA + Prompt)",
-    "description": "Gera a Musa em qualquer pose descrita por texto, com identidade preservada pelo LoRA da persona.",
+    "name": "Eros-Image Pose Editor (LoRA + Prompt)",
+    "description": "Edita a foto da musa por prompt (pose, ângulo, roupa e cenário) preservando rosto, pele, derme e proporções com o LoRA da persona.",
     "mode": "image",
-    "control": "eros",
+    "control": "edit",
     "workflowId": "",
     "workflowFile": "02_EDITOR_EROS_IMAGE/02_EROS_IMAGE_LORA_POSE_PROMPT.json",
     "instanceType": "plus",
@@ -1193,88 +1193,103 @@
     },
     "tags": [
       "Eros-Image",
-      "Pose por Prompt",
-      "Dual LoRA"
+      "Editor de Pose",
+      "LoRA da Musa",
+      "Derme Preservada"
     ],
-    "badge": "Eros-Image Pose",
-    "button": "Gerar Pose com Eros-Image",
+    "badge": "Eros-Image Pose Editor",
+    "button": "Editar Pose com Eros-Image",
     "resultMode": "image",
-    "inputs": {
-      "checkpoint": {
-        "nodeId": "55",
-        "fieldName": "unet_name",
-        "default": "krea2/krea2_turbo_int8_convrot.safetensors"
+    "requiredAssets": [
+      "base_image"
+    ],
+    "assets": {
+      "base_image": {
+        "bodyKey": "base_image",
+        "type": "image"
       },
-      "lora_base": {
-        "nodeId": "100",
-        "fieldName": "lora_name",
-        "weightField": "strength_model",
-        "default": "phone_photography_2025_krea2.safetensors",
-        "defaultWeight": 0.8
+      "reference_image": {
+        "bodyKey": "reference_image",
+        "type": "image"
+      }
+    },
+    "inputs": {
+      "base_image": {
+        "nodeId": "2",
+        "fieldName": "image",
+        "assetKey": "base_image",
+        "assetValue": "fileName"
       },
       "lora_musa": {
         "nodeId": "101",
         "fieldName": "lora_name",
         "weightField": "strength_model",
         "source": "persona_lora",
-        "defaultWeight": 1.5
+        "defaultWeight": 1.0,
+        "default": "phone_photography_2025_krea2.safetensors"
       },
       "prompt": {
-        "nodeId": "51",
-        "fieldName": "text",
+        "nodeId": "41052",
+        "fieldName": "prompt",
         "source": "prompt"
       },
       "seed": {
-        "nodeId": "53",
+        "nodeId": "41053",
         "fieldName": "seed",
         "type": "number"
       },
       "steps": {
-        "nodeId": "53",
+        "nodeId": "41053",
         "fieldName": "steps",
         "type": "number",
         "default": 8
       },
       "cfg": {
-        "nodeId": "53",
+        "nodeId": "41053",
         "fieldName": "cfg",
         "type": "number",
         "default": 1
       },
-      "aspect_ratio": {
-        "nodeId": "102",
-        "fieldName": "aspect_ratio",
-        "presetKey": "aspect_ratio",
-        "presets": {
-          "9:16": "9:16 (Vertical)",
-          "16:9": "16:9 (Widescreen)",
-          "1:1": "1:1 (Square)",
-          "3:4": "3:4 (Portrait)",
-          "4:5": "4:5 (Instagram Portrait)",
-          "4:3": "4:3 (Landscape)",
-          "2:3": "2:3 (Photo Portrait)",
-          "3:2": "3:2 (Photo Landscape)"
-        },
-        "default": "3:4 (Portrait)"
-      },
-      "megapixels": {
-        "nodeId": "102",
-        "fieldName": "megapixels",
+      "denoise": {
+        "nodeId": "41053",
+        "fieldName": "denoise",
         "type": "number",
-        "default": 2.45
+        "default": 0.85
+      },
+      "width": {
+        "nodeId": "41065",
+        "fieldName": "width",
+        "type": "number"
+      },
+      "height": {
+        "nodeId": "41065",
+        "fieldName": "height",
+        "type": "number"
       },
       "batch_size": {
-        "nodeId": "52",
+        "nodeId": "41065",
         "fieldName": "batch_size",
         "type": "number",
         "default": 1
+      },
+      "reference_image": {
+        "nodeId": "34",
+        "fieldName": "image",
+        "assetKey": "reference_image",
+        "assetValue": "fileName"
       }
     },
     "outputNodeIds": [
-      "29"
+      "41057",
+      "41037"
     ],
     "requiresReference": false,
-    "cost_label": "20 créditos • Pose por Prompt"
+    "dimensionPreset": "2k",
+    "promptSuffix": "preserve the exact same skin texture, same derme, visible micro-pores, natural body proportions and identity; photorealistic raw photo",
+    "cost_label": "20 créditos • Editor de Pose",
+    "defaultAssetAliases": {
+      "reference_image": "base_image"
+    }
   },
   "eros_image_ref_pose": {
     "name": "Eros-Image Ref Pose (Pinterest + Musa)",
@@ -1379,7 +1394,8 @@
     ],
     "requiresReference": true,
     "cost_label": "20 créditos • Referência de Pose",
-    "dimensionPreset": "2k"
+    "dimensionPreset": "2k",
+    "promptSuffix": "preserve the same skin texture, derme, micro-pores, body proportions and identity; photorealistic raw photo"
   },
   "eros_image_inpaint": {
     "name": "Eros-Image Inpaint (Troca de Roupa)",
@@ -1471,6 +1487,7 @@
       "39"
     ],
     "requiresReference": false,
-    "cost_label": "12 créditos • Inpaint de Roupa"
+    "cost_label": "12 créditos • Inpaint de Roupa",
+    "promptSuffix": "preserve the surrounding skin texture, derme, micro-pores, lighting and identity"
   }
 }

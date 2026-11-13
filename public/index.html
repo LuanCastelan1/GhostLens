@@ -6744,6 +6744,16 @@
       return parts.join(', ');
     }
 
+    function parseCreatorDna(value) {
+      const text = String(value || '').trim();
+      if (!text) return {};
+      try {
+        const parsed = JSON.parse(text);
+        if (parsed && typeof parsed === 'object') return parsed;
+      } catch (e) {}
+      return { prompt: text };
+    }
+
     function getStructuredDnaSummary(dna) {
       if (!dna) return '';
       return [
@@ -8706,8 +8716,8 @@
                   <span style="font-size: 0.72rem; font-weight: 800; color: #fff;">GhostComposer</span>
                   <span style="font-size: 0.58rem; background: rgba(190,242,100,0.15); color: var(--accent-lime); padding: 2px 6px; border-radius: 4px; font-weight: 800;">P-H3 • 8 Steps</span>
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                  <div>
+                <div id="boxComposerSlotsGrid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                  <div id="boxComposerSceneSlot">
                     <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">Cenário</div>
                     <input type="file" id="fileComposerScene" accept="image/*" style="display: none;" onchange="handleComposerSceneUpload(this.files)">
                     <label for="fileComposerScene" id="composerSceneDrop" style="height: 96px; border: 1.5px dashed rgba(190,242,100,0.3); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; color: #bef264; background: rgba(190,242,100,0.03); overflow: hidden; position: relative;">
@@ -8715,7 +8725,7 @@
                       <span style="font-size: 0.6rem; font-weight: 700;">Adicionar cenário</span>
                     </label>
                   </div>
-                  <div>
+                  <div id="boxComposerCharacterSlot">
                     <div style="font-size: 0.62rem; color: #94a3b8; margin-bottom: 4px;">Musa / Personagem</div>
                     <input type="file" id="fileComposerCharacter" accept="image/*" style="display: none;" onchange="handleComposerCharacterUpload(this.files)">
                     <label for="fileComposerCharacter" id="composerCharacterDrop" style="height: 96px; border: 1.5px dashed rgba(56,189,248,0.3); border-radius: 9px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer; color: #38bdf8; background: rgba(56,189,248,0.03); overflow: hidden; position: relative;">
@@ -9126,6 +9136,7 @@
 
       function saveCreatorDnaFromStudio() {
         const dna = (document.getElementById('txtCreatorDna')?.value || '').trim();
+        currentCreatorDna = parseCreatorDna(dna);
         if (!currentCreatorProfileId) return;
         localStorage.setItem(`ghost_dna_${currentCreatorProfileId}`, dna);
         const status = document.getElementById('lblMusaDnaStatus');
@@ -9746,6 +9757,7 @@
 
         // Buscar DNA e status de LoRA salvo
         const savedDna = localStorage.getItem(`ghost_dna_${profileId}`) || p.dna || '';
+        currentCreatorDna = parseCreatorDna(savedDna);
         if (dnaTxt) dnaTxt.value = savedDna;
         if (dnaStatus) dnaStatus.innerText = savedDna ? `${savedDna.length} chars` : 'sem DNA';
 
@@ -9947,8 +9959,13 @@
         const file = (files || [])[0];
         if (!file) return;
         try {
-          currentComposerCharacter = await ghostCompressImage(file, 768, 0.85);
+          const editorBase = ['eros_image_lora_pose', 'eros_image_inpaint'].includes(currentCreatorModel);
+          currentComposerCharacter = await ghostCompressImage(file, editorBase ? 1536 : 768, editorBase ? 0.92 : 0.85);
           composerDropPreview('composerCharacterDrop', currentComposerCharacter);
+          if (currentCreatorModel === 'eros_image_lora_pose') {
+            const ratio = await detectImageAspect(currentComposerCharacter);
+            if (ratio) setCreatorRatio(ratio, null);
+          }
           showToast(currentCreatorModel === 'eros_image_inpaint' ? 'Foto base carregada.' : 'Foto da musa carregada.', 2500);
         } catch (e) {
           showToast('Não foi possível processar a foto da musa.', 4000);
@@ -10118,16 +10135,23 @@
         const boxRefsImg = document.getElementById('boxReferencesImage');
         const boxRefsVid = document.getElementById('boxReferencesVideo');
 
-        if (model === 'image_edit_ph3' || model === 'eros_image_ref_pose' || model === 'eros_image_inpaint') {
+        if (model === 'image_edit_ph3' || model === 'eros_image_lora_pose' || model === 'eros_image_ref_pose' || model === 'eros_image_inpaint') {
           if (boxErosFrame) boxErosFrame.style.display = 'none';
           if (boxGeneralRefs) boxGeneralRefs.style.display = 'none';
           if (boxRefsImg) boxRefsImg.style.display = 'none';
           if (boxRefsVid) boxRefsVid.style.display = 'none';
           document.getElementById('boxImageEditControls')?.style.setProperty('display', 'flex');
+          const sceneSlot = document.getElementById('boxComposerSceneSlot');
+          if (sceneSlot) sceneSlot.style.display = 'block';
+          const slotsGrid = document.getElementById('boxComposerSlotsGrid');
+          if (slotsGrid) slotsGrid.style.gridTemplateColumns = '1fr 1fr';
           const sceneLabel = document.querySelector('#boxImageEditControls label[for="fileComposerScene"] span:last-child');
           const charLabel = document.querySelector('#boxImageEditControls label[for="fileComposerCharacter"] span:last-child');
           if (sceneLabel && charLabel) {
-            if (model === 'eros_image_ref_pose') {
+            if (model === 'eros_image_lora_pose') {
+              sceneLabel.innerText = 'Referência frontal (opcional)';
+              charLabel.innerText = 'Foto da musa (base)';
+            } else if (model === 'eros_image_ref_pose') {
               sceneLabel.innerText = 'Pose de referência';
               charLabel.innerText = 'Foto da musa';
             } else if (model === 'eros_image_inpaint') {
@@ -10138,6 +10162,16 @@
               charLabel.innerText = 'Foto da musa';
             }
           }
+          const promptArea = document.getElementById('txtCreatorPrompt');
+          if (promptArea) {
+            if (model === 'eros_image_lora_pose') {
+              promptArea.placeholder = 'Ex: vire a musa de frente, mantenha a mesma pose agachada com as pernas juntas, mesma roupa e cenário; preserve a pele e a derme.';
+            } else if (model === 'eros_image_ref_pose') {
+              promptArea.placeholder = 'Ex: copie a pose da foto de referência, preserve o rosto, a pele e a derme da musa.';
+            } else if (model === 'eros_image_inpaint') {
+              promptArea.placeholder = 'Ex: troque a roupa da área marcada pela máscara, preserve o resto da imagem e a pele.';
+            }
+          }
           if (!currentComposerCharacter) {
             const personaCreator = getCreatorDataForProfile(currentCreatorProfileId) || {};
             const ref = (personaCreator.references && personaCreator.references[0]) || currentCreatorRefs[0];
@@ -10145,6 +10179,11 @@
               currentComposerCharacter = ref;
               composerDropPreview('composerCharacterDrop', ref);
             }
+          }
+          if (model === 'eros_image_lora_pose' && currentComposerCharacter) {
+            detectImageAspect(currentComposerCharacter).then((ratio) => {
+              if (ratio) setCreatorRatio(ratio, null);
+            });
           }
           if (model === 'eros_image_ref_pose' && currentComposerScene) {
             detectImageAspect(currentComposerScene).then((ratio) => {
@@ -10605,6 +10644,13 @@
             return;
           }
         }
+        if (currentCreatorModel === 'eros_image_lora_pose') {
+          if (!currentComposerCharacter && currentCreatorRefs[0]) currentComposerCharacter = currentCreatorRefs[0];
+          if (!currentComposerCharacter) {
+            showToast('Envie a foto da musa que será editada.', 5000);
+            return;
+          }
+        }
         if (currentCreatorModel === 'eros_image_ref_pose') {
           if (!currentComposerScene) {
             showToast('Envie a foto de referência da pose (Pinterest).', 5000);
@@ -10720,6 +10766,10 @@
           if (currentCreatorModel === 'image_edit_ph3') {
             payload.scene_image = currentComposerScene;
             payload.character_image = currentComposerCharacter;
+          }
+          if (currentCreatorModel === 'eros_image_lora_pose') {
+            payload.base_image = currentComposerCharacter;
+            payload.reference_image = currentComposerScene || undefined;
           }
           if (currentCreatorModel === 'eros_image_ref_pose') {
             payload.base_image = currentComposerCharacter;
