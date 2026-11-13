@@ -1262,6 +1262,12 @@
         "fieldName": "megapixels",
         "type": "number",
         "default": 2.45
+      },
+      "batch_size": {
+        "nodeId": "52",
+        "fieldName": "batch_size",
+        "type": "number",
+        "default": 1
       }
     },
     "outputNodeIds": [
@@ -1355,6 +1361,16 @@
         "fieldName": "denoise",
         "type": "number",
         "default": 0.85
+      },
+      "width": {
+        "nodeId": "41065",
+        "fieldName": "width",
+        "type": "number"
+      },
+      "height": {
+        "nodeId": "41065",
+        "fieldName": "height",
+        "type": "number"
       }
     },
     "outputNodeIds": [
@@ -1362,7 +1378,8 @@
       "41037"
     ],
     "requiresReference": true,
-    "cost_label": "20 créditos • Referência de Pose"
+    "cost_label": "20 créditos • Referência de Pose",
+    "dimensionPreset": "2k"
   },
   "eros_image_inpaint": {
     "name": "Eros-Image Inpaint (Troca de Roupa)",

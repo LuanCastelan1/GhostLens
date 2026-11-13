@@ -8169,6 +8169,7 @@
       let currentCreatorMediaUrl = CREATOR_PLACEHOLDER;
       let currentCreatorRefs = [];
       let currentCreatorHistory = [];
+      let currentCreatorBatchCount = 1;
       let currentCreatorDna = {};
       const MOTION_ENGINES = {
         motion_shinjutsu_h3: {
@@ -8873,7 +8874,7 @@
               <div id="boxBottomControlsRow" style="display: flex; align-items: center; justify-content: space-between; gap: 8px; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px; flex-wrap: wrap;">
                 <div style="display: flex; align-items: center; gap: 6px;">
                   <!-- Contador de Fotos -->
-                  <div style="display: inline-flex; align-items: center; background: #0c0e14; border: 1px solid rgba(255,255,255,0.08); border-radius: 7px; padding: 2px 5px; gap: 4px;">
+                  <div id="boxBatchCountControl" style="display: none; align-items: center; background: #0c0e14; border: 1px solid rgba(255,255,255,0.08); border-radius: 7px; padding: 2px 5px; gap: 4px;">
                     <button type="button" onclick="adjustBatchCount(-1)" style="background: none; border: none; color: #94a3b8; font-size: 0.8rem; cursor: pointer; padding: 1px 4px;">-</button>
                     <span id="lblBatchCount" style="font-size: 0.68rem; font-weight: 800; color: #fff;">1</span>
                     <button type="button" onclick="adjustBatchCount(1)" style="background: none; border: none; color: #94a3b8; font-size: 0.8rem; cursor: pointer; padding: 1px 4px;">+</button>
@@ -9185,6 +9186,13 @@
         `).join('');
       }
       window.renderCreatorHistory = renderCreatorHistory;
+
+      function addCreatorHistory(url) {
+        if (!url) return;
+        currentCreatorHistory = [url, ...currentCreatorHistory.filter((u) => u !== url)].slice(0, 60);
+        renderCreatorHistory();
+      }
+      window.addCreatorHistory = addCreatorHistory;
 
       /* CATÁLOGO DE MODELOS DE IA MAGNIFIC STYLE (SCREENSHOTS 4 & 5) */
       const CREATOR_MODELS_CATALOG = {
@@ -9887,7 +9895,7 @@
             img.style.display = 'block';
           }
         }
-        renderCreatorHistory(url);
+        addCreatorHistory(url);
       }
       window.setCreatorPreviewMedia = setCreatorPreviewMedia;
 
@@ -9897,15 +9905,40 @@
         el.innerHTML = `<img src="${dataUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.9;"><span style="position:relative;z-index:1;background:rgba(0,0,0,.65);color:#fff;font-size:.55rem;padding:2px 6px;border-radius:4px;">Trocar</span>`;
       }
 
+      function nearestCreatorAspect(width, height) {
+        const target = width / height;
+        const options = [
+          ['1:1', 1], ['3:4', 3 / 4], ['4:5', 4 / 5],
+          ['9:16', 9 / 16], ['4:3', 4 / 3], ['16:9', 16 / 9]
+        ];
+        let best = options[1];
+        for (const opt of options) {
+          if (Math.abs(opt[1] - target) < Math.abs(best[1] - target)) best = opt;
+        }
+        return best[0];
+      }
+      function detectImageAspect(dataUrl) {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.onload = () => resolve(nearestCreatorAspect(img.naturalWidth, img.naturalHeight));
+          img.onerror = () => resolve('');
+          img.src = dataUrl;
+        });
+      }
+
       async function handleComposerSceneUpload(files) {
         const file = (files || [])[0];
         if (!file) return;
         try {
           currentComposerScene = await ghostCompressImage(file, 1280, 0.9);
           composerDropPreview('composerSceneDrop', currentComposerScene);
-          showToast('Cenário carregado.', 2500);
+          if (currentCreatorModel === 'eros_image_ref_pose') {
+            const ratio = await detectImageAspect(currentComposerScene);
+            if (ratio) setCreatorRatio(ratio, null);
+          }
+          showToast(currentCreatorModel === 'eros_image_inpaint' ? 'Máscara carregada.' : 'Cenário carregado.', 2500);
         } catch (e) {
-          showToast('Não foi possível processar o cenário.', 4000);
+          showToast('Não foi possível processar a imagem.', 4000);
         }
       }
       window.handleComposerSceneUpload = handleComposerSceneUpload;
@@ -9916,7 +9949,7 @@
         try {
           currentComposerCharacter = await ghostCompressImage(file, 768, 0.85);
           composerDropPreview('composerCharacterDrop', currentComposerCharacter);
-          showToast('Foto da musa carregada.', 2500);
+          showToast(currentCreatorModel === 'eros_image_inpaint' ? 'Foto base carregada.' : 'Foto da musa carregada.', 2500);
         } catch (e) {
           showToast('Não foi possível processar a foto da musa.', 4000);
         }
@@ -10076,6 +10109,8 @@
           const el = document.getElementById(id);
           if (el) el.style.display = 'none';
         });
+        const batchBox = document.getElementById('boxBatchCountControl');
+        if (batchBox) batchBox.style.display = model === 'eros_image_lora_pose' ? 'inline-flex' : 'none';
 
         // Alternância específica para o Eros-Image: mostra apenas o frame quadradinho da musa com LoRA!
         const boxErosFrame = document.getElementById('boxErosMusaFrame');
@@ -10659,6 +10694,7 @@
             eros_checkpoint: currentErosCheckpoint,
             prompt: fullPrompt,
             aspect_ratio: currentCreatorAspectRatio,
+            batch_size: currentCreatorModel === 'eros_image_lora_pose' ? currentCreatorBatchCount : undefined,
             references: currentCreatorRefs,
             persona_name: currentCreatorMusa,
             speed_mode: motionEngine ? currentMotionSpeedMode : undefined,
@@ -10713,6 +10749,9 @@
             if (!finalUrl) throw new Error('O workflow não retornou mídia.');
             const isVideo = final.media_type === 'video' || Boolean(final.video_url);
             setCreatorPreviewMedia(finalUrl, isVideo ? 'video' : 'image');
+            const extraImages = (Array.isArray(final.media) ? final.media : [])
+              .filter((m) => m && m.url && m.media_type !== 'video' && m.url !== finalUrl);
+            extraImages.forEach((m) => addCreatorHistory(m.url));
             if (currentCreatorModel === 'upscale_capivara_mass' && final.media) {
               renderEnhancerResults(final.media);
             }
@@ -10730,7 +10769,7 @@
               ? 'Cena composta com sucesso!'
               : currentCreatorModel === 'upscale_capivara_mass'
                 ? 'Upscale concluído!'
-                : (isVideo ? 'Vídeo gerado com sucesso!' : 'Imagem gerada com sucesso!');
+                : (isVideo ? 'Vídeo gerado com sucesso!' : (extraImages.length ? `${extraImages.length + 1} imagens geradas!` : 'Imagem gerada com sucesso!'));
             showToast(successMsg, 4000);
             return;
           }
