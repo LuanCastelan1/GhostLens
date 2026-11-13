@@ -1170,22 +1170,22 @@
     "cost_label": "15 créditos • Editor NSFW"
   },
   "eros_image_lora_pose": {
-    "name": "Eros-Image Pose Editor (LoRA + Prompt)",
-    "description": "Edita a foto da musa por prompt (pose, ângulo, roupa e cenário) preservando rosto, pele, derme e proporções com o LoRA da persona.",
+    "name": "Eros-Image Pose Editor (4 Ângulos)",
+    "description": "Edita a mesma foto da musa com 4 prompts diferentes em uma única tarefa: frente, ângulo de cima, em pé, selfie por cima do ombro etc. Preserva rosto, pele, derme e ambiente com o LoRA da persona.",
     "mode": "image",
     "control": "edit",
     "workflowId": "",
     "workflowFile": "02_EDITOR_EROS_IMAGE/02_EROS_IMAGE_LORA_POSE_PROMPT.json",
     "instanceType": "plus",
-    "credits": 20,
+    "credits": 40,
     "defaultSpeedMode": "ghostlite",
     "speedModes": [
       "ghostflash",
       "ghostlite"
     ],
     "speedModeCredits": {
-      "ghostflash": 20,
-      "ghostlite": 12
+      "ghostflash": 40,
+      "ghostlite": 24
     },
     "speedInstanceTypes": {
       "ghostflash": "plus",
@@ -1194,11 +1194,12 @@
     "tags": [
       "Eros-Image",
       "Editor de Pose",
+      "4 Ângulos",
       "LoRA da Musa",
       "Derme Preservada"
     ],
-    "badge": "Eros-Image Pose Editor",
-    "button": "Editar Pose com Eros-Image",
+    "badge": "Eros-Image Pose 4x",
+    "button": "Gerar 4 Ângulos com Eros-Image",
     "resultMode": "image",
     "requiredAssets": [
       "base_image"
@@ -1206,10 +1207,6 @@
     "assets": {
       "base_image": {
         "bodyKey": "base_image",
-        "type": "image"
-      },
-      "reference_image": {
-        "bodyKey": "reference_image",
         "type": "image"
       }
     },
@@ -1228,10 +1225,25 @@
         "defaultWeight": 1.0,
         "default": "phone_photography_2025_krea2.safetensors"
       },
-      "prompt": {
+      "prompt_1": {
         "nodeId": "41052",
         "fieldName": "prompt",
-        "source": "prompt"
+        "source": "prompt_1"
+      },
+      "prompt_2": {
+        "nodeId": "42052",
+        "fieldName": "prompt",
+        "source": "prompt_2"
+      },
+      "prompt_3": {
+        "nodeId": "43052",
+        "fieldName": "prompt",
+        "source": "prompt_3"
+      },
+      "prompt_4": {
+        "nodeId": "44052",
+        "fieldName": "prompt",
+        "source": "prompt_4"
       },
       "seed": {
         "nodeId": "41053",
@@ -1265,31 +1277,18 @@
         "nodeId": "41065",
         "fieldName": "height",
         "type": "number"
-      },
-      "batch_size": {
-        "nodeId": "41065",
-        "fieldName": "batch_size",
-        "type": "number",
-        "default": 1
-      },
-      "reference_image": {
-        "nodeId": "34",
-        "fieldName": "image",
-        "assetKey": "reference_image",
-        "assetValue": "fileName"
       }
     },
     "outputNodeIds": [
       "41057",
-      "41037"
+      "42057",
+      "43057",
+      "44057"
     ],
     "requiresReference": false,
     "dimensionPreset": "2k",
-    "promptSuffix": "preserve the exact same skin texture, same derme, visible micro-pores, natural body proportions and identity; photorealistic raw photo",
-    "cost_label": "20 créditos • Editor de Pose",
-    "defaultAssetAliases": {
-      "reference_image": "base_image"
-    }
+    "promptSuffix": "preserve the exact same skin texture, same derme, visible micro-pores, natural body proportions, same bedroom/environment and identity; photorealistic raw photo",
+    "cost_label": "40 créditos • 4 ângulos"
   },
   "eros_image_ref_pose": {
     "name": "Eros-Image Ref Pose (Pinterest + Musa)",

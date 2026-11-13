@@ -8734,6 +8734,13 @@
                     </label>
                   </div>
                 </div>
+                <div id="boxMultiPromptControls" style="display: none; flex-direction: column; gap: 6px;">
+                  <div style="font-size: 0.62rem; font-weight: 800; color: var(--accent-lime); text-transform: uppercase;">4 Prompts • 4 Ângulos na mesma foto</div>
+                  <textarea id="txtMultiPrompt1" rows="2" placeholder="1. De frente para a câmera, mesma pose agachada, pernas juntas..." style="width: 100%; background: #12141c; border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 6px 8px; border-radius: 6px; font-size: 0.66rem; font-family: inherit; resize: vertical; outline: none;"></textarea>
+                  <textarea id="txtMultiPrompt2" rows="2" placeholder="2. Ângulo de cima, câmera alta, mesma roupa e cenário..." style="width: 100%; background: #12141c; border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 6px 8px; border-radius: 6px; font-size: 0.66rem; font-family: inherit; resize: vertical; outline: none;"></textarea>
+                  <textarea id="txtMultiPrompt3" rows="2" placeholder="3. Em pé, encostada na cama, mesmo quarto..." style="width: 100%; background: #12141c; border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 6px 8px; border-radius: 6px; font-size: 0.66rem; font-family: inherit; resize: vertical; outline: none;"></textarea>
+                  <textarea id="txtMultiPrompt4" rows="2" placeholder="4. Selfie por cima do ombro mostrando o bumbum, mesmo look..." style="width: 100%; background: #12141c; border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 6px 8px; border-radius: 6px; font-size: 0.66rem; font-family: inherit; resize: vertical; outline: none;"></textarea>
+                </div>
                 <div style="font-size: 0.58rem; color: #64748b; line-height: 1.35;">A musa ativa é usada automaticamente; você pode trocar a foto. Descreva a ação no campo Prompt.</div>
               </div>
 
@@ -10127,7 +10134,7 @@
           if (el) el.style.display = 'none';
         });
         const batchBox = document.getElementById('boxBatchCountControl');
-        if (batchBox) batchBox.style.display = model === 'eros_image_lora_pose' ? 'inline-flex' : 'none';
+        if (batchBox) batchBox.style.display = 'none';
 
         // Alternância específica para o Eros-Image: mostra apenas o frame quadradinho da musa com LoRA!
         const boxErosFrame = document.getElementById('boxErosMusaFrame');
@@ -10142,14 +10149,13 @@
           if (boxRefsVid) boxRefsVid.style.display = 'none';
           document.getElementById('boxImageEditControls')?.style.setProperty('display', 'flex');
           const sceneSlot = document.getElementById('boxComposerSceneSlot');
-          if (sceneSlot) sceneSlot.style.display = 'block';
+          if (sceneSlot) sceneSlot.style.display = model === 'eros_image_lora_pose' ? 'none' : 'block';
           const slotsGrid = document.getElementById('boxComposerSlotsGrid');
-          if (slotsGrid) slotsGrid.style.gridTemplateColumns = '1fr 1fr';
+          if (slotsGrid) slotsGrid.style.gridTemplateColumns = model === 'eros_image_lora_pose' ? '1fr' : '1fr 1fr';
           const sceneLabel = document.querySelector('#boxImageEditControls label[for="fileComposerScene"] span:last-child');
           const charLabel = document.querySelector('#boxImageEditControls label[for="fileComposerCharacter"] span:last-child');
           if (sceneLabel && charLabel) {
             if (model === 'eros_image_lora_pose') {
-              sceneLabel.innerText = 'Referência frontal (opcional)';
               charLabel.innerText = 'Foto da musa (base)';
             } else if (model === 'eros_image_ref_pose') {
               sceneLabel.innerText = 'Pose de referência';
@@ -10162,6 +10168,8 @@
               charLabel.innerText = 'Foto da musa';
             }
           }
+          const multiBox = document.getElementById('boxMultiPromptControls');
+          if (multiBox) multiBox.style.display = model === 'eros_image_lora_pose' ? 'flex' : 'none';
           const promptArea = document.getElementById('txtCreatorPrompt');
           if (promptArea) {
             if (model === 'eros_image_lora_pose') {
@@ -10231,7 +10239,7 @@
         }
 
         const promptContainer = document.getElementById('boxPromptContainer');
-        if (promptContainer) promptContainer.style.display = model === 'upscale_capivara_mass' ? 'none' : 'block';
+        if (promptContainer) promptContainer.style.display = (model === 'upscale_capivara_mass' || model === 'eros_image_lora_pose') ? 'none' : 'block';
         const bottomRow = document.getElementById('boxBottomControlsRow');
         if (bottomRow) bottomRow.style.display = model === 'upscale_capivara_mass' ? 'none' : 'flex';
         const btnGen = document.getElementById('lblBtnGenText');
@@ -10684,7 +10692,14 @@
           }
         }
         const prompt = (document.getElementById('txtCreatorPrompt')?.value || '').trim();
-        if (!prompt && !motionEngine && currentCreatorModel !== 'upscale_capivara_mass') {
+        const multiPromptValues = ['1', '2', '3', '4'].map((i) => (document.getElementById(`txtMultiPrompt${i}`)?.value || '').trim());
+        const activeMultiPrompts = multiPromptValues.filter(Boolean);
+        if (currentCreatorModel === 'eros_image_lora_pose') {
+          if (!activeMultiPrompts.length) {
+            showToast('Escreva pelo menos um dos 4 prompts de ângulo.', 4000);
+            return;
+          }
+        } else if (!prompt && !motionEngine && currentCreatorModel !== 'upscale_capivara_mass') {
           showToast('Escreva o prompt da cena.', 4000);
           return;
         }
@@ -10707,6 +10722,8 @@
             statusLbl.innerText = 'Restaurando e upscalando no GhostEnhancer...';
           } else if (motionEngine) {
             statusLbl.innerText = `Renderizando motion com ${motionEngine.badge}...`;
+          } else if (currentCreatorModel === 'eros_image_lora_pose') {
+            statusLbl.innerText = 'Editando 4 ângulos com o LoRA da musa...';
           } else if (currentCreatorModel === 'eros_image_2k') {
             statusLbl.innerText = `Renderizando no motor Eros-Image™ 2K (${currentErosCheckpoint.toUpperCase()})...`;
           } else if (currentCreatorModel === 'seedream_5') {
@@ -10725,7 +10742,13 @@
 
         try {
           const dnaText = buildDnaPrompt(currentCreatorDna);
-          const fullPrompt = [dnaText, prompt].filter(Boolean).join('. ');
+          const promptPool = currentCreatorModel === 'eros_image_lora_pose'
+            ? multiPromptValues.map((p) => p || activeMultiPrompts[0])
+            : [];
+          const fullPrompts = promptPool.map((p) => [dnaText, p].filter(Boolean).join('. '));
+          const fullPrompt = currentCreatorModel === 'eros_image_lora_pose'
+            ? (fullPrompts[0] || [dnaText, prompt].filter(Boolean).join('. '))
+            : [dnaText, prompt].filter(Boolean).join('. ');
           const token = await getSupabaseAccessToken();
           const liveModel = getLiveCreatorModel(currentCreatorModel) || {};
           const isRunningHub = liveModel.provider === 'runninghub' || Boolean(liveModel.workflow_key) || Boolean(motionEngine) || staticImageTool;
@@ -10744,6 +10767,7 @@
             studio_mode: currentStudioMode,
             eros_checkpoint: currentErosCheckpoint,
             prompt: fullPrompt,
+            prompts: currentCreatorModel === 'eros_image_lora_pose' ? fullPrompts : undefined,
             aspect_ratio: currentCreatorAspectRatio,
             batch_size: currentCreatorModel === 'eros_image_lora_pose' ? currentCreatorBatchCount : undefined,
             references: currentCreatorRefs,
@@ -10767,9 +10791,11 @@
             payload.scene_image = currentComposerScene;
             payload.character_image = currentComposerCharacter;
           }
+          if (['eros_image_lora_pose', 'eros_image_ref_pose', 'eros_image_inpaint'].includes(currentCreatorModel)) {
+            payload.references = [];
+          }
           if (currentCreatorModel === 'eros_image_lora_pose') {
             payload.base_image = currentComposerCharacter;
-            payload.reference_image = currentComposerScene || undefined;
           }
           if (currentCreatorModel === 'eros_image_ref_pose') {
             payload.base_image = currentComposerCharacter;
