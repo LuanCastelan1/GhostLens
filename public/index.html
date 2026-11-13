@@ -10146,6 +10146,11 @@
               composerDropPreview('composerCharacterDrop', ref);
             }
           }
+          if (model === 'eros_image_ref_pose' && currentComposerScene) {
+            detectImageAspect(currentComposerScene).then((ratio) => {
+              if (ratio) setCreatorRatio(ratio, null);
+            });
+          }
         } else if (model === 'upscale_capivara_mass') {
           if (boxErosFrame) boxErosFrame.style.display = 'none';
           if (boxGeneralRefs) boxGeneralRefs.style.display = 'none';
