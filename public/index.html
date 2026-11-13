@@ -2904,7 +2904,7 @@
           <div style="margin-bottom: 14px;">
             <label
               style="font-size: 0.74rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 6px;">
-              Foto Autêntica da Modelo (Krea 2 / Ensaio Real)
+              Foto Autêntica da Modelo (Eros-Image / Ensaio Real)
             </label>
             <div style="display: flex; align-items: center; gap: 14px;">
               <div
@@ -2917,7 +2917,7 @@
                   onchange="handleAdminBannerUpload(this.files)" style="display: none;">
                 <button type="button" onclick="document.getElementById('adminBannerFileInput').click()"
                   style="background: rgba(234, 179, 8, 0.18); border: 1px solid rgba(234, 179, 8, 0.5); color: #fef08a; font-size: 0.8rem; font-weight: 800; padding: 9px 16px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                  📷 Carregar Foto Autêntica (Krea 2)...
+                  📷 Carregar Foto Autêntica (Eros-Image)...
                 </button>
                 <div style="font-size: 0.68rem; color: #cbd5e1; margin-top: 5px;">Esta foto atualiza instantaneamente o
                   banner da Home e a capa da Proposta Comercial.</div>
@@ -8307,7 +8307,7 @@
           seedream_5: { badge: 'Seedream 5 Pro', cost: 'Face & Look Swap', button: 'Gerar com Seedream 5 Pro' },
           chatgpt_import: { badge: 'GPT 2.6 Image (Plus)', cost: 'Importação Direta', button: 'Importar Imagem (Ctrl+V)' },
           nanobanana_21: { badge: 'Nano Banana 2.1', cost: 'Incluso no Plano', button: 'Gerar com Nano Banana' },
-          krea_2: { badge: 'Krea 2 Raw Edit', cost: 'Retoque & Textura', button: 'Gerar com Krea 2' },
+          krea_2: { badge: 'Eros-Image Raw', cost: 'Retoque & Textura', button: 'Gerar com Eros-Image' },
           qwen_360: { badge: 'Qwen 2.5 360°', cost: '6 Ângulos Orbitais', button: 'Gerar Ângulos 360°' },
           magnific_upscale: { badge: 'Magnific Upscaler 4K', cost: 'Restauração de Poros', button: 'Upscale com Magnific' },
 
@@ -9201,7 +9201,7 @@
             { id: 'qwen_360', name: 'Qwen 360 Image', provider: 'Alibaba', tags: ['360 Angle', 'Face Lock', '2K'], cost: '70 - 130', badge: 'Qwen 360', button: 'Gerar Multi-Ângulo' }
           ],
           recent: [
-            { id: 'krea_2', name: 'Krea 2', provider: 'Krea AI', tags: ['Refs', '~30s'], cost: '80 - 160', badge: 'Krea 2 Raw', button: 'Gerar com Krea 2' }
+            { id: 'krea_2', name: 'Eros-Image Raw', provider: 'Eros Studio', tags: ['Refs', 'Ultra Real'], cost: '80 - 160', badge: 'Eros-Image Raw', button: 'Gerar com Eros-Image' }
           ],
           allProviders: {
             'Magnific': [
@@ -9225,7 +9225,7 @@
             ],
             'Eros Pro Network': [
               { id: 'eros_image_2k', name: 'Eros-Image 2K (LoRA da Musa)', tags: ['Consistência 100%', '2K-4K'], cost: '80 - 120' },
-              { id: 'krea_2', name: 'Krea 2 Raw Edit', tags: ['RAW Natural', 'Retoque'], cost: '80 - 160' }
+              { id: 'krea_2', name: 'Eros-Image Raw', tags: ['RAW Natural', 'Retoque'], cost: '80 - 160' }
             ]
           }
         },
@@ -9306,7 +9306,7 @@
           chatgpt_import: { badge: 'GPT 2.6 Image', cost: 'Super-Prompt • Import', button: 'Importar Imagem GPT' },
           nanobanana_21: { badge: 'Google Nano Banana 2.1', cost: 'Ultra Rápido • 2K', button: 'Gerar com Nano Banana' },
           qwen_360: { badge: 'Qwen 360 Multi-Ângulo', cost: 'Consistência Orbital 360', button: 'Gerar Multi-Ângulo' },
-          krea_2: { badge: 'Krea 2 Raw Edit', cost: 'RAW Natural 35mm', button: 'Gerar com Krea 2' },
+          krea_2: { badge: 'Eros-Image Raw', cost: 'RAW Natural 35mm', button: 'Gerar com Eros-Image' },
           auto_video: { badge: 'Auto Video Engine', cost: 'Seleção Automática', button: 'Gerar Vídeo' },
           wan_3_prime: { badge: 'Wan 3.0 Prime', cost: 'Vídeo Ultra Realista 1080p', button: 'Gerar com Wan 3.0' },
           minimax_h3_max: { badge: 'MiniMax H3 Max', cost: 'Ultra Rápido 768p', button: 'Gerar com MiniMax H3' },
@@ -10083,12 +10083,26 @@
         const boxRefsImg = document.getElementById('boxReferencesImage');
         const boxRefsVid = document.getElementById('boxReferencesVideo');
 
-        if (model === 'image_edit_ph3') {
+        if (model === 'image_edit_ph3' || model === 'eros_image_ref_pose' || model === 'eros_image_inpaint') {
           if (boxErosFrame) boxErosFrame.style.display = 'none';
           if (boxGeneralRefs) boxGeneralRefs.style.display = 'none';
           if (boxRefsImg) boxRefsImg.style.display = 'none';
           if (boxRefsVid) boxRefsVid.style.display = 'none';
           document.getElementById('boxImageEditControls')?.style.setProperty('display', 'flex');
+          const sceneLabel = document.querySelector('#boxImageEditControls label[for="fileComposerScene"] span:last-child');
+          const charLabel = document.querySelector('#boxImageEditControls label[for="fileComposerCharacter"] span:last-child');
+          if (sceneLabel && charLabel) {
+            if (model === 'eros_image_ref_pose') {
+              sceneLabel.innerText = 'Pose de referência';
+              charLabel.innerText = 'Foto da musa';
+            } else if (model === 'eros_image_inpaint') {
+              sceneLabel.innerText = 'Máscara (P&B)';
+              charLabel.innerText = 'Foto base';
+            } else {
+              sceneLabel.innerText = 'Adicionar cenário';
+              charLabel.innerText = 'Foto da musa';
+            }
+          }
           if (!currentComposerCharacter) {
             const personaCreator = getCreatorDataForProfile(currentCreatorProfileId) || {};
             const ref = (personaCreator.references && personaCreator.references[0]) || currentCreatorRefs[0];
@@ -10217,7 +10231,7 @@
           intimate: 'Lente Intimate • Luz Baixa'
         };
         const badge = document.getElementById('lblCanvasModelBadge');
-        if (badge) badge.innerText = 'Eros-Image Krea 2 (' + (lensLabels[lensType] || 'RAW') + ')';
+        if (badge) badge.innerText = 'Eros-Image (' + (lensLabels[lensType] || 'RAW') + ')';
         const lblSpec = document.getElementById('lblCanvasSpec');
         if (lblSpec) lblSpec.innerText = `${currentCreatorAspectRatio} • ${lensSpecs[lensType] || ''} • 2K HD`;
         showToast(`Lente selecionada: ${lensLabels[lensType] || lensType}`, 2000);
@@ -10525,7 +10539,7 @@
           showToast('Este modelo ainda não está conectado. Configure USEAPI_TOKEN ou RunningHub.', 5000);
           return;
         }
-        if (!motionEngine && !staticImageTool && !currentCreatorRefs.length && !['eros_image_2k', 'eros_image_krea2'].includes(currentCreatorModel)) {
+        if (!motionEngine && !staticImageTool && !currentCreatorRefs.length && !['eros_image_2k', 'eros_image_krea2', 'eros_image_krea2_1k', 'eros_image_krea2_film', 'eros_image_lora_pose', 'eros_image_ref_pose', 'eros_image_inpaint'].includes(currentCreatorModel)) {
           showToast('Adicione pelo menos uma foto de referência da musa.', 5000);
           return;
         }
@@ -10548,6 +10562,28 @@
           if (!currentComposerCharacter && currentCreatorRefs[0]) currentComposerCharacter = currentCreatorRefs[0];
           if (!currentComposerCharacter) {
             showToast('Envie a foto da musa para o GhostComposer.', 5000);
+            return;
+          }
+        }
+        if (currentCreatorModel === 'eros_image_ref_pose') {
+          if (!currentComposerScene) {
+            showToast('Envie a foto de referência da pose (Pinterest).', 5000);
+            return;
+          }
+          if (!currentComposerCharacter && currentCreatorRefs[0]) currentComposerCharacter = currentCreatorRefs[0];
+          if (!currentComposerCharacter) {
+            showToast('Envie a foto da musa para preservar a identidade.', 5000);
+            return;
+          }
+        }
+        if (currentCreatorModel === 'eros_image_inpaint') {
+          if (!currentComposerScene) {
+            showToast('Envie a máscara da área que será alterada.', 5000);
+            return;
+          }
+          if (!currentComposerCharacter && currentCreatorRefs[0]) currentComposerCharacter = currentCreatorRefs[0];
+          if (!currentComposerCharacter) {
+            showToast('Envie a foto base que será editada.', 5000);
             return;
           }
         }
@@ -10643,6 +10679,14 @@
           if (currentCreatorModel === 'image_edit_ph3') {
             payload.scene_image = currentComposerScene;
             payload.character_image = currentComposerCharacter;
+          }
+          if (currentCreatorModel === 'eros_image_ref_pose') {
+            payload.base_image = currentComposerCharacter;
+            payload.reference_image = currentComposerScene;
+          }
+          if (currentCreatorModel === 'eros_image_inpaint') {
+            payload.base_image = currentComposerCharacter;
+            payload.mask = currentComposerScene;
           }
           if (currentCreatorModel === 'upscale_capivara_mass') {
             payload.zip_file = currentUpscaleMode === 'zip'

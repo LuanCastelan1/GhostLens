@@ -560,33 +560,33 @@
     ]
   },
   "eros_image_krea2": {
-    "name": "Eros-Image Krea 2 RAW (Dual LoRA)",
+    "name": "Eros-Image Ultra (2K Nativo)",
     "mode": "image",
     "control": "eros",
     "workflowId": "",
-    "workflowFile": "KREA2_DUAL_LORA.json",
+    "workflowFile": "01_KREA2_RAW_TURBO_EROS_IMAGE_DUAL_LORA.json",
     "instanceType": "plus",
-    "credits": 10,
+    "credits": 20,
     "defaultSpeedMode": "ghostlite",
     "speedModes": [
       "ghostflash",
       "ghostlite"
     ],
     "speedModeCredits": {
-      "ghostflash": 10,
-      "ghostlite": 4
+      "ghostflash": 20,
+      "ghostlite": 12
     },
     "speedInstanceTypes": {
       "ghostflash": "plus",
       "ghostlite": "default"
     },
     "tags": [
-      "Krea 2",
+      "Eros-Image",
       "Dual LoRA",
-      "Fotorrealismo"
+      "Fotorrealismo 2K"
     ],
-    "badge": "Eros-Image Krea 2",
-    "button": "Gerar com Eros-Image Krea 2",
+    "badge": "Eros-Image 2K Ultra",
+    "button": "Gerar com Eros-Image 2K",
     "resultMode": "image",
     "inputs": {
       "checkpoint": {
@@ -606,14 +606,14 @@
         "fieldName": "lora_name",
         "weightField": "strength_model",
         "default": "phone_photography_2025_krea2.safetensors",
-        "defaultWeight": 0.3
+        "defaultWeight": 0.8
       },
       "lora_musa": {
         "nodeId": "101",
         "fieldName": "lora_name",
         "weightField": "strength_model",
         "source": "persona_lora",
-        "defaultWeight": 0.85
+        "defaultWeight": 1.5
       },
       "prompt": {
         "nodeId": "51",
@@ -657,14 +657,14 @@
         "nodeId": "102",
         "fieldName": "megapixels",
         "type": "number",
-        "default": 1.0
+        "default": 2.45
       }
     },
     "outputNodeIds": [
       "29"
     ],
     "requiresReference": false,
-    "cost_label": "4 créditos • GhostLite"
+    "cost_label": "20 créditos • 2K Nativo"
   },
   "image_edit_ph3": {
     "name": "GhostComposer (P-H3 Scene Placement)",
@@ -875,5 +875,585 @@
     "outputNodeIds": [
       "404"
     ]
+  },
+  "eros_image_krea2_1k": {
+    "name": "Eros-Image Fast (1K)",
+    "mode": "image",
+    "control": "eros",
+    "workflowId": "",
+    "workflowFile": "01_KREA2_1K_FAST_EROS_IMAGE.json",
+    "instanceType": "plus",
+    "credits": 6,
+    "defaultSpeedMode": "ghostlite",
+    "speedModes": [
+      "ghostflash",
+      "ghostlite"
+    ],
+    "speedModeCredits": {
+      "ghostflash": 20,
+      "ghostlite": 12
+    },
+    "speedInstanceTypes": {
+      "ghostflash": "plus",
+      "ghostlite": "default"
+    },
+    "tags": [
+      "Eros-Image",
+      "1K Fast",
+      "Econômico"
+    ],
+    "badge": "Eros-Image 1K Fast",
+    "button": "Gerar com Eros-Image 1K",
+    "resultMode": "image",
+    "inputs": {
+      "checkpoint": {
+        "nodeId": "55",
+        "fieldName": "unet_name",
+        "presets": {
+          "raw": "Krea2-TurboNSWAIO_v10_fp8.safetensors",
+          "film": "krea2_analog_film_28mm.safetensors",
+          "glam": "gonzalomoKrea2_v40.safetensors",
+          "intimate": "krea2_intimate_raw_v1.safetensors"
+        },
+        "presetKey": "lens",
+        "default": "Krea2-TurboNSWAIO_v10_fp8.safetensors"
+      },
+      "lora_base": {
+        "nodeId": "100",
+        "fieldName": "lora_name",
+        "weightField": "strength_model",
+        "default": "phone_photography_2025_krea2.safetensors",
+        "defaultWeight": 0.8
+      },
+      "lora_musa": {
+        "nodeId": "101",
+        "fieldName": "lora_name",
+        "weightField": "strength_model",
+        "source": "persona_lora",
+        "defaultWeight": 1.5
+      },
+      "prompt": {
+        "nodeId": "51",
+        "fieldName": "text",
+        "source": "prompt"
+      },
+      "seed": {
+        "nodeId": "53",
+        "fieldName": "seed",
+        "type": "number"
+      },
+      "steps": {
+        "nodeId": "53",
+        "fieldName": "steps",
+        "type": "number",
+        "default": 8
+      },
+      "cfg": {
+        "nodeId": "53",
+        "fieldName": "cfg",
+        "type": "number",
+        "default": 1
+      },
+      "aspect_ratio": {
+        "nodeId": "102",
+        "fieldName": "aspect_ratio",
+        "presetKey": "aspect_ratio",
+        "presets": {
+          "9:16": "9:16 (Vertical)",
+          "16:9": "16:9 (Widescreen)",
+          "1:1": "1:1 (Square)",
+          "3:4": "3:4 (Portrait)",
+          "4:5": "4:5 (Instagram Portrait)",
+          "4:3": "4:3 (Landscape)",
+          "2:3": "2:3 (Photo Portrait)",
+          "3:2": "3:2 (Photo Landscape)"
+        },
+        "default": "3:4 (Portrait)"
+      },
+      "megapixels": {
+        "nodeId": "102",
+        "fieldName": "megapixels",
+        "type": "number",
+        "default": 1.0
+      }
+    },
+    "outputNodeIds": [
+      "29"
+    ],
+    "requiresReference": false,
+    "cost_label": "6 créditos • 1K Rápido"
+  },
+  "eros_image_krea2_film": {
+    "name": "Eros-Image Film (35mm Analog)",
+    "mode": "image",
+    "control": "eros",
+    "workflowId": "",
+    "workflowFile": "01_KREA2_FILM_CHECKPOINT_EROS_IMAGE.json",
+    "instanceType": "plus",
+    "credits": 20,
+    "defaultSpeedMode": "ghostlite",
+    "speedModes": [
+      "ghostflash",
+      "ghostlite"
+    ],
+    "speedModeCredits": {
+      "ghostflash": 20,
+      "ghostlite": 12
+    },
+    "speedInstanceTypes": {
+      "ghostflash": "plus",
+      "ghostlite": "default"
+    },
+    "tags": [
+      "Eros-Image",
+      "Film 35mm",
+      "Textura Real"
+    ],
+    "badge": "Eros-Image Film",
+    "button": "Gerar com Eros-Image Film",
+    "resultMode": "image",
+    "inputs": {
+      "checkpoint": {
+        "nodeId": "55",
+        "fieldName": "ckpt_name",
+        "default": "krea2_analog_film_28mm.safetensors"
+      },
+      "lora_base": {
+        "nodeId": "100",
+        "fieldName": "lora_name",
+        "weightField": "strength_model",
+        "default": "phone_photography_2025_krea2.safetensors",
+        "defaultWeight": 0.8
+      },
+      "lora_musa": {
+        "nodeId": "101",
+        "fieldName": "lora_name",
+        "weightField": "strength_model",
+        "source": "persona_lora",
+        "defaultWeight": 1.5
+      },
+      "prompt": {
+        "nodeId": "51",
+        "fieldName": "text",
+        "source": "prompt"
+      },
+      "seed": {
+        "nodeId": "53",
+        "fieldName": "seed",
+        "type": "number"
+      },
+      "steps": {
+        "nodeId": "53",
+        "fieldName": "steps",
+        "type": "number",
+        "default": 8
+      },
+      "cfg": {
+        "nodeId": "53",
+        "fieldName": "cfg",
+        "type": "number",
+        "default": 1
+      },
+      "aspect_ratio": {
+        "nodeId": "102",
+        "fieldName": "aspect_ratio",
+        "presetKey": "aspect_ratio",
+        "presets": {
+          "9:16": "9:16 (Vertical)",
+          "16:9": "16:9 (Widescreen)",
+          "1:1": "1:1 (Square)",
+          "3:4": "3:4 (Portrait)",
+          "4:5": "4:5 (Instagram Portrait)",
+          "4:3": "4:3 (Landscape)",
+          "2:3": "2:3 (Photo Portrait)",
+          "3:2": "3:2 (Photo Landscape)"
+        },
+        "default": "3:4 (Portrait)"
+      },
+      "megapixels": {
+        "nodeId": "102",
+        "fieldName": "megapixels",
+        "type": "number",
+        "default": 2.45
+      }
+    },
+    "outputNodeIds": [
+      "29"
+    ],
+    "requiresReference": false,
+    "cost_label": "20 créditos • 2K Nativo"
+  },
+  "eros_image_editor": {
+    "name": "Eros-Image Editor (NSFW & Poses)",
+    "mode": "image",
+    "control": "edit",
+    "workflowId": "",
+    "workflowFile": "01_EROS_IMAGE_EDITOR_NSFW_KREA2.json",
+    "instanceType": "plus",
+    "credits": 15,
+    "defaultSpeedMode": "ghostlite",
+    "speedModes": [
+      "ghostflash",
+      "ghostlite"
+    ],
+    "speedModeCredits": {
+      "ghostflash": 20,
+      "ghostlite": 10
+    },
+    "speedInstanceTypes": {
+      "ghostflash": "plus",
+      "ghostlite": "default"
+    },
+    "tags": [
+      "Eros-Image",
+      "Editor",
+      "NSFW Sem Censura",
+      "Troca de Roupa & Pose"
+    ],
+    "badge": "Eros-Image Editor",
+    "button": "Editar com Eros-Image",
+    "resultMode": "image",
+    "requiredAssets": [
+      "base_image"
+    ],
+    "assets": {
+      "base_image": {
+        "bodyKey": "base_image",
+        "type": "image"
+      },
+      "reference_image": {
+        "bodyKey": "reference_image",
+        "type": "image"
+      }
+    },
+    "inputs": {
+      "base_image": {
+        "nodeId": "2",
+        "fieldName": "image",
+        "assetKey": "base_image",
+        "assetValue": "fileName"
+      },
+      "reference_image": {
+        "nodeId": "34",
+        "fieldName": "image",
+        "assetKey": "reference_image",
+        "assetValue": "fileName"
+      },
+      "prompt": {
+        "nodeId": "41052",
+        "fieldName": "prompt",
+        "source": "prompt"
+      },
+      "seed": {
+        "nodeId": "41053",
+        "fieldName": "seed",
+        "type": "number"
+      },
+      "steps": {
+        "nodeId": "41053",
+        "fieldName": "steps",
+        "type": "number",
+        "default": 8
+      },
+      "cfg": {
+        "nodeId": "41053",
+        "fieldName": "cfg",
+        "type": "number",
+        "default": 1.0
+      }
+    },
+    "outputNodeIds": [
+      "41057",
+      "41037"
+    ],
+    "requiresReference": true,
+    "cost_label": "15 créditos • Editor NSFW"
+  },
+  "eros_image_lora_pose": {
+    "name": "Eros-Image Pose (LoRA + Prompt)",
+    "description": "Gera a Musa em qualquer pose descrita por texto, com identidade preservada pelo LoRA da persona.",
+    "mode": "image",
+    "control": "eros",
+    "workflowId": "",
+    "workflowFile": "02_EDITOR_EROS_IMAGE/02_EROS_IMAGE_LORA_POSE_PROMPT.json",
+    "instanceType": "plus",
+    "credits": 20,
+    "defaultSpeedMode": "ghostlite",
+    "speedModes": [
+      "ghostflash",
+      "ghostlite"
+    ],
+    "speedModeCredits": {
+      "ghostflash": 20,
+      "ghostlite": 12
+    },
+    "speedInstanceTypes": {
+      "ghostflash": "plus",
+      "ghostlite": "default"
+    },
+    "tags": [
+      "Eros-Image",
+      "Pose por Prompt",
+      "Dual LoRA"
+    ],
+    "badge": "Eros-Image Pose",
+    "button": "Gerar Pose com Eros-Image",
+    "resultMode": "image",
+    "inputs": {
+      "checkpoint": {
+        "nodeId": "55",
+        "fieldName": "unet_name",
+        "default": "krea2/krea2_turbo_int8_convrot.safetensors"
+      },
+      "lora_base": {
+        "nodeId": "100",
+        "fieldName": "lora_name",
+        "weightField": "strength_model",
+        "default": "phone_photography_2025_krea2.safetensors",
+        "defaultWeight": 0.8
+      },
+      "lora_musa": {
+        "nodeId": "101",
+        "fieldName": "lora_name",
+        "weightField": "strength_model",
+        "source": "persona_lora",
+        "defaultWeight": 1.5
+      },
+      "prompt": {
+        "nodeId": "51",
+        "fieldName": "text",
+        "source": "prompt"
+      },
+      "seed": {
+        "nodeId": "53",
+        "fieldName": "seed",
+        "type": "number"
+      },
+      "steps": {
+        "nodeId": "53",
+        "fieldName": "steps",
+        "type": "number",
+        "default": 8
+      },
+      "cfg": {
+        "nodeId": "53",
+        "fieldName": "cfg",
+        "type": "number",
+        "default": 1
+      },
+      "aspect_ratio": {
+        "nodeId": "102",
+        "fieldName": "aspect_ratio",
+        "presetKey": "aspect_ratio",
+        "presets": {
+          "9:16": "9:16 (Vertical)",
+          "16:9": "16:9 (Widescreen)",
+          "1:1": "1:1 (Square)",
+          "3:4": "3:4 (Portrait)",
+          "4:5": "4:5 (Instagram Portrait)",
+          "4:3": "4:3 (Landscape)",
+          "2:3": "2:3 (Photo Portrait)",
+          "3:2": "3:2 (Photo Landscape)"
+        },
+        "default": "3:4 (Portrait)"
+      },
+      "megapixels": {
+        "nodeId": "102",
+        "fieldName": "megapixels",
+        "type": "number",
+        "default": 2.45
+      }
+    },
+    "outputNodeIds": [
+      "29"
+    ],
+    "requiresReference": false,
+    "cost_label": "20 créditos • Pose por Prompt"
+  },
+  "eros_image_ref_pose": {
+    "name": "Eros-Image Ref Pose (Pinterest + Musa)",
+    "description": "Coloca a Musa na pose de uma foto de referência (ex: Pinterest), preservando rosto e identidade.",
+    "mode": "image",
+    "control": "edit",
+    "workflowId": "",
+    "workflowFile": "02_EDITOR_EROS_IMAGE/02_EROS_IMAGE_REF_POSE.json",
+    "instanceType": "plus",
+    "credits": 20,
+    "defaultSpeedMode": "ghostlite",
+    "speedModes": [
+      "ghostflash",
+      "ghostlite"
+    ],
+    "speedModeCredits": {
+      "ghostflash": 20,
+      "ghostlite": 12
+    },
+    "speedInstanceTypes": {
+      "ghostflash": "plus",
+      "ghostlite": "default"
+    },
+    "tags": [
+      "Eros-Image",
+      "Referência de Pose",
+      "Pinterest",
+      "Identity Edit"
+    ],
+    "badge": "Eros-Image Ref Pose",
+    "button": "Copiar Pose da Referência",
+    "resultMode": "image",
+    "requiredAssets": [
+      "base_image",
+      "reference_image"
+    ],
+    "assets": {
+      "base_image": {
+        "bodyKey": "base_image",
+        "type": "image"
+      },
+      "reference_image": {
+        "bodyKey": "reference_image",
+        "type": "image"
+      }
+    },
+    "inputs": {
+      "base_image": {
+        "nodeId": "2",
+        "fieldName": "image",
+        "assetKey": "base_image",
+        "assetValue": "fileName"
+      },
+      "reference_image": {
+        "nodeId": "34",
+        "fieldName": "image",
+        "assetKey": "reference_image",
+        "assetValue": "fileName"
+      },
+      "prompt": {
+        "nodeId": "41052",
+        "fieldName": "prompt",
+        "source": "prompt"
+      },
+      "seed": {
+        "nodeId": "41053",
+        "fieldName": "seed",
+        "type": "number"
+      },
+      "steps": {
+        "nodeId": "41053",
+        "fieldName": "steps",
+        "type": "number",
+        "default": 8
+      },
+      "cfg": {
+        "nodeId": "41053",
+        "fieldName": "cfg",
+        "type": "number",
+        "default": 1
+      },
+      "denoise": {
+        "nodeId": "41053",
+        "fieldName": "denoise",
+        "type": "number",
+        "default": 0.85
+      }
+    },
+    "outputNodeIds": [
+      "41057",
+      "41037"
+    ],
+    "requiresReference": true,
+    "cost_label": "20 créditos • Referência de Pose"
+  },
+  "eros_image_inpaint": {
+    "name": "Eros-Image Inpaint (Troca de Roupa)",
+    "description": "Troca ou remove roupa em área selecionada por máscara, preservando o resto da imagem.",
+    "mode": "image",
+    "control": "edit",
+    "workflowId": "",
+    "workflowFile": "02_EDITOR_EROS_IMAGE/02_EROS_IMAGE_INPAINT_ROUPA.json",
+    "instanceType": "plus",
+    "credits": 12,
+    "defaultSpeedMode": "ghostlite",
+    "speedModes": [
+      "ghostflash",
+      "ghostlite"
+    ],
+    "speedModeCredits": {
+      "ghostflash": 12,
+      "ghostlite": 8
+    },
+    "speedInstanceTypes": {
+      "ghostflash": "plus",
+      "ghostlite": "default"
+    },
+    "tags": [
+      "Eros-Image",
+      "Inpaint",
+      "Troca de Roupa"
+    ],
+    "badge": "Eros-Image Inpaint",
+    "button": "Inpaint com Eros-Image",
+    "resultMode": "image",
+    "requiredAssets": [
+      "base_image",
+      "mask"
+    ],
+    "assets": {
+      "base_image": {
+        "bodyKey": "base_image",
+        "type": "image"
+      },
+      "mask": {
+        "bodyKey": "mask",
+        "type": "image"
+      }
+    },
+    "inputs": {
+      "base_image": {
+        "nodeId": "1",
+        "fieldName": "image",
+        "assetKey": "base_image",
+        "assetValue": "fileName"
+      },
+      "mask": {
+        "nodeId": "40",
+        "fieldName": "image",
+        "assetKey": "mask",
+        "assetValue": "fileName"
+      },
+      "prompt": {
+        "nodeId": "29",
+        "fieldName": "text",
+        "source": "prompt"
+      },
+      "seed": {
+        "nodeId": "38",
+        "fieldName": "seed",
+        "type": "number"
+      },
+      "steps": {
+        "nodeId": "38",
+        "fieldName": "steps",
+        "type": "number",
+        "default": 8
+      },
+      "cfg": {
+        "nodeId": "38",
+        "fieldName": "cfg",
+        "type": "number",
+        "default": 1
+      },
+      "denoise": {
+        "nodeId": "38",
+        "fieldName": "denoise",
+        "type": "number",
+        "default": 0.95
+      }
+    },
+    "outputNodeIds": [
+      "39"
+    ],
+    "requiresReference": false,
+    "cost_label": "12 créditos • Inpaint de Roupa"
   }
 }

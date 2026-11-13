@@ -2904,7 +2904,7 @@
           <div style="margin-bottom: 14px;">
             <label
               style="font-size: 0.74rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 6px;">
-              Foto Autêntica da Modelo (Krea 2 / Ensaio Real)
+              Foto Autêntica da Modelo (Eros-Image / Ensaio Real)
             </label>
             <div style="display: flex; align-items: center; gap: 14px;">
               <div
@@ -2917,7 +2917,7 @@
                   onchange="handleAdminBannerUpload(this.files)" style="display: none;">
                 <button type="button" onclick="document.getElementById('adminBannerFileInput').click()"
                   style="background: rgba(234, 179, 8, 0.18); border: 1px solid rgba(234, 179, 8, 0.5); color: #fef08a; font-size: 0.8rem; font-weight: 800; padding: 9px 16px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                  📷 Carregar Foto Autêntica (Krea 2)...
+                  📷 Carregar Foto Autêntica (Eros-Image)...
                 </button>
                 <div style="font-size: 0.68rem; color: #cbd5e1; margin-top: 5px;">Esta foto atualiza instantaneamente o
                   banner da Home e a capa da Proposta Comercial.</div>
@@ -8307,7 +8307,7 @@
           seedream_5: { badge: 'Seedream 5 Pro', cost: 'Face & Look Swap', button: 'Gerar com Seedream 5 Pro' },
           chatgpt_import: { badge: 'GPT 2.6 Image (Plus)', cost: 'Importação Direta', button: 'Importar Imagem (Ctrl+V)' },
           nanobanana_21: { badge: 'Nano Banana 2.1', cost: 'Incluso no Plano', button: 'Gerar com Nano Banana' },
-          krea_2: { badge: 'Krea 2 Raw Edit', cost: 'Retoque & Textura', button: 'Gerar com Krea 2' },
+          krea_2: { badge: 'Eros-Image Raw', cost: 'Retoque & Textura', button: 'Gerar com Eros-Image' },
           qwen_360: { badge: 'Qwen 2.5 360°', cost: '6 Ângulos Orbitais', button: 'Gerar Ângulos 360°' },
           magnific_upscale: { badge: 'Magnific Upscaler 4K', cost: 'Restauração de Poros', button: 'Upscale com Magnific' },
 
@@ -8851,9 +8851,15 @@
 
               <!-- CAMPO DE PROMPT / SHOT (SCREENSHOTS 4 & 5) -->
               <div id="boxPromptContainer">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; flex-wrap: wrap; gap: 4px;">
                   <label id="lblPromptHeader" style="font-size: 0.62rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">PROMPT</label>
-                  <button type="button" onclick="suggestRandomScenePrompt()" style="background: transparent; border: none; color: var(--accent-lime); font-size: 0.62rem; font-weight: 700; cursor: pointer; padding: 0;">Sugerir Cena</button>
+                  <div style="display: flex; align-items: center; gap: 6px;">
+                    <button type="button" onclick="openGhostDirectorModal()" style="background: rgba(190, 242, 100, 0.12); border: 1px solid rgba(190, 242, 100, 0.3); color: var(--accent-lime); font-size: 0.62rem; font-weight: 800; padding: 2px 7px; border-radius: 5px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                      <span>🎬</span>
+                      <span>Diretor Carrossel (4 Poses)</span>
+                    </button>
+                    <button type="button" onclick="suggestRandomScenePrompt()" style="background: transparent; border: none; color: #94a3b8; font-size: 0.62rem; font-weight: 700; cursor: pointer; padding: 0;">Sugerir Cena</button>
+                  </div>
                 </div>
                 <textarea id="txtCreatorPrompt" rows="3" placeholder="Describe your image, try @ for references or / for templates" style="width: 100%; background: #0c0e14; border: 1px solid rgba(255,255,255,0.09); color: #fff; padding: 9px 11px; border-radius: 9px; font-size: 0.74rem; font-family: inherit; resize: vertical; outline: none;"></textarea>
 
@@ -9201,7 +9207,7 @@
             { id: 'qwen_360', name: 'Qwen 360 Image', provider: 'Alibaba', tags: ['360 Angle', 'Face Lock', '2K'], cost: '70 - 130', badge: 'Qwen 360', button: 'Gerar Multi-Ângulo' }
           ],
           recent: [
-            { id: 'krea_2', name: 'Krea 2', provider: 'Krea AI', tags: ['Refs', '~30s'], cost: '80 - 160', badge: 'Krea 2 Raw', button: 'Gerar com Krea 2' }
+            { id: 'krea_2', name: 'Eros-Image Raw', provider: 'Eros Studio', tags: ['Refs', 'Ultra Real'], cost: '80 - 160', badge: 'Eros-Image Raw', button: 'Gerar com Eros-Image' }
           ],
           allProviders: {
             'Magnific': [
@@ -9225,7 +9231,7 @@
             ],
             'Eros Pro Network': [
               { id: 'eros_image_2k', name: 'Eros-Image 2K (LoRA da Musa)', tags: ['Consistência 100%', '2K-4K'], cost: '80 - 120' },
-              { id: 'krea_2', name: 'Krea 2 Raw Edit', tags: ['RAW Natural', 'Retoque'], cost: '80 - 160' }
+              { id: 'krea_2', name: 'Eros-Image Raw', tags: ['RAW Natural', 'Retoque'], cost: '80 - 160' }
             ]
           }
         },
@@ -9306,7 +9312,7 @@
           chatgpt_import: { badge: 'GPT 2.6 Image', cost: 'Super-Prompt • Import', button: 'Importar Imagem GPT' },
           nanobanana_21: { badge: 'Google Nano Banana 2.1', cost: 'Ultra Rápido • 2K', button: 'Gerar com Nano Banana' },
           qwen_360: { badge: 'Qwen 360 Multi-Ângulo', cost: 'Consistência Orbital 360', button: 'Gerar Multi-Ângulo' },
-          krea_2: { badge: 'Krea 2 Raw Edit', cost: 'RAW Natural 35mm', button: 'Gerar com Krea 2' },
+          krea_2: { badge: 'Eros-Image Raw', cost: 'RAW Natural 35mm', button: 'Gerar com Eros-Image' },
           auto_video: { badge: 'Auto Video Engine', cost: 'Seleção Automática', button: 'Gerar Vídeo' },
           wan_3_prime: { badge: 'Wan 3.0 Prime', cost: 'Vídeo Ultra Realista 1080p', button: 'Gerar com Wan 3.0' },
           minimax_h3_max: { badge: 'MiniMax H3 Max', cost: 'Ultra Rápido 768p', button: 'Gerar com MiniMax H3' },
@@ -9325,7 +9331,9 @@
       /* CATÁLOGO DE SUB-FERRAMENTAS MAGNIFIC STYLE (SCREENSHOTS 1, 2, 3) */
       const CREATOR_SUBTOOLS_CATALOG = {
         image: [
-          { id: 'tool_img_gen', name: 'Image Generator', desc: 'Create images from text prompts', model: 'eros_image_2k', pinned: true, icon: 'img_gen' },
+          { id: 'tool_img_gen', name: 'Image Generator', desc: 'Create images from text prompts', model: 'eros_image_krea2', pinned: true, icon: 'img_gen' },
+          { id: 'tool_ghost_director', name: 'GhostDirector (Carrossel)', desc: 'Gerar 4 poses coerentes da mesma cena com IA', model: 'eros_image_krea2', isNew: true, pinned: true, icon: 'cinematic' },
+          { id: 'tool_ghost_pose', name: 'GhostPose (Copiador)', desc: 'Copiar pose/cena do Pinterest mantendo a musa', model: 'faceswap_duhot', pinned: true, icon: 'img_edit' },
           { id: 'tool_img_composer', name: 'GhostComposer', desc: 'Inserir a musa em um cenário real', model: 'image_edit_ph3', pinned: false, icon: 'img_edit' },
           { id: 'tool_img_enhancer', name: 'GhostEnhancer', desc: 'Upscale 4K em massa com SAM 3 + SeedVR2', model: 'upscale_capivara_mass', pinned: false, icon: 'upscale' },
           { id: 'tool_img_cinematic', name: 'Cinematic Shot', desc: 'Generate cinematic compositions', model: 'cinematic_img', pinned: false, icon: 'cinematic' },
@@ -9475,6 +9483,10 @@
         const titleEl = document.getElementById('lblActiveToolTitle');
         if (titleEl) titleEl.innerText = toolName;
         closeFlyoutToolsDrawer();
+        if (toolId === 'tool_ghost_director') {
+          openGhostDirectorModal();
+          return;
+        }
         if (defaultModel) {
           selectModelFromPicker(defaultModel);
         }
@@ -10083,12 +10095,26 @@
         const boxRefsImg = document.getElementById('boxReferencesImage');
         const boxRefsVid = document.getElementById('boxReferencesVideo');
 
-        if (model === 'image_edit_ph3') {
+        if (model === 'image_edit_ph3' || model === 'eros_image_ref_pose' || model === 'eros_image_inpaint') {
           if (boxErosFrame) boxErosFrame.style.display = 'none';
           if (boxGeneralRefs) boxGeneralRefs.style.display = 'none';
           if (boxRefsImg) boxRefsImg.style.display = 'none';
           if (boxRefsVid) boxRefsVid.style.display = 'none';
           document.getElementById('boxImageEditControls')?.style.setProperty('display', 'flex');
+          const sceneLabel = document.querySelector('#boxImageEditControls label[for="fileComposerScene"] span:last-child');
+          const charLabel = document.querySelector('#boxImageEditControls label[for="fileComposerCharacter"] span:last-child');
+          if (sceneLabel && charLabel) {
+            if (model === 'eros_image_ref_pose') {
+              sceneLabel.innerText = 'Pose de referência';
+              charLabel.innerText = 'Foto da musa';
+            } else if (model === 'eros_image_inpaint') {
+              sceneLabel.innerText = 'Máscara (P&B)';
+              charLabel.innerText = 'Foto base';
+            } else {
+              sceneLabel.innerText = 'Adicionar cenário';
+              charLabel.innerText = 'Foto da musa';
+            }
+          }
           if (!currentComposerCharacter) {
             const personaCreator = getCreatorDataForProfile(currentCreatorProfileId) || {};
             const ref = (personaCreator.references && personaCreator.references[0]) || currentCreatorRefs[0];
@@ -10217,7 +10243,7 @@
           intimate: 'Lente Intimate • Luz Baixa'
         };
         const badge = document.getElementById('lblCanvasModelBadge');
-        if (badge) badge.innerText = 'Eros-Image Krea 2 (' + (lensLabels[lensType] || 'RAW') + ')';
+        if (badge) badge.innerText = 'Eros-Image (' + (lensLabels[lensType] || 'RAW') + ')';
         const lblSpec = document.getElementById('lblCanvasSpec');
         if (lblSpec) lblSpec.innerText = `${currentCreatorAspectRatio} • ${lensSpecs[lensType] || ''} • 2K HD`;
         showToast(`Lente selecionada: ${lensLabels[lensType] || lensType}`, 2000);
@@ -10525,7 +10551,7 @@
           showToast('Este modelo ainda não está conectado. Configure USEAPI_TOKEN ou RunningHub.', 5000);
           return;
         }
-        if (!motionEngine && !staticImageTool && !currentCreatorRefs.length && !['eros_image_2k', 'eros_image_krea2'].includes(currentCreatorModel)) {
+        if (!motionEngine && !staticImageTool && !currentCreatorRefs.length && !['eros_image_2k', 'eros_image_krea2', 'eros_image_krea2_1k', 'eros_image_krea2_film', 'eros_image_lora_pose', 'eros_image_ref_pose', 'eros_image_inpaint'].includes(currentCreatorModel)) {
           showToast('Adicione pelo menos uma foto de referência da musa.', 5000);
           return;
         }
@@ -10548,6 +10574,28 @@
           if (!currentComposerCharacter && currentCreatorRefs[0]) currentComposerCharacter = currentCreatorRefs[0];
           if (!currentComposerCharacter) {
             showToast('Envie a foto da musa para o GhostComposer.', 5000);
+            return;
+          }
+        }
+        if (currentCreatorModel === 'eros_image_ref_pose') {
+          if (!currentComposerScene) {
+            showToast('Envie a foto de referência da pose (Pinterest).', 5000);
+            return;
+          }
+          if (!currentComposerCharacter && currentCreatorRefs[0]) currentComposerCharacter = currentCreatorRefs[0];
+          if (!currentComposerCharacter) {
+            showToast('Envie a foto da musa para preservar a identidade.', 5000);
+            return;
+          }
+        }
+        if (currentCreatorModel === 'eros_image_inpaint') {
+          if (!currentComposerScene) {
+            showToast('Envie a máscara da área que será alterada.', 5000);
+            return;
+          }
+          if (!currentComposerCharacter && currentCreatorRefs[0]) currentComposerCharacter = currentCreatorRefs[0];
+          if (!currentComposerCharacter) {
+            showToast('Envie a foto base que será editada.', 5000);
             return;
           }
         }
@@ -10643,6 +10691,14 @@
           if (currentCreatorModel === 'image_edit_ph3') {
             payload.scene_image = currentComposerScene;
             payload.character_image = currentComposerCharacter;
+          }
+          if (currentCreatorModel === 'eros_image_ref_pose') {
+            payload.base_image = currentComposerCharacter;
+            payload.reference_image = currentComposerScene;
+          }
+          if (currentCreatorModel === 'eros_image_inpaint') {
+            payload.base_image = currentComposerCharacter;
+            payload.mask = currentComposerScene;
           }
           if (currentCreatorModel === 'upscale_capivara_mass') {
             payload.zip_file = currentUpscaleMode === 'zip'
@@ -14795,6 +14851,250 @@
       </div>
     </div>
   </div>
+  <!-- 🎬 MODAL: GHOSTDIRECTOR™ • CARROSSEL MULTI-POSE POR IA -->
+  <div id="modalGhostDirector" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10007; justify-content: center; align-items: center; backdrop-filter: blur(14px); padding: 16px;">
+    <div style="background: #0c0e15; border: 1.5px solid rgba(190, 242, 100, 0.35); border-radius: 20px; padding: 24px; max-width: 820px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 30px 100px rgba(0,0,0,0.9); position: relative; color: #fff;">
+      <button type="button" onclick="closeGhostDirectorModal()" style="position: absolute; top: 18px; right: 20px; background: rgba(255,255,255,0.06); border: none; color: #94a3b8; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; font-size: 1rem;">✕</button>
+
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
+        <div style="width: 44px; height: 44px; border-radius: 12px; background: rgba(190, 242, 100, 0.15); border: 1.5px solid var(--accent-lime); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; color: var(--accent-lime);">
+          🎬
+        </div>
+        <div>
+          <h3 style="font-size: 1.2rem; font-weight: 900; color: #fff; margin: 0; display: flex; align-items: center; gap: 8px;">
+            <span>GhostDirector™</span>
+            <span style="font-size: 0.62rem; background: var(--accent-lime); color: #000; font-weight: 900; padding: 2px 7px; border-radius: 4px;">4 POSES COERENTES</span>
+          </h3>
+          <span style="font-size: 0.72rem; color: #94a3b8;">Diretor de fotografia IA: gera 4 takes da mesma cena, roupa e derme para Carrossel ou Pack Hot.</span>
+        </div>
+      </div>
+
+      <!-- Configuração da Sessão -->
+      <div style="background: #12141c; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 10px;">
+        <div>
+          <label style="font-size: 0.66rem; font-weight: 800; color: #64748b; text-transform: uppercase; display: block; margin-bottom: 5px;">Ideia da Cena ou Roupa</label>
+          <input type="text" id="txtDirectorSceneIdea" placeholder="Ex: lingerie branca sensual no quarto de hotel moderno de frente pro espelho" style="width: 100%; background: #0a0c12; border: 1px solid rgba(255,255,255,0.12); color: #fff; padding: 9px 12px; border-radius: 8px; font-size: 0.78rem; outline: none;">
+        </div>
+
+        <!-- Chips de Ideias Prontas -->
+        <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
+          <span style="font-size: 0.6rem; color: #64748b; font-weight: 700;">Ideias rápidas:</span>
+          <button type="button" onclick="setDirectorIdeaChip('lingerie branca rendada no quarto de luxo perto da cama')" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: #cbd5e1; font-size: 0.62rem; padding: 3px 8px; border-radius: 5px; cursor: pointer;">Hotel & Lingerie</button>
+          <button type="button" onclick="setDirectorIdeaChip('conjunto legging cinza na academia tirando foto no espelho dos pesos')" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: #cbd5e1; font-size: 0.62rem; padding: 3px 8px; border-radius: 5px; cursor: pointer;">Academia & Legging</button>
+          <button type="button" onclick="setDirectorIdeaChip('biquíni vermelho na praia ao entardecer com luz dourada')" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: #cbd5e1; font-size: 0.62rem; padding: 3px 8px; border-radius: 5px; cursor: pointer;">Praia Golden Hour</button>
+          <button type="button" onclick="setDirectorIdeaChip('vestido preto colado jantando em restaurante sofisticado')" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); color: #cbd5e1; font-size: 0.62rem; padding: 3px 8px; border-radius: 5px; cursor: pointer;">Noite & Restaurante</button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px;">
+          <div>
+            <label style="font-size: 0.62rem; font-weight: 800; color: #64748b; text-transform: uppercase; display: block; margin-bottom: 4px;">Objetivo / Formato</label>
+            <select id="selDirectorStyle" style="width: 100%; background: #0a0c12; border: 1px solid rgba(255,255,255,0.12); color: #fff; padding: 7px 10px; border-radius: 7px; font-size: 0.72rem; outline: none;">
+              <option value="instagram_carousel">Instagram Carousel (4 Fotos Coerentes)</option>
+              <option value="privacy_hot_pack">Pack Hot Exclusivo (Privacy / OnlyFans)</option>
+              <option value="casual_feed">Lifestyle Natural (Feed & Stories)</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size: 0.62rem; font-weight: 800; color: #64748b; text-transform: uppercase; display: block; margin-bottom: 4px;">Modelo / Persona Ativa</label>
+            <div id="lblDirectorActiveMusa" style="background: #0a0c12; border: 1px solid rgba(255,255,255,0.12); color: var(--accent-lime); padding: 7px 10px; border-radius: 7px; font-size: 0.72rem; font-weight: 800;">
+              Leninha (LoRA 100% Consistência)
+            </div>
+          </div>
+        </div>
+
+        <button type="button" id="btnRunGhostDirector" onclick="executeGhostDirectorPlan()" style="margin-top: 4px; width: 100%; background: linear-gradient(135deg, #10b981, #bef264); border: none; color: #000; font-weight: 900; font-size: 0.84rem; padding: 11px 16px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 18px rgba(190, 242, 100, 0.35);">
+          <span>⚡ Direcionar Sessão com IA (Gerar os 4 Takes)</span>
+        </button>
+      </div>
+
+      <!-- Container dos Resultados (Os 4 Takes) -->
+      <div id="boxDirectorResults" style="display: none; flex-direction: column; gap: 12px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 0.75rem; font-weight: 800; color: #fff;">Sessão Fotográfica Criada</span>
+          <span id="lblDirectorModeBadge" style="font-size: 0.58rem; background: rgba(56,189,248,0.15); color: #38bdf8; padding: 2px 7px; border-radius: 4px; font-weight: 800;">IA Director Ativo</span>
+        </div>
+
+        <div id="gridDirectorShots" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+          <!-- Os 4 cards dos takes serão injetados via JS -->
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.08);">
+          <button type="button" onclick="closeGhostDirectorModal()" style="background: rgba(255,255,255,0.06); border: none; color: #cbd5e1; padding: 8px 14px; border-radius: 7px; font-size: 0.74rem; cursor: pointer;">Fechar</button>
+          <button type="button" id="btnDirectorBatchAll" onclick="generateAllDirectorShots()" style="background: var(--accent-lime); border: none; color: #000; font-weight: 900; padding: 9px 18px; border-radius: 7px; font-size: 0.78rem; cursor: pointer; box-shadow: 0 4px 14px rgba(190,242,100,0.3);">
+            🚀 Gerar Todos os 4 Takes no Eros-Image
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ------------------------------------------------------------------------
+    // GhostDirector Frontend Logic
+    // ------------------------------------------------------------------------
+    window.ghostDirectorSession = null;
+
+    function openGhostDirectorModal() {
+      const modal = document.getElementById('modalGhostDirector');
+      if (!modal) return;
+      modal.style.display = 'flex';
+
+      const personaLabel = document.getElementById('lblDirectorActiveMusa');
+      const personas = window.GHOST_PERSONAS || [];
+      const p = personas.find(x => x.id === currentCreatorProfileId) || {};
+      if (personaLabel) {
+        personaLabel.innerText = `${p.name || 'Leninha'} (${p.has_lora !== false ? 'LoRA Calibrado' : 'DNA Base'})`;
+      }
+
+      const input = document.getElementById('txtDirectorSceneIdea');
+      if (input && !input.value) {
+        const currentPrompt = (document.getElementById('txtCreatorPrompt')?.value || '').trim();
+        if (currentPrompt) input.value = currentPrompt;
+      }
+    }
+    window.openGhostDirectorModal = openGhostDirectorModal;
+
+    function closeGhostDirectorModal() {
+      const modal = document.getElementById('modalGhostDirector');
+      if (modal) modal.style.display = 'none';
+    }
+    window.closeGhostDirectorModal = closeGhostDirectorModal;
+
+    function setDirectorIdeaChip(text) {
+      const input = document.getElementById('txtDirectorSceneIdea');
+      if (input) input.value = text;
+    }
+    window.setDirectorIdeaChip = setDirectorIdeaChip;
+
+    async function executeGhostDirectorPlan() {
+      const idea = (document.getElementById('txtDirectorSceneIdea')?.value || '').trim();
+      const style = document.getElementById('selDirectorStyle')?.value || 'instagram_carousel';
+      const btn = document.getElementById('btnRunGhostDirector');
+      const resultsBox = document.getElementById('boxDirectorResults');
+      const grid = document.getElementById('gridDirectorShots');
+
+      if (!idea) {
+        showToast('Digite uma ideia de cena ou escolha uma das sugestões rápidas.', 4000);
+        return;
+      }
+
+      const personas = window.GHOST_PERSONAS || [];
+      const p = personas.find(x => x.id === currentCreatorProfileId) || {};
+      const personaName = p.name || 'Leninha';
+      const personaDna = localStorage.getItem(`ghost_dna_${currentCreatorProfileId}`) || '';
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span>⏳ Direcionando Sessão com IA...</span>';
+      }
+
+      try {
+        const token = window.GHOST_SUPABASE_TOKEN || '';
+        const res = await fetch('/api/wavespeed_proxy', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { Authorization: `Bearer ${token}` } : {})
+          },
+          body: JSON.stringify({
+            action: 'carousel_director',
+            scene_description: idea,
+            persona_name: personaName,
+            persona_dna: personaDna,
+            shot_count: 4,
+            style: style
+          })
+        });
+
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.message || data.error || 'Falha ao direcionar carrossel.');
+        }
+
+        window.ghostDirectorSession = data;
+
+        const shots = Array.isArray(data.shots) ? data.shots : [];
+        if (grid) {
+          grid.innerHTML = shots.map((s, idx) => `
+            <div style="background: #0a0c12; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
+                <div>
+                  <div style="font-size: 0.78rem; font-weight: 800; color: #fff;">${ghostEsc(s.title || `Take ${idx + 1}`)}</div>
+                  <div style="font-size: 0.6rem; color: var(--accent-lime); font-weight: 700; margin-top: 1px;">${ghostEsc(s.angle || 'Ângulo Fotográfico')}</div>
+                </div>
+                <span style="font-size: 0.58rem; background: rgba(255,255,255,0.08); color: #cbd5e1; padding: 1px 6px; border-radius: 4px; font-weight: 700;">Take #${idx + 1}</span>
+              </div>
+              <div style="font-size: 0.66rem; color: #94a3b8; line-height: 1.35; max-height: 60px; overflow-y: auto; background: #12141c; padding: 6px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.05); font-family: 'JetBrains Mono', monospace;">
+                ${ghostEsc(s.prompt || '')}
+              </div>
+              <div style="display: flex; gap: 6px; margin-top: auto; padding-top: 4px;">
+                <button type="button" onclick="applyDirectorShotToPrompt(${idx})" style="flex: 1; background: #1a1e2b; border: 1px solid rgba(255,255,255,0.1); color: #fff; font-size: 0.62rem; font-weight: 700; padding: 6px; border-radius: 6px; cursor: pointer;">
+                  Colocar no Prompt
+                </button>
+                <button type="button" onclick="generateDirectorSingleShot(${idx})" style="flex: 1; background: var(--accent-lime); border: none; color: #000; font-size: 0.62rem; font-weight: 900; padding: 6px; border-radius: 6px; cursor: pointer;">
+                  🚀 Gerar no Eros
+                </button>
+              </div>
+            </div>
+          `).join('');
+        }
+
+        if (resultsBox) resultsBox.style.display = 'flex';
+        showToast('Sessão com 4 poses criada com sucesso!', 4000);
+      } catch (err) {
+        showToast(err.message || 'Erro ao planejar carrossel.', 5000);
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<span>⚡ Direcionar Sessão com IA (Gerar os 4 Takes)</span>';
+        }
+      }
+    }
+    window.executeGhostDirectorPlan = executeGhostDirectorPlan;
+
+    function applyDirectorShotToPrompt(idx) {
+      if (!window.ghostDirectorSession || !window.ghostDirectorSession.shots) return;
+      const shot = window.ghostDirectorSession.shots[idx];
+      if (!shot) return;
+      const txt = document.getElementById('txtCreatorPrompt');
+      if (txt) {
+        txt.value = shot.prompt;
+      }
+      selectModelFromPicker('eros_image_lora_pose');
+      closeGhostDirectorModal();
+      showToast(`Take #${idx + 1} carregado no prompt do Eros-Image!`, 3000);
+    }
+    window.applyDirectorShotToPrompt = applyDirectorShotToPrompt;
+
+    async function generateDirectorSingleShot(idx) {
+      applyDirectorShotToPrompt(idx);
+      setTimeout(() => {
+        executeGhostCreatorGen();
+      }, 200);
+    }
+    window.generateDirectorSingleShot = generateDirectorSingleShot;
+
+    async function generateAllDirectorShots() {
+      if (!window.ghostDirectorSession || !window.ghostDirectorSession.shots) return;
+      const shots = window.ghostDirectorSession.shots;
+      const estimatedCredits = shots.length * 20;
+      if (!confirm(`Gerar ${shots.length} takes no Eros-Image Pose?\n\nCusto estimado: ${estimatedCredits} créditos (${shots.length} × 20).\nO tempo pode passar de 1 minuto por take.`)) return;
+      closeGhostDirectorModal();
+      selectModelFromPicker('eros_image_lora_pose');
+
+      showToast(`Iniciando geração em lote dos ${shots.length} takes no Eros-Image...`, 4000);
+
+      for (let i = 0; i < shots.length; i++) {
+        const shot = shots[i];
+        const txt = document.getElementById('txtCreatorPrompt');
+        if (txt) txt.value = shot.prompt;
+        await executeGhostCreatorGen();
+        // Pequena pausa entre os disparos
+        await new Promise(r => setTimeout(r, 1500));
+      }
+    }
+    window.generateAllDirectorShots = generateAllDirectorShots;
+  </script>
 </body>
 
 </html>

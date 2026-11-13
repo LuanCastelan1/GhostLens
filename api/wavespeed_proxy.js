@@ -19,7 +19,7 @@ const {
   enforceRateLimit,
   supabaseRest
 } = require('../lib/ghostlens-backend');
-const { generateCreatorImage, generateCreatorFromVision, queryCreatorTask, getCreatorCatalog, getCreatorUsage, creatorConfigured, visionConfigured } = require('../lib/creator');
+const { generateCreatorImage, generateCreatorFromVision, planCarouselDirector, queryCreatorTask, getCreatorCatalog, getCreatorUsage, creatorConfigured, visionConfigured } = require('../lib/creator');
 const { getRunningHubCatalog } = require('../lib/runninghub');
 
 const WAVESPEED_API_KEY = process.env.WAVESPEED_API_KEY || '';
@@ -193,6 +193,11 @@ module.exports = async (req, res) => {
 
     if (action === 'creator_vision') {
       const result = await generateCreatorFromVision(body, user);
+      return res.status(result.status).json(result.payload);
+    }
+
+    if (action === 'carousel_director') {
+      const result = await planCarouselDirector(body);
       return res.status(result.status).json(result.payload);
     }
 
