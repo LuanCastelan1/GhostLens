@@ -1266,7 +1266,7 @@
         "nodeId": "41053",
         "fieldName": "denoise",
         "type": "number",
-        "default": 0.85
+        "default": 0.75
       },
       "width": {
         "nodeId": "41065",
@@ -1286,8 +1286,6 @@
       "44057"
     ],
     "requiresReference": false,
-    "dimensionPreset": "2k",
-    "promptSuffix": "preserve the exact same skin texture, same derme, visible micro-pores, natural body proportions, same bedroom/environment and identity; photorealistic raw photo",
     "cost_label": "40 créditos • 4 ângulos"
   },
   "eros_image_ref_pose": {
